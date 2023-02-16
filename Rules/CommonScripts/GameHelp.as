@@ -577,8 +577,7 @@ void onRender( CRules@ this )
 	{
 		playerClassButtons.display();
 	}
-
-	if (particleCount is null) return;
+	
 	string temp = "Particle count: ";
 	if (particleCount.value == 0){
 		temp += "None";
