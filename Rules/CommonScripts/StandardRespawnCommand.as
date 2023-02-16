@@ -47,6 +47,7 @@ void InitClasses(CBlob@ this)
 	addPlayerClass(this, "Druid", "$druid_class_icon$", "druid", "I hate gardening.");
 	addPlayerClass(this, "SwordCaster", "$swordcaster_class_icon$", "swordcaster", "Swords, but Magic.");
 	addPlayerClass(this, "Entropist", "$entropist_class_icon$", "entropist", "Sunk Cost Fallacy.");
+	addPlayerClass(this, "Priest", "$priest_class_icon$", "priest", "test");
 }
 
 void BuildRespawnMenuFor(CBlob@ this, CBlob @caller)
@@ -77,6 +78,7 @@ void buildSpawnMenu(CBlob@ this, CBlob@ caller)
 	AddIconToken("$druid_class_icon$", "GUI/ClassIcons.png", Vec2f(32, 32), 4, caller.getTeamNum());
 	AddIconToken("$swordcaster_class_icon$", "GUI/ClassIcons.png", Vec2f(32, 32), 5, caller.getTeamNum());
 	AddIconToken("$entropist_class_icon$", "GUI/ClassIcons.png", Vec2f(32, 32), 6, caller.getTeamNum());
+	AddIconToken("$priest_class_icon$", "GUI/ClassIcons.png", Vec2f(32, 32), 6, caller.getTeamNum());
 
 	BuildRespawnMenuFor(this, caller);
 }

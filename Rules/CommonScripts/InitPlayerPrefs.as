@@ -105,6 +105,7 @@ void onTick(CRules@ this)
 		loadHotbarAssignments( localPlayer, "necromancer" );
 		loadHotbarAssignments( localPlayer, "swordcaster" );
 		loadHotbarAssignments( localPlayer, "entropist" );
+		loadHotbarAssignments( localPlayer, "priest" );
 		loadHotbarAssignments( localPlayer, "frigate" );
 		
 		playerPrefsInfo.infoLoaded = true;
@@ -137,7 +138,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 		PlayerPrefsInfo playerPrefsInfo;
 		player.set( "playerPrefsInfo", @playerPrefsInfo );
 		
-		print("playerPrefs set");
+		//print("playerPrefs set");
 	}
 	/*
 	else if (this.getCommandID("unlock class") == cmd)
