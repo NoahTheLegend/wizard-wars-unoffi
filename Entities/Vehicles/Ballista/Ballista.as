@@ -23,7 +23,7 @@ void onInit(CBlob@ this)
 	this.Tag("change class drop inventory");
 
 	InitCosts();
-	this.set_s32("gold building amount", CTFCosts::ballista_gold);
+	this.set_s32("gold building amount", 50);
 
 	AddIconToken("$Normal_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 0);
 	AddIconToken("$Explosive_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 1);

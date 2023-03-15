@@ -37,7 +37,7 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + Descriptions::ballista, false, true);
 		s.crate_icon = 5;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", (CTFCosts::ballista_gold / 2));
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 0);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
@@ -84,7 +84,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				// makes crate still drop gold if it breaks before it's unpacked
 				// Crate.as prevents gold from dropping if it dies after unpack
 				CBlob@ box = getBlobByNetworkID(item);
-				if (box !is null) box.set_s32("gold building amount", CTFCosts::ballista_gold);
+				if (box !is null) box.set_s32("gold building amount", 50);
 			}
 		}
 	}
