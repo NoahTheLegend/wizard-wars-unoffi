@@ -34,7 +34,7 @@ namespace SwordCasterParams
 			SpellType::other, 20, 10, 0, 64.0f, true),
 			
 		Spell("executioner", "Executioner", 43, "The Executioner was a sword used, as the name implies, in execution by decapitation. Today, it serves another purpose. Press SHIFT to launch them in the direction of your mouse.",
-				SpellType::other, 24, 30, 0, 360.0f, true),
+				SpellType::other, 35, 45, 3, 360.0f, true),
 			
 		Spell("crusader", "Crusader", 42, "This spell materializes three big swords to block the enemy advancement.",
 				SpellType::other, 15, 40, 0, 360.0f, true),
