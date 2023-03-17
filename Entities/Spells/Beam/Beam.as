@@ -5,7 +5,7 @@
 #include "ShieldCommon.as";
 
 const f32 RANGE = 128.0f;
-const f32 DAMAGE = 0.2f;
+const f32 DAMAGE = 0.15f;
 
 const f32 LIFETIME = 3.0f;
 const u8 MANA_TAKE_PERIOD = 6;
