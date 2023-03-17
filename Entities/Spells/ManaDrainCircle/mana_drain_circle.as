@@ -49,7 +49,7 @@ void onTick(CBlob@ this)
 		if (b is null)
 		{continue;}
 
-        if ( !b.hasTag("flesh") || this.getTeamNum() == b.getTeamNum() ) //if not made of flesh or not same team, abort
+        if ( !b.hasTag("flesh") || b.hasTag("dead") || this.getTeamNum() == b.getTeamNum() )
         {continue;}
         
         Vec2f vel = b.getVelocity();

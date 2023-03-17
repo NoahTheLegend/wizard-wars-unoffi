@@ -152,7 +152,7 @@ class NecromancerRain
 						arrow.IgnoreCollisionWhileOverlapped(this);
 						arrow.SetDamageOwnerPlayer(this.getPlayer());
 						arrow.server_setTeamNum(team);
-						arrow.setPosition( Vec2f(position.x + XORRandom(xVariation*2) - xVariation, XORRandom(yVariation*2) - 2.0f*yVariation) );
+						arrow.setPosition( Vec2f(position.x + XORRandom(xVariation*2) - xVariation, XORRandom(yVariation*2) - 2.0f*yVariation) + Vec2f(0,8) );
 						arrow.setVelocity(Vec2f(0.0f, 8.0f));
 					}
 				}
