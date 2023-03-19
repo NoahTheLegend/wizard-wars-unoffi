@@ -28,7 +28,7 @@ void onTick(CBlob@ this)
 	if (this.getCurrentScript().tickFrequency == 1)
 	{
 		this.getShape().SetGravityScale(1.0f);
-		this.server_SetTimeToDie(54);
+		this.server_SetTimeToDie(30);
 		this.SetLight(true);
 		this.SetLightRadius(24.0f);
 		this.SetLightColor(SColor(255, 211, 121, 224));
