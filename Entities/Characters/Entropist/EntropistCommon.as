@@ -33,33 +33,33 @@ namespace EntropistParams
 			SpellType::other, 5, 15, 0, 360.0f, true),
 			 
 		Spell("disruption_wave", "Disruption Wave", 51, "Unleash a destructive burst of warping energy, tearing apart anything in its path.",
-				SpellType::other, 30, 30, 2, 360.0f, true),
+				SpellType::other, 25, 30, 2, 360.0f, true),
 			 
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 10, 10, 0, 64.0f, true),
+			SpellType::other, 12, 10, 0, 64.0f, true),
 			 
 		Spell("sidewind", "Sidewind", 53, "Temporarily accelerate your own time by transporting yourself to another dimension for a few moments. Harder to damage while in this dimension.",
 				SpellType::other, 8, 2, 3, 1.0f, true),
 			 
 		Spell("voltage_field", "Voltage Field", 54, "Releases a bubble of electricity that knocks away projectiles and enemies that collide with it. Cannot cast spells while active.",
-				SpellType::other, 30, 90, 6, 1.0f, true),
+				SpellType::other, 30, 60, 6, 1.0f, true),
 			
 		Spell("nova", "Nova", 55, "Releases a homing, concentrated energy star. Explodes on contact.",
-				SpellType::other, 30, 40, 5, 100.0f, true),
+				SpellType::other, 30, 45, 6, 100.0f, true),
 			
 		Spell("burn", "Burn", 60, "Ignite your mana reserves and fuel your magic with blinding heat. Reduces mana generation by 1.",
-				SpellType::other, 20, 60, 15, 0.0f, true),
+				SpellType::other, 20, 60, 45, 0.0f, true),
 			
 		Spell("negentropy", "Negentropy", 59, "Cause Negentropy. Gain 1 extra mana generation.",
-				SpellType::other, 170, 60, 20, 0.0f, true),
+				SpellType::other, 150, 150, 45, 0.0f, true),
 				
-		Spell("crystallize", "Crystallize", 61, "Create a new shard. WIP",
+		Spell("crystallize", "Crystallize", 61, "Create a new shard.",
 				SpellType::other, 20, 20, 0, 0.0f, true),
 							
-		Spell("dematerialize", "Dematerialize", 62, "Converts a shard back into mana. WIP",
+		Spell("dematerialize", "Dematerialize", 62, "Converts a shard back into mana.",
 				SpellType::other, 0, 20, 0, 0.0f, true),
 				
-		Spell("polarity", "Polarity", 63, "Switch between attack and defense mode. WIP",
+		Spell("polarity", "Polarity", 63, "Switch between attack and defense mode.",
 				SpellType::other, 0, 10, 0, 0.0f, true),
 				
 		Spell("", "", 0, "Empty spell.",

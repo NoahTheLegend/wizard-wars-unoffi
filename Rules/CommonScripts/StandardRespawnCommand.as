@@ -47,7 +47,8 @@ void InitClasses(CBlob@ this)
 	addPlayerClass(this, "Druid", "$druid_class_icon$", "druid", "I hate gardening.");
 	addPlayerClass(this, "SwordCaster", "$swordcaster_class_icon$", "swordcaster", "Swords, but Magic.");
 	addPlayerClass(this, "Entropist", "$entropist_class_icon$", "entropist", "Sunk Cost Fallacy.");
-	addPlayerClass(this, "Priest", "$priest_class_icon$", "priest", "test");
+	addPlayerClass(this, "Priest", "$priest_class_icon$", "priest", "Warhammer reference.");
+	addPlayerClass(this, "Shaman", "$shaman_class_icon$", "shaman", "Does drugs.");
 }
 
 void BuildRespawnMenuFor(CBlob@ this, CBlob @caller)

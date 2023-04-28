@@ -68,6 +68,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	if(this is null || blob is null)
 	{return false;}
 
+	if (this.hasTag("no_spike_collision") && blob.hasTag("projectile")) return false;
 	return 
 	( 
 		blob.hasTag("standingup")
@@ -89,9 +90,14 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	if (solid)
 	{
 		causeSparks = true;
+
+		if (blob is null && isServer() && this.hasTag("die_on_collide"))
+		{
+			this.server_Die();
+		}
 	}
 
-	if( blob !is null && isEnemy(this, blob) )
+	if(blob !is null && isEnemy(this, blob))
 	{
 		causeSparks = true;
 		if (this.getTickSinceCreated() > min_detonation_time)	
@@ -127,7 +133,7 @@ void onDie( CBlob@ this )
 		for ( u8 i = 0; i < aoeBlobs.length(); i++ )
 		{
 			CBlob@ b = aoeBlobs[i]; //standard null check for blobs in radius
-			if (b is null)
+			if (b is null || b.getName() == "spikes")
 			{continue;}
 
 			if ( !map.rayCastSolidNoBlobs( pos, b.getPosition() ) )

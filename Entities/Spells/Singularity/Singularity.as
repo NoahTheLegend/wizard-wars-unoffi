@@ -9,7 +9,6 @@ const f32 hit_amount_cata = 10.0f;
 
 void onInit( CBlob @ this )
 {
-	this.Tag("counterable");
 	this.Tag("projectile");
 	this.Tag("invincible");
 	this.Tag("magic_circle");

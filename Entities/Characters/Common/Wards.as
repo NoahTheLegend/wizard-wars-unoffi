@@ -22,7 +22,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
         {return damage;}
     }
 */
-
+    if (this.get_u16("airblastShield") <= 1) return damage;
     Vec2f thisPos = this.getPosition();
 
 	this.getSprite().PlaySound("Airblast.ogg", 1.0f, 1.0f + XORRandom(1)/10.0f); //produces airblast sound

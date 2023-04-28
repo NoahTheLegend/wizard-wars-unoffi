@@ -208,8 +208,8 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		
         Spell spell = FrigateParams::spells[spellID];
         Vec2f aimpos = params.read_Vec2f();
-		Vec2f thispos = params.read_Vec2f();
-        CastSpell(this, charge_state, spell, aimpos, thispos);
+        Vec2f thispos = params.read_Vec2f();
+		CastSpell(this, charge_state, spell, aimpos, thispos);
 		
 		//manaInfo.mana -= spell.mana;
     }
@@ -229,6 +229,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
 {
+if (customData == Hitters::burn && hitterBlob is null) return damage / 2;
     if (( hitterBlob.getName() == "wraith" || hitterBlob.getName() == "orb" ) && hitterBlob.getTeamNum() == this.getTeamNum())
         return 0;
     return damage;

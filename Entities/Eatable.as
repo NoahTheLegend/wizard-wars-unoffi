@@ -53,7 +53,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 				if (heal_amount == 255)
 				{
-					theBlob.server_SetHealth(theBlob.getInitialHealth());
+					theBlob.server_Heal(f32(heal_amount) * 0.25f);
 				}
 				else
 				{

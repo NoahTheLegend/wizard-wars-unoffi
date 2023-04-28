@@ -47,6 +47,8 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
         {
             this.server_SendCommandToPlayer(this.getCommandID("message"), player);//send the player a message
         }
+        blob.set_u32("damage_boost", getGameTime()+60*30);
+        blob.Sync("damage_boost", true);
         blob.Tag("extra_damage");
         blob.Sync("extra_damage", true);//Sync this tag to clients as well, true means "sync from the server", false would mean to "sync from client"
         this.server_Die();
@@ -80,4 +82,9 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
     {
         client_AddToChat("Your offensive spells are more powerful for the remainder of this life.", SColor(255, 255, 0, 0));
     }
+}
+
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+	return false;
 }

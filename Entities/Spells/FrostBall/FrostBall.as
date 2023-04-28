@@ -134,6 +134,7 @@ void Freeze(CBlob@ blob, f32 frozenTime)
 			AttachmentPoint@ ap = icePrison.getAttachments().getAttachmentPointByName("PICKUP2");
 			if ( ap !is null )
 			{
+				icePrison.setVelocity(blob.getVelocity()*0.5f);
 				icePrison.server_AttachTo(blob, "PICKUP2");
 			}
 			

@@ -82,6 +82,8 @@ class WWPlayerClassButton
 			spells = EntropistParams::spells;
 		else if ( _configFilename == "priest" )
 			spells = PriestParams::spells;
+		else if ( _configFilename == "shaman" )
+			spells = ShamanParams::spells;
 		else if ( _configFilename == "frigate" )
 			spells = FrigateParams::spells;
 		
@@ -344,7 +346,7 @@ void intitializeClasses()
 	
 	playerClassButtons.registerWWPlayerClassButton("Necromancer", 
 													"     A spell-caster who is able to summon the undead and specializes in dark magic. Takes on the role of AOE damage support, but can hold his own in combat. Complexity: EASY" +
-													"\n\n     Health: 75" +
+													"\n\n     Health: 100" +
 													"\n     Mana: 100" +
 													"\n     Mana Regen: 4 mana/sec", 
 													"necromancer", 1, 0, 3, 5, "WizardWars");
@@ -358,7 +360,7 @@ void intitializeClasses()
 													
 	playerClassButtons.registerWWPlayerClassButton("SwordCaster", 
 													"     \"This is a good day for SwordCasters all around the world. Complexity: MEDIUM\" " +
-													"\n\n     Health: 70" +
+													"\n\n     Health: 80" +
 													"\n     Mana: 70" +
 													"\n     Mana Regen: 3 mana/sec",
 													"swordcaster", 4, 0, 5, 0, "WizardWars");
@@ -375,6 +377,13 @@ void intitializeClasses()
 													"\n     Mana: 150" +
 													"\n     Mana Regen: 3 mana/sec",
 													"priest", 6, 0, 7, 0, "WizardWars");
+
+	playerClassButtons.registerWWPlayerClassButton("Shaman", 
+													"A powerful elementalist, totemist, zoologist and fire shitterist. Complexity: MEDIUM" +
+													"\n\n     Health: 100" +
+													"\n     Mana: 100" +
+													"\n     Mana Regen: 4 mana/sec",
+													"shaman", 6, 0, 7, 0, "WizardWars");
 													
 /*	playerClassButtons.registerWWPlayerClassButton("Spaceship Combat Initiative", 
 													"     Frigate Prototype. In highly fragile state. " +
@@ -509,6 +518,8 @@ void SpellButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 					sSpell = EntropistParams::spells[Maths::Min( s,(EntropistParams::spells.length-1) )];
 				else if ( cButton.name == "priest" )
 					sSpell = PriestParams::spells[Maths::Min( s,(PriestParams::spells.length-1) )];
+				else if ( cButton.name == "shaman" )
+					sSpell = ShamanParams::spells[Maths::Min( s,(ShamanParams::spells.length-1) )];
 				else if ( cButton.name == "frigate" )
 					sSpell = FrigateParams::spells[Maths::Min( s,(FrigateParams::spells.length-1) )];
 					
@@ -1239,6 +1250,123 @@ void RenderClassMenus()		//very light use of KGUI
 				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
 				{
 					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "priest");	//hotkey 17 is the auxiliary2 fire hotkey
+					hotbarClicked = true;
+				}
+				
+				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
+				
+				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
+				{
+					if ( hotbarClicked )
+					{
+						lastHotbarPressTime = controls.lastKeyPressTime;
+						Sound::Play( "MenuSelect1.ogg" );	
+					}
+				}
+			}
+			else if ( iButton.name == "shaman" )
+			{
+				CControls@ controls = localPlayer.getControls();
+				Vec2f mouseScreenPos = controls.getMouseScreenPos();
+			
+				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Shaman;
+			
+				//PRIMARY SPELL HUD
+				Vec2f offset = Vec2f(264.0f, 350.0f);
+				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
+				
+				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
+				bool hotbarClicked = false;
+				int spellsLength = ShamanParams::spells.length;
+				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
+				{
+					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
+					Spell spell = ShamanParams::spells[primarySpellID];
+					
+					if ( i < 5 )		//spells 0 through 4
+					{
+						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
+						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
+						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
+							
+						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
+						{
+							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "shaman");
+							hotbarClicked = true;
+						}			
+					}
+					else if ( i < 10 )	//spells 5 through 9	
+					{
+						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
+						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
+							
+						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
+						{
+							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "shaman");
+							hotbarClicked = true;
+						}
+					}
+					else				//spells 10 through 14
+					{
+						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
+						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
+							
+						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
+						{
+							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "shaman");
+							hotbarClicked = true;
+						}
+					}
+				}
+				
+				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
+				
+				//SECONDARY SPELL HUD
+				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
+				
+				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Shaman[15], spellsLength-1);
+				Spell secondarySpell = ShamanParams::spells[secondarySpellID];
+				
+				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
+				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
+					
+				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
+				{
+					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "shaman");	//hotkey 15 is the secondary fire hotkey
+					hotbarClicked = true;
+				}
+				
+				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
+				
+				//AUXILIARY1 SPELL HUD
+				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
+				
+				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Shaman[16], spellsLength-1);
+				Spell aux1Spell = ShamanParams::spells[aux1SpellID];
+				
+				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
+				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
+					
+				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
+				{
+					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "shaman");	//hotkey 16 is the auxiliary1 fire hotkey
+					hotbarClicked = true;
+				}
+				
+				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
+
+				//AUXILIARY2 SPELL HUD
+				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
+				
+				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Shaman[17], spellsLength-1);
+				Spell aux2Spell = ShamanParams::spells[aux2SpellID];
+				
+				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
+				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
+					
+				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
+				{
+					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "shaman");	//hotkey 17 is the auxiliary2 fire hotkey
 					hotbarClicked = true;
 				}
 				

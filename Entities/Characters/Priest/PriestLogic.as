@@ -259,6 +259,7 @@ void ManageSpell( CBlob@ this, PriestInfo@ priest, PlayerPrefsInfo@ playerPrefsI
             params.write_u8(castSpellID);
             params.write_Vec2f(spellPos);
 			params.write_Vec2f(pos);
+			params.write_Vec2f(this.getAimPos());
             this.SendCommand(this.getCommandID("spell"), params);
 			
 			playerPrefsInfo.spell_cooldowns[castSpellID] = PriestParams::spells[castSpellID].cooldownTime*getTicksASecond();
@@ -499,6 +500,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
 {
+    if (customData == Hitters::burn && hitterBlob is null) return damage / 2;
     if (( hitterBlob.getName() == "wraith" || hitterBlob.getName() == "orb" ) && hitterBlob.getTeamNum() == this.getTeamNum())
         return 0;
     return damage;

@@ -10,6 +10,7 @@
 #include "SwordCasterCommon.as"
 #include "EntropistCommon.as"
 #include "PriestCommon.as"
+#include "ShamanCommon.as"
 #include "FrigateCommon.as"
 
 #define CLIENT_ONLY
@@ -23,6 +24,7 @@ enum spellClass
 	SwordCaster,
     Entropist,
     Priest,
+    Shaman,
 }
 
 void onInit(CRules@ rules)
@@ -119,6 +121,11 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
         _class = Priest;
         spells_length = PriestParams::spells.length;
     }
+    else if(blob_name == "shaman")
+    {
+        _class = Shaman;
+        spells_length = ShamanParams::spells.length;
+    }
     else
     {
         return;
@@ -154,6 +161,9 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
             break;
             case Priest:
                 spell = PriestParams::spells[i];
+            break;
+            case Shaman:
+                spell = ShamanParams::spells[i];
             break;
 
             default:

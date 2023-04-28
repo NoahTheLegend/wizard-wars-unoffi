@@ -11,7 +11,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		if (hitterBlob !is this)
 		{
-			this.getSprite().PlaySound("dig_stone", Maths::Min(1.25f, Maths::Max(0.5f, damage)));
+			if (!this.hasTag("silent"))
+				this.getSprite().PlaySound("dig_stone", Maths::Min(1.25f, Maths::Max(0.5f, damage)));
 		}
 
 		makeGibParticle("gibs_ice", worldPoint, getRandomVelocity((this.getPosition() - worldPoint).getAngle(), 1.0f + damage, 90.0f) + Vec2f(0.0f, -2.0f),
@@ -24,6 +25,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onGib(CSprite@ this)
 {
+	if (this.getBlob() !is null && this.getBlob().hasTag("silent")) return;
 	if (this.getBlob().hasTag("heavy weight"))
 	{
 		this.PlaySound("WoodDestruct");
@@ -52,7 +54,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	const f32 soundbase = heavy ? 0.7f : 2.5f;
 	const f32 sounddampen = heavy ? soundbase : soundbase * 2.0f;
 
-	if (vellen > soundbase)
+	if (vellen > soundbase && !this.hasTag("silent"))
 	{
 		f32 volume = Maths::Min(1.25f, Maths::Max(0.2f, (vellen - soundbase) / soundbase));
 

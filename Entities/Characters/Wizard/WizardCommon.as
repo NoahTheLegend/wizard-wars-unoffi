@@ -34,13 +34,13 @@ namespace WizardParams
 			SpellType::other, 15, 10, 0, 64.0f, true),
 			
 		Spell("frost_ball", "Ball of Frost", 13, "Send forth a slow travelling ball of pure cold essence to freeze your enemies in place and deal a small amount of damage. Freeze duration increases as your own health declines.",
-			SpellType::other, 15, 25, 0, 360.0f, true),
+			SpellType::other, 12, 30, 0, 360.0f, true),
 			
 		Spell("heal", "Lesser Heal", 14, "Salves the least of your allies' wounds to restore a moderate portion of their health. Fully charge in order to heal yourself with less efficiency.",
-			SpellType::other, 25, 60, 0, 360.0f), 
+			SpellType::other, 15, 45, 0, 360.0f), 
 			 
 		Spell("firebomb", "Fire Bomb", 11, "Throw a high velocity condensed ball of flames that explodes on contact with enemies, igniting them. Has a minimum engagement distance of about 4 blocks.",
-			SpellType::other, 35, 40, 0, 360.0f, true),
+			SpellType::other, 30, 40, 0, 360.0f, true),
 			 
 		Spell("fire_sprite", "Fire Sprites", 12, "Create long-ranged explosive balls of energy which follow your aim for an extended period of time.",
 			SpellType::other, 22, 35, 0, 360.0f, true),	
@@ -61,7 +61,7 @@ namespace WizardParams
 			SpellType::other, 10, 15, 0, 360.0f, true),
 			
 		Spell("lightning", "Lightning", 26, "Call down the blazing wrath of heaven upon the heads of those who oppose you. .",
-				SpellType::other, 35, 10, 0, 180.0f, true),
+				SpellType::other, 35, 30, 0, 180.0f, true),
 
 		Spell("mana_drain_circle", "Circle of disenchant", 33, "Those who stand inside this circle lose their mana and are slowed to a crawl",
 				SpellType::other,35,40,15,360, true),			
@@ -70,13 +70,13 @@ namespace WizardParams
 				SpellType::other, 10, 10, 0, 360.0f, true),
 
 		Spell("negatisphere", "NegatiSphere", 50, "Moving magic field that negates other counterable spells. Press SHIFT to launch them in the direction of your aim.",
-				SpellType::other, 15, 10, 2, 360.0f, true),
+				SpellType::other, 10, 10, 1, 360.0f, true),
 				
 		Spell("plasma_shot", "Plasma Shot", 17, "Fires a burst of slow moving plasma that explodes on impact or after reaching its destination.",
-				SpellType::other, 12, 15, 0, 500.0f, true),
+				SpellType::other, 20, 20, 0, 500.0f, true),
 
-		Spell("fiery_star", "Fiery Star", 58, "[WIP] Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
-				SpellType::other, 25, 50, 1, 360.0f, true),
+		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
+				SpellType::other, 25, 45, 1, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

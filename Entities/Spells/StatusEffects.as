@@ -81,6 +81,27 @@ void onTick( CBlob@ this)
 			this.Sync("slowed", true);
 		}
 	}
+
+	//HEAVY
+	u16 heavy = this.get_u16("heavy");
+
+	if (heavy > 0)
+	{
+		heavy--;
+		this.set_u16("heavy", heavy);
+		
+		Vec2f thisVel = this.getVelocity();
+		this.setVelocity( Vec2f(thisVel.x*0.5f, thisVel.y) );
+		if (thisVel.y < 0.00f) this.setVelocity(Vec2f(thisVel.x, 0));
+		
+
+		//makeSmokeParticle(this, Vec2f(), "Smoke");
+		
+		if ( heavy == 0 )
+		{
+			this.Sync("heavy", true);
+		}
+	}
 	
 	//MANABURN
 	u16 manaburn = this.get_u16("manaburn");
@@ -339,7 +360,7 @@ void onTick( CBlob@ this)
 			}
 		}
 		
-		if (damageaura == 0)
+		if (damageaura == 1)
 		{
 			this.Sync("damageaura", true);
 			if(isClient())
@@ -406,6 +427,12 @@ void onTick( CBlob@ this)
 			this.set_bool("airblastSetupDone",true);
 		}
 
+		if (thisSprite.getSpriteLayer("airblast_ward") !is null)
+		{
+			CSpriteLayer@ layer = thisSprite.getSpriteLayer("airblast_ward");
+			layer.RotateBy(0.5f, Vec2f(0,0));
+		}
+
 		if(airblastShield == 0 || this.hasTag("dead"))
 		{
 			airblastShield = 0;
@@ -426,16 +453,29 @@ void onTick( CBlob@ this)
 	{
 		fireProt--;
 
+		if(!this.hasScript("Wards.as"))
+		{
+			thisSprite.PlaySound("Airblast.ogg", 1.0f, 1.0f + XORRandom(1)/10.0f);
+			this.AddScript("Wards.as");
+		}
+
 		if(!this.exists("fireprotSetupDone") || !this.get_bool("fireprotSetupDone")) //Ward sprite setup
 		{
 			CSpriteLayer@ layer = thisSprite.addSpriteLayer("fire_ward","Fire Ward.png",25,25);
 			layer.SetRelativeZ(-3);
 			this.set_bool("fireprotSetupDone",true);
 		}
+
+		if (thisSprite.getSpriteLayer("fire_ward") !is null)
+		{
+			CSpriteLayer@ layer = thisSprite.getSpriteLayer("fire_ward");
+			layer.RotateBy(0.5f, Vec2f(0,0));
+		}
 		
 		if(fireProt == 0 || this.hasTag("dead"))
 		{
 			fireProt = 0;
+			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.1f + XORRandom(1)/10.0f);
 			thisSprite.RemoveSpriteLayer("fire_ward"); //Ward sprite removal
 			this.set_bool("fireprotSetupDone",false);
 		}

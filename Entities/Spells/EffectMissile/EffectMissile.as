@@ -255,7 +255,7 @@ void onTick( CBlob@ this)
 
 					case mana_effect_missile:
 					{
-						manaShot(blob, this.get_u8("mana_used"), this.get_u8("caster_mana"), this.get_bool("silent"));
+						manaShot(blob, this.get_u8("mana_used"), this.get_u8("caster_mana"), this.get_bool("silent"), this.get_u8("direct_restore"));
 					}
 					break;
 					

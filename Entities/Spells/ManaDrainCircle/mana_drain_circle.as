@@ -103,6 +103,7 @@ void onTick(CBlob@ this)
 				orb.set_u8("effect", mana_effect_missile);
 				orb.set_u8("mana_used", 1);
 				orb.set_u8("caster_mana", 3);
+                orb.set_u8("direct_restore", 0);
                 orb.set_bool("silent", true);
 
                 Vec2f orbVel = Vec2f( 0.1f , 0 ).RotateByDegrees(XORRandom(360));

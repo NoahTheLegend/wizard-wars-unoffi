@@ -186,7 +186,7 @@ void makeSmokeParticle( CBlob@ this , Vec2f targetPos )
     	p1.fastcollision = true;
 		p1.Z = 300.0f;
 	}
-
+	
 	CParticle@ p2 = ParticleAnimated( particleName , targetPos, Vec2f_zero, float(XORRandom(360)), 0.5f, 6, 0.0f, false );
 	if ( p2 !is null)
 	{

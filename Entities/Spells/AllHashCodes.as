@@ -14,6 +14,7 @@ enum EntityHash
 	_swordcaster = 896217902,
 	_entropist = -910968587,
 	_priest = -1512480422,
+	_shaman = -390352416,
 	_knight = -541330116,
 	_archer = 871806850,
 	_builder = -466287296,

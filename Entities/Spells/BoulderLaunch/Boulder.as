@@ -12,6 +12,8 @@ void onInit(CBlob @ this)
 {
 	this.set_u8("launch team", 255);
 	this.Tag("medium weight");
+	this.Tag("projectile");
+	this.Tag("counterable");
 
 	LimitedAttack_setup(this);
 

@@ -205,6 +205,7 @@ void onTick( CBlob@ this )
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
 {
+if (customData == Hitters::burn && hitterBlob is null) return damage / 2;
     if (( hitterBlob.getName() == "wraith" || hitterBlob.getName() == "orb" ) && hitterBlob.getTeamNum() == this.getTeamNum())
         return 0;
 

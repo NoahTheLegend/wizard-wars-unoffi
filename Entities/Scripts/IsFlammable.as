@@ -108,7 +108,7 @@ void onTick(CBlob@ this)
 			f32 damage = 0.2f;
 			if(this.get_u16("fireProt") > 0)
 			{damage = 0.0f;}
-			blob.server_Hit(this, pos, Vec2f(0, 0), damage, this.get_u8(burn_hitter), true);
+			blob.server_Hit(this, pos, Vec2f(0, 0), damage/2, this.get_u8(burn_hitter), true);
 		}
 
 		//burninating the burning time

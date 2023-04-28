@@ -49,7 +49,7 @@ namespace DruidParams
 			SpellType::other, 10, 15, 0, 30.0f),
 				
 		Spell("healing_plant", "Nature's Remedy", 37, "This blessing from nature will seal your wounds.",
-			SpellType::other, 12, 7, 4, 128.0f, true),
+			SpellType::other, 25, 30, 5, 128.0f, true),
 
 		Spell("mushroom", "Dancing Shroom", 34, "A happy mushroom that will create it's own cloud of spores for you.",
 			SpellType::other, 10, 7, 0, 60.0f),
@@ -58,7 +58,7 @@ namespace DruidParams
 			SpellType::other, 20, 30, 2, 16.0f),
 				
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
-			SpellType::other, 25, 20, 0, 360.0f, true), 
+			SpellType::other, 20, 20, 0, 360.0f, true), 
 			 
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
 			SpellType::other, 20, 20, 0, 360.0f, true),
@@ -67,10 +67,10 @@ namespace DruidParams
 			SpellType::other, 35, 30, 10, 180.0f),
 
 		Spell("airblast_shield", "Airblast Shield", 56, "Cover your team or yourself in a volatile wind barrier that blasts away nearby enemies whenever you take damage.",
-			SpellType::other, 30, 30, 0, 360.0f, true),
+			SpellType::other, 20, 25, 0, 360.0f, true),
 
 		Spell("fire_ward", "Fire Ward", 57, "Form a heat protection aura around yourself. Completely nullifies fire damage.",
-			SpellType::other, 30, 30, 0, 360.0f, true),
+			SpellType::other, 20, 25, 0, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

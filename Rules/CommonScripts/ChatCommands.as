@@ -48,6 +48,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				orb.set_u8("effect", mana_effect_missile);
 				orb.set_u8("mana_used", 20);
 				orb.set_u8("caster_mana", 3);
+				orb.set_u8("direct_restore", 0);
                 orb.set_bool("silent", true);
 
 				orb.IgnoreCollisionWhileOverlapped( blob );

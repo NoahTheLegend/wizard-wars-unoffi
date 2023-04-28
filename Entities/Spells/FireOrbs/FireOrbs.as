@@ -14,7 +14,7 @@ void onInit( CBlob@ this )
     this.getShape().SetGravityScale( 0.0f );
 	this.getShape().getConsts().mapCollisions = false;
 	this.getSprite().SetZ(1450);// draw over ground
-    this.server_SetTimeToDie(45);
+    this.server_SetTimeToDie(60);
 
 	this.set_f32("explosive_radius",32.0f);
 	this.set_f32("explosive_damage",10.0f);
@@ -116,7 +116,7 @@ void onTick( CBlob@ this )
 		Vec2f vel = move_to-pos;
 
 		this.AddForce(vel/2.5f);
-		if (vel.Length() <= 4.0f) Boom( this );
+		if (vel.Length() <= 1.0f) Boom( this );
 	}
 	else
 	{
@@ -241,7 +241,7 @@ void ExplodeWithFire(CBlob@ this)
 					}
 					else
 					{
-						this.server_Hit(b, bPos, bPos-thisPos, 0.75f+(XORRandom(25)*0.01f), XORRandom(4) == 0 ? Hitters::fire : Hitters::explosion, false);
+						this.server_Hit(b, bPos, bPos-thisPos, 0.75f+(XORRandom(25)*0.01f), XORRandom(3) == 0 ? Hitters::fire : Hitters::explosion, false);
 					}
 				}
 			}
