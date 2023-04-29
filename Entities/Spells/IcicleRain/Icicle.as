@@ -128,7 +128,9 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 				this.server_Die();
 				return;
 			}
-			this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.1f), 0.33f, Hitters::explosion, true);
+			f32 dmg = 0.33f;
+			if (blob.get_u16("waterbarrier") > 0) dmg *= 2.5f;
+			this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.1f), dmg, Hitters::explosion, true);
 		}
 		this.server_Hit(this, this.getPosition(), this.getVelocity(), 99.0f, Hitters::builder, true);
 	}

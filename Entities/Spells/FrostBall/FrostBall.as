@@ -178,6 +178,7 @@ void ExplodeWithIce(CBlob@ this)
 				{
 					damage = 0.0f;
 				}
+				if (b.get_u16("waterbarrier") > 0) damage *= 3.0f;
 				this.server_Hit(b, bPos, bPos-thisPos, damage, Hitters::water, true);
 			}
 		}

@@ -96,7 +96,9 @@ void updateLaserPositions(CBlob@ this)
 				}
 				else if ( damageDealt == false )
 				{
-					this.server_Hit(hitBlob, hi.hitpos, Vec2f(0,1), DAMAGE, Hitters::explosion, true);
+					f32 damage = DAMAGE;
+					if (hitBlob.get_u16("waterbarrier") > 0) damage *= 1.75f;
+					this.server_Hit(hitBlob, hi.hitpos, Vec2f(0,1), damage, Hitters::explosion, true);
 					
 					damageDealt = true;
 				}

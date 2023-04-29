@@ -49,13 +49,13 @@ namespace ShamanParams
 			SpellType::other, 30, 45, 2, 156.0f),
 
 		Spell("watertotem", "Totem of Water", 77, "Heals most damaged nearby ally. Only one totem can heal a target. Generates heal charges passively. Overchage increases durability and generation rate. Pushes everything away upon death.",
-			SpellType::other, 45, 90, 8, 128.0f),
+			SpellType::other, 50, 90, 8, 128.0f),
 		
 		Spell("earthtotem", "Totem of Earth", 78, "Slows nearby enemies down. Overcharge increases effect distance and durability. Releases different buffs upon death.",
 			SpellType::other, 50, 60, 10, 224.0f),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freezes everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
-			SpellType::other, 20, 80, 12, 0.0f),
+			SpellType::other, 20, 75, 20, 0.0f),
 		
 		Spell("lavashot", "Lava Shot", 80, "Launches a slowly-moving sphere, which shatters into many drops of lava on impact. Periodically drops a bit of lava while flying. Overcharge increases the rate of dropping lava and amount from impact.",
 			SpellType::other, 25, 60, 2, 256.0f),
@@ -69,8 +69,8 @@ namespace ShamanParams
 		Spell("waterbarrier", "Water Barrier", 83, "Covers yourself in a bubble of water, which slows down enemies and some of their spells. While under this effect, you are unable to use fire spells and receive more damage from electricity and ice.",
 			SpellType::other, 25, 45, 0, 0.0f),
 
-		Spell("", "", 0, "Empty spell.",
-			SpellType::other, 1, 1, 0, 0.0f),
+		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
+			SpellType::other, 25, 45, 0, 120.0f),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)

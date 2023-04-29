@@ -43,7 +43,10 @@ void onInit( CBlob@ this )
 
 	//no spinning
 	this.getShape().SetRotationsAllowed(false);
-    this.addCommandID( "spell");
+	
+	this.addCommandID("freeze");
+    this.addCommandID("spell");
+	
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
     AddIconToken( "$Skeleton$", "SpellIcons.png", Vec2f(16,16), 0 );
@@ -423,8 +426,9 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 			return;
 		}
 	
-        u8 charge_state = params.read_u8();
-		u8 spellID = params.read_u8();
+        u8 charge_state; u8 spellID;
+		if (!params.saferead_u8(charge_state)) return;
+		if (!params.saferead_u8(spellID)) return;
 		
         Spell spell = ShamanParams::spells[spellID];
         Vec2f aimpos = params.read_Vec2f();
@@ -433,6 +437,18 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		
 		manaInfo.mana -= spell.mana;
     }
+	else if (cmd == this.getCommandID("freeze"))
+	{
+		u16 blobid;
+		f32 power;
+		if (!params.saferead_u16(blobid)) return;
+		if (!params.saferead_f32(power)) return;
+
+		CBlob@ b = getBlobByNetworkID(blobid);
+		if (b is null) return;
+
+		Freeze(b, 2.0f*power);
+	}
 }
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )

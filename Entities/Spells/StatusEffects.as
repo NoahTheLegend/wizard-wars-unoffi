@@ -510,7 +510,7 @@ void onTick( CBlob@ this)
 			if (layer !is null)
 			{
 				layer.SetRelativeZ(-5.75f);
-				layer.ScaleBy(Vec2f(1.25f,1.25f));
+				layer.ScaleBy(Vec2f(1.33f,1.33f));
 				layer.setRenderStyle(RenderStyle::additive);
 			}
 			this.set_bool("waterSetupDone",true);
@@ -523,6 +523,7 @@ void onTick( CBlob@ this)
 			{
 				layer.SetFacingLeft(false);
 				layer.RotateBy(Maths::Sin(getGameTime()*0.1f)*1.5f, Vec2f(0,0));
+				layer.setRenderStyle(RenderStyle::additive);
 			}
 		}
 

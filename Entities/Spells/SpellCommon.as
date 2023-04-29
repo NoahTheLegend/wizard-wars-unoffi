@@ -3162,6 +3162,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
+			if (this.get_u16("waterbarrier") > 0)
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 0.85f, 0.85f);
+				return;
+			}
+
 			f32 orbspeed = necro_shoot_speed/1.5f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
 
@@ -3234,12 +3247,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					distance = 142.0f;
-					power *= 2.25f;
+					power = 1.33f;
 
 					if (this.hasTag("extra_damage"))
 					{
 						distance = 186.0f;
-						power = 2.75f;
+						power = 1.5f;
 					}
 				}
 				break;
@@ -3256,7 +3269,11 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 					b.getSprite().PlaySound("IceShoot.ogg", 0.75f, 1.3f + XORRandom(11)/10.0f);
 					this.server_Hit(b, b.getPosition(), b.getVelocity(), 0.001f, Hitters::water, true);
-					Freeze(b, 2.0f*power);
+
+					CBitStream params;
+					params.write_u16(b.getNetworkID());
+					params.write_f32(2.0f*power);
+					this.SendCommand(this.getCommandID("freeze"), params);
 					{									
 						const f32 rad = 16.0f;
 						Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
@@ -3408,6 +3425,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
+			if (this.get_u16("waterbarrier") > 0)
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 0.85f, 0.85f);
+				return;
+			}
+
 			f32 orbspeed = necro_shoot_speed * 0.3f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
 			f32 orbDamage = 0.5f * extraDamage;
@@ -3468,6 +3498,57 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				break;
 				
 				default:return;
+			}
+		}
+		break;
+
+		
+		case -1908358180://chainlightning
+		{
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+		
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob( "chainlightning", this.getTeamNum(), orbPos ); 
+				if (orb !is null)
+				{
+					switch (charge_state)
+					{
+						case minimum_cast:
+						case medium_cast:
+						{
+							orb.set_u8("targets", 1);
+							orb.set_f32("damage", 1.25f);
+							break;
+						}
+						case complete_cast:
+						{
+							orb.set_u8("targets", 2);
+							orb.set_f32("damage", 1.5f);
+							break;
+						}
+						case super_cast:
+						{
+							orb.set_u8("targets", 3);
+							orb.set_f32("damage", 1.75f);
+							break;
+						}
+						if (this.hasTag("extra_damage"))
+						{
+							// extra damage is inside the spell's logic
+							orb.add_u8("targets", 2);
+						}
+					}
+
+                    if(this.hasTag("extra_damage"))
+                        orb.Tag("extra_damage");
+
+					orb.set_Vec2f("aim pos", aimpos);
+					orb.set_u16("follow_id", this.getNetworkID());
+
+					orb.IgnoreCollisionWhileOverlapped( this );
+					orb.SetDamageOwnerPlayer( this.getPlayer() );
+				}
 			}
 		}
 		break;

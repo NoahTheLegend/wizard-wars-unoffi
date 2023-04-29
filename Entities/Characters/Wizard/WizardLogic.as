@@ -44,7 +44,8 @@ void onInit( CBlob@ this )
 
 	//no spinning
 	this.getShape().SetRotationsAllowed(false);
-    this.addCommandID( "spell" );
+    this.addCommandID("freeze");
+    this.addCommandID("spell");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 	
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_nodeath);
@@ -430,6 +431,18 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		
 		manaInfo.mana -= spell.mana;
     }
+	else if (cmd == this.getCommandID("freeze"))
+	{
+		u16 blobid;
+		f32 power;
+		if (!params.saferead_u16(blobid)) return;
+		if (!params.saferead_f32(power)) return;
+
+		CBlob@ b = getBlobByNetworkID(blobid);
+		if (b is null) return;
+
+		Freeze(b, 2.0f*power);
+	}
 }
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )

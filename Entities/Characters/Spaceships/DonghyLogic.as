@@ -49,7 +49,8 @@ void onInit( CBlob@ this )
 	this.getShape().SetRotationsAllowed(false);
 	//this.getShape().SetGravityScale(0);
 
-    this.addCommandID( "spell" );
+    this.addCommandID("freeze");
+    this.addCommandID("spell");
 	this.addCommandID( "pulsed" );
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 

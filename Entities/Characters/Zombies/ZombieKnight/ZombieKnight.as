@@ -391,8 +391,6 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 		}
 		if (getNet().isServer())
 		{
-			
-			warn("SS: "+getRules().get_bool("scrolls_spawn"));
 			int r = XORRandom(30);
 			if (r<3 && getRules().get_bool("scrolls_spawn"))
 			{
