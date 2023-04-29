@@ -3,7 +3,7 @@
 const f32 heal_radius = 128.0f;
 const f32 heal_amount = 0.5f; // 1.0f is 5 HP
 const f32 max_charges = 8;
-const u32 heal_rate = 60;
+const u32 heal_rate = 75;
 
 void onInit(CBlob@ this)
 {

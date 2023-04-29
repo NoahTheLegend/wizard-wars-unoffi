@@ -3043,13 +3043,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							}
 							case 4:
 							{
-								tot.set_u16("charge_delay", 105);
+								tot.set_u16("charge_delay", 115);
 								tot.set_s32("aliveTime", 2400);//1m20s
 								break;
 							}
 							case 5:
 							{
-								tot.set_u16("charge_delay", 90);
+								tot.set_u16("charge_delay", 105);
 								tot.set_s32("aliveTime", 2700); //1m30s
 								break;
 							}
@@ -3253,31 +3253,27 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					CBlob@ b = getPlayer(i).getBlob();
 					if (b is null || b.hasTag("burning")) continue;
 					if (b.getDistanceTo(this) > distance) continue;
-					{
-						b.getSprite().PlaySound("IceShoot.ogg", 0.75f, 1.3f + XORRandom(11)/10.0f);
 
-						Freeze(b, 2.0f*power);
-						{									
-							const f32 rad = 16.0f;
-							Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-    			    		CParticle@ p = ParticleAnimated( "IceBlast" + (XORRandom(3)+1) + ".png", 
-														b.getPosition(), 
-														Vec2f(0,0), 
-														0.0f, 
-														1.0f, 
-														2 + XORRandom(4), 
-														0.0f, 
-														false );
-
-    			    		if(p is null) return; //bail if we stop getting particles
-
-    						p.fastcollision = true;
-    			    		p.damping = 0.85f;
-							p.Z = 500.0f;
-							p.lighting = false;
-    					}
-						this.server_Hit(b, b.getPosition(), b.getVelocity(), 0.001f, Hitters::water, true);
-					}
+					b.getSprite().PlaySound("IceShoot.ogg", 0.75f, 1.3f + XORRandom(11)/10.0f);
+					this.server_Hit(b, b.getPosition(), b.getVelocity(), 0.001f, Hitters::water, true);
+					Freeze(b, 2.0f*power);
+					{									
+						const f32 rad = 16.0f;
+						Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+    			    	CParticle@ p = ParticleAnimated( "IceBlast" + (XORRandom(3)+1) + ".png", 
+													b.getPosition(), 
+													Vec2f(0,0), 
+													0.0f, 
+													1.0f, 
+													2 + XORRandom(4), 
+													0.0f, 
+													false );
+    			    	if(p is null) return; //bail if we stop getting particles
+    					p.fastcollision = true;
+    			    	p.damping = 0.85f;
+						p.Z = 500.0f;
+						p.lighting = false;
+    				}
 				}
 			}
 
