@@ -439,11 +439,12 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
     }
 	else if (cmd == this.getCommandID("freeze"))
 	{
+		printf("aea");
 		u16 blobid;
 		f32 power;
 		if (!params.saferead_u16(blobid)) return;
 		if (!params.saferead_f32(power)) return;
-
+		printf("aeae");
 		CBlob@ b = getBlobByNetworkID(blobid);
 		if (b is null) return;
 

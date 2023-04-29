@@ -326,7 +326,7 @@ class WheelMenu
 	// This has to be called from a render script, otherwise the hover effect will not work.
 	void render()
 	{
-		GUI::DrawRectangle(Vec2f_zero, getDriver().getScreenDimensions(), WheelMenu::background_color);
+		if (getDriver() !is null) GUI::DrawRectangle(Vec2f_zero, getDriver().getScreenDimensions(), WheelMenu::background_color);
 
 		draw_hover_effect();
 		draw_center_pane();

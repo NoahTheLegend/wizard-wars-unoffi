@@ -50,7 +50,7 @@ namespace PriestParams
 		Spell("holystrike", "Holy Strike", 65, "Summons a piercing shard, which shatters into smaller shards after time.",
 				SpellType::other, 35, 60, 6, 270.0f),
 							
-		Spell("divineshield", "Divine Shield", 66, "Covers a moderate area with reflecting and powerful barrier. Lifetime scales with charge.",
+		Spell("divineshield", "Divine Shield", 66, "Covers a moderate area with reflecting and powerful barrier. Some spells can phase through it. Lifetime scales with charge.",
 				SpellType::other, 80, 180, 15, 92.0f),
 				
 		Spell("beam", "Divine Beam", 67, "Continuously damages enemies or heals teammates in beam area. Pushes enemies when overcharged fully. Also continuously takes mana and keeps firing after activation if held left click.",
@@ -74,9 +74,8 @@ namespace PriestParams
 		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied.",
 				SpellType::other, 25, 45, 0, 360.0f),
 
-
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
+				SpellType::other, 25, 45, 1, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

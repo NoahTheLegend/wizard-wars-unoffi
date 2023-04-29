@@ -75,8 +75,8 @@ namespace WizardParams
 		Spell("plasma_shot", "Plasma Shot", 17, "Fires a burst of slow moving plasma that explodes on impact or after reaching its destination.",
 				SpellType::other, 20, 20, 0, 500.0f, true),
 
-		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
-				SpellType::other, 25, 45, 1, 360.0f, true),
+		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
+			SpellType::other, 20, 60, 3, 120.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

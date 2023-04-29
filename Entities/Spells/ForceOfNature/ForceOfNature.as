@@ -12,6 +12,7 @@ void onInit(CBlob@ this)
 	this.SetLight(true);
 	this.SetLightRadius(24.0f);
 	this.SetLightColor(SColor(255, 0, 255, 0));
+	this.Tag("die_in_divine_shield");
 	
 	CSprite@ thisSprite = this.getSprite();
 	thisSprite.SetZ(500.0f);

@@ -36,8 +36,9 @@ void onInit(CBlob @ this)
 	thisSprite.PlaySound("lightning_impact.ogg", 1.5f, 1.35f + XORRandom(26)*0.01f);
 	
 	Setup(SColor(255, 50, 100, 255), "rend4", false);
-	Setup(SColor(255, 100, 125, 235), "rend5", false);
-	Setup(SColor(255, 175, 175, 220), "rend6", false);
+	Setup(SColor(255, 100, 100, 245), "rend5", false);
+	Setup(SColor(255, 100, 150, 235), "rend6", false);
+	Setup(SColor(255, 195, 195, 225), "rend7", false);
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "ChainLightning.as", "laserEffects");
 	
 	this.set_bool("initialized", false);
@@ -177,7 +178,7 @@ void laserEffects(CBlob@ this, int id)
 			v_pos.push_back(currSegPos + Vec2f( followDist * laserLength + 4, LASER_WIDTH).RotateBy(-followNorm.Angle(), Vec2f())	); v_uv.push_back(Vec2f(1,1));//Bottom right?
 			v_pos.push_back(currSegPos + Vec2f(-followDist * laserLength + 4, LASER_WIDTH).RotateBy(-followNorm.Angle(), Vec2f())	); v_uv.push_back(Vec2f(0,1));//Bottom left?
 				
-			Render::Quads("rend"+(XORRandom(3)+4), z, v_pos, v_uv);
+			Render::Quads("rend"+(XORRandom(4)+4), z, v_pos, v_uv);
 			
 			v_pos.clear();
 			v_uv.clear();

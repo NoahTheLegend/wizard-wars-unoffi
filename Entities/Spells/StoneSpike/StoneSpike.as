@@ -1,3 +1,5 @@
+#include "Hitters.as";
+
 const f32 DAMAGE = 0.4f;
 const f32 AOE = 12.0f;//radius
 const int min_detonation_time = 6;
@@ -5,6 +7,7 @@ void onInit(CBlob@ this)
 {
 	this.Tag("standingup");
 	this.Tag("counterable");
+	this.Tag("die_in_divine_shield");
 	//this.Tag("alwayscounter");
 	//this.set_f32("explosive_radius", 2.0f);
 	//this.set_f32("explosive_damage", 10.0f);
@@ -132,15 +135,15 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if(blob is null)
 		return;
-	if (!blob.hasTag("counterable"))
+	if (!blob.hasTag("counterable") && blob.getVelocity().Length() > 2.5f)
 	{
 		if (/*isEnemy(this, blob) &&*/ blob.getVelocity().y > 0)
 		{
-			this.server_Hit(blob, blob.getPosition(), Vec2f_zero, DAMAGE, 29, false);//29 is spikes damage type
+			this.server_Hit(blob, blob.getPosition(), Vec2f_zero, DAMAGE, Hitters::spikes, false);//29 is spikes damage type
 		}
 		else
 		{
-			this.server_Hit(blob, blob.getPosition(), Vec2f_zero, DAMAGE / 4, 41, false);
+			this.server_Hit(blob, blob.getPosition(), Vec2f_zero, DAMAGE / 4, Hitters::spikes, false);
 		}
 	}
 }

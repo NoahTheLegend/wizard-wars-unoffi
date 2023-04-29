@@ -55,7 +55,7 @@ namespace ShamanParams
 			SpellType::other, 50, 60, 10, 224.0f),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freezes everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
-			SpellType::other, 20, 75, 20, 0.0f),
+			SpellType::other, 20, 60, 15, 0.0f),
 		
 		Spell("lavashot", "Lava Shot", 80, "Launches a slowly-moving sphere, which shatters into many drops of lava on impact. Periodically drops a bit of lava while flying. Overcharge increases the rate of dropping lava and amount from impact.",
 			SpellType::other, 25, 60, 2, 256.0f),

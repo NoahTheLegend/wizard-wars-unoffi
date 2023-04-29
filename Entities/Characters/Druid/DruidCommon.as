@@ -64,7 +64,7 @@ namespace DruidParams
 			SpellType::other, 20, 20, 0, 360.0f, true),
 
 		Spell("stone_spikes", "Stone Spikes", 38, "Creates a line of dangerous sharp rocks.",
-			SpellType::other, 35, 30, 10, 180.0f),
+			SpellType::other, 30, 30, 8, 180.0f),
 
 		Spell("airblast_shield", "Airblast Shield", 56, "Cover your team or yourself in a volatile wind barrier that blasts away nearby enemies whenever you take damage.",
 			SpellType::other, 20, 25, 0, 360.0f, true),

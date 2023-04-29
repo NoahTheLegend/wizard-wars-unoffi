@@ -80,7 +80,8 @@ void onTick(CBlob@ this)
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
-{	
+{
+	if (this.getTickSinceCreated() < 3) return;
 	if (blob !is null && this !is null)
 	{
 		if (isEnemy(this, blob))

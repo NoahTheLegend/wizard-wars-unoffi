@@ -455,6 +455,9 @@ bool canExplosionDestroy(CMap@ map, Vec2f tpos, TileType t)
 bool HitBlob(CBlob@ this, CBlob@ hit_blob, f32 radius, f32 damage, const u8 hitter,
              const bool bother_raycasting = true, const bool should_teamkill = false)
 {
+	if (hit_blob !is null && hit_blob.exists("divine_protection") && getGameTime() <= hit_blob.get_u32("divine_protection"))
+		return false;
+
 	Vec2f pos = this.getPosition();
 	CMap@ map = this.getMap();
 	Vec2f hit_blob_pos = hit_blob.getPosition();

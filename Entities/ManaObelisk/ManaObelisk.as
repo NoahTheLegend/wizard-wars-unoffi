@@ -47,7 +47,7 @@ void onTick( CBlob@ this )
 				break;
 				
 			CBlob@ touchBlob = this.getTouchingByIndex(step);
-			if ( touchBlob !is null && touchBlob.get_u16("manaburn") == 0 )
+			if ( touchBlob !is null && (touchBlob.getName() != "entropist" || !touchBlob.get_bool("burnState")))
 			{
 				ManaInfo@ manaInfo;
 				if ( touchBlob.get("manaInfo", @manaInfo) && !touchBlob.hasTag("dead") )

@@ -133,7 +133,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (this.getName() == "epicorbmain") return false;
+	if (blob.getName() == "epicorbmain") return false;
 	return ( isEnemy(this, blob) || blob.hasTag("barrier") );
 }
 
@@ -145,7 +145,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 1.0f + XORRandom(3)/10.0f);
 		sparks(this.getPosition(), 4);
 		
-		if(blob !is null && isEnemy(this, blob) )
+		if(blob !is null && isEnemy(this, blob))
 		{
 			if(!blob.hasScript("BladedShell.as"))
 			{

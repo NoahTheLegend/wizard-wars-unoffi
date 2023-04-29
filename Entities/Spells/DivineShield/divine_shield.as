@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
     this.SetLightColor(SColor(255,255,0,0));
     this.SetLight(true);
     this.getSprite().setRenderStyle(RenderStyle::additive);
+    this.server_SetTimeToDie(999);
 }
 
 const int effectRadius = 8*10;
@@ -36,12 +37,14 @@ void onTick(CBlob@ this)
         {
             CBlob@ b = blobs[i];
             if (b is null || b is this) continue;
+            if (b.exists("sidewinding") && b.get_u16("sidewinding") > 0) continue;
             if((b.getName() != "skeleton" && b.getName() != "zombie" && b.getName() != "zombieknight")
             && (b.getTeamNum() == this.getTeamNum() && b.hasTag("flesh"))) // push friendly fleshy blobs inside
             {
                 Vec2f tpos = this.getPosition();
                 Vec2f bpos = b.getPosition();
                 b.AddForce((tpos-bpos)/5);
+                b.set_u32("divine_protection", getGameTime()+5);
             }
             else if (b.hasTag("flesh") || b.hasTag("magic_circle")) // push other outside
             {
@@ -56,17 +59,22 @@ void onTick(CBlob@ this)
             }
             else // rotate and change teamnum of incoming projectiles
             {
-                if (b.getTeamNum() != this.getTeamNum() && (b.hasTag("projectile")))
+                if (b.getTeamNum() != this.getTeamNum() && (b.hasTag("projectile") || b.hasTag("die_in_divine_shield")))
                 {
                     if (b.getShape() !is null)
                     {
                         if (isServer())
                         {
-                            f32 dmg;
-                            dmg = (!b.exists("explosive_damage") || b.get_f32("damage") >= b.get_f32("explosive_damage")) ? b.get_f32("damage") * 0.5 : b.get_f32("explosive_damage") * 0.33f;
-                            b.server_setTeamNum(this.getTeamNum());
-                            this.server_Hit(this, this.getPosition(), this.getVelocity(), dmg, Hitters::arrow, true);
-                            if (b.hasTag("die_in_divine_shield") || b.getName() == "arrow" || b.getName() == "stone_spike") b.server_Die();
+                            if (b.hasTag("projectile") && b.getName() != "arrow")
+                            {
+                                f32 dmg;
+                                dmg = (!b.exists("explosive_damage") || b.get_f32("damage") >= b.get_f32("explosive_damage")) ? b.get_f32("damage") * 0.5 : b.get_f32("explosive_damage") * 0.33f;
+                                b.server_setTeamNum(this.getTeamNum());
+                                if (b.getName()=="bunker_buster") dmg *= 2.0f;
+                                else if (b.getName() == "force_of_nature") this.server_SetTimeToDie(1.0f);
+                                this.server_Hit(this, this.getPosition(), this.getVelocity(), dmg, Hitters::arrow, true);
+                            }
+                            if (b.hasTag("die_in_divine_shield") || b.getName() == "arrow") b.server_Die();
                         }
                         //b.getShape().SetAngleDegrees(b.getAngleDegrees()+180-(XORRandom(21)-10));
                         b.setVelocity(-b.getVelocity());

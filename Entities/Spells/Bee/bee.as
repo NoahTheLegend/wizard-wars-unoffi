@@ -8,6 +8,7 @@ void onInit(CBlob@ this){
     this.getShape().SetGravityScale(0);
     this.set_f32("targetAngle",0);
     this.set_f32("heal_ammount",0.1);
+    this.Tag("die_in_divine_shield");
     //this.set_netid("caster",0);
     if(!isServer()){return;}
     this.server_SetTimeToDie(5);

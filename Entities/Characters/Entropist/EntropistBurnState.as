@@ -31,6 +31,7 @@ void onTick( CBlob@ this )
 void onInit( CSprite@ this )
 {
 	this.SetEmitSound("burnSpellSound.ogg");
+	this.SetEmitSoundVolume(0.75f);
 	this.SetEmitSoundPaused(true);
 }
 

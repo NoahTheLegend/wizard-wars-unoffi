@@ -15,6 +15,7 @@ void onInit(CBlob@ this)
 	consts.bullet = false;
 	this.Tag("projectile");
 	this.Tag("counterable");
+	this.Tag("die_in_divine_shield");
 	shape.SetGravityScale( 0.05f );
 
 	this.set_f32("damage", 1.0f);

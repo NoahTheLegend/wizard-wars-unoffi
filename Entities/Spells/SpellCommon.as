@@ -3130,14 +3130,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							case 5:
 							{
 								tot.set_s32("aliveTime", 900); //30s
-								tot.set_f32("max_dist", 64.0f+48.0f);
+								tot.set_f32("max_dist", 64.0f+64.0f);
 								break;
 							}
 						}
 						if (this.hasTag("extra_damage"))
 						{
 							tot.set_s32("aliveTime", 1200); //40s
-							tot.set_f32("max_dist", 64.0f+64.0f);
 						}
 					}
 				}
@@ -3223,7 +3222,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			f32 distance = 48.0f;
 			f32 power = 1.0f;
-			bool cancel;
+			bool cancel = false;
 
 			switch(charge_state)
 			{
@@ -3264,9 +3263,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					if (getPlayer(i) is null) continue;
 					CBlob@ b = getPlayer(i).getBlob();
+					printf("e");
 					if (b is null || b.hasTag("burning")) continue;
 					if (b.getDistanceTo(this) > distance) continue;
-
+					printf("ae");
 					b.getSprite().PlaySound("IceShoot.ogg", 0.75f, 1.3f + XORRandom(11)/10.0f);
 					this.server_Hit(b, b.getPosition(), b.getVelocity(), 0.001f, Hitters::water, true);
 
