@@ -70,7 +70,7 @@ void onTick(CBlob@ this)
 		{
 			if (!this.hasTag("had_sound"))
 			{
-				this.getSprite().PlaySound("ManaGain.ogg", 0.33f, 1.7f + XORRandom(26)*0.01f);
+				this.getSprite().PlaySound("ManaGain.ogg", 0.5f, 1.7f + XORRandom(26)*0.01f);
 				this.Tag("had_sound");
 			}
 			this.setVelocity(this.get_Vec2f("aim_vel"));

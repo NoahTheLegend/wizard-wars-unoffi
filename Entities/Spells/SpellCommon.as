@@ -3446,6 +3446,37 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
+
+		
+		case 564111203://waterbarrier
+		{
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				{
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
+					}
+					manaInfo.mana += spell.mana;
+					break;
+				}
+				case complete_cast:
+				case super_cast:
+				{
+					this.getSprite().PlaySound("WaterBubble1.ogg", 1.5f, 0.75f);
+					this.getSprite().PlaySound("WaterBubble2.ogg", 1.25f, 0.75f);
+
+					WaterBarrier(this, charge_state == complete_cast ? 900 : 1350);
+					return; //Fireward self, doesn't send projectile
+				}
+				break;
+				
+				default:return;
+			}
+		}
+		break;
 		
 		default:
 		{
@@ -3463,7 +3494,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				print("spell not found " + spellName +  " with spell hash : " + spellName.getHash()+'' + " in file : spellCommon.as");
 			}
 		}
-
 	}
 }
 
@@ -3877,6 +3907,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			 || b.get_u16("fireProt") > 0 
 			 || b.get_u16("airblastShield") > 0 
 			 || b.get_u16("stoneSkin") > 0 )
+			 || b.get_u16("waterbarrier") > 0
 			 && !sameTeam )
 			{
 				if(b.get_u16("hastened") > 0)
@@ -3907,6 +3938,12 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				{
 					b.set_u16("stoneSkin", 1);
 					b.Sync("stoneSkin", true);
+				}
+
+				if (b.get_u16("waterbarrier") > 0)
+				{
+					b.set_u16("waterbarrier", 1);
+					b.Sync("waterbarrier", true);
 				}
 					
 				countered = true;
@@ -4062,6 +4099,12 @@ void FireWard( CBlob@ blob, u16 firewardTime )
 	blob.Sync("fireProt", true);
 	//if(isClient())
 	//{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
+}
+
+void WaterBarrier( CBlob@ blob, u16 wardTime )
+{
+	blob.set_u16("waterbarrier", wardTime);
+	blob.Sync("waterbarrier", true);
 }
 
 void StoneSkin( CBlob@ blob, u16 stoneskinTime )

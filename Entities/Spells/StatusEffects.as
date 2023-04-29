@@ -1,6 +1,7 @@
 //Status Effects
 #include "RunnerCommon.as"
 #include "MagicCommon.as";
+#include "SplashWater.as";
 
 void onTick( CBlob@ this)
 {
@@ -433,13 +434,15 @@ void onTick( CBlob@ this)
 		if (thisSprite.getSpriteLayer("airblast_ward") !is null)
 		{
 			CSpriteLayer@ layer = thisSprite.getSpriteLayer("airblast_ward");
-			layer.RotateBy(0.5f, Vec2f(0,0));
+			if (layer !is null)
+			{
+				layer.RotateBy(-0.5f, Vec2f(0,0));
+			}
 		}
 
-		if(airblastShield == 0 || this.hasTag("dead"))
+		if(airblastShield == 0)
 		{
-			airblastShield = 0;
-			if(this.hasScript("Wards.as") && this.get_u16("stoneSkin") == 0)
+			if(this.hasScript("Wards.as"))
 			{
 				this.RemoveScript("Wards.as");
 			}
@@ -475,18 +478,69 @@ void onTick( CBlob@ this)
 		if (thisSprite.getSpriteLayer("fire_ward") !is null)
 		{
 			CSpriteLayer@ layer = thisSprite.getSpriteLayer("fire_ward");
-			layer.RotateBy(0.5f, Vec2f(0,0));
+			if (layer !is null)
+			{
+				layer.RotateBy(-0.5f, Vec2f(0,0));
+			}
 		}
 		
-		if(fireProt == 0 || this.hasTag("dead"))
+		if (fireProt == 0)
 		{
-			fireProt = 0;
 			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.1f + XORRandom(1)/10.0f);
 			thisSprite.RemoveSpriteLayer("fire_ward"); //Ward sprite removal
 			this.set_bool("fireprotSetupDone",false);
 		}
 
 		this.set_u16("fireProt", fireProt);
+	}
+
+	//WATER BARRIER
+	u16 water = this.get_u16("waterbarrier");
+	if (water > 0)
+	{
+		water--;
+		if(!this.hasScript("Wards.as"))
+		{
+			this.AddScript("Wards.as");
+		}
+
+		if(!this.exists("waterSetupDone") || !this.get_bool("waterSetupDone")) //Ward sprite setup
+		{
+			CSpriteLayer@ layer = thisSprite.addSpriteLayer("water_ward","WaterBarrier.png",64,64);
+			if (layer !is null)
+			{
+				layer.SetRelativeZ(-5.75f);
+				layer.ScaleBy(Vec2f(1.25f,1.25f));
+				layer.setRenderStyle(RenderStyle::additive);
+			}
+			this.set_bool("waterSetupDone",true);
+		}
+
+		if (thisSprite.getSpriteLayer("water_ward") !is null)
+		{
+			CSpriteLayer@ layer = thisSprite.getSpriteLayer("water_ward");
+			if (layer !is null)
+			{
+				layer.SetFacingLeft(false);
+				layer.RotateBy(Maths::Sin(getGameTime()*0.1f)*1.5f, Vec2f(0,0));
+			}
+		}
+
+		if(water == 0)
+		{
+			water = 0;
+			if(this.hasScript("Wards.as"))
+			{
+				this.RemoveScript("Wards.as");
+			}
+			thisSprite.PlaySound("SplashFast.ogg", 1.25f, 0.9f);
+			thisSprite.PlaySound("SplashSlow.ogg", 1.25f, 0.9f);
+			Splash(this, 4, 4, 0, false);
+			thisSprite.RemoveSpriteLayer("water_ward"); //Ward sprite removal
+			this.set_bool("waterSetupDone",false);
+		}
+
+		this.set_u16("waterbarrier", water);
 	}
 
 	//STONE SKIN
@@ -507,7 +561,7 @@ void onTick( CBlob@ this)
 			this.set_bool("stoneSkinSetupDone",true);
 		}
 
-		if(stoneSkin == 0 || this.hasTag("dead"))
+		if(stoneSkin == 0 )
 		{
 			stoneSkin = 0;
 			if(this.hasScript("Wards.as") && this.get_u16("airblastShield") == 0)

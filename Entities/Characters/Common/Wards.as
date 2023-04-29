@@ -1,5 +1,22 @@
 #include "Hitters.as"
 
+void onTick(CBlob@ this)
+{
+    if (!isServer() || getMap() is null || this.get_u16("waterbarrier") == 0) return;
+
+    CBlob@[] list;
+    getMap().getBlobsInRadius(this.getPosition(), 36.0f, @list);
+    for (u16 i = 0; i < list.length; i++)
+    {
+        CBlob@ b = list[i];
+        if (b is null) continue;
+        if (b.getTeamNum() == this.getTeamNum() || (!b.hasTag("flesh") && !b.hasTag("counterable") || !b.hasTag("projectile"))) continue;
+
+        if (b.hasTag("flesh")) b.setVelocity(b.getVelocity()*0.5f);
+        else if (b.getVelocity().Length() > 1.5f ) b.setVelocity(b.getVelocity()*0.75f);
+    }
+}
+
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
     if(this.hasTag("dead") || customData == Hitters::burn || customData == Hitters::fall)
@@ -24,6 +41,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 */
     if (this.get_u16("airblastShield") <= 1) return damage;
     Vec2f thisPos = this.getPosition();
+
+    if (this.get_u16("waterbarrier") > 0)
+    {
+        if (hitterBlob.getName() == "lightning") damage *= 1.33f;
+        else if (customData == Hitters::water) damage *= 1.5f;
+    }
 
 	this.getSprite().PlaySound("Airblast.ogg", 1.0f, 1.0f + XORRandom(1)/10.0f); //produces airblast sound
     if (isClient()) //placeholder particle

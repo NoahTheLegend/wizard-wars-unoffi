@@ -116,12 +116,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		if (isEnemy(this, blob))
 		{
 			Shatter(this, normal);
+			this.setVelocity(Vec2f_zero);
 			this.server_Die();
 		}
 	}
 	else if (solid && blob is null)
 	{
 		Shatter(this, normal);
+		this.setVelocity(Vec2f_zero);
 		this.server_Die();
 	}
 }
