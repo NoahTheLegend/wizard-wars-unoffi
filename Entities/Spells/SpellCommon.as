@@ -3037,20 +3037,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							}
 							case 3:
 							{
-								tot.set_u16("charge_delay", 135);
-								tot.set_s32("aliveTime", 2100);
+								tot.set_u16("charge_delay", 120);
+								tot.set_s32("aliveTime", 2100); //1m10s
 								break;
 							}
 							case 4:
 							{
-								tot.set_u16("charge_delay", 135);
-								tot.set_s32("aliveTime", 2100);//1m10s
+								tot.set_u16("charge_delay", 105);
+								tot.set_s32("aliveTime", 2400);//1m20s
 								break;
 							}
 							case 5:
 							{
-								tot.set_u16("charge_delay", 120);
-								tot.set_s32("aliveTime", 2400); //1m20s
+								tot.set_u16("charge_delay", 90);
+								tot.set_s32("aliveTime", 2700); //1m30s
 								break;
 							}
 						}
@@ -3210,22 +3210,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			f32 distance = 48.0f;
 			f32 power = 1.0f;
+			bool cancel;
 
 			switch(charge_state)
 			{
 				case minimum_cast:
 				case medium_cast:
 				{
-					if (isClient())
-					{
-						ManaInfo@ manaInfo;
-						if (!this.get( "manaInfo", @manaInfo )) {
-							return;
-						}
-						manaInfo.mana += spell.mana;
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
 					}
-
-					return;
+					manaInfo.mana += spell.mana;
+					cancel = true;
 				}
 				case complete_cast:
 				{
@@ -3246,40 +3243,41 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					}
 				}
 				break;
-				
-				default:return;
 			}
 			
-			for (u8 i = 0; i < getPlayersCount(); i++)
+			if (!cancel)
 			{
-				if (getPlayer(i) is null) continue;
-				CBlob@ b = getPlayer(i).getBlob();
-				if (b is null || b.hasTag("burning")) continue;
-				if (b.getDistanceTo(this) > distance) continue;
+				for (u8 i = 0; i < getPlayersCount(); i++)
 				{
-					b.getSprite().PlaySound("IceShoot.ogg", 0.75f, 1.3f + XORRandom(11)/10.0f);
-					
-					Freeze(b, 2.0f*power);
-					{									
-						const f32 rad = 16.0f;
-						Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-    		    		CParticle@ p = ParticleAnimated( "IceBlast" + (XORRandom(3)+1) + ".png", 
-													b.getPosition(), 
-													Vec2f(0,0), 
-													0.0f, 
-													1.0f, 
-													2 + XORRandom(4), 
-													0.0f, 
-													false );
+					if (getPlayer(i) is null) continue;
+					CBlob@ b = getPlayer(i).getBlob();
+					if (b is null || b.hasTag("burning")) continue;
+					if (b.getDistanceTo(this) > distance) continue;
+					{
+						b.getSprite().PlaySound("IceShoot.ogg", 0.75f, 1.3f + XORRandom(11)/10.0f);
 
-    		    		if(p is null) return; //bail if we stop getting particles
+						Freeze(b, 2.0f*power);
+						{									
+							const f32 rad = 16.0f;
+							Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+    			    		CParticle@ p = ParticleAnimated( "IceBlast" + (XORRandom(3)+1) + ".png", 
+														b.getPosition(), 
+														Vec2f(0,0), 
+														0.0f, 
+														1.0f, 
+														2 + XORRandom(4), 
+														0.0f, 
+														false );
 
-    					p.fastcollision = true;
-    		    		p.damping = 0.85f;
-						p.Z = 500.0f;
-						p.lighting = false;
-    				}
-					this.server_Hit(b, b.getPosition(), b.getVelocity(), 0.001f, Hitters::water, true);
+    			    		if(p is null) return; //bail if we stop getting particles
+
+    						p.fastcollision = true;
+    			    		p.damping = 0.85f;
+							p.Z = 500.0f;
+							p.lighting = false;
+    					}
+						this.server_Hit(b, b.getPosition(), b.getVelocity(), 0.001f, Hitters::water, true);
+					}
 				}
 			}
 
@@ -3427,13 +3425,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (orb !is null)
 			{
 				if (charge_state == complete_cast) {
-					orb.set_u8("lavadrop_time", 45);
-					orb.set_u8("lavadrop_amount", 8);
+					orb.set_u8("lavadrop_time", 30);
+					orb.set_u8("lavadrop_amount", 12);
 					orbDamage *= 1.25f;
 				}
 				else if (charge_state == super_cast) {
-					orb.set_u8("lavadrop_time", 30);
-					orb.set_u8("lavadrop_amount", 12);
+					orb.set_u8("lavadrop_time", 20);
+					orb.set_u8("lavadrop_amount", 16);
 					orbDamage *= 1.5f;
 				}
 				orb.set_f32("damage", orbDamage);

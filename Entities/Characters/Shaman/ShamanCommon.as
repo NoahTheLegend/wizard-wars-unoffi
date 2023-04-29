@@ -49,7 +49,7 @@ namespace ShamanParams
 			SpellType::other, 30, 45, 2, 156.0f),
 
 		Spell("watertotem", "Totem of Water", 77, "Heals most damaged nearby ally. Only one totem can heal a target. Generates heal charges passively. Overchage increases durability and generation rate. Pushes everything away upon death.",
-			SpellType::other, 50, 105, 8, 128.0f),
+			SpellType::other, 45, 90, 8, 128.0f),
 		
 		Spell("earthtotem", "Totem of Earth", 78, "Slows nearby enemies down. Overcharge increases effect distance and durability. Releases different buffs upon death.",
 			SpellType::other, 50, 60, 10, 224.0f),

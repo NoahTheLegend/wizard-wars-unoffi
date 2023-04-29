@@ -44,8 +44,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
     if (this.get_u16("waterbarrier") > 0)
     {
-        if (hitterBlob.getName() == "lightning") damage *= 1.33f;
-        else if (customData == Hitters::water) damage *= 1.5f;
+        if (hitterBlob.getName() == "lightning" || hitterBlob.getName() == "icicle" || hitterBlob.getName() == "frost_ball") damage *= 2.0f;
+        else if (customData == Hitters::water) damage *= 2.0f;
     }
 
 	this.getSprite().PlaySound("Airblast.ogg", 1.0f, 1.0f + XORRandom(1)/10.0f); //produces airblast sound

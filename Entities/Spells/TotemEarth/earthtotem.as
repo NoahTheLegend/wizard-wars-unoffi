@@ -136,7 +136,7 @@ void onTick(CBlob@ this)
         }
         segment.SetVisible(true);
 
-        segment.SetOffset(Vec2f(-1 * Maths::Ceil((showPos-this.getPosition()).x/8)*8, (showPos-this.getPosition()).y));
+        segment.SetOffset(Vec2f(-1 * Maths::Ceil((showPos-this.getPosition()).x/8)*8, (showPos-this.getPosition()).y-1));
     }
 
     for (u8 i = 0; i < 3; i++)

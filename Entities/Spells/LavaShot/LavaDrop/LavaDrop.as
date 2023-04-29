@@ -38,7 +38,7 @@ void onTick(CBlob@ this)
 	if (this.isOnGround())
 	{
 		this.getSprite().SetAnimation("ground");
-		if (!this.hasTag("done")) this.server_SetTimeToDie(0.5f);
+		if (!this.hasTag("done")) this.server_SetTimeToDie(1.0f);
 		this.Tag("done");
 		return;
 	}
@@ -117,7 +117,7 @@ void onDie( CBlob@ this )
 		if (radiusBlob.getTeamNum() == this.getTeamNum())
 		{continue;}
 
-		this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f_zero, damage, Hitters::boulder, false);
+		this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f(0,0.1f), damage, Hitters::boulder, false);
 	}
 }
 
