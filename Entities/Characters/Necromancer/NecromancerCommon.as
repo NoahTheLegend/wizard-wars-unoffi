@@ -51,13 +51,13 @@ namespace NecromancerParams
 			SpellType::other, 45, 30, 0, 360.0f, true),
 			
 		Spell("arrow_rain", "Arrow Rain", 22, "Cause a long volley of randomly assorted arrows to fall upon thy foe. Great for area denial, and possibly overpowered!",
-			SpellType::other, 70, 60, 10, 360.0f, true),
+			SpellType::other, 75, 60, 10, 360.0f, true),
 			
 		Spell("recall_undead", "Recall Undead", 23, "Instantly bring all summoned minions, along with the unfortunate victims they may be carrying, to your location. ",
 				SpellType::other, 15, 10, 10, 8.0f, true),
 				
-		Spell("unholy_resurrection", "Unholy Resurrection", 24, "Inexpensively resurrect fallen allies... though they may not find themselves completely restored to their former glory.",
-				SpellType::other, 25, 20, 5, 360.0f, true),
+		Spell("unholy_resurrection", "Unholy Resurrection", 24, "Inexpensively resurrect fallen allies... Though they may not find themselves completely restored to their former glory.",
+				SpellType::other, 20, 30, 4, 360.0f, true),
 							
 		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes the user.",
 				SpellType::other, 20, 40, 0, 180.0f, true),

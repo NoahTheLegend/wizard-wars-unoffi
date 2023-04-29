@@ -3169,7 +3169,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				case minimum_cast:
 				{
-					orbspeed *= (1.0f/2.0f);
+					orbspeed *= (1.0f/2.0f); // wtf is this code even? 
 				}
 				break;
 
@@ -3404,6 +3404,45 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if(!this.hasScript("IcicleRain.as"))
 			{
 				this.AddScript("IcicleRain.as");
+			}
+		}
+		break;
+
+		case 1050564475: //lavashot
+		{
+			if (!isServer()){
+           		return;
+			}
+
+			f32 orbspeed = necro_shoot_speed * 0.3f;
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
+			f32 orbDamage = 0.5f * extraDamage;
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob( "lavashot" );
+			if (orb !is null)
+			{
+				if (charge_state == complete_cast) {
+					orb.set_u8("lavadrop_time", 45);
+					orb.set_u8("lavadrop_amount", 8);
+					orbDamage *= 1.25f;
+				}
+				else if (charge_state == super_cast) {
+					orb.set_u8("lavadrop_time", 30);
+					orb.set_u8("lavadrop_amount", 12);
+					orbDamage *= 1.5f;
+				}
+				orb.set_f32("damage", orbDamage);
+
+				orb.IgnoreCollisionWhileOverlapped( this );
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
+				orb.server_setTeamNum( this.getTeamNum() );
+				orb.setPosition( orbPos );
+				orb.setVelocity( orbVel );
 			}
 		}
 		break;

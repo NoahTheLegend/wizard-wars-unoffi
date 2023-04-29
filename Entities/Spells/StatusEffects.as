@@ -423,7 +423,10 @@ void onTick( CBlob@ this)
 		if(!this.exists("airblastSetupDone") || !this.get_bool("airblastSetupDone")) //Ward sprite setup
 		{
 			CSpriteLayer@ layer = thisSprite.addSpriteLayer("airblast_ward","Airblast Ward.png",25,25);
-			layer.SetRelativeZ(-2);
+			if (layer !is null)
+			{
+				layer.SetRelativeZ(-5.4f);
+			}
 			this.set_bool("airblastSetupDone",true);
 		}
 
@@ -462,7 +465,10 @@ void onTick( CBlob@ this)
 		if(!this.exists("fireprotSetupDone") || !this.get_bool("fireprotSetupDone")) //Ward sprite setup
 		{
 			CSpriteLayer@ layer = thisSprite.addSpriteLayer("fire_ward","Fire Ward.png",25,25);
-			layer.SetRelativeZ(-3);
+			if (layer !is null)
+			{
+				layer.SetRelativeZ(-5.5f);
+			}
 			this.set_bool("fireprotSetupDone",true);
 		}
 

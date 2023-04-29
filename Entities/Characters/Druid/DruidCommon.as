@@ -34,7 +34,7 @@ namespace DruidParams
 			SpellType::other, 15, 10, 0, 64.0f, true),
 			 
 		Spell("revive", "Revive", 15, "Fully bring trusty allies back from the dead by aiming a reviving missile at their gravestone.",
-			SpellType::other, 70, 40, 0, 360.0f, true),
+			SpellType::other, 80, 60, 30, 360.0f, true),
 			
 		Spell("nature's helpers", "Nature's Helpers", 29, "Fires a swarm of bees. Can heal friends or attack foes.",
 			SpellType::other, 30, 40, 3, 360.0f, true),	

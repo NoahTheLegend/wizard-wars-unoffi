@@ -25,6 +25,11 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	//prevent leaving the map
+
+	if (this.getTickSinceCreated()==0)
+	{
+		this.getSprite().PlaySound("FireBlast4.ogg", 0.8f, 1.15f + XORRandom(21)*0.01f);
+	}
 	
 	Vec2f pos = this.getPosition();
 	if ( pos.x < 0.1f ||

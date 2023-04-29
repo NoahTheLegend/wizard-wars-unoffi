@@ -358,32 +358,32 @@ void intitializeClasses()
 													"\n     Mana Regen: 4 mana/sec",
 													"druid", 3, 20, 4, 0, "WizardWars");
 													
-	playerClassButtons.registerWWPlayerClassButton("SwordCaster", 
-													"     \"This is a good day for SwordCasters all around the world. Complexity: MEDIUM\" " +
+	playerClassButtons.registerWWPlayerClassButton("Swordcaster", 
+													"     \"This is a good day for Swordcasters all around the world. Complexity: MEDIUM\" " +
 													"\n\n     Health: 80" +
 													"\n     Mana: 70" +
 													"\n     Mana Regen: 3 mana/sec",
 													"swordcaster", 4, 0, 5, 0, "WizardWars");
 	playerClassButtons.registerWWPlayerClassButton("Entropist", 
-													"     There is no better feeling than giving the enemy a taste of their own medicine. Complexity: HARD" +
+													"     There is no better feeling than giving the enemy a taste of their own medicine. Good enemy rusher with impactful damage. Complexity: HARD" +
 													"\n\n     Health: 75" +
 													"\n     Mana: 200" +
 													"\n     Mana is obtained by absorbing enemy spells.",
 													"entropist", 5, 0, 6, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Priest", 
-													"Has a breathe of smite and holy water. Complexity: MEDIUM" +
+													"Has a breathe of smite and holy water. Has expensive, but impactful AOE damage and useful optional spells, including heal. Complexity: MEDIUM" +
 													"\n\n     Health: 80" +
 													"\n     Mana: 150" +
 													"\n     Mana Regen: 3 mana/sec",
 													"priest", 6, 0, 7, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Shaman", 
-													"A powerful elementalist, totemist, zoologist and fire shitterist. Complexity: MEDIUM" +
-													"\n\n     Health: 100" +
+													"A powerful elementalist, so known totemist. Has a variety of counterattack spells which deal more damage near or from inside enemy groups. Complexity: MEDIUM" +
+													"\n\n     Health: 90" +
 													"\n     Mana: 100" +
 													"\n     Mana Regen: 4 mana/sec",
-													"shaman", 6, 0, 7, 0, "WizardWars");
+													"shaman", 7, 0, 8, 0, "WizardWars");
 													
 /*	playerClassButtons.registerWWPlayerClassButton("Spaceship Combat Initiative", 
 													"     Frigate Prototype. In highly fragile state. " +
