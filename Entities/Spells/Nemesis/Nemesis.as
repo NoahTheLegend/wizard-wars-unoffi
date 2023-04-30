@@ -75,7 +75,7 @@ void onTick(CBlob@ this)
         if (isServer())
         {
             this.server_SetTimeToDie(3.0f);
-			f32 orbDamage = 1.25f;
+			f32 orbDamage = 1.5f;
 
 			Vec2f orbPos = top_pos;
 			Vec2f orbVel = (dir);

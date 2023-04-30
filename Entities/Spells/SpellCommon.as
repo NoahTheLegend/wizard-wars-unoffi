@@ -2005,6 +2005,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -1395850262://hook
 		{
+			if ( this.get_u16("slowed") > 0 )	//cannot teleport while slowed
+			{ failedCast = true; }
+
+			if (failedCast)
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+				return;
+			}
+
 			this.getSprite().PlaySound("ImpCast.ogg", 10.0f, 1.1f);
 			this.getSprite().PlaySound("swordlaunch.ogg", 1.0f, 1.15f);
 			if (!isServer()){
@@ -2802,6 +2817,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				manaInfo.mana += spell.mana;
 				
 				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+				return;
 			}
 			else
 			{

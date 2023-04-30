@@ -23,7 +23,8 @@ void onInit(CBlob@ this)
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
-	Setup(SColor(200, 100, 175, 255), "hook", false);
+	Setup(SColor(175, 100, 175, 255), "hook0", false);
+	Setup(SColor(175, 255, 125, 100), "hook1", false);
     int cb_id = Render::addBlobScript(Render::layer_prehud, this, "Hook.as", "laserEffects");
 
     this.server_SetTimeToDie(2.5f);
@@ -294,7 +295,7 @@ void laserEffects(CBlob@ this, int id)
 	v_pos.push_back(thisPos + Vec2f(dist, size).RotateBy(-(ownerPos-thisPos).Angle())); v_uv.push_back(Vec2f(1,1)); //Bottomright?
 	v_pos.push_back(thisPos + Vec2f(0,    size).RotateBy(-(ownerPos-thisPos).Angle())); v_uv.push_back(Vec2f(0,1)); //Bottom left?
 
-	Render::Quads("hook", -50.0f, v_pos, v_uv);
+	Render::Quads("hook"+this.getTeamNum(), -50.0f, v_pos, v_uv);
 
 	v_pos.clear();
 	v_uv.clear();
