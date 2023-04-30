@@ -69,7 +69,7 @@ void onInit( CBlob@ this )
 	AddIconToken( "$CounterSpell$", "SpellIcons.png", Vec2f(16,16), 15 );
 	AddIconToken( "$MagicMissile$", "SpellIcons.png", Vec2f(16,16), 16 );
 	
-	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_nodeath);
+	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_up | CBlob::map_collide_nodeath);
 	this.getCurrentScript().removeIfTag = "dead";
 	
 	if(getNet().isServer())

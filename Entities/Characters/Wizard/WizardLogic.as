@@ -48,7 +48,7 @@ void onInit( CBlob@ this )
     this.addCommandID("spell");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 	
-	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_nodeath);
+	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_up | CBlob::map_collide_nodeath);
 	this.getCurrentScript().removeIfTag = "dead";
 
 	if(isServer())

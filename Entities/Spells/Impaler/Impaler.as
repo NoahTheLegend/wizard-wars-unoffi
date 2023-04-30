@@ -73,7 +73,8 @@ void Pierce(CBlob@ this, CBlob@ blob = null)
 	CMap@ map = this.getMap();
 	Vec2f position = blob is null ? this.getPosition() : blob.getPosition();
 
-	if (map.rayCastSolidNoBlobs(this.getShape().getVars().oldpos, position, end))
+	if (!this.hasTag("nemesis_proj")
+		&& map.rayCastSolidNoBlobs(this.getShape().getVars().oldpos, position, end))
 	{
 		ArrowHitMap(this, end, this.getOldVelocity(), 0.5f, Hitters::arrow);
 	}
@@ -144,13 +145,16 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				{
 					if(blob !is null)
 					{
-					this.getSprite().PlaySound("ImpStuck.ogg", 100.0f);
-					this.setVelocity(Vec2f(0,0));
-					this.server_SetTimeToDie(15);
-					u16 netid = blob.getNetworkID();
-					this.set_u16("attached",netid);
-					this.set_bool("following", true);
-					this.Untag("primed");
+						//if (blob.getShape().getConsts().mapCollisions)
+						{
+							this.getSprite().PlaySound("ImpStuck.ogg", 100.0f);
+							this.setVelocity(Vec2f(0,0));
+							this.server_SetTimeToDie(15);
+							u16 netid = blob.getNetworkID();
+							this.set_u16("attached",netid);
+							this.set_bool("following", true);
+							this.Untag("primed");
+						}
 					}
 				}
 			}

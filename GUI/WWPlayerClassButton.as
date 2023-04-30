@@ -359,9 +359,9 @@ void intitializeClasses()
 													"druid", 3, 20, 4, 0, "WizardWars");
 													
 	playerClassButtons.registerWWPlayerClassButton("Swordcaster", 
-													"     \"This is a good day for Swordcasters all around the world. Complexity: MEDIUM\" " +
+													"     \"This is a good day for Swordcasters all around the world.\" Complexity: MEDIUM\" " +
 													"\n\n     Health: 80" +
-													"\n     Mana: 70" +
+													"\n     Mana: 85" +
 													"\n     Mana Regen: 3 mana/sec",
 													"swordcaster", 4, 0, 5, 0, "WizardWars");
 	playerClassButtons.registerWWPlayerClassButton("Entropist", 
