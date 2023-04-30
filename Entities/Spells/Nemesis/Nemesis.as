@@ -96,6 +96,7 @@ void onTick(CBlob@ this)
                 orb.Tag("nemesis_proj");
                 orb.Sync("nemesis_proj", true);
                 this.set_string("ids", this.get_string("ids")+orb.getNetworkID()+" ");
+                this.Sync("ids", true);
 			}
         }
         if (isClient())

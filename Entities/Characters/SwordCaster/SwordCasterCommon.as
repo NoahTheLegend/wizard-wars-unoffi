@@ -60,7 +60,7 @@ namespace SwordCasterParams
 		Spell("nemesis", "Nemesis", 85, "Summons a row of falling swords from the sky. Overcharge increases the amount of swords and decreases the delay between load and launch.",
 				SpellType::other, 25, 30, 2, 384.0f),
 			 
-		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press \"|USE| to cut the rope off.\" Overcharge increases throw distance.",
+		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press | USE | button to cut the rope off. Overcharge increases throw distance.",
 				SpellType::other, 10, 15, 2, 256.0f),
 			
 		Spell("", "", 0, "Empty spell.",

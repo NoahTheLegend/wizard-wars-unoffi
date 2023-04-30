@@ -18,7 +18,7 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.set_bool("following", false);
 	this.set_u16("attached",0);
-	shape.SetGravityScale( 0.5f );
+	shape.SetGravityScale(1.0f);
 
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
@@ -69,8 +69,8 @@ void onTick(CBlob@ this)
 
 					Vec2f force = this.getPosition() - owner.getPosition();
 					force.Normalize();
-					this.AddForce(-force*8);
-					shape.SetGravityScale(0.5f);
+					this.AddForce(-force*12);
+					shape.SetGravityScale(1.0f);
 				}
 				else // flying mode
 				{
@@ -184,7 +184,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 		CBlob@ owner = this.getDamageOwnerPlayer().getBlob();
 		if (owner !is null)
 		{
-			owner.setVelocity(owner.getVelocity()+(this.getPosition()-owner.getPosition())/20);
+			owner.setVelocity(owner.getVelocity()+(this.getPosition()-owner.getPosition())/(18+XORRandom(3)));
 			//if (owner.getVelocity().y > 8.0f) owner.setVelocity(Vec2f(owner.getVelocity().x, owner.getVelocity().y*0.5f));
 
 			this.getShape().SetStatic(true);

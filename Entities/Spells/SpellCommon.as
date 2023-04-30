@@ -1968,11 +1968,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					case minimum_cast:
 					case medium_cast:
 					{
-						ManaInfo@ manaInfo;
-						if (!this.get( "manaInfo", @manaInfo )) {
-							return;
+						if (isClient())
+						{
+							ManaInfo@ manaInfo;
+							if (!this.get( "manaInfo", @manaInfo )) {
+								return;
+							}
+							manaInfo.mana += spell.mana;
 						}
-						manaInfo.mana += spell.mana;
 						return;
 					}
 					case complete_cast:
@@ -3606,13 +3609,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case complete_cast:
 						{
 							orb.set_u8("targets", 2);
-							orb.set_f32("damage", 1.5f);
+							orb.set_f32("damage", 1.75f);
 							break;
 						}
 						case super_cast:
 						{
-							orb.set_u8("targets", 3);
-							orb.set_f32("damage", 1.75f);
+							orb.set_u8("targets", 4);
+							orb.set_f32("damage", 2.25f);
 							break;
 						}
 						if (this.hasTag("extra_damage"))

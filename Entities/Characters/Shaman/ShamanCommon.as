@@ -55,7 +55,7 @@ namespace ShamanParams
 			SpellType::other, 50, 60, 10, 224.0f),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freezes everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
-			SpellType::other, 20, 60, 15, 0.0f),
+			SpellType::other, 20, 45, 15, 0.0f),
 		
 		Spell("lavashot", "Lava Shot", 80, "Launches a slowly-moving sphere, which shatters into many drops of lava on impact. Periodically drops a bit of lava while flying. Overcharge increases the rate of dropping lava and amount from impact.",
 			SpellType::other, 25, 60, 2, 256.0f),
@@ -64,13 +64,13 @@ namespace ShamanParams
 			SpellType::other, 20, 45, 0, 16.0f),
 		
 		Spell("iciclerain", "Magic Icicles", 82, "Launches icicles above, then forwards them to your aim position. Overcharge increases amount of icicles and decreases their delay. Overcharge fully to control aim position while icicles are being released.",
-			SpellType::other, 40, 60, 6, 512.0f),
+			SpellType::other, 30, 45, 6, 512.0f),
 
 		Spell("waterbarrier", "Water Barrier", 83, "Covers yourself in a bubble of water, which slows down enemies and some of their spells. While under this effect, you are unable to use fire spells and receive more damage from electricity and ice.",
-			SpellType::other, 25, 45, 0, 0.0f),
+			SpellType::other, 25, 40, 0, 0.0f),
 
 		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
-			SpellType::other, 25, 45, 0, 120.0f),
+			SpellType::other, 25, 40, 0, 120.0f),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)
