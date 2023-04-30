@@ -45,7 +45,7 @@ void onTick(CBlob@ this)
             if (sword is null) continue;
 
             sword.Tag("primed");
-            sword.setVelocity(-sword.get_Vec2f("nemesis_vel")/16);
+            sword.setVelocity(-sword.get_Vec2f("nemesis_vel")/20);
             sword.server_SetTimeToDie(10.0f);
             sword.getShape().getConsts().mapCollisions = false;
         }
