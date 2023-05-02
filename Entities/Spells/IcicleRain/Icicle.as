@@ -4,13 +4,13 @@
 void onInit(CBlob@ this)
 {
 	this.Tag("silent");
-	this.getSprite().PlaySound("IceCracking.ogg", 0.4f, 0.95f+XORRandom(36)*0.01f);
+	this.getSprite().PlaySound("IceCracking.ogg", 0.76f, 0.95f+XORRandom(36)*0.01f);
 	
 	this.Tag("kill other spells");
 	this.Tag("counterable");
 	this.Tag("projectile");
 
-	this.getSprite().PlaySound("WizardShoot.ogg", 0.4f, 1.7f+XORRandom(16)*0.01f);
+	this.getSprite().PlaySound("WizardShoot.ogg", 0.76f, 1.7f+XORRandom(16)*0.01f);
 
 	CSprite@ sprite = this.getSprite();
 	sprite.SetZ(6.0f);

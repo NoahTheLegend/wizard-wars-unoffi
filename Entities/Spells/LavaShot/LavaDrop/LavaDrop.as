@@ -118,7 +118,7 @@ void onDie( CBlob@ this )
 		if (radiusBlob.getTeamNum() == this.getTeamNum())
 		{continue;}
 
-		this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f(0,0.1f), damage, Hitters::boulder, false);
+		this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f(0,0.8f), damage, Hitters::boulder, false);
 	}
 }
 

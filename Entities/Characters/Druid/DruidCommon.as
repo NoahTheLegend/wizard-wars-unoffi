@@ -83,21 +83,7 @@ namespace DruidParams
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)
-
-				/*Spell("", "", 0, "Empty spell.",
-		SpellType::other, 1, 1, 0, 0.0f),
-
-				Spell("", "", 0, "Empty spell.",
-		SpellType::other, 1, 1, 0, 0.0f)
-		
-				Spell("", "", 0, "Empty spell.",
-		SpellType::other, 1, 1, 0, 0.0f),
-
-				Spell("", "", 0, "Empty spell.",
-		SpellType::other, 1, 1, 0, 0.0f),
-
-				Spell("", "", 0, "Empty spell.",
-		SpellType::other, 1, 1, 0, 0.0f)*/		
+	
 				
 	};
 }
