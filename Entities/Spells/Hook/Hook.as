@@ -51,9 +51,9 @@ void onTick(CBlob@ this)
 			owner.set_bool("dashing", true);
 			owner.set_u32("teleport_disable", getGameTime()+2);
 
-			if (this.getTickSinceCreated() > 15 && (this.hasTag("returning")
-				|| this.hasTag("collided_blob")) && !shape.isStatic()
-				&& this.getDistanceTo(owner) <= 24.0f)
+			if ((this.getTickSinceCreated() > 10 && this.hasTag("returning") && !shape.isStatic() && this.getDistanceTo(owner) <= 24.0f)
+			|| (this.hasTag("collided_blob")
+				&& this.getDistanceTo(owner) <= 24.0f))
 					this.server_Die();
 
 			if (!this.hasTag("collided")) // return mode
@@ -163,7 +163,7 @@ void Pierce(CBlob@ this, CBlob@ blob = null)
 	CMap@ map = this.getMap();
 	Vec2f position = blob is null ? this.getPosition() : blob.getPosition();
 
-	if (map.rayCastSolidNoBlobs(this.getShape().getVars().oldpos, position, end))
+	if (!this.hasTag("collided_blob") && map.rayCastSolidNoBlobs(this.getShape().getVars().oldpos, position, end))
 	{
 		ArrowHitMap(this, end, this.getOldVelocity(), 0.5f, Hitters::arrow);
 	}

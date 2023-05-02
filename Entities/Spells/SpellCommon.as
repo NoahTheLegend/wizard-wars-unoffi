@@ -2364,7 +2364,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 
 			u8 amount = 3;
-			f32 orbDamage = 0.25f;
+			f32 orbDamage = 0.2f;
 			u8 delay = 5;
 
 			switch(charge_state)
@@ -2377,7 +2377,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					delay = 4;
 					amount = 4;
-					orbDamage = 0.33f;
+					orbDamage = 0.275f;
 				}
 				break;
 
@@ -2385,7 +2385,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					delay = 3;
 					amount = 5;
-					orbDamage = 0.5f;
+					orbDamage = 0.33f;
 				}
 				break;
 				default:return;
@@ -3466,17 +3466,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					if (getPlayer(i) is null) continue;
 					CBlob@ b = getPlayer(i).getBlob();
-					printf("e");
+
 					if (b is null || b.hasTag("burning")) continue;
 					if (b.getDistanceTo(this) > distance) continue;
-					printf("ae");
+					
 					b.getSprite().PlaySound("IceShoot.ogg", 0.75f, 1.3f + XORRandom(11)/10.0f);
 					this.server_Hit(b, b.getPosition(), b.getVelocity(), 0.001f, Hitters::water, true);
 
-					CBitStream params;
-					params.write_u16(b.getNetworkID());
-					params.write_f32(2.0f*power);
-					this.SendCommand(this.getCommandID("freeze"), params);
+					if (this.isMyPlayer())
+					{
+						CBitStream params;
+						params.write_u16(b.getNetworkID());
+						params.write_f32(2.0f*power);
+						this.SendCommand(this.getCommandID("freeze"), params);
+					}
+					
 					{									
 						const f32 rad = 16.0f;
 						Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
