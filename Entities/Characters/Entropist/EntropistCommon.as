@@ -24,7 +24,7 @@ namespace EntropistParams
 	const ::Spell[] spells = 
 	{
 		Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
-			SpellType::other, 2, 20, 0, 360.0f),
+			SpellType::other, 3, 25, 0, 360.0f),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 15, 6, 0, 270.0f, true),
@@ -62,11 +62,11 @@ namespace EntropistParams
 		Spell("polarity", "Polarity", 63, "Switch between attack and defense mode.",
 				SpellType::other, 0, 10, 0, 0.0f, true),
 				
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("dmine", "Disruption Mine", 87, "Places an invisible to enemies mine on the ground. They still can see it in 3 blocks radius. Overcharge increases duration.",
+				SpellType::other, 15, 60, 0, 64.0f),
 							
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("magicarrows", "Magic Arrows", 88, "Launches magic arrows, which slightly home at closest enemy if the angle is not too big. Overcharge increases arrows amount and decreases launch delay.",
+				SpellType::other, 12, 40, 0, 128.0f),
 				
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

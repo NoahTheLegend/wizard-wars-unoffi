@@ -32,6 +32,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		this.set_u16("focus", 0);
 	}
 
+	CMap@ map = getMap();
+
     string spellName = spell.typeName;
 
 	Vec2f castPos = this.getPosition();
@@ -62,48 +64,48 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 		case -825046729: //mushroom
+		{
+			CBlob@[] mushrooms;
+			getBlobsByName("mushroom",@mushrooms);
+
+			if (this.getPlayer() is null)
+			{return;}
+
+			for(int i = 0; i < mushrooms.length; i++)
 			{
-				CBlob@[] mushrooms;
-				getBlobsByName("mushroom",@mushrooms);
-
-				if (this.getPlayer() is null)
-				{return;}
-
-				for(int i = 0; i < mushrooms.length; i++)
+				if (mushrooms[i] is null)
+				{continue;}
+				if (mushrooms[i].getDamageOwnerPlayer() is null)
+				{continue;}
+				if(mushrooms[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
 				{
-					if (mushrooms[i] is null)
-					{continue;}
-					if (mushrooms[i].getDamageOwnerPlayer() is null)
-					{continue;}
-					if(mushrooms[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
-					{
-						mushrooms[i].server_Die();
-						break;
-					}
-				}
-
-				int height = getLandHeight(aimpos);
-				if(height != 0)
-				{
-					if(isServer())
-					{
-						CBlob@ mush = server_CreateBlob("mushroom",this.getTeamNum(),Vec2f(aimpos.x,height) );
-						mush.SetDamageOwnerPlayer(this.getPlayer());
-						mush.set_s32("aliveTime",charge_state == 5 ? 1800 : 900); //if full charge last longer
-					}
-				}
-				else
-				{
-					ManaInfo@ manaInfo;
-					if (!this.get( "manaInfo", @manaInfo )) {
-						return;
-					}
-					
-					manaInfo.mana += spell.mana;
-					
-					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+					mushrooms[i].server_Die();
+					break;
 				}
 			}
+
+			int height = getLandHeight(aimpos);
+			if(height != 0)
+			{
+				if(isServer())
+				{
+					CBlob@ mush = server_CreateBlob("mushroom",this.getTeamNum(),Vec2f(aimpos.x,height) );
+					mush.SetDamageOwnerPlayer(this.getPlayer());
+					mush.set_s32("aliveTime",charge_state == 5 ? 1800 : 900); //if full charge last longer
+				}
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			}
+		}
 		break;
 		
 		case 1299162377://boulder_throw
@@ -2005,6 +2007,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -1395850262://hook
 		{
+			bool failedCast = false;
 			if ( this.get_u16("slowed") > 0 )	//cannot teleport while slowed
 			{ failedCast = true; }
 
@@ -2288,6 +2291,52 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -139761568: //dmine
+		{
+			int height = getLandHeight(aimpos);
+			if(height != 0 && (charge_state == complete_cast || charge_state == super_cast))
+			{
+				CBlob@[] list;
+				map.getBlobsInRadius(Vec2f(aimpos.x,height), 8, @list);
+				bool can_place = true;
+				for (u16 i = 0; i < list.length; i++)
+				{
+					CBlob@ b = list[i];
+					if (b is null) continue;
+					if (b.getName()=="dmine")
+					{
+						ManaInfo@ manaInfo;
+						if (!this.get( "manaInfo", @manaInfo )) {
+							return;
+						}
+
+						can_place = false;
+						manaInfo.mana += spell.mana;
+
+						this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+					}
+				}
+				if(isServer() && can_place)
+				{
+					CBlob@ mush = server_CreateBlob("dmine",this.getTeamNum(),Vec2f(aimpos.x,height) );
+					mush.SetDamageOwnerPlayer(this.getPlayer());
+					mush.set_s32("aliveTime",charge_state == 5 ? 1350 : 900); //45s\30s
+				}
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			}
+		}
+		break;
+
 		case -595243942://voltage_field
 		{
 			if(this.hasScript("VoltageField.as"))
@@ -2303,6 +2352,59 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					this.getSprite().PlaySound("voltage.ogg", 3.0f);
 				}
+			}
+		}
+		break;
+
+		case -997077766://magicarrows
+		{
+			if(this.hasScript("CastMagicArrows.as"))
+			{
+				return;
+			}
+
+			u8 amount = 3;
+			f32 orbDamage = 0.25f;
+			u8 delay = 5;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+
+				case complete_cast:
+				{
+					delay = 4;
+					amount = 4;
+					orbDamage = 0.33f;
+				}
+				break;
+
+				case super_cast:
+				{
+					delay = 3;
+					amount = 5;
+					orbDamage = 0.5f;
+				}
+				break;
+				default:return;
+			}
+			if (this.hasTag("extra_damage"))
+			{
+				delay = 2;
+				amount += 2;
+			}
+
+			if(!this.hasScript("CastMagicArrows.as"))
+			{
+				this.set_u8("magicarrows_amount", amount);
+				this.set_u8("magicarrows_current", amount);
+				this.set_f32("magicarrows_damage", orbDamage);
+				this.set_u8("magicarrows_delay", delay);
+				this.set_u32("magicarrows_time", getGameTime());
+				this.AddScript("CastMagicArrows.as");
+				this.set_u16("stunned", delay*amount);//disables casting and the such
 			}
 		}
 		break;

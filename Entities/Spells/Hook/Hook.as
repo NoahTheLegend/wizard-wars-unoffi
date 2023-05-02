@@ -16,6 +16,7 @@ void onInit(CBlob@ this)
 	consts.net_threshold_multiplier = 4.0f;
 	this.Tag("projectile");
 	this.Tag("counterable");
+	this.Tag("die_in_divine_shield");
 	this.set_bool("following", false);
 	this.set_u16("attached",0);
 	shape.SetGravityScale(1.0f);
