@@ -2332,7 +2332,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				manaInfo.mana += spell.mana;
 				
-				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+				if (height == 0) this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 			}
 		}
 		break;

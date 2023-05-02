@@ -42,7 +42,7 @@ namespace EntropistParams
 				SpellType::other, 8, 2, 3, 1.0f, true),
 			 
 		Spell("voltage_field", "Voltage Field", 54, "Releases a bubble of electricity that knocks away projectiles and enemies that collide with it. Cannot cast spells while active.",
-				SpellType::other, 30, 60, 6, 1.0f, true),
+				SpellType::other, 25, 60, 6, 1.0f, true),
 			
 		Spell("nova", "Nova", 55, "Releases a homing, concentrated energy star. Explodes on contact.",
 				SpellType::other, 30, 45, 6, 100.0f, true),
@@ -57,16 +57,16 @@ namespace EntropistParams
 				SpellType::other, 20, 20, 0, 0.0f, true),
 							
 		Spell("dematerialize", "Dematerialize", 62, "Converts a shard back into mana.",
-				SpellType::other, 0, 20, 0, 0.0f, true),
+				SpellType::other, 0, 15, 0, 0.0f, true),
 				
 		Spell("polarity", "Polarity", 63, "Switch between attack and defense mode.",
-				SpellType::other, 0, 10, 0, 0.0f, true),
+				SpellType::other, 0, 15, 0, 0.0f, true),
 				
 		Spell("dmine", "Disruption Mine", 87, "Places an invisible to enemies mine on the ground. They still can see it in 3 blocks radius. Overcharge increases duration.",
 				SpellType::other, 15, 60, 0, 64.0f),
 							
 		Spell("magicarrows", "Magic Arrows", 88, "Launches magic arrows, which slightly home at closest enemy if the angle is not too big. Overcharge increases arrows amount and decreases launch delay.",
-				SpellType::other, 12, 40, 0, 128.0f),
+				SpellType::other, 15, 45, 0, 128.0f),
 				
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

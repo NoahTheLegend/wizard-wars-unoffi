@@ -26,7 +26,7 @@ void onTick(CBlob@ this)
         s32 diff = this.get_u32("boom_end")-getGameTime();
         if (diff == duration-1)
         {
-            this.getSprite().PlaySound("dw_cast_sequence.ogg", 3.0f, 1.4f);
+            this.getSprite().PlaySound("dw_cast_sequence.ogg", 3.0f, 1.5f);
         }
 
         if (diff%delay==0)

@@ -14,7 +14,7 @@ void onInit(CBlob@ this)
 
 	this.getShape().SetGravityScale(0.0f);
 
-	this.getSprite().PlaySound("WizardShoot.ogg", 2.0f, 1.25f);
+	this.getSprite().PlaySound("WizardShoot.ogg", 2.0f, 2.5f);
 	this.getSprite().SetZ(30.0f);
 	this.set_u16("target_id", 0);
 }
@@ -60,7 +60,7 @@ void onTick(CBlob@ this)
 	{
 		if (isServer() && this.getDistanceTo(target) <= 16.0f)
 		{
-			this.server_Hit(target, target.getPosition(), Vec2f(0,0.1f), this.get_f32("damage"), Hitters::explosion, true);
+			this.server_Hit(target, target.getPosition(), Vec2f(0,0.75f), this.get_f32("damage"), Hitters::arrow, true);
 			this.server_Die();
 		}
 		Vec2f dir = target.getPosition() - this.getPosition();
@@ -122,7 +122,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	if (!isServer()) return;
 	if (blob !is null && this.get_u16("target_id") == blob.getNetworkID() && this.get_u16("target_id") != 0)
 	{
-		this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.1f), this.get_f32("damage"), Hitters::explosion, true);
+		this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.75f), this.get_f32("damage"), Hitters::arrow, true);
 		this.server_Die();
 	}
 	if (blob is null && solid)
