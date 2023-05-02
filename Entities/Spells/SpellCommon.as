@@ -2033,10 +2033,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			f32 orbDamage = 0.25f;
            
             if (charge_state == complete_cast) {
-				orbspeed = necro_shoot_speed*4;
+				orbspeed = necro_shoot_speed*3.5f;
 			}
 			else if (charge_state == super_cast) {
-				orbspeed = necro_shoot_speed*5;
+				orbspeed = necro_shoot_speed*4.5f;
 			}
 
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
@@ -3480,7 +3480,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						params.write_f32(2.0f*power);
 						this.SendCommand(this.getCommandID("freeze"), params);
 					}
-					
+
 					{									
 						const f32 rad = 16.0f;
 						Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
