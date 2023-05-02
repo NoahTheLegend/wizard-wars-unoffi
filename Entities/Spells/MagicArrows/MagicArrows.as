@@ -1,6 +1,6 @@
 #include "Hitters.as"
 
-f32 max_angle = 45.0f; // max capture angle, actually doubled so this is 90 degree coverage
+f32 max_angle = 67.5f; // max capture angle, actually doubled so this is 135 degree coverage
 
 void onInit(CBlob@ this)
 {
@@ -86,11 +86,11 @@ void onTick(CBlob@ this)
 			|| (angle >= 360-max_angle && this.getAngleDegrees() <= max_angle))
 		{
 			//printf("a "+angle+" d "+this.getAngleDegrees());
-			this.setAngleDegrees((angle == 0 ? 180 : 0) + Maths::Lerp(this.getAngleDegrees()+(this.getPosition().x<=target.getPosition().x?90:-90), angle, 0.15f));
+			this.setAngleDegrees((angle == 0 ? 180 : 0) + Maths::Lerp(this.getAngleDegrees()+(this.getPosition().x<=target.getPosition().x?90:-90), angle, 0.2f));
 		}
 		else
 		{
-			this.setAngleDegrees(Maths::Lerp(this.getAngleDegrees(), angle, 0.15f));
+			this.setAngleDegrees(Maths::Lerp(this.getAngleDegrees(), angle, 0.2f));
 		}
 	}
 

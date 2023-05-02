@@ -2364,7 +2364,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				return;
 			}
 
-			u8 amount = 3;
+			u8 amount = 4;
 			f32 orbDamage = 0.2f;
 			u8 delay = 5;
 
@@ -2377,7 +2377,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case complete_cast:
 				{
 					delay = 4;
-					amount = 4;
+					amount = 5;
 					orbDamage = 0.275f;
 				}
 				break;
@@ -2385,7 +2385,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					delay = 3;
-					amount = 5;
+					amount = 6;
 					orbDamage = 0.33f;
 				}
 				break;
