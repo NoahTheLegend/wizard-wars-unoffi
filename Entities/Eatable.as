@@ -51,14 +51,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 				u8 heal_amount;
 				if (!params.saferead_u8(heal_amount)) return;
 
-				if (heal_amount == 255)
-				{
-					theBlob.server_Heal(f32(heal_amount) * 0.25f);
-				}
-				else
-				{
-					theBlob.server_Heal(f32(heal_amount) * 0.25f);
-				}
+
+				theBlob.server_Heal(f32(heal_amount) * 0.25f);
 
 			}
 
