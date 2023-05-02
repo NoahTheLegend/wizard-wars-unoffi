@@ -214,7 +214,7 @@ void ExplodeWithFire(CBlob@ this)
     if (map is null)   return;
 	
 	CBlob@[] blobsInRadius;
-	if (map.getBlobsInRadius(thisPos, 48.0f, @blobsInRadius))
+	if (map.getBlobsInRadius(thisPos, 40.0f, @blobsInRadius))
 	{
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{

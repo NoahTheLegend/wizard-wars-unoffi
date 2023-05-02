@@ -273,18 +273,18 @@ void onDie(CBlob@ this)
 	    if (orb !is null)
 	    {
             Vec2f orbVel = Vec2f(0,-vel).RotateBy(randdeg+240+120*rand);
-            if (XORRandom(2)==0)
+            //if (XORRandom(2)==0)
             {
 	    	    orb.set_u8("effect", mana_effect_missile);
                 orb.set_u8("mana_used", 1);
 	    	    orb.set_u8("caster_mana", 2);
                 orb.set_u8("direct_restore", 6+XORRandom(3));
             }
-            else
-            {
-                orb.set_u8("effect", manaburn_effect_missile);
-                orb.set_u16("effect_time", 450);
-            }
+            //else
+            //{
+            //    orb.set_u8("effect", manaburn_effect_missile);
+            //    orb.set_u16("effect_time", 450);
+            //}
 
 	    	orb.IgnoreCollisionWhileOverlapped( this );
 	    	orb.SetDamageOwnerPlayer( this.getPlayer() );

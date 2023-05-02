@@ -92,7 +92,7 @@ void onTick( CBlob@ this)
 		this.set_u16("heavy", heavy);
 		
 		Vec2f thisVel = this.getVelocity();
-		this.setVelocity( Vec2f(thisVel.x*0.5f, thisVel.y) );
+		this.setVelocity( Vec2f(thisVel.x*0.75f, thisVel.y) );
 		if (thisVel.y < 0.00f) this.setVelocity(Vec2f(thisVel.x, 0));
 		
 
