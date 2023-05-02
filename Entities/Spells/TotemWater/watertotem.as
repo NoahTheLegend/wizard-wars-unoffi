@@ -3,7 +3,7 @@
 const f32 heal_radius = 128.0f;
 const f32 heal_amount = 0.5f; // 1.0f is 5 HP
 const f32 max_charges = 8;
-const u32 heal_rate = 45;
+const u32 heal_rate = 50;
 
 void onInit(CBlob@ this)
 {
@@ -49,7 +49,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 void onTick(CBlob@ this)
 {
     //////////
-    if(this.get_u8("despelled") >= 2 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
+    if(this.get_u8("despelled") >= 1 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
         this.server_Die();
     }

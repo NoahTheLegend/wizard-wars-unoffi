@@ -43,10 +43,10 @@ namespace ShamanParams
 			SpellType::other, 15, 30, 0, 360.0f, true),
 
 		Spell("flameorb", "Flame Orb", 75, "Ignites enemies on impact.",
-			SpellType::other, 12, 25, 0, 256.0f),
+			SpellType::other, 8, 25, 0, 256.0f),
 
 		Spell("firetotem", "Totem of Fire", 76, "Shoots flames at nearby enemies. Ignites everything in close range upon death. Overcharge increases lifetime and fire rate.",
-			SpellType::other, 30, 45, 2, 156.0f),
+			SpellType::other, 25, 45, 2, 156.0f),
 
 		Spell("watertotem", "Totem of Water", 77, "Heals most damaged nearby ally. Only one totem can heal a target. Generates heal charges passively. Overchage increases durability and generation rate. Pushes everything away upon death.",
 			SpellType::other, 50, 90, 8, 128.0f),
@@ -61,10 +61,10 @@ namespace ShamanParams
 			SpellType::other, 25, 60, 2, 256.0f),
 		
 		Spell("spikeburst", "Spike Burst", 81, "Throws a bunch of spikes that die on touch, around the player. Overcharge increases amount of spikes",
-			SpellType::other, 20, 45, 0, 16.0f),
+			SpellType::other, 15, 30, 0, 16.0f),
 		
 		Spell("iciclerain", "Magic Icicles", 82, "Launches icicles above, then forwards them to your aim position. Overcharge increases amount of icicles and decreases their delay. Overcharge fully to control aim position while icicles are being released.",
-			SpellType::other, 30, 30, 6, 512.0f),
+			SpellType::other, 25, 30, 6, 512.0f),
 
 		Spell("waterbarrier", "Water Barrier", 83, "Covers yourself in a bubble of water, which slows down enemies and some of their spells. While under this effect, you are unable to use fire spells and receive more damage from electricity and ice.",
 			SpellType::other, 25, 40, 0, 0.0f),

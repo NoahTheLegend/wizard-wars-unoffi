@@ -37,7 +37,7 @@ void onTick(CBlob@ this)
 	{
 		if (!this.exists("aim_vel"))
 		{
-			Vec2f aim_vel = Vec2f(0,-8).RotateBy(-(aimPos-this.getPosition()).Angle()-90);
+			Vec2f aim_vel = Vec2f(0,-12).RotateBy(-(aimPos-this.getPosition()).Angle()-90);
 			this.set_Vec2f("aim_vel", -aim_vel);
 			this.Tag("arrived");
 			this.set_u32("arrival_time", getGameTime());
@@ -130,7 +130,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 			}
 			f32 dmg = 0.33f;
 			if (blob.get_u16("waterbarrier") > 0) dmg *= 2.5f;
-			this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.1f), dmg, Hitters::explosion, true);
+			this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.1f), dmg, Hitters::arrow, true);
 		}
 		this.server_Hit(this, this.getPosition(), this.getVelocity(), 99.0f, Hitters::builder, true);
 	}
