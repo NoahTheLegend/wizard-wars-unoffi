@@ -48,10 +48,10 @@ namespace NecromancerParams
 			SpellType::summoning, 50, 15, 0, 64.0f, true),
 			
 		Spell("skeleton_rain", "Skeleton Rain", 10, "Summon a hailstorm of skeletons to swarm a nearby opponent.",
-			SpellType::other, 45, 30, 0, 360.0f, true),
+			SpellType::other, 50, 30, 0, 360.0f, true),
 			
 		Spell("arrow_rain", "Arrow Rain", 22, "Cause a long volley of randomly assorted arrows to fall upon thy foe. Great for area denial, and possibly overpowered!",
-			SpellType::other, 75, 60, 10, 360.0f, true),
+			SpellType::other, 70, 60, 10, 360.0f, true),
 			
 		Spell("recall_undead", "Recall Undead", 23, "Instantly bring all summoned minions, along with the unfortunate victims they may be carrying, to your location. ",
 				SpellType::other, 15, 10, 10, 8.0f, true),
@@ -60,22 +60,22 @@ namespace NecromancerParams
 				SpellType::other, 20, 30, 4, 360.0f, true),
 							
 		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes the user.",
-				SpellType::other, 20, 40, 0, 180.0f, true),
+				SpellType::other, 15, 40, 0, 180.0f, true),
 				
 		Spell("force_of_nature", "Force of Nature", 27, "By invoking this spell, you call into being an orb of ghastly green light which destroys anything foolish enough to cross its path, including you!",
-				SpellType::other, 60, 10, 3, 360.0f, true),
+				SpellType::other, 50, 10, 3, 360.0f, true),
 				
 		Spell("arcane_circle","Arcane Circle",32,"Summon an unholy circle that will drain the life force of your foes",
 			SpellType::other,50,50,5,360,true),
 							
 		Spell("bunker_buster", "Bunker Buster", 39, "Anti-Barrier spell.",
-				SpellType::other, 20, 30, 0, 360.0f, true),	
+				SpellType::other, 15, 30, 0, 360.0f, true),	
 				
 		Spell("no_teleport_barrier", "Teleport Block", 49, "Prevents enemies from teleporting past this barrier.",
 				SpellType::other, 10, 10, 0, 100.0f, true),	
 							
 		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied.",
-				SpellType::other, 25, 45, 0, 360.0f),
+				SpellType::other, 30, 45, 0, 360.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),	
