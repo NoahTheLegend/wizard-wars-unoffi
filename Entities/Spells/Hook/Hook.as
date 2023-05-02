@@ -27,7 +27,9 @@ void onInit(CBlob@ this)
 	Setup(SColor(175, 100, 175, 255), "hook0", false);
 	Setup(SColor(175, 255, 125, 100), "hook1", false);
 	if (isClient())
+	{
     	int cb_id = Render::addBlobScript(Render::layer_prehud, this, "Hook.as", "laserEffects");
+	}
 
     this.server_SetTimeToDie(2.5f);
 }
