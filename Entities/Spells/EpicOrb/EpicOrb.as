@@ -133,7 +133,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.getName() == "epicorbmain") return false;
+	if (blob.getName() == "epicorbmain" || blob.hasTag("flesh") || blob.hasTag("zombie")) return false;
 	return ( isEnemy(this, blob) || blob.hasTag("barrier") );
 }
 

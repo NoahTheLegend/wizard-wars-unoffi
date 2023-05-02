@@ -155,7 +155,7 @@ void onTick(CBlob@ this)
 	{
 		if (lTime > shooTime)  //timer system for roboteching
 		{
-			this.AddForce(Vec2f(0, 78-(8*this.get_u8("stage"))).RotateBy(this.getAngleDegrees()-90)*1.1f);
+			this.AddForce(Vec2f(0, 78-(8*this.get_u8("stage"))).RotateBy(this.getAngleDegrees()-90));
 			shape.SetStatic(false);
 			this.Tag("cruiseMode"); //stops
 		}

@@ -57,13 +57,13 @@ namespace PriestParams
 				SpellType::other, 15, 20, 1, 96.0f),
 							
 		Spell("fireorbs", "Sacrilege Fire", 68, "A ball of light and smite, will target an enemy when nearby. Has a moderate chance to ignite.",
-				SpellType::other, 25, 30, 1, 32.0f),	
+				SpellType::other, 30, 30, 1, 32.0f),	
 
 		Spell("singularity", "Singularity", 69, "Summons an essence of stars, which explodes with colossal power after some time. Takes less time to explode if overchaged. Can not be denied. Does not pierce blocks.",
 				SpellType::other, 100, 60, 15, 360.0f),	
 
 		Spell("epicorbmain", "Orbiting Orbs", 74, "Summons magic orbs rotating around its center. Amount of orbs scales with charge.",
-				SpellType::other, 8, 45, 0, 360.0f),
+				SpellType::other, 10, 45, 0, 360.0f),
 							
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
 				SpellType::other, 30, 60, 20, 16.0f),
@@ -75,7 +75,7 @@ namespace PriestParams
 				SpellType::other, 25, 45, 0, 360.0f),
 
 		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
-				SpellType::other, 25, 45, 1, 360.0f, true),
+				SpellType::other, 30, 45, 1, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
