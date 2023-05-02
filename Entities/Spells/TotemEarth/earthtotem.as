@@ -7,6 +7,7 @@ void onInit(CBlob@ this)
     this.set_s32("nextorb", getGameTime());
     //this.Tag("counterable");
     this.Tag("totem");
+    this.Tag("cantparry");
     this.set_u8("despelled", 0);
     this.set_u16("fire_delay", 120);
     this.set_f32("max_dist", 64.0f);

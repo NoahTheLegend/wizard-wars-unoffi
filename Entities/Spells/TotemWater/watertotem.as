@@ -10,6 +10,7 @@ void onInit(CBlob@ this)
     this.set_s32("aliveTime",1500);
     this.set_s32("nextHeal",getGameTime());
     this.Tag("totem");
+    this.Tag("cantparry");
     this.set_u8("despelled", 0);
     this.set_u8("spheres", 1);
     this.set_u32("heal_delay", getGameTime()+heal_rate);

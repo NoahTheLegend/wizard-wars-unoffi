@@ -24,7 +24,7 @@ namespace ShamanParams
 	const ::Spell[] spells = 
 	{
 		Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
-			SpellType::other, 4, 45, 0, 360.0f),
+			SpellType::other, 4, 35, 0, 360.0f),
 							// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
@@ -34,7 +34,7 @@ namespace ShamanParams
 			SpellType::other, 25, 10, 0, 64.0f, true),
 
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
-			SpellType::other, 20, 20, 0, 360.0f, true),
+			SpellType::other, 15, 20, 0, 360.0f, true),
 
 		Spell("airblast_shield", "Airblast Shield", 56, "Cover your team or yourself in a volatile wind barrier that blasts away nearby enemies whenever you take damage.",
 			SpellType::other, 25, 45, 0, 360.0f, true),
@@ -43,7 +43,7 @@ namespace ShamanParams
 			SpellType::other, 15, 30, 0, 360.0f, true),
 
 		Spell("flameorb", "Flame Orb", 75, "Ignites enemies on impact.",
-			SpellType::other, 12, 30, 0, 256.0f),
+			SpellType::other, 12, 25, 0, 256.0f),
 
 		Spell("firetotem", "Totem of Fire", 76, "Shoots flames at nearby enemies. Ignites everything in close range upon death. Overcharge increases lifetime and fire rate.",
 			SpellType::other, 30, 45, 2, 156.0f),
@@ -52,7 +52,7 @@ namespace ShamanParams
 			SpellType::other, 50, 90, 8, 128.0f),
 		
 		Spell("earthtotem", "Totem of Earth", 78, "Slows nearby enemies down. Overcharge increases effect distance and durability. Releases different buffs upon death.",
-			SpellType::other, 50, 60, 10, 224.0f),
+			SpellType::other, 40, 60, 10, 224.0f),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freezes everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
 			SpellType::other, 20, 45, 15, 0.0f),

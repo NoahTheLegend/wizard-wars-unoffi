@@ -1893,6 +1893,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ other = @blobs[i];//setting other blob to a variable for readability
 				if(other.getTeamNum() == ownTeam){continue;}//Does nothing if same team
 				if(other.hasTag("barrier")){continue;} //do nothing if it's a barrier
+				if(other.hasTag("cantparry")){continue;}
 				Vec2f othVel = other.getVelocity(); //velocity of target shortcut
 
 				s8 blobType = parryTargetIdentifier(other);
@@ -3645,7 +3646,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				return;
 			}
 
-			f32 orbspeed = necro_shoot_speed * 0.3f;
+			f32 orbspeed = necro_shoot_speed * 0.5f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
 			f32 orbDamage = 0.5f * extraDamage;
 
