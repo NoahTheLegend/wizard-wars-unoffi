@@ -5,14 +5,14 @@
 
 const f32 arrowMediumSpeed = 8.0f;
 const f32 arrowFastSpeed = 13.0f;
-const f32 max_dist = 224.0f;
+const f32 max_dist = 328.0f;
 
 void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;	 // we have our own map collision
-	consts.bullet = false;
+	consts.bullet = true;
 	consts.net_threshold_multiplier = 4.0f;
 	this.Tag("projectile");
 	this.Tag("counterable");
