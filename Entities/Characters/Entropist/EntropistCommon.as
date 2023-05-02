@@ -66,7 +66,7 @@ namespace EntropistParams
 				SpellType::other, 15, 60, 0, 64.0f),
 							
 		Spell("magicarrows", "Magic Arrows", 88, "Launches magic arrows, which slightly home at closest enemy if the angle is not too big. Overcharge increases arrows amount and decreases launch delay.",
-				SpellType::other, 14, 45, 0, 128.0f),
+				SpellType::other, 16, 45, 0, 128.0f),
 				
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
