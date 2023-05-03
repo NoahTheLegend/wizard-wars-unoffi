@@ -45,7 +45,7 @@ namespace PriestParams
 			SpellType::other, 8, 15, 0, 360.0f, true),
 
 		Spell("regen", "Regenerate", 70, "Applies a slight healing, that lasts some time.",
-				SpellType::other, 18, 25, 0, 360.0f, true), 	
+				SpellType::other, 20, 40, 0, 360.0f, true), 	
 
 		Spell("holystrike", "Holy Strike", 65, "Summons a piercing shard, which shatters into smaller shards after time.",
 				SpellType::other, 35, 60, 6, 270.0f),

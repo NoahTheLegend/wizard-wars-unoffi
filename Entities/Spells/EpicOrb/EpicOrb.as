@@ -124,7 +124,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") )
 		||
 		(
-			target.hasTag("flesh") 
+			(target.hasTag("flesh")  || target.hasTag("zombie"))
 			&& !target.hasTag("dead") 
 			&& target.getTeamNum() != this.getTeamNum() 
 		)
@@ -133,7 +133,8 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.getName() == "epicorbmain" || blob.hasTag("flesh") || blob.hasTag("zombie")) return false;
+	if (blob.getName() == "epicorbmain") return false;
+	if (this.getName() == "epicorb" && (blob.hasTag("flesh") || blob.hasTag("zombie"))) return true; 
 	return ( isEnemy(this, blob) || blob.hasTag("barrier") );
 }
 
