@@ -120,6 +120,10 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (!isServer()) return;
+	if (blob !is null && blob.getTeamNum() != this.getTeamNum() && (blob.hasTag("zombie") || blob.hasTag("barrier")))
+	{
+		this.server_Die();
+	}
 	if (blob !is null && this.get_u16("target_id") == blob.getNetworkID() && this.get_u16("target_id") != 0)
 	{
 		this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.75f), this.get_f32("damage"), Hitters::arrow, true);

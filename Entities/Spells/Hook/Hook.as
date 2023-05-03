@@ -12,8 +12,8 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;	 // we have our own map collision
-	consts.bullet = true;
-	consts.net_threshold_multiplier = 4.0f;
+	consts.bullet = false;
+	consts.net_threshold_multiplier = 16.0f;
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("die_in_divine_shield");
@@ -242,8 +242,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				if (this.getDamageOwnerPlayer() is null || this.getDamageOwnerPlayer().getBlob() is null) return;
 				CBlob@ owner = this.getDamageOwnerPlayer().getBlob();
 
-				blob.setVelocity((owner.getPosition()-blob.getPosition())/12);
-				if (blob.getVelocity().y > 8.0f) owner.setVelocity(Vec2f(owner.getVelocity().x, owner.getVelocity().y*0.75f));	
+				blob.setVelocity((owner.getPosition()-blob.getPosition())/10);
 				this.setVelocity(Vec2f_zero);
 
 				blob.set_u8("dashCoolDown", 30);
@@ -253,7 +252,6 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				this.Tag("returning");
 					
 				owner.setVelocity((this.getPosition()-owner.getPosition())/16);
-				if (owner.getVelocity().y > 8.0f) owner.setVelocity(Vec2f(owner.getVelocity().x, owner.getVelocity().y*0.75f));
 			}
 		}
 	}
