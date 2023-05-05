@@ -28,7 +28,7 @@ namespace WizardParams
 							// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 20, 6, 0, 270.0f, true), 
+			SpellType::other, 15, 6, 0, 270.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 15, 10, 0, 64.0f, true),
@@ -40,10 +40,10 @@ namespace WizardParams
 			SpellType::other, 15, 45, 0, 360.0f), 
 			 
 		Spell("firebomb", "Fire Bomb", 11, "Throw a high velocity condensed ball of flames that explodes on contact with enemies, igniting them. Has a minimum engagement distance of about 4 blocks.",
-			SpellType::other, 30, 40, 0, 360.0f, true),
+			SpellType::other, 35, 40, 0, 360.0f, true),
 			 
 		Spell("fire_sprite", "Fire Sprites", 12, "Create long-ranged explosive balls of energy which follow your aim for an extended period of time.",
-			SpellType::other, 22, 35, 0, 360.0f, true),	
+			SpellType::other, 25, 35, 0, 360.0f, true),	
 			 
 		Spell("meteor_strike", "Meteor Strike", 9, "Bring flaming meteors crashing down wherever you desire.",
 			SpellType::other, 60, 50, 0, 360.0f, true),
@@ -76,7 +76,7 @@ namespace WizardParams
 				SpellType::other, 20, 20, 0, 500.0f, true),
 
 		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
-			SpellType::other, 20, 60, 3, 120.0f),
+			SpellType::other, 25, 30, 2, 120.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

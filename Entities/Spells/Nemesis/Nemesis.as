@@ -128,7 +128,7 @@ void laserEffects(CBlob@ this, int id)
     u32 gt = getGameTime();
     u32 start_time = this.get_u32("start_time");
 
-    int start = (gt-start_time)/5-appear_delay*2;
+    int start = (gt-start_time)/3-appear_delay*2;
     for (int i = start > 0 ? start : 0; i < max-swords; i++)
     {
         Vec2f aimPos;

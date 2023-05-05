@@ -56,7 +56,7 @@ void onTick(CBlob@ this)
 
 			if ((this.getTickSinceCreated() > 10 && this.hasTag("returning") && !shape.isStatic() && this.getDistanceTo(owner) <= 24.0f)
 			|| (this.hasTag("collided_blob")
-				&& this.getDistanceTo(owner) <= 24.0f))
+				&& this.getDistanceTo(owner) <= 24.0f) && !this.getShape().isStatic())
 					this.server_Die();
 
 			if (!this.hasTag("collided")) // return mode
@@ -111,11 +111,11 @@ void onTick(CBlob@ this)
 						&& ((owner.isKeyPressed(key_left) && op.x < tp.x)
 						|| (owner.isKeyPressed(key_right) && op.x > tp.x)))
 					{
-						force.x *= -0.25f;
+						force.x *= -0.33f;
 					}
 				}
 
-				owner.AddForce(force/2.0f);
+				owner.AddForce(force/1.85f);
 				//if (owner.getVelocity().y > 8.0f) owner.setVelocity(Vec2f(owner.getVelocity().x, owner.getVelocity().y*0.5f));
 			}
 		}
@@ -242,7 +242,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				if (this.getDamageOwnerPlayer() is null || this.getDamageOwnerPlayer().getBlob() is null) return;
 				CBlob@ owner = this.getDamageOwnerPlayer().getBlob();
 
-				blob.setVelocity((owner.getPosition()-blob.getPosition())/10);
+				blob.setVelocity((owner.getPosition()-blob.getPosition())/8);
 				this.setVelocity(Vec2f_zero);
 
 				blob.set_u8("dashCoolDown", 30);

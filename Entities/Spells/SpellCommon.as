@@ -1984,13 +1984,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					case complete_cast:
 					{
 						orb.set_s32("max_swords", 7);
-						orb.set_u32("delay_time", 45);
+						orb.set_u32("delay_time", 30);
 						break;
 					}
 					case super_cast:
 					{
 						orb.set_s32("max_swords", 10);
-						orb.set_u32("delay_time", 30);
+						orb.set_u32("delay_time", 15);
 						break;
 					}
 				}

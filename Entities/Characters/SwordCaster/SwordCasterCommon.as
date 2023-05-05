@@ -34,7 +34,7 @@ namespace SwordCasterParams
 			SpellType::other, 30, 10, 0, 64.0f, true),
 			
 		Spell("executioner", "Executioner", 43, "The Executioner was a sword used, as the name implies, in execution by decapitation. Today, it serves another purpose. Press SHIFT to launch them in the direction of your mouse.",
-				SpellType::other, 35, 45, 3, 360.0f, true),
+				SpellType::other, 30, 45, 3, 360.0f, true),
 			
 		Spell("crusader", "Crusader", 42, "This spell materializes three big swords to block the enemy advancement.",
 				SpellType::other, 25, 40, 0, 360.0f, true),
@@ -58,10 +58,10 @@ namespace SwordCasterParams
 				SpellType::other, 12, 25, 1, 70.0f, true),
 			
 		Spell("nemesis", "Nemesis", 85, "Summons a row of falling swords from the sky. Overcharge increases the amount of swords and decreases the delay between load and launch.",
-				SpellType::other, 25, 35, 3, 384.0f),
+				SpellType::other, 25, 30, 3, 384.0f),
 			 
 		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press | USE | button to cut the rope off. Disables dashing and teleporting while active. Overcharge increases throw distance.",
-				SpellType::other, 12, 15, 3, 256.0f),
+				SpellType::other, 12, 15, 2, 256.0f),
 			
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
