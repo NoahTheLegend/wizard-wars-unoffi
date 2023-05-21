@@ -36,10 +36,10 @@ namespace EntropistParams
 				SpellType::other, 25, 30, 2, 360.0f, true),
 			 
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 12, 10, 0, 64.0f, true),
+			SpellType::other, 10, 10, 0, 64.0f, true),
 			 
 		Spell("sidewind", "Sidewind", 53, "Temporarily accelerate your own time by transporting yourself to another dimension for a few moments. Harder to damage while in this dimension.",
-				SpellType::other, 8, 2, 3, 1.0f, true),
+				SpellType::other, 5, 2, 3, 1.0f, true),
 			 
 		Spell("voltage_field", "Voltage Field", 54, "Releases a bubble of electricity that knocks away projectiles and enemies that collide with it. Cannot cast spells while active.",
 				SpellType::other, 25, 60, 6, 1.0f, true),
@@ -63,10 +63,10 @@ namespace EntropistParams
 				SpellType::other, 8, 15, 15, 0.0f, true),
 				
 		Spell("dmine", "Disruption Mine", 87, "Places an invisible to enemies mine on the ground. They still can see it in 3 blocks radius. Overcharge increases duration.",
-				SpellType::other, 15, 60, 0, 64.0f),
+				SpellType::other, 20, 60, 0, 64.0f),
 							
 		Spell("magicarrows", "Magic Arrows", 88, "Launches magic arrows, which slightly home at closest enemy if the angle is not too big. Overcharge increases arrows amount and decreases launch delay.",
-				SpellType::other, 14, 45, 0, 128.0f),
+				SpellType::other, 13, 45, 0, 128.0f),
 				
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
