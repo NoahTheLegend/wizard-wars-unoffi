@@ -16,8 +16,8 @@ void onInit( CBlob@ this )
 	this.getSprite().SetZ(1450);// draw over ground
     this.server_SetTimeToDie(60);
 
-	this.set_f32("explosive_radius",32.0f);
-	this.set_f32("explosive_damage",10.0f);
+	this.set_f32("explosive_radius",48.0f);
+	this.set_f32("explosive_damage",15.0f);
 	this.set_string("custom_explosion_sound", "FireBlast8.ogg");
 	this.set_f32("map_damage_radius", 0.0f);
 	this.set_f32("map_damage_ratio", 0.0f);

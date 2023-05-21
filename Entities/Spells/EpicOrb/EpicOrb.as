@@ -135,7 +135,8 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	if (blob.getName() == "epicorbmain") return false;
 	if (this.getName() == "epicorb" && (blob.hasTag("flesh") || blob.hasTag("zombie"))) return true; 
-	return ( isEnemy(this, blob) || blob.hasTag("barrier") );
+	if (this.getName() == "epicorbmain" && !blob.hasTag("barrier") && isEnemy(this, blob)) return false;
+	return (isEnemy(this, blob) || blob.hasTag("barrier"));
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)

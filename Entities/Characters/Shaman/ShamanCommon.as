@@ -31,13 +31,13 @@ namespace ShamanParams
 			SpellType::other, 20, 6, 0, 270.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 25, 10, 0, 64.0f, true),
+			SpellType::other, 20, 10, 0, 64.0f, true),
 
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
 			SpellType::other, 10, 20, 0, 360.0f, true),
 
 		Spell("airblast_shield", "Airblast Shield", 56, "Cover your team or yourself in a volatile wind barrier that blasts away nearby enemies whenever you take damage.",
-			SpellType::other, 25, 45, 0, 360.0f, true),
+			SpellType::other, 20, 45, 0, 360.0f, true),
 
 		Spell("fire_ward", "Fire Ward", 57, "Form a heat protection aura around yourself. Completely nullifies fire damage.",
 			SpellType::other, 15, 30, 0, 360.0f, true),
@@ -58,7 +58,7 @@ namespace ShamanParams
 			SpellType::other, 20, 45, 15, 0.0f),
 		
 		Spell("lavashot", "Lava Shot", 80, "Launches a slowly-moving sphere, which shatters into many drops of lava on impact. Periodically drops a bit of lava while flying. Overcharge increases the rate of dropping lava and amount from impact.",
-			SpellType::other, 25, 60, 2, 256.0f),
+			SpellType::other, 25, 45, 2, 256.0f),
 		
 		Spell("spikeburst", "Spike Burst", 81, "Throws a bunch of spikes that die on touch, around the player. Overcharge increases amount of spikes",
 			SpellType::other, 12, 30, 0, 16.0f),
