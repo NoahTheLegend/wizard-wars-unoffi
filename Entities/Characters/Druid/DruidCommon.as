@@ -40,7 +40,7 @@ namespace DruidParams
 			SpellType::other, 30, 40, 3, 360.0f, true),	
 										
 		Spell("spikeorb", "SpikeBall", 30, "The spikeball is natures punishment to those that tread her woods unwelcomed",
-			SpellType::other, 2, 5, 1, 360.0f),			
+			SpellType::other, 2, 20, 0, 360.0f),			
 				
 		Spell("sporeshot", "SporeShot", 31, "A foul fungus that is painful to the touch, lighter than air",
 			SpellType::other, 4, 10, 0, 360.0f, true),	
