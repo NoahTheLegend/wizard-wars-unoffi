@@ -375,7 +375,7 @@ void intitializeClasses()
 													"Has a breathe of smite and holy water. Has expensive, but impactful AOE damage and useful optional spells, including heal. Complexity: MEDIUM" +
 													"\n\n     Health: 80" +
 													"\n     Mana: 150" +
-													"\n     Mana Regen: 3 mana/sec",
+													"\n     Mana Regen: 4 mana/sec",
 													"priest", 6, 0, 7, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Shaman", 
