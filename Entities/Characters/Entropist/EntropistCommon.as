@@ -65,7 +65,7 @@ namespace EntropistParams
 		Spell("dmine", "Disruption Mine", 87, "Places an invisible to enemies mine on the ground. They still can see it in 3 blocks radius. Overcharge increases duration.",
 				SpellType::other, 20, 60, 0, 64.0f),
 							
-		Spell("magicarrows", "Magic Arrows", 88, "Launches magic arrows, which slightly home at closest enemy if the angle is not too big. Overcharge increases arrows amount and decreases launch delay.",
+		Spell("magicarrows", "Magic Arrows", 88, "Launches magic arrows, which slightly home at closest enemy if the angle is not too step. Overcharge increases arrows amount and decreases launch delay.",
 				SpellType::other, 13, 45, 0, 128.0f),
 				
 		Spell("", "", 0, "Empty spell.",
