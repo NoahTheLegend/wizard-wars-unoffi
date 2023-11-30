@@ -38,7 +38,7 @@ void onTick(CBlob@ this)
 	if (this.isOnGround())
 	{
 		this.getSprite().SetAnimation("ground");
-		if (!this.hasTag("done")) this.server_SetTimeToDie(1.0f);
+		if (!this.hasTag("done")) this.server_SetTimeToDie(2.0f);
 		this.Tag("done");
 		return;
 	}
