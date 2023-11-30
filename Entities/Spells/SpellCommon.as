@@ -1351,11 +1351,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			int teamNum = this.getTeamNum();
 
 			bool failedCast = false;
-			
-			if (isTeleCancelInRange(map, thispos, teamNum))
-			{
-				failedCast = true;
-			}
 
 			if (this.get_u16("slowed") > 0 
 			|| (this.exists("teleport_disable") && this.get_u32("teleport_disable") > getGameTime()))	//cannot teleport while slowed
@@ -2116,11 +2111,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			int teamNum = this.getTeamNum();
 
 			bool failedCast = false;
-
-			if (isTeleCancelInRange(map, thispos, teamNum))
-			{
-				failedCast = true;
-			}
 
 			if (failedCast)
 			{
@@ -2897,11 +2887,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			int teamNum = this.getTeamNum();
 
 			bool failedCast = false;
-			
-			if (isTeleCancelInRange(map, thispos, teamNum))
-			{
-				failedCast = true;
-			}
 
 			if ( this.get_u16("slowed") > 0 )	//cannot teleport while slowed
 			{ failedCast = true; }

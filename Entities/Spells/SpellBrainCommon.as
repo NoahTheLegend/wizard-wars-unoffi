@@ -196,11 +196,7 @@ void SearchTarget(CBrain@ this, const bool seeThroughWalls = false, const bool s
 
 void onChangeTarget(CBlob@ blob, CBlob@ target, CBlob@ oldTarget)
 {
-	// !!!
-	if (oldTarget is null)
-	{
-		set_emote(blob, Emotes::attn, 1);
-	}
+
 }
 
 bool LoseTarget(CBrain@ this, CBlob@ target)
