@@ -5,7 +5,6 @@
 #include "PlayerPrefsCommon.as";
 #include "SpellHashDecoder.as";
 #include "EffectMissileEnum.as";
-#include "CTFDefenseLogic.as";
 
 const int minimum_cast = NecromancerParams::cast_1;
 const int medium_cast = NecromancerParams::cast_2;
@@ -1323,8 +1322,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				default:return;
 			}
 
-			if (sv_gamemode == "CTF")
-			{ lifetime *= 2; }
 
 			Vec2f orbPos = aimpos;
 			Vec2f targetPos = orbPos + Vec2f(0.0f,2.0f);
@@ -2170,8 +2167,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			u16 extraLifetime = this.hasTag("extra_damage") ? 5 : 0;
 			u16 lifetime = 30 + extraLifetime;
-			if (sv_gamemode == "CTF")
-			{ lifetime *= 2; }
 
 			Vec2f orbPos = aimpos;
 			Vec2f targetPos = orbPos + Vec2f(0.0f,2.0f);
