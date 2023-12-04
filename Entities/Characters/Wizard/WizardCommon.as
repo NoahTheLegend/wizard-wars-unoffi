@@ -76,7 +76,7 @@ namespace WizardParams
 				SpellType::other, 20, 20, 0, 500.0f, true),
 
 		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
-			SpellType::other, 25, 30, 2, 120.0f),
+			SpellType::other, 20, 30, 1, 120.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

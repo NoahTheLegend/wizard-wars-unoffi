@@ -4,9 +4,9 @@
 #include "TextureCreation.as";
 #include "ShieldCommon.as";
 
-const f32 RANGE = 128.0f;
-const f32 DAMAGE = 2.0f; //10 hp
-const f32 chain_radius = 96.0f;
+const f32 RANGE = 172.0f;
+const f32 DAMAGE = 2.0f; // 1.0f is 5 hp
+const f32 chain_radius = 128.0f;
 
 const f32 LIFETIME = 0.33f;
 
