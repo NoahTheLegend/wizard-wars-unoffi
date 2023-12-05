@@ -1,5 +1,5 @@
 # Wizard Wars
-An amazing fantasy-PvP arena with all kinds of sorcery, resembling Magicka and World of Warcraft spells, features, strategies and dynamic gameplay
+An amazing PvP arena with all kinds of sorcery, resembling Magicka and World of Warcraft spells, features, strategies and dynamic gameplay
 <br>
 <hr>
 
