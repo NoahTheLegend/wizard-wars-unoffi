@@ -7,5 +7,10 @@ An amazing PvP arena with all kinds of sorcery, resembling Magicka and World of 
 <br>
 Dashes, control spells, traps
 
+<p align="center">
+  <img src="" alt="animated" />
+</p>
+
+
 
 ### Spell it, cast it, TRY it
