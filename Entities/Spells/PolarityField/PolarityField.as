@@ -32,7 +32,7 @@ void onInit(CBlob@ this)
 		sprite.SetEmitSoundVolume(2.0f);
 	}
 
-	if (!this.exists("stages")) this.set_u8("stages", 2);
+	if (!this.exists("stages")) this.set_u8("stages", 3);
 	this.Sync("stages", true);
 
 	this.set_u8("despelled",0);
