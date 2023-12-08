@@ -3,8 +3,11 @@
 #include "MagicCommon.as";
 #include "SplashWater.as";
 
-void onTick( CBlob@ this)
+void onTick(CBlob@ this)
 {
+	//if (getGameTime()%30==0) printf(""+this.get_bool("damageaura"));
+	if (getGameTime() < 30) return;
+
 	RunnerMoveVars@ moveVars;
 	if (!this.get("moveVars", @moveVars))
 	{
@@ -280,7 +283,7 @@ void onTick( CBlob@ this)
 			}
 		}
 		
-		if ( sidewinding == 0 )
+		if (sidewinding == 0)
 		{
 			if(isClient())
 			{thisSprite.PlaySound("sidewind_exit.ogg", 3.0f, 1.0f + XORRandom(1)/10.0f);}
@@ -310,25 +313,26 @@ void onTick( CBlob@ this)
 		this.set_u16("sidewinding", sidewinding);
 	}
 
+	u32 gt = getGameTime();
 	//DAMAGE AURA
-	bool damageaura = this.get_bool("damageaura");
-	u32 origindamageauratiming = this.get_u32("origindamageauratiming");
-	u32 damageauratiming = this.get_u32("damageauratiming");
-
-	if (this.exists("damageaura"))
 	{
+		bool damageaura = this.get_bool("damageaura");
+		u32 origindamageauratiming = this.get_u32("origindamageauratiming");
+		u32 damageauratiming = this.get_u32("damageauratiming");
+		u32 disabledamageauratiming = this.get_u32("disabledamageauratiming");
+
 		f32 radius = 96.0f;
 		if (damageaura)
 		{
 			Vec2f thisVel = this.getVelocity();
-			this.set_u32("damageauratiming", getGameTime());
+			this.set_u32("damageauratiming", gt);
 
 			this.set_bool("dashing", true); // disable dash
 			moveVars.walkFactor *= 0.85f;
 			moveVars.jumpFactor *= 0.85f;
 
 			//workstate
-			if (getGameTime()%15==0)
+			if (gt%15==0)
 			{
 				CBlob@[] bs;
 				if (getMap() !is null) getMap().getBlobsInRadius(this.getPosition(), radius, @bs);
@@ -336,7 +340,7 @@ void onTick( CBlob@ this)
 				{
 					CBlob@ b = bs[i];
 					if (b is null || b.getPlayer() is null || b.getTeamNum() != this.getTeamNum() || b is this || b.getTickSinceCreated() < 90 || b.hasTag("dead")) continue;
-					b.set_u32("damage_boost", getGameTime()+20);
+					b.set_u32("damage_boost", gt+20);
 					b.Sync("damage_boost", true);
 				}
 			}
@@ -365,12 +369,10 @@ void onTick( CBlob@ this)
 				}
 			}
 		}
-
 		//disable
-		if (!damageaura && damageauratiming != 0 && damageauratiming+6 > getGameTime())
+	    else if (damageauratiming+6 > gt
+			)
 		{
-			this.Sync("damageaura", true);
-
 			for(int i = 0; i < 120; i++)
 			{
 				SColor color = SColor(255,255,25,25);
@@ -390,25 +392,25 @@ void onTick( CBlob@ this)
 				}
 			}
 		}
+	}
 
-		//STUN
-		u16 stunned = this.get_u16("stunned");
-		if (stunned > 0)
+	//STUN
+	u16 stunned = this.get_u16("stunned");
+	if (stunned > 0)
+	{
+		stunned--;
+
+		//this.DisableMouse(true);
+		u16 takekeys;
+		takekeys = key_action1 | key_action2 | key_action3 | key_taunts;
+		this.DisableKeys(takekeys);
+
+		if ( stunned == 0 )
 		{
-			stunned--;
-
-			//this.DisableMouse(true);
-			u16 takekeys;
-			takekeys = key_action1 | key_action2 | key_action3 | key_taunts;
-			this.DisableKeys(takekeys);
-
-			if ( stunned == 0 )
-			{
-				//this.DisableMouse(false);
-				this.DisableKeys(0);
-			}
-			this.set_u16("stunned", stunned);
+			//this.DisableMouse(false);
+			this.DisableKeys(0);
 		}
+		this.set_u16("stunned", stunned);
 	}
 
 	//AIRBLAST SHIELD

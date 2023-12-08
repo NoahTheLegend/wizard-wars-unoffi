@@ -5,6 +5,7 @@
 void onInit( CRules@ this )
 {
 	this.addCommandID("load playerPrefs");
+	this.addCommandID("load class");
 	//this.addCommandID("unlock class");
 	//this.addCommandID("buy unlock");
 	
@@ -25,7 +26,7 @@ void onInit( CRules@ this )
 	//setStartingUnlocks( this );
 }
 bool security_reloaded = false;
-void onNewPlayerJoin( CRules@ this, CPlayer@ player )
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
 	//reload the seclevs shortly after a player joins once every new map to fix certain versions of windows preventing security to work
 	if(security_reloaded == false )
@@ -33,7 +34,6 @@ void onNewPlayerJoin( CRules@ this, CPlayer@ player )
 		getSecurity().reloadSecurity();
 		security_reloaded = true;	
 	}//Yes this is a bad way of doing it, i didn't want it every single next map so i settled for this. At least it works
-
 
 	string pName = player.getUsername();
 	u16 pPlatinum = server_getPlayerPlatinum( pName );
@@ -100,6 +100,17 @@ void onTick(CRules@ this)
 	}
 	else if ( playerPrefsInfo.infoLoaded == false )
 	{
+		PlayerPrefsInfo@ playerPrefsInfo;
+		if (localPlayer.get("playerPrefsInfo", @playerPrefsInfo) && playerPrefsInfo !is null)
+		{
+			CBitStream params;
+			params.write_u16(localPlayer.getNetworkID());
+			params.write_string(playerPrefsInfo.classConfig);
+			this.SendCommand(this.getCommandID("load class"), params);
+			
+			//error("sending "+playerPrefsInfo.classConfig);
+		}
+
 		loadHotbarAssignments( localPlayer, "wizard" );
 		loadHotbarAssignments( localPlayer, "druid" );
 		loadHotbarAssignments( localPlayer, "necromancer" );
@@ -140,6 +151,27 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 		player.set( "playerPrefsInfo", @playerPrefsInfo );
 		
 		//print("playerPrefs set");
+	}
+	else if (this.getCommandID("load class") == cmd)
+	{
+		if (isServer())
+		{
+			u16 id;
+			if (!params.saferead_u16(id)) return;
+			CPlayer@ player = getPlayerByNetworkId(id);
+			if (player is null) return;
+
+			PlayerPrefsInfo@ playerPrefsInfo;
+			if (player.get("playerPrefsInfo", @playerPrefsInfo) && playerPrefsInfo !is null)
+			{
+				string class_config;
+				if (!params.saferead_string(class_config)) return;
+				playerPrefsInfo.classConfig = class_config;
+				player.Tag("synced_class");
+				
+				//error("receiving "+playerPrefsInfo.classConfig);
+			}
+		}
 	}
 	/*
 	else if (this.getCommandID("unlock class") == cmd)

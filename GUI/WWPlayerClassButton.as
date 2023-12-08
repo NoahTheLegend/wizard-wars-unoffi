@@ -331,7 +331,7 @@ class WWPlayerClassButtonList : GenericGUIItem
 void intitializeClasses()
 {
 	string configstr = "../Cache/WizardWars_Classes"+classesVersion+".cfg";
-	ConfigFile cfg = ConfigFile( configstr );
+	ConfigFile cfg = ConfigFile(configstr);
 	if (!cfg.exists("Version")){cfg.add_string("Version","Classes 1.2");
 		cfg.saveFile("WizardWars_Classes"+classesVersion+".cfg");}
 	playerClassButtons = WWPlayerClassButtonList(Vec2f(50,40),Vec2f(700,400),1);
@@ -418,7 +418,7 @@ void SwapButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button cl
 	CRules@ rules = getRules();
 	rules.SendCommand(rules.getCommandID("swap classes"), params);
 
-	Sound::Play( "MenuSelect2.ogg" );	
+	Sound::Play("MenuSelect2.ogg");	
 }
 /*
 void UnlockButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI

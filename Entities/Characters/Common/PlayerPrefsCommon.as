@@ -45,6 +45,15 @@ shared class PlayerPrefsInfo
 		infoLoaded = false;
 		
 		classConfig = "wizard";
+
+		if (isClient())
+		{
+			ConfigFile cfg;
+			if (cfg.loadFile("../Cache/WW_PlayerPrefs.cfg"))
+			{
+				classConfig = cfg.read_string("class config");
+			}
+		}
 	
 		primarySpellID = 0;
 		primaryHotkeyID = 0;

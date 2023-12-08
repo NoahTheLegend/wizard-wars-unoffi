@@ -68,7 +68,7 @@ void onTick(CBlob@ this)
 			swordVel.Normalize();
 			swordVel *= swordSpeed;
 			this.setVelocity(swordVel);
-			this.getSprite().PlaySound("swordlaunch.ogg");
+			this.getSprite().PlaySound("swordlaunch.ogg", 0.75f, 1.0f);
 			this.Tag("cruiseMode"); //stops
 		}
 	}

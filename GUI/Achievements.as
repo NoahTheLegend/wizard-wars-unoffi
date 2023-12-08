@@ -310,7 +310,6 @@ class Achievement {
 			cfg.saveFile(modName+"_Achievements"+achievementsVersion+".cfg");
 		}
 	}
-
 	
 	void draw(Vec2f pos){
 		frame.position = pos;

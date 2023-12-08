@@ -133,22 +133,22 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case 1:
 						case 2:
 						{
-							mush.set_s32("aliveTime", 150);
+							mush.set_s32("aliveTime", 180);
 							break;
 						}
 						case 3:
 						{
-							mush.set_s32("aliveTime", 150);
+							mush.set_s32("aliveTime", 180);
 							break;
 						}
 						case 4:
 						{
-							mush.set_s32("aliveTime", 180);
+							mush.set_s32("aliveTime", 240);
 							break;
 						}
 						case 5:
 						{
-							mush.set_s32("aliveTime", 240);
+							mush.set_s32("aliveTime", 300);
 							break;
 						}
 					}
@@ -2985,7 +2985,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1938943027://damage aura
 		{
-			DamageAura(this);
+			DamageAura(this, !this.get_bool("damageaura"));
 		}
 		break;
 
@@ -4447,23 +4447,25 @@ void Sidewind( CBlob@ blob, u16 windTime )
 	{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
 }
 
-void DamageAura(CBlob@ blob)
-{	
-	if (!blob.get_bool("damageaura"))
-	{
-		blob.set_u32("origindamageauratiming", getGameTime());
-		blob.Sync("origindamageauratiming", true);
-	}
-
-	blob.set_bool("damageaura", !blob.get_bool("damageaura"));
-	blob.Sync("damageaura", true);
-
+void DamageAura(CBlob@ blob, bool enable)
+{
 	if(isClient())
 	{
-		if (blob.get_bool("damageaura"))
+		if (!blob.get_bool("damageaura"))
 			blob.getSprite().PlaySound("PlantShotLaunch.ogg", 4.0f, 0.35f + (0.15f * _spell_common_r.NextFloat()));
 		else
 			blob.getSprite().PlaySound("sidewind_init.ogg", 0.75f, 1.5f);
+	}
+
+	blob.set_u32("damageauratiming", getGameTime());
+	blob.set_u32("origindamageauratiming", getGameTime());
+	blob.set_bool("damageaura", enable);
+	
+	if (isServer())
+	{
+		//blob.Sync("damageauratiming", true);
+		//blob.Sync("origindamageauratiming", true);
+		//blob.Sync("damageaura", true);
 	}
 }
 

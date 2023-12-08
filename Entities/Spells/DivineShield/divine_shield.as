@@ -78,7 +78,7 @@ void onTick(CBlob@ this)
                         }
                         //b.getShape().SetAngleDegrees(b.getAngleDegrees()+180-(XORRandom(21)-10));
                         b.setVelocity(-b.getVelocity());
-                        this.getSprite().PlaySound("shield_create.ogg", 10.0f, 2.0f+XORRandom(10)*0.1f);
+                        this.getSprite().PlaySound("shield_create.ogg", 1.0f, 2.0f+XORRandom(10)*0.1f);
                     }
                 }
             }
@@ -89,7 +89,7 @@ void onTick(CBlob@ this)
         if (!this.hasTag("soundplayed"))
         {
             this.Tag("soundplayed");
-            this.getSprite().PlaySound("circle_create.ogg",10, 1.75f);
+            this.getSprite().PlaySound("circle_create.ogg", 1.0f, 1.75f);
         }
         if(getGameTime()%30==0)
         {
@@ -124,7 +124,7 @@ void onInit(CSprite@ this)
     //this.SetZ(0);
     //this.setRenderStyle(RenderStyle::light);
     //this.ReloadSprites(this.getBlob().getTeamNum(),0);
-    this.PlaySound("circle_create.ogg",10, 2.5f);
+    this.PlaySound("circle_create.ogg", 1.0f, 2.5f);
     this.SetRelativeZ(888.0f);
 }
 

@@ -115,6 +115,9 @@ shared class TDMSpawns : RespawnSystem
 
 	void DoSpawnPlayer(PlayerInfo@ p_info)
 	{
+		CPlayer@ p = getPlayerByUsername(p_info.username);
+		if (p is null || (!p.hasTag("synced_class") && !p.isBot())) return;
+
 		if (force || canSpawnPlayer(p_info))
 		{
 			CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
@@ -164,7 +167,6 @@ shared class TDMSpawns : RespawnSystem
 		if (info is null) { warn("TDM LOGIC: Couldn't get player info ( in bool canSpawnPlayer(PlayerInfo@ p_info) ) "); return false; }
 
 		if (force) { return true; }
-
 		return info.can_spawn_time == 0;
 	}
 

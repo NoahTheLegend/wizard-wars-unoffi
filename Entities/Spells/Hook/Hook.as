@@ -170,7 +170,6 @@ void Pierce(CBlob@ this, CBlob@ blob = null)
 	{
 		ArrowHitMap(this, end, this.getOldVelocity(), 0.5f, Hitters::arrow);
 	}
-	
 }
 
 void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 customData)

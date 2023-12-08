@@ -34,11 +34,17 @@ void changeWizDefaultClass( CPlayer@ thisPlayer, string classConfig = "" )
 	PlayerPrefsInfo@ playerPrefsInfo;
 	if (!thisPlayer.get( "playerPrefsInfo", @playerPrefsInfo ))
 	{ return; }
-		
+
 	playerPrefsInfo.classConfig = classConfig;
-		
-	if ( thisPlayer.isMyPlayer() )
+	ConfigFile cfg;
+	if (cfg.loadFile("../Cache/WW_PlayerPrefs.cfg"))
 	{
-		client_AddToChat("You will now be a " + classConfig + " the next time you respawn or get revived.", SColor(255,0,200,200));
+		cfg.add_string("class config", classConfig);
+		cfg.saveFile("WW_PlayerPrefs.cfg");
+	}
+		
+	if (thisPlayer.isMyPlayer())
+	{
+		client_AddToChat("You will now be a " + classConfig + " the next time you respawn or get revived.", SColor(255,255,0,200));
 	}
 }

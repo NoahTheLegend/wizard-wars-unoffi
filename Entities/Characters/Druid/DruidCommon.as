@@ -72,7 +72,7 @@ namespace DruidParams
 		Spell("fire_ward", "Fire Ward", 57, "Form a heat protection aura around yourself. Completely nullifies fire damage.",
 			SpellType::other, 20, 25, 0, 360.0f, true),
 
-		Spell("vinetrap", "Vine", 89, "Plants sharp vines that will stop enemies passing through it.",
+		Spell("vinetrap", "Vine Embrace", 89, "Plants sharp vines that will stop enemies passing through it.",
 			SpellType::other, 30, 40, 5, 128.0f),
 
 		Spell("", "", 0, "Empty spell.",

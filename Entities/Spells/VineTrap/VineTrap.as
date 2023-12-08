@@ -50,7 +50,7 @@ void onTick(CBlob@ this)
 		CBlob@ trapped = getBlobByNetworkID(this.get_u16("trapped_id"));
 		if (trapped !is null)
 		{
-			trapped.setPosition(this.getPosition()-Vec2f(0,6));
+			trapped.setPosition(this.getPosition()-Vec2f(0,8));
 
 			if (trapped.get_u16("slowed") < 15)
             {
