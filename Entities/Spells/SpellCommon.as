@@ -62,13 +62,18 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
+		
 		case -825046729: //mushroom
 		{
+
 			CBlob@[] mushrooms;
 			getBlobsByName("mushroom",@mushrooms);
 
 			if (this.getPlayer() is null)
 			{return;}
+
+			CBlob@ mushroom1 = null;
+			CBlob@ mushroom2 = null;
 
 			for(int i = 0; i < mushrooms.length; i++)
 			{
@@ -78,8 +83,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{continue;}
 				if(mushrooms[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
 				{
-					mushrooms[i].server_Die();
-					break;
+					if (mushroom1 is null) @mushroom1 = @mushrooms[i];
+					else if (mushroom2 is null) @mushroom2 = @mushrooms[i];
+					
+					if (mushroom1 !is null && mushroom2 !is null)
+					{
+						mushroom1.server_Die();
+						break;
+					}
 				}
 			}
 
@@ -90,7 +101,57 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					CBlob@ mush = server_CreateBlob("mushroom",this.getTeamNum(),Vec2f(aimpos.x,height) );
 					mush.SetDamageOwnerPlayer(this.getPlayer());
-					mush.set_s32("aliveTime",charge_state == 5 ? 1800 : 900); //if full charge last longer
+					mush.set_s32("aliveTime",charge_state == 5 ? 1200 : 900); //if full charge last longer
+				}
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			}
+		}
+		break;
+
+		case 1538155802: //vinetrap
+		{
+			int height = getLandHeight(aimpos);
+			if(height != 0)
+			{
+				if(isServer())
+				{
+					CBlob@ mush = server_CreateBlob("vinetrap",this.getTeamNum(),Vec2f(aimpos.x,height) );
+					mush.SetDamageOwnerPlayer(this.getPlayer());
+
+					switch (charge_state)
+					{
+						case 1:
+						case 2:
+						{
+							mush.set_s32("aliveTime", 150);
+							break;
+						}
+						case 3:
+						{
+							mush.set_s32("aliveTime", 150);
+							break;
+						}
+						case 4:
+						{
+							mush.set_s32("aliveTime", 180);
+							break;
+						}
+						case 5:
+						{
+							mush.set_s32("aliveTime", 240);
+							break;
+						}
+					}
 				}
 			}
 			else
@@ -2297,8 +2358,11 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						}
 
 						can_place = false;
-						manaInfo.mana += spell.mana;
 
+						if (!this.get_bool("burnState"))
+						{
+							manaInfo.mana += spell.mana;
+						}
 						this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 					}
 				}
@@ -2391,6 +2455,55 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				this.set_u32("magicarrows_time", getGameTime());
 				this.AddScript("CastMagicArrows.as");
 				this.set_u16("stunned", delay*amount);//disables casting and the such
+			}
+		}
+		break;
+
+		case 1341451107: //polarityfield
+		{
+			if (!isServer()){
+           		return;
+			}
+
+			f32 orbspeed = 0;
+			bool extraDamage = this.hasTag("extra_damage");
+			f32 orbDamage = 2.0f;
+			u8 stages = 3;
+            
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+					return;
+									
+				case complete_cast:
+				{
+					stages = 3;
+				}
+				break;
+
+				case super_cast:
+				{
+					stages = 4;
+				}
+				break;
+			}
+
+			bool extra_damage = this.hasTag("extra_damage");
+			if (extra_damage)
+				stages += 1;
+
+			CBlob@ orb = server_CreateBlobNoInit("polarityfield");
+			if (orb !is null)
+			{
+				orb.set_u8("stages", stages);
+				orb.Init();
+
+				orb.IgnoreCollisionWhileOverlapped(this);
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+				orb.server_setTeamNum(this.getTeamNum());
+				orb.setPosition(aimpos);
+				orb.getShape().SetStatic(true);
 			}
 		}
 		break;
@@ -2673,7 +2786,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					default:return;
 				}
 
-				Vec2f baseSite = Vec2f(aimpos.x , landheight);
+				Vec2f baseSite = Vec2f(aimpos.x, landheight);
 				const int numOrbs = 1;
 				for (int i = 0; i < numOrbs; i++)
 				{
@@ -2872,9 +2985,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1938943027://damage aura
 		{
-			u16 auraTime = 120 + (charge_state * 30);
-
-			DamageAura(this, auraTime);
+			DamageAura(this);
 		}
 		break;
 
@@ -4336,17 +4447,24 @@ void Sidewind( CBlob@ blob, u16 windTime )
 	{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
 }
 
-void DamageAura( CBlob@ blob, u16 auraTime )
+void DamageAura(CBlob@ blob)
 {	
-	if (blob.get_u16("damageaura") == 0)
+	if (!blob.get_bool("damageaura"))
 	{
-		blob.set_u32("damageauratiming", getGameTime());
-		blob.Sync("damageauratiming", true);
+		blob.set_u32("origindamageauratiming", getGameTime());
+		blob.Sync("origindamageauratiming", true);
 	}
-	blob.set_u16("damageaura", auraTime);
+
+	blob.set_bool("damageaura", !blob.get_bool("damageaura"));
 	blob.Sync("damageaura", true);
+
 	if(isClient())
-	{blob.getSprite().PlaySound("PlantShotLaunch.ogg", 4.0f, 0.35f + (0.15f * _spell_common_r.NextFloat()) );}
+	{
+		if (blob.get_bool("damageaura"))
+			blob.getSprite().PlaySound("PlantShotLaunch.ogg", 4.0f, 0.35f + (0.15f * _spell_common_r.NextFloat()));
+		else
+			blob.getSprite().PlaySound("sidewind_init.ogg", 0.75f, 1.5f);
+	}
 }
 
 void AirblastShield( CBlob@ blob, u16 airshieldTime )

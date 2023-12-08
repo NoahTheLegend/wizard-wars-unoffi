@@ -15,7 +15,7 @@ void onInit(CBlob@ this)
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	CShape@ shape = this.getShape();
-	shape.getConsts().net_threshold_multiplier = 2.0f;
+	//shape.getConsts().net_threshold_multiplier = 2.0f;
 	
 	this.getShape().getConsts().bullet = true;
 
@@ -34,7 +34,7 @@ void onInit(CBlob@ this)
 					nice.set_u16("id", this.getNetworkID());
 					nice.set_u8("orbs", this.get_u8("orbs"));
 					nice.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
-					nice.IgnoreCollisionWhileOverlapped( this );
+					nice.IgnoreCollisionWhileOverlapped(this);
 				} 
 			}
 		}

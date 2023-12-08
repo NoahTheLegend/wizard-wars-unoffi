@@ -39,11 +39,11 @@ void onTick(CBlob@ this)
             if (b is null || b is this) continue;
             if (b.exists("sidewinding") && b.get_u16("sidewinding") > 0) continue;
             if((b.getName() != "skeleton" && b.getName() != "zombie" && b.getName() != "zombieknight")
-            && (b.getTeamNum() == this.getTeamNum() && b.hasTag("flesh"))) // push friendly fleshy blobs inside
+            && (b.getTeamNum() == this.getTeamNum() && b.hasTag("flesh"))) // friendly blobs
             {
                 Vec2f tpos = this.getPosition();
                 Vec2f bpos = b.getPosition();
-                b.AddForce((tpos-bpos)/5);
+                
                 b.set_u32("divine_protection", getGameTime()+5);
             }
             else if (b.hasTag("flesh") || b.hasTag("magic_circle")) // push other outside

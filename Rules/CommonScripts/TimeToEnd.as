@@ -71,7 +71,7 @@ void onTick(CRules@ this)
 		//GAME OVER
 		this.SetCurrentState(3);
 	}
-    else if(spawnbuff != 0 && getGameTime() > gameEndTime - 900 * spawnbuff)// 900 is 30 seconds
+    else if(spawnbuff != 0 && getGameTime() > gameEndTime - 2700 * spawnbuff)// 900 is 30 seconds
     {
         server_CreateBlob("damage_buff", 0, Vec2f(128 + XORRandom(getMap().getMapDimensions().x - 256), 0));//create damage buff at top of map 128 pixels away from the sides randomly
         this.set_u8("spawnbuff", spawnbuff - 1);

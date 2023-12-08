@@ -311,40 +311,45 @@ void onTick( CBlob@ this)
 	}
 
 	//DAMAGE AURA
-	u16 damageaura = this.get_u16("damageaura");
+	bool damageaura = this.get_bool("damageaura");
+	u32 origindamageauratiming = this.get_u32("origindamageauratiming");
 	u32 damageauratiming = this.get_u32("damageauratiming");
 
-	if (damageaura > 0)
+	if (this.exists("damageaura"))
 	{
-		damageaura--;
-		Vec2f thisVel = this.getVelocity();
-
-		this.set_bool("dashing", true); // disable dash
-		moveVars.walkFactor *= 0.75f;
-		moveVars.jumpFactor *= 0.75f;
-
-		u32 diff = getGameTime() - damageauratiming;
-
-		if (getGameTime()%15==0)
+		f32 radius = 96.0f;
+		if (damageaura)
 		{
-			CBlob@[] bs;
-			if (getMap() !is null) getMap().getBlobsInRadius(this.getPosition(), 64.0f, @bs);
-			for (u16 i = 0; i < bs.length; i++)
+			Vec2f thisVel = this.getVelocity();
+			this.set_u32("damageauratiming", getGameTime());
+
+			this.set_bool("dashing", true); // disable dash
+			moveVars.walkFactor *= 0.85f;
+			moveVars.jumpFactor *= 0.85f;
+
+			//workstate
+			if (getGameTime()%15==0)
 			{
-				CBlob@ b = bs[i];
-				if (b is null || b.getPlayer() is null || b.getTeamNum() != this.getTeamNum() || b is this || b.getTickSinceCreated() < 90 || b.hasTag("dead")) continue;
-				b.set_u32("damage_boost", getGameTime()+20);
-				b.Sync("damage_boost", true);
+				CBlob@[] bs;
+				if (getMap() !is null) getMap().getBlobsInRadius(this.getPosition(), radius, @bs);
+				for (u16 i = 0; i < bs.length; i++)
+				{
+					CBlob@ b = bs[i];
+					if (b is null || b.getPlayer() is null || b.getTeamNum() != this.getTeamNum() || b is this || b.getTickSinceCreated() < 90 || b.hasTag("dead")) continue;
+					b.set_u32("damage_boost", getGameTime()+20);
+					b.Sync("damage_boost", true);
+				}
 			}
-		}
 
-		if (isClient())
-		{
+			u32 diff = getGameTime() - origindamageauratiming;
+
+			//particles
+			if (isClient())
 			{
-				for(int i = 0; i < 120; i++)
+				for (int i = 0; i < 120; i++)
 				{
 					SColor color = SColor(255,255,25,25);
-					Vec2f pbPos = this.getOldPosition() + Vec2f_lengthdir(64.0f,i*(diff <= 30 ? (-3.0f * diff/30) : 3.0f)).RotateBy(90, Vec2f(0,0));//game time gets rid of some gaps and can add a rotation effect
+					Vec2f pbPos = this.getOldPosition() + Vec2f_lengthdir(radius,i*(diff <= 30 ? (-3.0f * diff/30) : 3.0f)).RotateBy(90, Vec2f(0,0));//game time gets rid of some gaps and can add a rotation effect
 					CParticle@ pb = ParticlePixelUnlimited( pbPos, this.getVelocity(), color , true );
 					if(pb !is null)
 					{
@@ -360,54 +365,50 @@ void onTick( CBlob@ this)
 				}
 			}
 		}
-		
-		if (damageaura == 1)
+
+		//disable
+		if (!damageaura && damageauratiming != 0 && damageauratiming+6 > getGameTime())
 		{
 			this.Sync("damageaura", true);
-			if(isClient())
-			{this.getSprite().PlaySound("sidewind_init.ogg", 0.75f, 1.5f);}
 
+			for(int i = 0; i < 120; i++)
 			{
-				for(int i = 0; i < 120; i++)
+				SColor color = SColor(255,255,25,25);
+				Vec2f pbPos = this.getOldPosition() + Vec2f_lengthdir(radius,i*3);//game time gets rid of some gaps and can add a rotation effect
+				CParticle@ pb = ParticlePixelUnlimited(pbPos, this.getVelocity()+Vec2f((pbPos-this.getPosition())*0.1f), color , true);
+				if(pb !is null)
 				{
-					SColor color = SColor(255,255,25,25);
-					Vec2f pbPos = this.getOldPosition() + Vec2f_lengthdir(64.0f,i*3);//game time gets rid of some gaps and can add a rotation effect
-					CParticle@ pb = ParticlePixelUnlimited( pbPos, this.getVelocity()+Vec2f((pbPos-this.getPosition())*0.1f), color , true );
-					if(pb !is null)
-					{
-						u8 time = i%4 * 2.5f;
-						pb.timeout = 32.5f+time;
-						pb.gravity = Vec2f_zero;
-						pb.damping = 0.9;
-						pb.collides = false;
-						pb.fastcollision = true;
-						pb.bounce = 0;
-						pb.lighting = false;
-						pb.Z = 500;
-					}
+					u8 time = i%4 * 2.5f;
+					pb.timeout = 32.5f+time;
+					pb.gravity = Vec2f_zero;
+					pb.damping = 0.9;
+					pb.collides = false;
+					pb.fastcollision = true;
+					pb.bounce = 0;
+					pb.lighting = false;
+					pb.Z = 500;
 				}
 			}
 		}
-		this.set_u16("damageaura", damageaura);
-	}
 
-	//STUN
-	u16 stunned = this.get_u16("stunned");
-	if (stunned > 0)
-	{
-		stunned--;
-
-		//this.DisableMouse(true);
-		u16 takekeys;
-		takekeys = key_action1 | key_action2 | key_action3 | key_taunts;
-		this.DisableKeys(takekeys);
-
-		if ( stunned == 0 )
+		//STUN
+		u16 stunned = this.get_u16("stunned");
+		if (stunned > 0)
 		{
-			//this.DisableMouse(false);
-			this.DisableKeys(0);
+			stunned--;
+
+			//this.DisableMouse(true);
+			u16 takekeys;
+			takekeys = key_action1 | key_action2 | key_action3 | key_taunts;
+			this.DisableKeys(takekeys);
+
+			if ( stunned == 0 )
+			{
+				//this.DisableMouse(false);
+				this.DisableKeys(0);
+			}
+			this.set_u16("stunned", stunned);
 		}
-		this.set_u16("stunned", stunned);
 	}
 
 	//AIRBLAST SHIELD

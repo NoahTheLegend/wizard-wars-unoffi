@@ -52,7 +52,7 @@ namespace DruidParams
 			SpellType::other, 25, 30, 5, 128.0f, true),
 
 		Spell("mushroom", "Dancing Shroom", 34, "A happy mushroom that will create it's own cloud of spores for you.",
-			SpellType::other, 10, 7, 0, 60.0f),
+			SpellType::other, 10, 15, 0, 60.0f),
 
 		Spell("boulder_throw", "Rock Throw", 35, "Throws a heavy rock that is highly affected by gravity.",
 			SpellType::other, 20, 30, 2, 16.0f),
@@ -72,8 +72,8 @@ namespace DruidParams
 		Spell("fire_ward", "Fire Ward", 57, "Form a heat protection aura around yourself. Completely nullifies fire damage.",
 			SpellType::other, 20, 25, 0, 360.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-			SpellType::other, 1, 1, 0, 0.0f),
+		Spell("vinetrap", "Vine", 89, "Plants sharp vines that will stop enemies passing through it.",
+			SpellType::other, 30, 40, 5, 128.0f),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

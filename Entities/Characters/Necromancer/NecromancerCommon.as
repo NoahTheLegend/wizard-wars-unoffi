@@ -39,7 +39,7 @@ namespace NecromancerParams
 			SpellType::summoning, 25, 10, 0, 64.0f, true),
 			 
 		Spell("black_hole", "Black Hole", 18, "Open a portal into outer space, pulling your enemies into the airless void. Also drains the mana of enemies in the area and gives it to the caster.",
-			SpellType::other, 45, 120, 5, 180.0f, true),
+			SpellType::other, 50, 120, 8, 180.0f, true),
 			 
 		//Spell("greg", "Greg", 4, "Testing",
 			//SpellType::summoning, 20, 50, 15, 64.0f, true),
@@ -66,7 +66,7 @@ namespace NecromancerParams
 				SpellType::other, 50, 10, 3, 360.0f, true),
 				
 		Spell("arcane_circle","Arcane Circle",32,"Summon an unholy circle that will drain the life force of your foes",
-			SpellType::other,50,50,5,360,true),
+			SpellType::other,40,60,5,360, true),
 							
 		Spell("bunker_buster", "Bunker Buster", 39, "Anti-Barrier spell.",
 				SpellType::other, 15, 45, 0, 360.0f, true),	
@@ -75,7 +75,7 @@ namespace NecromancerParams
 				SpellType::other, 10, 10, 0, 100.0f, true),	
 							
 		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied.",
-				SpellType::other, 30, 45, 0, 360.0f),
+				SpellType::other, 30, 45, 0, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),	

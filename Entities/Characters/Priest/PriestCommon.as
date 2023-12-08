@@ -68,11 +68,11 @@ namespace PriestParams
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
 				SpellType::other, 30, 60, 20, 16.0f),
 
-		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies for a short time, however disables your dash ability and slows down.",
-				SpellType::other, 15, 30, 0, 16.0f),
+		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, however takes your dash ability and slows down.\nCast again to disable.",
+				SpellType::other, 20, 45, 5, 16.0f, true),
 
 		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied.",
-				SpellType::other, 25, 45, 0, 360.0f),
+				SpellType::other, 25, 45, 0, 360.0f, true),
 
 		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
 				SpellType::other, 30, 45, 1, 360.0f, true),
