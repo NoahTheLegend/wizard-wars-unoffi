@@ -203,6 +203,7 @@ void onTick(CSprite@ sprite)
 
 	sprite.SetEmitSoundVolume(Maths::Min(2.0f, this.getTickSinceCreated()*0.025f));
 	
+	if (!this.isOnScreen()) return;
 	orbit(this.get_Vec2f("init_pos"), 1, this, 32.0f);
 }
 
@@ -214,6 +215,8 @@ void orbit(Vec2f pos, int amount, CBlob@ this, f32 radius)
 	u32 gt = getGameTime();
 	bool s = gt%3==0;
 	f32 angle = 90-Maths::Sin(gt*0.01f)*20;
+
+	if (v_fastrender) angle *= 0.33f;
 
 	for(int i = 0; i < angle; i++)
 	{
