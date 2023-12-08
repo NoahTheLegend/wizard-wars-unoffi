@@ -73,7 +73,7 @@ namespace DruidParams
 			SpellType::other, 20, 25, 0, 360.0f, true),
 
 		Spell("vinetrap", "Vine Embrace", 89, "Plants sharp vines that will stop enemies passing through it.",
-			SpellType::other, 30, 40, 5, 128.0f),
+			SpellType::other, 35, 60, 6, 128.0f),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),
