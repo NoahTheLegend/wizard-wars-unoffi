@@ -115,8 +115,8 @@ shared class TDMSpawns : RespawnSystem
 
 	void DoSpawnPlayer(PlayerInfo@ p_info)
 	{
-		CPlayer@ p = getPlayerByUsername(p_info.username);
-		if (p is null || (!p.hasTag("synced_class") && !p.isBot())) return;
+		//CPlayer@ p = getPlayerByUsername(p_info.username);
+		//if (p is null || (!p.hasTag("synced_class") && !p.isBot())) return;
 
 		if (force || canSpawnPlayer(p_info))
 		{

@@ -4,7 +4,7 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.Tag("exploding");
 	this.set_f32("explosive_radius", 12.0f);
-	this.set_f32("explosive_damage", 0.5f);
+	this.set_f32("explosive_damage", 1.0f);
 	this.set_f32("map_damage_radius", 16.0f);
 	this.set_f32("map_damage_ratio", -1.0f);
 
