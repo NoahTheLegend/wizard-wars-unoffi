@@ -89,7 +89,7 @@ void updateFoNParticle( CParticle@ p )
 				
 				Vec2f forceNorm = forceVec;
 				forceNorm.Normalize();
-				p.gravity = forceNorm*(2.0f/(dist+1)^2)*0.1f;
+				p.gravity = forceNorm*(Maths::Pow(2.0f/(dist+1), 2))*0.1f;
 				
 				Vec2f pVelNorm = p.velocity;
 				pVelNorm.Normalize();
