@@ -199,10 +199,15 @@ void onDie(CBlob@ this)
 
 void Boom( CBlob@ this )
 {
-	this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 2.0f + XORRandom(20)/10.0f);
+	
 	ExplodeWithFire(this);
+
+    #ifdef STAGING
+	return;
+	#endif
 	smoke(this.getPosition()-Vec2f(0,8), 5);	
-	blast(this.getPosition()-Vec2f(0,8), 10);	
+	blast(this.getPosition()-Vec2f(0,8), 10);
+    this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 2.0f + XORRandom(20)/10.0f);
 	
     this.server_Die();
 }

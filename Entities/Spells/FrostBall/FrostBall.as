@@ -307,6 +307,10 @@ void smoke(Vec2f pos, int amount)
 
 void Boom( CBlob@ this )
 {
+	#ifdef STAGING
+	this.server_Die();
+	return;
+	#endif
 	blast(this.getPosition(), 5);
 	this.getSprite().SetEmitSoundPaused(true);
     this.server_Die();

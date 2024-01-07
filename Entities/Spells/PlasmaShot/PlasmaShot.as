@@ -107,7 +107,9 @@ void onDie( CBlob@ this )
 
 	Vec2f thisPos = this.getPosition();
 
+	#ifndef STAGING
 	blast(thisPos, 10); //particles and client stuff effects
+	#endif
 
 	float damage = this.get_f32("damage");
 
