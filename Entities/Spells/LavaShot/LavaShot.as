@@ -160,13 +160,17 @@ void blast(Vec2f pos, int amount)
 
 void onDie( CBlob@ this )
 {
+	#ifndef STAGING
 	if (isClient())
 	{
 		this.getSprite().PlaySound("MolotovExplosion.ogg", 1.0f, 0.65f+XORRandom(26)*0.01f);
 		blast(this.getPosition()-Vec2f(0,8), 10);
 	}
+	#endif
 	if(!this.hasTag("exploding"))
-	{return;}
+	{
+		return;
+	}
 
 	Vec2f thisPos = this.getPosition();
 	//Vec2f othPos = blob.getPosition();
@@ -182,8 +186,10 @@ void onDie( CBlob@ this )
 	map.getBlobsInRadius(this.getPosition(), 32.0f, @blobsInRadius);
 	for (uint i = 0; i < blobsInRadius.length; i++)
 	{
-		if(blobsInRadius[i] is null)
-		{continue;}
+		if (blobsInRadius[i] is null)
+		{
+			continue;
+		}
 
 		CBlob@ radiusBlob = blobsInRadius[i];
 
@@ -199,7 +205,9 @@ void onDie( CBlob@ this )
 		}
 
 		if (radiusBlob.getTeamNum() == this.getTeamNum())
-		{continue;}
+		{
+			continue;
+			}
 
 		this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f_zero, damage, Hitters::fire, false);
 	}
