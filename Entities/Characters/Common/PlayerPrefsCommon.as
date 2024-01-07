@@ -49,7 +49,7 @@ shared class PlayerPrefsInfo
 		if (isClient())
 		{
 			ConfigFile cfg;
-			if (cfg.loadFile("../Cache/WW_PlayerPrefs.cfg") && cfg !is null)
+			if (cfg !is null && cfg.loadFile("../Cache/WW_PlayerPrefs.cfg"))
 			{
 				classConfig = cfg.read_string("class config");
 			}
