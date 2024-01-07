@@ -213,13 +213,12 @@ void blast(Vec2f pos, int amount)
 									false );
 									
         if(p is null) return; //bail if we stop getting particles
-		#ifndef STAGING
+
     	p.fastcollision = true;
         p.scale = 0.75f + _blast_r.NextFloat()*0.5f;
         p.damping = 0.85f;
 		p.Z = 200.0f;
 		p.lighting = false;
-		#endif
     }
 }
 
