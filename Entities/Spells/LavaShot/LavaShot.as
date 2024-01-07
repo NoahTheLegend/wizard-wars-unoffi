@@ -149,24 +149,23 @@ void blast(Vec2f pos, int amount)
 									false );
 									
         if(p is null) return; //bail if we stop getting particles
-
+		#ifndef STAGING
     	p.fastcollision = true;
         p.scale = 0.75f + _blast_r.NextFloat()*0.5f;
         p.damping = 0.85f;
 		p.Z = 200.0f;
 		p.lighting = false;
+		#endif
     }
 }
 
 void onDie( CBlob@ this )
 {
-	#ifndef STAGING
 	if (isClient())
 	{
 		this.getSprite().PlaySound("MolotovExplosion.ogg", 1.0f, 0.65f+XORRandom(26)*0.01f);
 		blast(this.getPosition()-Vec2f(0,8), 10);
 	}
-	#endif
 	if(!this.hasTag("exploding"))
 	{
 		return;

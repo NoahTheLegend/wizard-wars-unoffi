@@ -246,11 +246,13 @@ void blast( CBlob@ this , int amount)
 									
         if(p is null) continue; //bail if we stop getting particles
 		
+		#ifndef STAGING
     	p.fastcollision = true;
         p.scale = 0.5f + _blast_r.NextFloat()*0.5f;
         p.damping = 0.85f;
 		p.Z = 200.0f;
 		p.lighting = false;
+		#endif
     }
 }
 /// end (vam note)
