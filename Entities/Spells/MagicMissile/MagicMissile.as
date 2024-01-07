@@ -153,16 +153,13 @@ CBlob@ ClosestBlob(CBlob@ this, CBlob@[]@ blobs)
 /// note (vam) -> I'm not touching these
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {
-	
     if (solid && (this.getTickSinceCreated() > (HOMING_DELAY * 2) ))
     {
-		#ifndef STAGING
 		blast(this, 4);
-		#endif
         this.server_Die();
 		return;
     }
-	
+
 	if (blob is null) { return; }
 
 	//hit detection
@@ -187,9 +184,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 		else if (!blob.hasTag("flesh")){ return; }
 
         this.server_Hit(blob,blob.getPosition(),this.getVelocity()*4,damage,Hitters::explosion);
-		#ifndef STAGING
 		blast(this, 4);
-		#endif
         this.server_Die();
     }
 }

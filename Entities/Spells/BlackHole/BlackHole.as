@@ -258,9 +258,6 @@ void sparks(Vec2f pos, int amount)
 
 void onDie(CBlob@ this)
 {
-	#ifdef STAGING
-	return;
-	#endif
 	blast(this.getPosition(), 20);
 	this.getSprite().PlaySound("BlackHoleDie.ogg", 1.0f, 1.0f);
 }

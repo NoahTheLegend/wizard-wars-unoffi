@@ -285,9 +285,6 @@ void smoke(Vec2f pos, int amount)
 void Boom( CBlob@ this )
 {
 	ExplodeWithFire(this);
-	#ifdef STAGING
-	return;
-	#endif
 	smoke(this.getPosition(), 5);	
 	blast(this.getPosition(), 10);	
 	

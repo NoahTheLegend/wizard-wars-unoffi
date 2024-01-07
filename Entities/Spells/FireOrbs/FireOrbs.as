@@ -313,12 +313,8 @@ void smoke(Vec2f pos, int amount)
 
 void Boom( CBlob@ this )
 {
-	
-	ExplodeWithFire(this);
-	#ifdef STAGING
-	return;
-	#endif
 	this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 2.0f + XORRandom(20)/10.0f);
+	ExplodeWithFire(this);
 	smoke(this.getPosition(), 5);	
 	blast(this.getPosition(), 10);	
 	
