@@ -46,14 +46,14 @@ shared class PlayerPrefsInfo
 		
 		classConfig = "wizard";
 
-		if (isClient())
-		{
-			ConfigFile cfg;
-			if (cfg !is null && cfg.loadFile("../Cache/WW_PlayerPrefs.cfg"))
-			{
-				classConfig = cfg.read_string("class config");
-			}
-		}
+		//if (isClient())
+		//{
+		//	ConfigFile cfg;
+		//	if (cfg !is null && cfg.loadFile("../Cache/WW_PlayerPrefs.cfg"))
+		//	{
+		//		classConfig = cfg.read_string("class config");
+		//	}
+		//}
 	
 		primarySpellID = 0;
 		primaryHotkeyID = 0;
