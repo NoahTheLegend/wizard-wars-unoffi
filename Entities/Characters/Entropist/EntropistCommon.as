@@ -69,7 +69,7 @@ namespace EntropistParams
 				SpellType::other, 13, 45, 0, 128.0f),
 				
 		Spell("polarityfield", "Polarity Breaker", 90, "Summons a massive sphere that summons explosive projectiles to orbit around.\nOvercharge changes rotation side for each second level.",
-				SpellType::other, 50, 90, 15, 256.0f, true),
+				SpellType::other, 60, 90, 25, 256.0f, true),
 							
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),	
