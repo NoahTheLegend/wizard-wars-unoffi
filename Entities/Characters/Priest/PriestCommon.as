@@ -63,7 +63,7 @@ namespace PriestParams
 				SpellType::other, 100, 60, 15, 360.0f),	
 
 		Spell("epicorbmain", "Orbiting Orbs", 74, "Summons magic orbs rotating around its center. Amount of orbs scales with charge.",
-				SpellType::other, 8, 45, 0, 360.0f),
+				SpellType::other, 8, 45, 0, 360.0f, true),
 							
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
 				SpellType::other, 30, 60, 20, 16.0f),

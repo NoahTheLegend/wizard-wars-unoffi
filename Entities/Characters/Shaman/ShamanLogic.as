@@ -237,7 +237,11 @@ void ManageSpell( CBlob@ this, ShamanInfo@ shaman, PlayerPrefsInfo@ playerPrefsI
 			params.write_Vec2f(pos);
             this.SendCommand(this.getCommandID("spell"), params);
 			
-			playerPrefsInfo.spell_cooldowns[castSpellID] = ShamanParams::spells[castSpellID].cooldownTime*getTicksASecond();
+			int spell_cd_time = ShamanParams::spells[castSpellID].cooldownTime * getTicksASecond();
+			f32 cd_reduction_factor = 1.0f * this.get_f32("majestyglyph_cd_reduction");
+			int apply_cd_time = (spell_cd_time == 0 ? 0 : spell_cd_time * cd_reduction_factor);
+
+			playerPrefsInfo.spell_cooldowns[castSpellID] = apply_cd_time;
         }
         charge_state = ShamanParams::not_aiming;
         charge_time = 0;

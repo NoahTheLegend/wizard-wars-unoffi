@@ -148,7 +148,7 @@ void ExplodeWithFire(CBlob@ this)
 	{
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
-			CBlob @b = blobsInRadius[i];
+			CBlob@b = blobsInRadius[i];
 			if (b !is null)
 			{
 				Vec2f bPos = b.getPosition();
@@ -284,7 +284,9 @@ void smoke(Vec2f pos, int amount)
 
 void Boom( CBlob@ this )
 {
+	#ifndef STAGING
 	ExplodeWithFire(this);
+	#endif
 	smoke(this.getPosition(), 5);	
 	blast(this.getPosition(), 10);	
 	

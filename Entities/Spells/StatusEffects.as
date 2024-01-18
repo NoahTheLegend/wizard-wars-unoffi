@@ -5,7 +5,6 @@
 
 void onTick(CBlob@ this)
 {
-	//if (getGameTime()%30==0) printf(""+this.get_bool("damageaura"));
 	if (getGameTime() < 30) return;
 
 	RunnerMoveVars@ moveVars;
@@ -65,7 +64,7 @@ void onTick(CBlob@ this)
 				{
 					const f32 rad = 6.0f;
 					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-					CParticle@ p = ParticleAnimated( "MissileFire1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, false );
+					CParticle@ p = ParticleAnimated( "MissileFire1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true );
 					if ( p !is null)
 					{
 						p.bounce = 0;
@@ -121,10 +120,10 @@ void onTick(CBlob@ this)
 		{
 			return;
 		}
-		if (getGameTime()%8==0) manaInfo.mana -= 1;
+		if (manaInfo.mana > 0 && getGameTime()%15==0) manaInfo.mana -= 1;
 
 		//makeSmokeParticle(this, Vec2f(), "Smoke");
-		if ( manaburn % 2 == 0 )
+		if (manaburn % 2 == 0)
 		{
 			for (int i = 0; i < 1; i++)
 			{		
@@ -132,7 +131,7 @@ void onTick(CBlob@ this)
 				{
 					const f32 rad = 6.0f;
 					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-					CParticle@ p = ParticleAnimated( "MissileFire5.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, false );
+					CParticle@ p = ParticleAnimated( "MissileFire5.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true );
 					if ( p !is null)
 					{
 						p.bounce = 0;
@@ -150,6 +149,68 @@ void onTick(CBlob@ this)
 		{
 			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.1f + XORRandom(1)/10.0f);
 			this.Sync("manaburn", true);
+		}
+	}
+
+	//HEAL BLOCK
+	u16 healblock = this.get_u16("healblock");
+
+	if (healblock > 0)
+	{
+		healblock--;
+		this.set_u16("healblock", healblock);
+		Vec2f thisVel = this.getVelocity();
+
+		if (isClient())
+		{
+			CParticle@[] ps;
+			this.get("healblock_particles", ps);
+
+			if (healblock % 8 == 0)
+			{
+				const f32 rad = 6.0f;
+				Vec2f random = Vec2f(XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+
+				CParticle@ p = ParticleAnimated("MissileFire6.png", random, Vec2f(0,0), 0, 1.0f, 1+XORRandom(2), 0.2f, true );
+				if (p !is null)
+				{
+					p.initpos = random;
+					p.gravity = Vec2f_zero;
+					p.bounce = 0;
+					p.collides = false;
+    				p.fastcollision = true;
+					p.timeout = 30;
+
+					if ( XORRandom(4) == 0 )
+						p.Z = -10.0f;
+					else
+						p.Z = 10.0f;
+
+					ps.push_back(p);
+				}
+			}
+
+			for (int i = 0; i < ps.size(); i++)
+			{
+				CParticle@ p = ps[i];
+				if (p is null) continue;
+				if (p.timeout < 1)
+				{
+					ps.erase(i);
+					i--;
+					continue;
+				}
+
+				p.position = this.getPosition() + this.getVelocity() + p.initpos;
+			}
+			
+			this.set("healblock_particles", ps);
+		}
+		
+		if (healblock == 0)
+		{
+			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.33f + XORRandom(1)/10.0f);
+			this.Sync("healblock", true);
 		}
 	}
 
@@ -174,7 +235,7 @@ void onTick(CBlob@ this)
 				{
 					const f32 rad = 6.0f;
 					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-					CParticle@ p = ParticleAnimated( "MissileFire3.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, false );
+					CParticle@ p = ParticleAnimated( "MissileFire3.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true );
 					if ( p !is null)
 					{
 						p.bounce = 0;
@@ -220,7 +281,7 @@ void onTick(CBlob@ this)
 				{
 					const f32 rad = 6.0f;
 					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-					CParticle@ p = ParticleAnimated( "MissileFire4.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, false );
+					CParticle@ p = ParticleAnimated( "MissileFire4.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true );
 					if ( p !is null)
 					{
 						p.bounce = 0;
@@ -297,7 +358,7 @@ void onTick(CBlob@ this)
 			for(int i = 0; i < 100; i ++)
 			{
 				Vec2f particleVel = Vec2f( 1.5f ,0).RotateByDegrees(XORRandom(361));
-				CParticle@ p = ParticlePixelUnlimited( this.getPosition() , particleVel , color , false );
+				CParticle@ p = ParticlePixelUnlimited( this.getPosition() , particleVel , color , true );
 				if(p !is null)
 				{
 					p.gravity = Vec2f_zero;
@@ -322,6 +383,8 @@ void onTick(CBlob@ this)
 		u32 disabledamageauratiming = this.get_u32("disabledamageauratiming");
 
 		f32 radius = 96.0f;
+		u8 ticks_for_disable = 6; // for how long to run disable code
+
 		if (damageaura)
 		{
 			Vec2f thisVel = this.getVelocity();
@@ -370,7 +433,7 @@ void onTick(CBlob@ this)
 			}
 		}
 		//disable
-	    else if (damageauratiming+6 > gt
+	    else if (damageauratiming+ticks_for_disable > gt
 			)
 		{
 			for(int i = 0; i < 120; i++)
@@ -391,6 +454,233 @@ void onTick(CBlob@ this)
 					pb.Z = 500;
 				}
 			}
+		}
+	}
+
+	//MANA TO HEALTH; visuals only, look at Regens.as for logic
+	{
+		bool manatohealth = this.get_bool("manatohealth");
+		u32 originmanatohealthtiming = this.get_u32("originmanatohealthtiming");
+		u32 manatohealthtiming = this.get_u32("manatohealthtiming");
+		u32 disablemanatohealthtiming = this.get_u32("disablemanatohealthtiming");
+
+		u8 ticks_for_disable = 1; // for how long to run disable code
+
+		// particles
+		f32 amount = 31;
+		f32 sum = 0;
+		f32 h = 16;
+
+		if (manatohealth)
+		{
+			Vec2f thisVel = this.getVelocity();
+			this.set_u32("manatohealthtiming", gt);
+			u32 diff = getGameTime() - originmanatohealthtiming;
+
+			//particles
+			if (isClient())
+			{
+				for (int i = 0; i < amount; i++)
+				{
+					f32 val = Maths::Abs(Maths::Sin(gt * (i%3) * 0.1f))*4;
+					sum += val;
+
+					Vec2f pbPos = this.getOldPosition() - Vec2f(0,h) + Vec2f(val, 0).RotateBy(360/amount*i);
+					SColor color = SColor(255,XORRandom(75)+100,25,255);
+					if (val > 3.0f)
+					{
+						color = SColor(255, 225+XORRandom(25), 65+XORRandom(25), 225);
+					}
+					
+					CParticle@ pb = ParticlePixelUnlimited(pbPos, this.getVelocity(), color , true);
+					if(pb !is null)
+					{
+						pb.timeout = 0.01f;
+						pb.gravity = Vec2f_zero;
+						pb.collides = false;
+						pb.fastcollision = true;
+						pb.bounce = 0;
+						pb.lighting = false;
+						pb.Z = 500;
+					}
+				}
+				if (sum <= 5)
+				{
+					f32 angle = 67.5f;
+					for (u8 i = 0; i < amount; i++)
+					{
+						Vec2f pbPos = this.getOldPosition() - Vec2f(0,h);
+						Vec2f vel = Vec2f(XORRandom(5)-2,XORRandom(3)-1).RotateBy((XORRandom(10.0f * angle)-(10.0f * angle)/2) / 10);
+						u8 rnd = XORRandom(75);
+						SColor color = SColor(255,255,25+rnd,25+rnd);
+
+						CParticle@ pb = ParticlePixelUnlimited(pbPos, vel, color , true);
+						if(pb !is null)
+						{
+							pb.timeout = 20-vel.Length()*3 + XORRandom(6);
+							pb.gravity = Vec2f(0,0.15f);
+							pb.collides = false;
+							pb.damping = 0.85f;
+							pb.fastcollision = true;
+							pb.bounce = 0;
+							pb.lighting = false;
+							pb.Z = 0;
+						}
+					}
+				}
+			}
+		}
+		//disable
+	    else if (manatohealthtiming+1 > gt)
+		{
+			for (int i = 0; i < amount*2; i++)
+			{
+				Vec2f pbPos = this.getOldPosition() - Vec2f(0,h);
+				SColor color = SColor(255,XORRandom(55)+125,25,255);
+				
+				CParticle@ pb = ParticlePixelUnlimited(pbPos, Vec2f(4+XORRandom(2), 0).RotateBy(XORRandom(360)), color, true);
+				if(pb !is null)
+				{
+					pb.timeout = 15+XORRandom(16);
+					pb.collides = true;
+					pb.gravity = Vec2f(0,0.5f);
+					pb.damping = 0.85f;
+					pb.fastcollision = true;
+					pb.bounce = 0;
+					pb.lighting = false;
+					pb.Z = 500;
+				}
+			}
+		}
+	}
+
+	//DAMAGE TO MANA
+	{
+		bool damagetomana = this.get_bool("damagetomana");
+		u32 origindamagetomanatiming = this.get_u32("origindamagetomanatiming");
+		u32 damagetomanatiming = this.get_u32("damagetomanatiming");
+		u32 disabledamagetomanatiming = this.get_u32("disabledamagetomanatiming");
+
+		u8 ticks_for_disable = 1; // for how long to run disable code
+
+		// particles
+		f32 amount = 31;
+		f32 sum = 0;
+		f32 h = 16;
+
+		if (damagetomana)
+		{
+			Vec2f thisVel = this.getVelocity();
+			this.set_u32("damagetomanatiming", gt);
+			u32 diff = getGameTime() - origindamagetomanatiming;
+
+			//particles
+			if (isClient())
+			{
+				for (int i = 0; i < amount; i++)
+				{
+					f32 val = Maths::Abs(Maths::Sin(gt * (i%3) * 0.1f))*4;
+					sum += val;
+
+					Vec2f pbPos = this.getOldPosition() - Vec2f(0,h) + Vec2f(val, 0).RotateBy(360/amount*i);
+					u8 rnd = XORRandom(75);
+						SColor color = SColor(255,255,25+rnd,25+rnd);
+					
+					CParticle@ pb = ParticlePixelUnlimited(pbPos, this.getVelocity(), color , true);
+					if(pb !is null)
+					{
+						pb.timeout = 0.01f;
+						pb.gravity = Vec2f_zero;
+						pb.collides = false;
+						pb.fastcollision = true;
+						pb.bounce = 0;
+						pb.lighting = false;
+						pb.Z = 500;
+					}
+				}
+			}
+		}
+		//disable
+	    else if (damagetomanatiming+1 > gt)
+		{
+			for (int i = 0; i < amount*2; i++)
+			{
+				Vec2f pbPos = this.getOldPosition() - Vec2f(0,h);
+				u8 rnd = XORRandom(75);
+				SColor color = SColor(255,255,25+rnd,25+rnd);
+				
+				CParticle@ pb = ParticlePixelUnlimited(pbPos, Vec2f(2+XORRandom(2), 0).RotateBy(XORRandom(360)), color, true);
+				if(pb !is null)
+				{
+					pb.timeout = 15+XORRandom(16);
+					pb.collides = true;
+					pb.gravity = Vec2f(0,0.5f);
+					pb.damping = 0.85f;
+					pb.fastcollision = true;
+					pb.bounce = 0;
+					pb.lighting = false;
+					pb.Z = 500;
+				}
+			}
+		}
+	}
+
+	// COOLDOWN REDUCTION
+	u16 cdreduction = this.get_u16("cdreduction");
+
+	if (cdreduction > 0)
+	{
+		cdreduction--;
+		this.set_u16("cdreduction", cdreduction);
+		
+		if (isClient())
+		{
+			CParticle@[] ps;
+			this.get("cdreduction_particles", ps);
+
+			if (cdreduction % 5 == 0)
+			{
+				const f32 rad = 6.0f;
+				Vec2f random = Vec2f(XORRandom(150)-75, XORRandom(150)-75 ) * 0.015625f * rad;
+
+				CParticle@ p = ParticleAnimated("MissileFire7.png", random, Vec2f(0,0), -random.Angle()+90, 1.0f, 1+XORRandom(2), 0.2f, true);
+				if (p !is null)
+				{
+					p.initpos = random;
+					p.gravity = Vec2f_zero;
+					p.bounce = 0;
+    				p.fastcollision = true;
+					p.collides = false;
+					p.timeout = 30;
+					p.Z = 10.0f;
+
+					ps.push_back(p);
+				}
+			}
+
+			for (int i = 0; i < ps.size(); i++)
+			{
+				CParticle@ p = ps[i];
+				if (p is null) continue;
+				if (p.timeout < 1)
+				{
+					ps.erase(i);
+					i--;
+					continue;
+				}
+
+				p.position = this.getPosition() + this.getVelocity() + p.initpos;
+			}
+			
+			this.set("cdreduction_particles", ps);
+		}
+		
+		if (cdreduction == 0)
+		{
+			this.set_f32("majestyglyph_cd_reduction", 1.0f);
+			
+			thisSprite.PlaySound("HasteOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
+			this.Sync("cdreduction", true);
 		}
 	}
 
@@ -525,7 +815,7 @@ void onTick(CBlob@ this)
 			if (layer !is null)
 			{
 				layer.SetFacingLeft(false);
-				layer.RotateBy(Maths::Sin(getGameTime()*0.1f)*1.5f, Vec2f(0,0));
+				layer.RotateBy(Maths::Sin(getGameTime()*0.1f)*2.0f, Vec2f(0,0));
 				layer.setRenderStyle(RenderStyle::additive);
 			}
 		}
@@ -545,6 +835,83 @@ void onTick(CBlob@ this)
 		}
 
 		this.set_u16("waterbarrier", water);
+	}
+
+	//DAMAGE CONNECTION
+	u16 dmgconnection = this.get_u16("dmgconnection");
+	if (dmgconnection > 0)
+	{
+		dmgconnection--;
+		if(!this.hasScript("Wards.as"))
+		{
+			this.AddScript("Wards.as");
+		}
+
+		if(!this.exists("dmgconnectionSetupDone") || !this.get_bool("dmgconnectionSetupDone")) //Ward sprite setup
+		{
+			CSpriteLayer@ layer = thisSprite.addSpriteLayer("dmgconnection_ward","SpiritualConnection.png",64,64);
+			if (layer !is null)
+			{
+				layer.SetRelativeZ(-5.75f);
+				layer.ScaleBy(Vec2f(0.75f,0.75f));
+				layer.setRenderStyle(RenderStyle::additive);
+			}
+			this.set_bool("dmgconnectionSetupDone",true);
+		}
+
+		if (thisSprite.getSpriteLayer("dmgconnection_ward") !is null)
+		{
+			CSpriteLayer@ layer = thisSprite.getSpriteLayer("dmgconnection_ward");
+			if (layer !is null)
+			{
+				layer.SetFacingLeft(false);
+				layer.RotateBy(Maths::Sin(getGameTime()*0.1f)*1.5f, Vec2f(0,0));
+				layer.setRenderStyle(RenderStyle::additive);
+			}
+		}
+
+		if (dmgconnection == 0 || this.hasTag("dead"))
+		{
+			dmgconnection = 0;
+			thisSprite.RemoveSpriteLayer("dmgconnection_ward"); //Ward sprite removal
+			this.set_bool("dmgconnectionSetupDone", false);
+		}
+
+		this.set_u16("dmgconnection", dmgconnection);
+	}
+	if (dmgconnection == 0)
+	{
+		this.set_u16("dmgconnection_id", 0);
+	}
+
+
+	u16 hallowedbarrier = this.get_u16("hallowedbarrier");
+	if (hallowedbarrier > 0)
+	{
+    	u8 amount = this.get_u8("hallowedbarrieramount");
+		hallowedbarrier--;
+
+		if (hallowedbarrier == 0 || amount == 0)
+		{
+			u8 amount = this.get_u8("hallowedbarriermax");
+			CSprite@ sprite = this.getSprite();
+			if (isClient())
+			{
+				for (u8 i = 0; i < amount; i++)
+				{
+					string n = "hallowedbarrier_segment"+i;
+					CSpriteLayer@ l = sprite.getSpriteLayer(n);
+					if (l is null) continue;
+
+					ParticlesFromSprite(l, l.getWorldTranslation(), Vec2f(0, -0.75f).RotateBy(XORRandom(360)), 0, 3);
+					sprite.RemoveSpriteLayer(n);
+				}
+			}
+			sprite.PlaySound("Zap1.ogg", 0.5f, 1.5f);
+			hallowedbarrier = 0;
+		}
+
+		this.set_u16("hallowedbarrier", hallowedbarrier);
 	}
 
 	//STONE SKIN

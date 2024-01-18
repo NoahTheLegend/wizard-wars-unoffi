@@ -11,7 +11,7 @@ void onInit(CBlob@ this)
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	CShape@ shape = this.getShape();
-	//shape.getConsts().net_threshold_multiplier = 2.0f;
+	shape.getConsts().net_threshold_multiplier = 0.5f;
 	
 	shape.getConsts().bullet = true;
 	shape.getConsts().mapCollisions = false;

@@ -84,8 +84,8 @@ class WWPlayerClassButton
 			spells = PriestParams::spells;
 		else if ( _configFilename == "shaman" )
 			spells = ShamanParams::spells;
-		else if ( _configFilename == "frigate" )
-			spells = FrigateParams::spells;
+		else if ( _configFilename == "paladin" )
+			spells = PaladinParams::spells;
 		
 		int spellsLength = spells.length;
 		for (uint i = 0; i < spellsLength; i++)
@@ -384,15 +384,15 @@ void intitializeClasses()
 													"\n     Mana: 100" +
 													"\n     Mana Regen: 4 mana/sec",
 													"shaman", 7, 0, 8, 0, "WizardWars");
-													
-/*	playerClassButtons.registerWWPlayerClassButton("Spaceship Combat Initiative", 
-													"     Frigate Prototype. In highly fragile state. " +
-													"\n\n     Health: 10" +
-													"\n     Mana: 300" +
-													"\n     Mana Regen: 0 mana/sec",
-													"frigate", 6, 0, 6, 0, "WizardWars");
 
-	playerClassButtons.registerWWPlayerClassButton("Archer", 
+	playerClassButtons.registerWWPlayerClassButton("Paladin", 
+													"Justice guardian. Handicapped in spells range and agility. Complexity: MEDIUM" +
+													"\n\n     Health: 150" +
+													"\n     Mana: 300" +
+													"\n     Mana Regen: 2 mana/sec",
+													"paladin", 8, 0, 9, 0, "WizardWars");
+													
+/*	playerClassButtons.registerWWPlayerClassButton("Archer", 
 													"     The most powerful class ever with over 1000 mana fit for taking on the Gods. Too bad they skipped magic class. " +
 													"\n\n     Health: 40" +
 													"\n     Mana: 1001" +
@@ -520,9 +520,9 @@ void SpellButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 					sSpell = PriestParams::spells[Maths::Min( s,(PriestParams::spells.length-1) )];
 				else if ( cButton.name == "shaman" )
 					sSpell = ShamanParams::spells[Maths::Min( s,(ShamanParams::spells.length-1) )];
-				else if ( cButton.name == "frigate" )
-					sSpell = FrigateParams::spells[Maths::Min( s,(FrigateParams::spells.length-1) )];
-					
+				else if ( cButton.name == "paladin" )
+					sSpell = PaladinParams::spells[Maths::Min( s,(PaladinParams::spells.length-1) )];
+
 				playerClassButtons.list[c].spellDescText.setText(playerClassButtons.list[c].spellDescText.textWrap("-- " + sSpell.name + " --" + 
 																													"\n     " + sSpell.spellDesc + 
 																													"\n\n  Mana cost: " + sSpell.mana));
@@ -1381,12 +1381,12 @@ void RenderClassMenus()		//very light use of KGUI
 					}
 				}
 			}
-			if ( iButton.name == "frigate" )
+			else if ( iButton.name == "paladin" )
 			{
 				CControls@ controls = localPlayer.getControls();
 				Vec2f mouseScreenPos = controls.getMouseScreenPos();
 			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Frigate;
+				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Paladin;
 			
 				//PRIMARY SPELL HUD
 				Vec2f offset = Vec2f(264.0f, 350.0f);
@@ -1394,11 +1394,11 @@ void RenderClassMenus()		//very light use of KGUI
 				
 				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
 				bool hotbarClicked = false;
-				int spellsLength = FrigateParams::spells.length;
+				int spellsLength = PaladinParams::spells.length;
 				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
 				{
 					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = FrigateParams::spells[primarySpellID];
+					Spell spell = PaladinParams::spells[primarySpellID];
 					
 					if ( i < 5 )		//spells 0 through 4
 					{
@@ -1408,7 +1408,7 @@ void RenderClassMenus()		//very light use of KGUI
 							
 						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
 						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "frigate");
+							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "paladin");
 							hotbarClicked = true;
 						}			
 					}
@@ -1419,7 +1419,7 @@ void RenderClassMenus()		//very light use of KGUI
 							
 						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
 						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "frigate");
+							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "paladin");
 							hotbarClicked = true;
 						}
 					}
@@ -1430,7 +1430,7 @@ void RenderClassMenus()		//very light use of KGUI
 							
 						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
 						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "frigate");
+							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "paladin");
 							hotbarClicked = true;
 						}
 					}
@@ -1439,52 +1439,51 @@ void RenderClassMenus()		//very light use of KGUI
 				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
 				
 				//SECONDARY SPELL HUD
-				/*Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
+				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
 				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Frigate[15], spellsLength-1);
-				Spell secondarySpell = FrigateParams::spells[secondarySpellID];
+				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Paladin[15], spellsLength-1);
+				Spell secondarySpell = PaladinParams::spells[secondarySpellID];
 				
 				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
 				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
 					
 				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
 				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "frigate");	//hotkey 15 is the secondary fire hotkey
+					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "paladin");	//hotkey 15 is the secondary fire hotkey
 					hotbarClicked = true;
 				}
 				
 				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				*/
-
+				
 				//AUXILIARY1 SPELL HUD
 				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
 				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Frigate[15], spellsLength-1);
-				Spell aux1Spell = FrigateParams::spells[aux1SpellID];
+				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Paladin[16], spellsLength-1);
+				Spell aux1Spell = PaladinParams::spells[aux1SpellID];
 				
 				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
 				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
 					
 				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
 				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "frigate");	//hotkey 15 is the auxiliary1 fire hotkey
+					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "paladin");	//hotkey 16 is the auxiliary1 fire hotkey
 					hotbarClicked = true;
 				}
 				
 				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
 
 				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
+				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
 				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Frigate[16], spellsLength-1);
-				Spell aux2Spell = FrigateParams::spells[aux2SpellID];
+				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Paladin[17], spellsLength-1);
+				Spell aux2Spell = PaladinParams::spells[aux2SpellID];
 				
 				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
 				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
 					
 				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
 				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "frigate");	//hotkey 16 is the auxiliary2 fire hotkey
+					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "paladin");	//hotkey 17 is the auxiliary2 fire hotkey
 					hotbarClicked = true;
 				}
 				

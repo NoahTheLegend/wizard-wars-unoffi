@@ -27,7 +27,7 @@ namespace NecromancerParams
 			SpellType::other, 3, 40, 0, 360.0f),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 25, 10, 0, 270.0f, true),
+			SpellType::other, 25, 8, 0, 270.0f, true),
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 25, 10, 0, 64.0f, true),

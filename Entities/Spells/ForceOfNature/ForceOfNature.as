@@ -105,7 +105,6 @@ void sparks(Vec2f Pos, int amount, CBlob@ this)
 		tempGrav.x = -(particle.position.x - Pos.x);
 		tempGrav.y = -(particle.position.y - Pos.y);
 
-
 		//Colour
 		SColor col = particle.colour;
 		col.setGreen(col.getGreen() - 1);

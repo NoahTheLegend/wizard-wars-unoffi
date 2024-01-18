@@ -51,6 +51,9 @@ void DrawManaBar(CBlob@ this, Vec2f origin)
 	f32 fourthManaSeg = manaPerSegment*(1.0f/4.0f);
 	f32 halfManaSeg = manaPerSegment*(1.0f/2.0f);
 	f32 threeFourthsManaSeg = manaPerSegment*(3.0f/4.0f);
+
+	SColor col = SColor(255,208, 78, 228);
+    if (this.get_u16("manaburn") > 0) col = SColor(255,155,155,155);
 	
 	int MANA = 0;
     for (int step = 0; step < barLength; step += 1)
@@ -60,11 +63,11 @@ void DrawManaBar(CBlob@ this, Vec2f origin)
         if (thisMANA > 0)
         {
             Vec2f manapos = origin+Vec2f(segmentWidth*MANA-1,0);
-            if (thisMANA <= fourthManaSeg) { GUI::DrawIcon(manaFile, 4, Vec2f(16,16), manapos); }
-            else if (thisMANA <= halfManaSeg) { GUI::DrawIcon(manaFile, 3, Vec2f(16,16), manapos); }
-            else if (thisMANA <= threeFourthsManaSeg) { GUI::DrawIcon(manaFile, 2, Vec2f(16,16), manapos); }
-            else if (thisMANA > threeFourthsManaSeg) { GUI::DrawIcon(manaFile, 1, Vec2f(16,16), manapos); }
-            else { GUI::DrawIcon(manaFile, 0, Vec2f(16,16), manapos); }
+            if (thisMANA <= fourthManaSeg) { GUI::DrawIcon(manaFile, 4, Vec2f(16,16), manapos, 1, col); }
+            else if (thisMANA <= halfManaSeg) { GUI::DrawIcon(manaFile, 3, Vec2f(16,16), manapos, 1, col); }
+            else if (thisMANA <= threeFourthsManaSeg) { GUI::DrawIcon(manaFile, 2, Vec2f(16,16), manapos, 1, col); }
+            else if (thisMANA > threeFourthsManaSeg) { GUI::DrawIcon(manaFile, 1, Vec2f(16,16), manapos, 1, col); }
+            else { GUI::DrawIcon(manaFile, 0, Vec2f(16,16), manapos, 1, col); }
         }
         MANA++;
     }

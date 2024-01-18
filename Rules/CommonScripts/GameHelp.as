@@ -54,7 +54,7 @@ const string textInfo =
 		" * How do I turn off this awesome music?! It's too good for my ears!!!\n"+
 		"The in-game music is played through KAG's built-in jukebox system. Turn it off just like you would for the default music by going to your 'ESC' settings menu. Still, I recommend putting that shit on full blast to get the best experience!\n\n"+
 		" * How do I use some of my spells? They get stuck in mid air or do nothing!\n"+
-		"Most classes have a special effect on one of their spells that can be activated by pressing your SHIFT key.\n";
+		"Press your SHIFT key.\n";
 
 const Vec2f windowDimensions = Vec2f(1000,600); //temp
 
@@ -258,10 +258,6 @@ void onTick( CRules@ this )
                 hoverDistance_value = cfg.read_u8("hover_distance");//Set default
             }
         }
-
-
-
-
 
 		CFileImage@ image = CFileImage( "GameHelp.png" );
 		Vec2f imageSize = Vec2f( image.getWidth(), image.getHeight() );

@@ -2,24 +2,26 @@
 
 void onTick(CBlob@ this)
 {
-    if (getMap() is null || this.get_u16("waterbarrier") == 0) return;
-
-    CBlob@[] list;
-    getMap().getBlobsInRadius(this.getPosition(), 40.0f, @list);
-    for (u16 i = 0; i < list.length; i++)
+    if (getMap() is null) return;
+    if (this.get_u16("waterbarrier") != 0)
     {
-        CBlob@ b = list[i];
-        if (b is null) continue;
-        if (b.getTeamNum() == this.getTeamNum() || (!b.hasTag("flesh") && !b.hasTag("counterable") || !b.hasTag("projectile"))) continue;
+        CBlob@[] list;
+        getMap().getBlobsInRadius(this.getPosition(), 40.0f, @list);
+        for (u16 i = 0; i < list.length; i++)
+        {
+            CBlob@ b = list[i];
+            if (b is null) continue;
+            if (b.getTeamNum() == this.getTeamNum() || (!b.hasTag("flesh") && !b.hasTag("counterable") || !b.hasTag("projectile"))) continue;
 
-        if (b.hasTag("flesh")) b.setVelocity(b.getVelocity()*0.5f);
-        else if (b.getVelocity().Length() > 1.5f ) b.setVelocity(b.getVelocity()*0.8f);
+            if (b.hasTag("flesh")) b.setVelocity(b.getVelocity()*0.5f);
+            else if (b.getVelocity().Length() > 1.5f ) b.setVelocity(b.getVelocity()*0.8f);
+        }
     }
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-    if(this.hasTag("dead") || customData == Hitters::burn || customData == Hitters::fall)
+    if (this.hasTag("dead") || customData == Hitters::burn || customData == Hitters::fall)
     {
         return damage; //burn and fall damage doesn't trigger anything, proceed as if this script doesn't exist.
     }

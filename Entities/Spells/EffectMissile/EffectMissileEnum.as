@@ -10,4 +10,7 @@ enum EffectMissileNumbered
 	unholyRes_effect_missile,
 	regen_effect_missile,
 	manaburn_effect_missile,
+	dmgconnection_effect_missile,
+	healblock_effect_missile,
+	cooldownreduce_effect_missile,
 };

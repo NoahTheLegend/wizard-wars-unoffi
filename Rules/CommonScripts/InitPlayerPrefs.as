@@ -118,7 +118,7 @@ void onTick(CRules@ this)
 		loadHotbarAssignments( localPlayer, "entropist" );
 		loadHotbarAssignments( localPlayer, "priest" );
 		loadHotbarAssignments( localPlayer, "shaman" );
-		loadHotbarAssignments( localPlayer, "frigate" );
+		loadHotbarAssignments( localPlayer, "paladin" );
 		
 		playerPrefsInfo.infoLoaded = true;
 	}

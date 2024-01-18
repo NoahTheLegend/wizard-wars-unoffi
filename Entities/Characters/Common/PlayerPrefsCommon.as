@@ -6,7 +6,7 @@
 #include "EntropistCommon.as";
 #include "PriestCommon.as";
 #include "ShamanCommon.as";
-#include "FrigateCommon.as";
+#include "PaladinCommon.as";
 #include "MagicCommon.as";
 
 const u8 MAX_SPELLS = 20;
@@ -18,7 +18,7 @@ const u8 SWORDCASTER_TOTAL_HOTKEYS = 18;
 const u8 ENTROPIST_TOTAL_HOTKEYS = 18;
 const u8 PRIEST_TOTAL_HOTKEYS = 18;
 const u8 SHAMAN_TOTAL_HOTKEYS = 18;
-const u8 FRIGATE_TOTAL_HOTKEYS = 17;
+const u8 PALADIN_TOTAL_HOTKEYS = 18;
 
 shared class PlayerPrefsInfo
 {
@@ -36,7 +36,7 @@ shared class PlayerPrefsInfo
 	u8[] hotbarAssignments_Entropist;
 	u8[] hotbarAssignments_Priest;
 	u8[] hotbarAssignments_Shaman;
-	u8[] hotbarAssignments_Frigate;
+	u8[] hotbarAssignments_Paladin;
 	
 	s32[] spell_cooldowns;
 
@@ -126,11 +126,11 @@ void assignHotkey( CPlayer@ this, const u8 hotkeyID, const u8 spellID, string pl
 		playerPrefsInfo.hotbarAssignments_Shaman[Maths::Min(hotkeyID,hotbarLength-1)] = spellID;
 		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Shaman[Maths::Min(playerPrefsInfo.primaryHotkeyID,hotbarLength-1)];
 	}
-	else if ( playerClass == "frigate" )
+	else if ( playerClass == "paladin" )
 	{
-		int hotbarLength = playerPrefsInfo.hotbarAssignments_Frigate.length;
-		playerPrefsInfo.hotbarAssignments_Frigate[Maths::Min(hotkeyID,hotbarLength-1)] = spellID;
-		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Frigate[Maths::Min(playerPrefsInfo.primaryHotkeyID,hotbarLength-1)];
+		int hotbarLength = playerPrefsInfo.hotbarAssignments_Paladin.length;
+		playerPrefsInfo.hotbarAssignments_Paladin[Maths::Min(hotkeyID,hotbarLength-1)] = spellID;
+		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Paladin[Maths::Min(playerPrefsInfo.primaryHotkeyID,hotbarLength-1)];
 	}
 	
 	saveHotbarAssignments( this );
@@ -305,25 +305,27 @@ void defaultHotbarAssignments( CPlayer@ this, string playerClass )
 				playerPrefsInfo.hotbarAssignments_Shaman.push_back(3);	//assign aux2 to something
 		}	
 	}
-	else if ( playerClass == "frigate" )
+	else if ( playerClass == "paladin" )
 	{
-		playerPrefsInfo.hotbarAssignments_Frigate.clear();
+		playerPrefsInfo.hotbarAssignments_Paladin.clear();
 		
-		int spellsLength = FrigateParams::spells.length;
-		for (uint i = 0; i < FRIGATE_TOTAL_HOTKEYS; i++)
+		int spellsLength = PaladinParams::spells.length;
+		for (uint i = 0; i < PALADIN_TOTAL_HOTKEYS; i++)
 		{
 			if ( i > spellsLength )
 			{
-				playerPrefsInfo.hotbarAssignments_Frigate.push_back(0);
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(0);
 				continue;
 			}
 				
 			if ( i < 15 )
-				playerPrefsInfo.hotbarAssignments_Frigate.push_back(i);
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(i);
 			else if ( i == 15 )
-				playerPrefsInfo.hotbarAssignments_Frigate.push_back(1);	//assign aux1 to counter spell
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(1);	//assign secondary to teleport
 			else if ( i == 16 )
-				playerPrefsInfo.hotbarAssignments_Frigate.push_back(2);	//assign aux2 to something
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(2);	//assign aux1 to counter spell
+			else if ( i == 17 )
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(3);	//assign aux2 to something
 		}	
 	}
 }
@@ -375,9 +377,9 @@ void saveHotbarAssignments( CPlayer@ this )
 			cfg.add_u32("shaman hotkey" + i, playerPrefsInfo.hotbarAssignments_Shaman[i]);
 		}
 
-		for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Frigate.length; i++)
+		for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Paladin.length; i++)
 		{	
-			cfg.add_u32("frigate hotkey" + i, playerPrefsInfo.hotbarAssignments_Frigate[i]);
+			cfg.add_u32("paladin hotkey" + i, playerPrefsInfo.hotbarAssignments_Paladin[i]);
 		}
 
 		cfg.saveFile( "WW_PlayerPrefs.cfg" );
@@ -714,48 +716,50 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 		
 		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Shaman[Maths::Min(0,hotbarLength-1)];
 	}
-	else if ( playerClass == "frigate" )
+	else if ( playerClass == "paladin" )
 	{
-		playerPrefsInfo.hotbarAssignments_Frigate.clear();
+		playerPrefsInfo.hotbarAssignments_Paladin.clear();
 		
-		int spellsLength = FrigateParams::spells.length;
-		for (uint i = 0; i < FRIGATE_TOTAL_HOTKEYS; i++)
+		int spellsLength = PaladinParams::spells.length;
+		for (uint i = 0; i < PALADIN_TOTAL_HOTKEYS; i++)
 		{
 			if ( i == 15 )
-				playerPrefsInfo.hotbarAssignments_Frigate.push_back(1);	//assign aux1 to counter spell
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(1);	//assign secondary to teleport
 			else if ( i == 16 )
-				playerPrefsInfo.hotbarAssignments_Frigate.push_back(2);	//assign aux2 to something
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(2);	//assign aux1 to counter spell
+			else if ( i == 17 )
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(3);	//assign aux2 to something
 			else if ( i >= spellsLength )
 			{
-				playerPrefsInfo.hotbarAssignments_Frigate.push_back(0);
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(0);
 				continue;
 			}	
 			else if ( i < 15 )
-				playerPrefsInfo.hotbarAssignments_Frigate.push_back(i);
+				playerPrefsInfo.hotbarAssignments_Paladin.push_back(i);
 		}
 		
-		int hotbarLength = playerPrefsInfo.hotbarAssignments_Frigate.length;
+		int hotbarLength = playerPrefsInfo.hotbarAssignments_Paladin.length;
 		if (isClient()) 
 		{	
 			u8[] loadedHotkeys;
 			ConfigFile cfg;
 			if ( cfg.loadFile("../Cache/WW_PlayerPrefs.cfg") )
 			{
-				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Frigate.length; i++)
+				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Paladin.length; i++)
 				{		
-					if ( cfg.exists( "frigate hotkey" + i ) )
+					if ( cfg.exists( "paladin hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("frigate hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("paladin hotkey" + i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
 					else
 						loadedHotkeys.push_back(0);
 				}
-				playerPrefsInfo.hotbarAssignments_Frigate = loadedHotkeys;
+				playerPrefsInfo.hotbarAssignments_Paladin = loadedHotkeys;
 				//print("Hotkey config file loaded.");
 			}
 		}
 		
-		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Frigate[Maths::Min(0,hotbarLength-1)];
+		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Paladin[Maths::Min(0,hotbarLength-1)];
 	}
 }

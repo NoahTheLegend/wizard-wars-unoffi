@@ -49,6 +49,7 @@ void InitClasses(CBlob@ this)
 	addPlayerClass(this, "Entropist", "$entropist_class_icon$", "entropist", "Sunk Cost Fallacy.");
 	addPlayerClass(this, "Priest", "$priest_class_icon$", "priest", "Warhammer reference.");
 	addPlayerClass(this, "Shaman", "$shaman_class_icon$", "shaman", "Does drugs.");
+	addPlayerClass(this, "Paladin", "$paladin_class_icon$", "paladin", "Fat ass.");
 }
 
 void BuildRespawnMenuFor(CBlob@ this, CBlob @caller)

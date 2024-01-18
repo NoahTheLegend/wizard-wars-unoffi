@@ -31,7 +31,7 @@ namespace WizardParams
 			SpellType::other, 15, 6, 0, 270.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 15, 10, 0, 64.0f, true),
+			SpellType::other, 15, 10, 3, 64.0f, true),
 			
 		Spell("frost_ball", "Ball of Frost", 13, "Send forth a slow travelling ball of pure cold essence to freeze your enemies in place and deal a small amount of damage. Freeze duration increases as your own health declines.",
 			SpellType::other, 12, 30, 0, 360.0f, true),
@@ -63,7 +63,7 @@ namespace WizardParams
 		Spell("lightning", "Lightning", 26, "Call down the blazing wrath of heaven upon the heads of those who oppose you. .",
 				SpellType::other, 35, 30, 0, 180.0f, true),
 
-		Spell("mana_drain_circle", "Circle of disenchant", 33, "Those who stand inside this circle lose their mana and are slowed to a crawl",
+		Spell("mana_drain_circle", "Circle of Disenchant", 33, "Those who stand inside this circle lose their mana and are slowed to a crawl",
 				SpellType::other,35,40,15,360, true),			
 
 		Spell("mana_transfer", "Mana Transfer", 48, "Transfers mana equivalent to the target's regen. Generates 1 extra mana if overcharged.",

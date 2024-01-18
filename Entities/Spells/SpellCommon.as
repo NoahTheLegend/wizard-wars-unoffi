@@ -3851,7 +3851,460 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
+
+		// PALADIN
+
+		case 1909995520: // spiritual connection
+		{
+			f32 orbspeed = 4.2f;
+			u16 effectTime = 900;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.6f;
+					effectTime *= 1.25f;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob( "effect_missile", this.getTeamNum(), orbPos ); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", dmgconnection_effect_missile);
+					orb.set_u8("override_sprite_frame", 3); // missile sprite is hardcoded
+					orb.set_u16("effect_time", effectTime);
+					orb.set_u16("link_id", this.getNetworkID());
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		case -1351043648: // celestial crush
+		{
+			u32 landheight = getLandHeight(aimpos);
+			if(landheight != 0)
+			{
+				this.getSprite().PlaySound("celestialcrushcast.ogg", 1.0f, 0.85f+XORRandom(11)*0.01f);
+
+                if (!isServer())
+				{return;}
+				
+				f32 hitradius = 12;
+				f32 orbDamage = 0.35f;
+				f32 decel = 0.225f;
+
+				if (this.hasTag("extra_damage"))
+				{
+					orbDamage += 0.15f;
+					hitradius += 4;
+				}
+
+				switch(charge_state)
+				{
+					case minimum_cast:
+					case medium_cast:
+					case complete_cast:
+					break;
+					
+					case super_cast:
+					{
+						orbDamage += 0.15f;
+						hitradius += 4;
+						decel = 0.3f;
+					}
+					break;
+					default:return;
+				}
+
+				Vec2f baseSite = Vec2f(aimpos.x , landheight - 8);
+				Vec2f cruSpawn = baseSite + Vec2f(0, -12.0f);
+
+				CBlob@ orb = server_CreateBlob("celestialcrush");
+				if (orb !is null)
+				{
+					orb.SetFacingLeft(this.isFacingLeft());
+					orb.set_f32("damage", orbDamage);
+
+					orb.set_f32("hitradius", hitradius);
+					orb.set_f32("deceleration", decel);
+					orb.Sync("hitradius", true);
+					orb.Sync("deceleration", true);
+
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.getShape().SetGravityScale(0);
+					orb.server_setTeamNum(this.getTeamNum());
+					orb.setPosition(cruSpawn);
+				}
+			}
+            else//Can't place this under the map
+            {
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo ))
+				{return;}
+				
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+            }
+		}
+		break;
+
+		case 1676183192: // templar hammer
+		{
+			this.getSprite().PlaySound("hammercast.ogg", 1.5f, 0.95f+XORRandom(6)*0.01f);
+
+			if (!isServer())
+			{return;}
+
+			bool extra_damage = this.hasTag("extra_damage");
+			int numOrbs = extra_damage ? 2 : 1;
+			
+            switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					numOrbs += 1;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			
+			f32 angle = 10.0f;
+			f32 tot_angle = numOrbs * angle;
+			for (int i = 0; i < numOrbs; i++)
+			{
+				CBlob@ orb = server_CreateBlob("templarhammer");
+				if (orb !is null)
+				{
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.server_setTeamNum(this.getTeamNum());
+					orb.getShape().SetGravityScale(0.0f);
+					orb.setPosition(orbPos);
+				
+					Vec2f aim = aimpos;
+					Vec2f vel = aim - thispos;
+					Vec2f norm = vel;
+					norm.Normalize();
+
+					f32 ff = (this.isFacingLeft()?-1:1);
+
+					if (numOrbs > 1) norm.RotateBy(ff*(-tot_angle/2 + angle/2*i + i*angle));
+					orb.setVelocity(norm*12);
+				}
+			}
+		}
+		break;
 		
+		case 895532553://manatohealth
+		{
+			bool state = this.get_bool("manatohealth");
+			ManaToHealth(this, !state);
+
+			bool other = this.get_bool("damagetomana");
+			if (other) DamageToMana(this, false);
+		}
+		break;
+
+		case -1449680114://damagetomana
+		{
+			bool state = this.get_bool("damagetomana");
+			DamageToMana(this, !state);
+
+			bool other = this.get_bool("manatohealth");
+			if (other) ManaToHealth(this, false);
+		}
+		break;
+
+		case 1006366403: //healblock
+		{
+			f32 orbspeed = 3.25f;
+			u16 effectTime = 900;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.75f;
+					effectTime = 1350;
+				}
+				break;
+
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos ); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", healblock_effect_missile);
+					orb.set_u8("override_sprite_frame", 0);
+					orb.set_u16("effect_time", effectTime);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		case -774033844://hallowedbarrier
+		{
+			u8 amount = 3;
+			u16 effectTime = 900;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				{
+					effectTime = 900;
+					amount = 4;
+				}
+				break;
+				case complete_cast:
+				{
+					effectTime = 1350;
+					amount = 5;
+				}
+				break;
+				
+				case super_cast:
+				{
+					effectTime = 1800;
+					amount = 6;
+				}
+				break;
+
+				default:return;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				amount += 2;
+			}
+
+			Barrier(this, effectTime, amount);
+		}
+		break;
+
+		case -1347011254://majesty glyph
+		{
+			f32 orbspeed = 4.0f;
+			u16 effectTime = 900;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				{
+					orbspeed *= 1.0f;
+					effectTime = 900;
+				}
+				break;
+				
+				case super_cast:
+				{
+					effectTime = 1350;
+					CooldownReduce(this, effectTime, 0.5f);
+					return;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			if (isServer())
+			{
+				bool targetless = true;
+
+				CBlob@[] blobs;
+				getBlobsByTag("player",@blobs);
+				int bestIndex = closestBlobIndex(this,blobs,true);
+
+				if(bestIndex != -1)
+				{
+					targetless = false;
+				}
+
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", cooldownreduce_effect_missile);
+					orb.set_u8("override_sprite_frame", 10);
+					orb.set_u16("effect_time", effectTime);
+					
+					if(!targetless)
+					{
+						CBlob@ target = blobs[bestIndex];
+						if(target !is null)
+						{
+							orb.set_netid("target", target.getNetworkID());
+							orb.set_bool("target found", true);
+						}
+					}
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		case -842442030://sealofwisdom
+		{
+			f32 takeHealth = 2.0f;
+			if (this.getHealth() <= takeHealth)
+			{
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+
+				return;
+			}
+
+			f32 orbspeed = 3.0f;
+			
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			ManaInfo@ manaInfo;
+			if (!this.get( "manaInfo", @manaInfo )) {return;}
+
+			if (isServer())
+			{
+				bool targetless = true;
+
+				CBlob@[] blobs;
+				getBlobsByTag("player",@blobs);
+				int bestIndex = closestBlobIndex(this,blobs,true);
+
+				if(bestIndex != -1)
+				{
+					targetless = false;
+				}
+
+				CBlob@ orb = server_CreateBlob( "effect_missile", this.getTeamNum(), orbPos ); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", mana_effect_missile);
+					orb.set_u8("override_sprite_frame", 11);
+					orb.set_u8("mana_used", 1);
+					orb.set_u8("caster_mana", 1);
+					orb.set_u8("direct_restore", 20);
+					orb.set_bool("silent", false);
+
+					if(!targetless)
+					{
+						CBlob@ target = blobs[bestIndex];
+						if(target !is null)
+						{
+							orb.set_netid("target", target.getNetworkID());
+							orb.set_bool("target found", true);
+						}
+					}
+
+					if (isServer())
+					{
+						this.server_Hit(this, this.getPosition(), Vec2f_zero, takeHealth, Hitters::fall, true);
+					}
+
+					orb.IgnoreCollisionWhileOverlapped( this );
+					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.setVelocity( orbVel );
+				}
+			}
+		}
+		break;
+
+		case -148838652511://fury
+		{
+			if (!isServer()){
+           		return;
+			}
+
+			f32 orbspeed = necro_shoot_speed * 0.25f;
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
+			f32 orbDamage = 0.25f * extraDamage;
+            
+			if (charge_state == super_cast) {
+				orbDamage *= 1.25f;
+				orbspeed *= 1.25f;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob("fury");
+			if (orb !is null)
+			{
+				orb.set_f32("damage", orbDamage);
+
+				orb.IgnoreCollisionWhileOverlapped( this );
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
+				orb.server_setTeamNum( this.getTeamNum() );
+				orb.setPosition( orbPos );
+				orb.setVelocity( orbVel );
+			}
+		}
+		break;
+
+		case 1375277208://burn
+		{
+			this.set_bool("burnState", true);
+		}
+		break;
+
 		default:
 		{
 			if (spell.type == SpellType::summoning)
@@ -4275,13 +4728,21 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
+			else if ( b.get_u16("healblock") > 0 && sameTeam )
+			{				
+				b.set_u16("healblock", 1);
+				b.Sync("healblock", true);
+					
+				countered = true;
+			}
 			else if (
-			(	b.get_u16("hastened") > 0
+			(b.get_u16("hastened") > 0
 			 || b.get_u16("regen") > 0
 			 || b.get_u16("fireProt") > 0 
 			 || b.get_u16("airblastShield") > 0 
-			 || b.get_u16("stoneSkin") > 0 )
+			 || b.get_u16("stoneSkin") > 0
 			 || b.get_u16("waterbarrier") > 0
+			 || b.get_u16("dmgconnection") > 0)
 			 && !sameTeam )
 			{
 				if(b.get_u16("hastened") > 0)
@@ -4318,6 +4779,12 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				{
 					b.set_u16("waterbarrier", 1);
 					b.Sync("waterbarrier", true);
+				}
+
+				if (b.get_u16("dmgconnection") > 0)
+				{
+					b.set_u16("dmgconnection", 1);
+					b.Sync("dmgconnection", true);
 				}
 					
 				countered = true;
@@ -4416,6 +4883,14 @@ void ManaBurn( CBlob@ blob, u16 burnTime )
 	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.15f + XORRandom(1)/10.0f);
 }
 
+void HealBlock( CBlob@ blob, u16 hbTime )
+{
+	blob.set_u16("healblock", hbTime);
+	blob.Sync("healblock", true);
+	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.35f + XORRandom(1)/10.0f);
+	blob.getSprite().PlaySound("sidewind_init", 0.5f, 0.8f);
+}
+
 void Haste( CBlob@ blob, u16 hasteTime )
 {	
 	if ( blob.get_u16("slowed") > 0 )
@@ -4439,6 +4914,18 @@ void Regen( CBlob@ blob, u16 regenTime )
 	blob.getSprite().PlaySound("Heal.ogg", 0.75f, 1.15f + XORRandom(1)/10.0f);
 }
 
+void CooldownReduce(CBlob@ blob, u16 time, f32 power)
+{	
+	blob.set_u16("cdreduction", time);
+	blob.Sync("cdreduction", true);
+
+	blob.set_f32("majestyglyph_cd_reduction", 0.5f);
+	blob.Sync("majestyglyph_cd_reduction", true);
+
+	blob.getSprite().PlaySound("negentropySound.ogg", 0.75f, 2.5f + XORRandom(1)/10.0f);
+	blob.getSprite().PlaySound("SlowOff.ogg", 0.75f, 1.5f + XORRandom(1)/10.0f);
+}
+
 void Sidewind( CBlob@ blob, u16 windTime )
 {	
 	blob.set_u16("sidewinding", windTime);
@@ -4460,13 +4947,60 @@ void DamageAura(CBlob@ blob, bool enable)
 	blob.set_u32("damageauratiming", getGameTime());
 	blob.set_u32("origindamageauratiming", getGameTime());
 	blob.set_bool("damageaura", enable);
-	
-	if (isServer())
+}
+
+void ManaToHealth(CBlob@ blob, bool enable)
+{
+	if(isClient())
 	{
-		//blob.Sync("damageauratiming", true);
-		//blob.Sync("origindamageauratiming", true);
-		//blob.Sync("damageaura", true);
+		if (!blob.get_bool("manatohealth"))
+			blob.getSprite().PlaySound("EnergySound1.ogg", 1.0f, 1.35f + (0.15f * _spell_common_r.NextFloat()));
+		else
+			blob.getSprite().PlaySound("sidewind_exit.ogg", 0.75f, 1.5f);
 	}
+
+	blob.set_u32("manatohealthtiming", getGameTime());
+	blob.set_u32("originmanatohealthtiming", getGameTime());
+	blob.set_bool("manatohealth", enable);
+}
+
+void DamageToMana(CBlob@ blob, bool enable)
+{
+	if(isClient())
+	{
+		if (!blob.get_bool("damagetomana"))
+			blob.getSprite().PlaySound("EnergySound1.ogg", 1.0f, 1.35f + (0.15f * _spell_common_r.NextFloat()));
+		else
+			blob.getSprite().PlaySound("sidewind_exit.ogg", 0.75f, 1.5f);
+	}
+
+	blob.set_u32("damagetomanatiming", getGameTime());
+	blob.set_u32("origindamagetomanatiming", getGameTime());
+	blob.set_bool("damagetomana", enable);
+}
+
+void Barrier(CBlob@ blob, u16 time, u8 amount)
+{
+	if(isClient())
+	{
+		CSprite@ sprite = blob.getSprite();
+		
+		sprite.PlaySound("Homerun.ogg", 1.15f, 1.75f + (0.05f * _spell_common_r.NextFloat()));
+		
+		for (u8 i = 0; i < amount; i++)
+		{
+			string n = "hallowedbarrier_segment"+i;
+			CSpriteLayer@ l = sprite.getSpriteLayer(n);
+			if (l is null) continue;
+
+			ParticlesFromSprite(l, l.getWorldTranslation(), Vec2f(0, -0.75f).RotateBy(XORRandom(360)), 0, 3);
+			sprite.RemoveSpriteLayer(n);
+		}
+	}
+
+	blob.set_u16("hallowedbarrier", time);
+	blob.set_u8("hallowedbarriermax", amount);
+	blob.set_u8("hallowedbarrieramount", amount);
 }
 
 void AirblastShield( CBlob@ blob, u16 airshieldTime )
@@ -4482,6 +5016,19 @@ void FireWard( CBlob@ blob, u16 firewardTime )
 	blob.Sync("fireProt", true);
 	//if(isClient())
 	//{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
+}
+
+void Connect(CBlob@ blob, u16 time, u16 link_id)
+{
+	blob.set_u16("dmgconnection_id", link_id);
+	blob.Sync("dmgconnection_id", true);
+	blob.set_u16("dmgconnection", time);
+	blob.Sync("dmgconnection", true);
+
+	if (isClient())
+	{
+		blob.getSprite().PlaySound("shield_create.ogg", 1.15f, 1.5f);
+	}
 }
 
 void WaterBarrier( CBlob@ blob, u16 wardTime )

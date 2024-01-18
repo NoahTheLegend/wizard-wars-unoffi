@@ -3,17 +3,25 @@
 #include "MakeDustParticle.as";
  
 const u16 DASH_COOLDOWN = 15;//seconds * 30
-const f32 DASH_FORCE = 375.0f;//force applied
+const f32 BASE_DASH_FORCE = 375.0f;//force applied
  
 void onInit( CBlob@ this )
 {
     this.set_u8( "dashCoolDown", 0 );
     this.set_bool( "dashing", false );
     this.getCurrentScript().removeIfTag = "dead";
+
+    f32 new_force = BASE_DASH_FORCE;
+    if (this.getName() == "paladin")
+    {
+        new_force *= 0.8f;
+    }
+    this.set_f32("dash_force", new_force);
 }
  
 void onTick( CBlob@ this )
 {
+    const f32 DASH_FORCE = this.get_f32("dash_force");
     bool dashing = this.get_bool( "dashing" );
      
     Vec2f vel = this.getVelocity();

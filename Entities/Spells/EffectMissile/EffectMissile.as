@@ -63,6 +63,8 @@ void onTick( CBlob@ this)
 			case airblastShield_effect_missile:
 			case fireProt_effect_missile:
 			case regen_effect_missile:
+			case dmgconnection_effect_missile:
+			case cooldownreduce_effect_missile:
 			{
 				targetType = 0;
 			}
@@ -76,6 +78,7 @@ void onTick( CBlob@ this)
 			break;
 
 			case slow_effect_missile:
+			case healblock_effect_missile:
 			{
 				targetType = 2;
 				this.Tag("projectile");
@@ -253,6 +256,12 @@ void onTick( CBlob@ this)
 					}
 					break;
 
+					case dmgconnection_effect_missile:
+					{
+						Connect(blob, this.get_u16("effect_time"), this.get_u16("link_id"));
+					}
+					break;
+
 					case mana_effect_missile:
 					{
 						manaShot(blob, this.get_u8("mana_used"), this.get_u8("caster_mana"), this.get_bool("silent"), this.get_u8("direct_restore"));
@@ -271,21 +280,31 @@ void onTick( CBlob@ this)
 					}
 					break;
 
+					case cooldownreduce_effect_missile:
+					{
+						CooldownReduce(blob, this.get_u16("effect_time"), 0.5f);
+					}
+					break;
+
 					default: break; 
 				} //switch end
 
 				this.server_Die();
 				return;
 			}
-			else if ( !sameTeam && targetType == 2 )	//curse status effects
+			else if (!sameTeam && targetType == 2)	//curse status effects
 			{
-				if ( effectType == slow_effect_missile )
+				if (effectType == slow_effect_missile)
 				{
 					Slow(blob, this.get_u16("effect_time"));
 				}
 				else if (effectType == manaburn_effect_missile)
 				{
 					ManaBurn(blob, this.get_u16("effect_time"));
+				}
+				else if (effectType == healblock_effect_missile)
+				{
+					HealBlock(blob, this.get_u16("effect_time"));
 				}
 						
 				this.server_Die();
@@ -334,6 +353,8 @@ void onTick(CSprite@ this)
 	if ( (!b.exists("spriteSetupDone") || !b.get_bool("spriteSetupDone")) && effectType != 255)//this is done instead of using onInit becuase onInit only runs once even if this script is removed and added again
 	{
 		this.SetFrame(effectType);
+		if (b.exists("override_sprite_frame"))
+			this.SetFrame(b.get_u8("override_sprite_frame"));
 		b.set_bool("spriteSetupDone", true);
 	}
 	

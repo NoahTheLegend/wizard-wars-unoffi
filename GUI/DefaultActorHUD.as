@@ -39,7 +39,10 @@ void renderHPBar( CBlob@ blob, Vec2f origin)
 	f32 fourthHPSeg = healthPerSegment*(1.0f/4.0f);
 	f32 halfHPSeg = healthPerSegment*(1.0f/2.0f);
 	f32 threeFourthsHPSeg = healthPerSegment*(3.0f/4.0f);
-	
+    
+    SColor col = SColor(255, 255, 75, 75);
+    if (blob.get_u16("healblock") > 0) col = SColor(255, 155, 155, 155);
+
     int HPs = 0;
     for (int step = 0; step < barLength; step += 1)
     {	
@@ -49,11 +52,11 @@ void renderHPBar( CBlob@ blob, Vec2f origin)
         {
             // Vec2f heartoffset = (Vec2f(2,10) * 2);
             Vec2f heartpos = origin+Vec2f(segmentWidth*HPs-1,0); // origin+Vec2f(segmentWidth*HPs,0)+heartoffset;
-			if (thisHP <= fourthHPSeg) { GUI::DrawIcon(heartFile, 4, Vec2f(16,16), heartpos); } // Vec2f(12,12)
-            else if (thisHP <= halfHPSeg) { GUI::DrawIcon(heartFile, 3, Vec2f(16,16), heartpos); } // Vec2f(12,12)
-            else if (thisHP <= threeFourthsHPSeg) { GUI::DrawIcon(heartFile, 2, Vec2f(16,16), heartpos); } // Vec2f(12,12)
-			else if (thisHP > threeFourthsHPSeg) { GUI::DrawIcon(heartFile, 1, Vec2f(16,16), heartpos); } // else { GUI::DrawIcon(heartFile, 1, Vec2f(12,12), heartpos); }
-            else { GUI::DrawIcon(heartFile, 0, Vec2f(16,16), heartpos); }
+			if (thisHP <= fourthHPSeg) { GUI::DrawIcon(heartFile, 4, Vec2f(16,16), heartpos, 1, col); } // Vec2f(12,12)
+            else if (thisHP <= halfHPSeg) { GUI::DrawIcon(heartFile, 3, Vec2f(16,16), heartpos, 1, col); } // Vec2f(12,12)
+            else if (thisHP <= threeFourthsHPSeg) { GUI::DrawIcon(heartFile, 2, Vec2f(16,16), heartpos, 1, col); } // Vec2f(12,12)
+			else if (thisHP > threeFourthsHPSeg) { GUI::DrawIcon(heartFile, 1, Vec2f(16,16), heartpos, 1, col); } // else { GUI::DrawIcon(heartFile, 1, Vec2f(12,12), heartpos); }
+            else { GUI::DrawIcon(heartFile, 0, Vec2f(16,16), heartpos, 1, col); }
         }
         HPs++;
     }

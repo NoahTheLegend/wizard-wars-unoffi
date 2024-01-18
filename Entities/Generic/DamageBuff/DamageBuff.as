@@ -80,7 +80,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
     }
     else if(cmd == this.getCommandID("message") )
     {
-        client_AddToChat("Your offensive spells are more powerful for the remainder of this life.", SColor(255, 255, 0, 0));
+        client_AddToChat("Your offensive spells are more powerful for some time.", SColor(255, 255, 0, 0));
     }
 }
 

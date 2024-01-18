@@ -133,8 +133,8 @@ void onTick(CBlob@ this)
 		if (this.get_f32("lifetime") <= 0.133f && this.getTickSinceCreated() > 90)
 		{
 			Boom(this);
-			smoke(this.getPosition(), 45);	
-			blast(this.getPosition(), 60);
+			smoke(this.getPosition(), 90);	
+			blast(this.getPosition(), 120);
 		}
 
 		CSpriteLayer@ spin1 = sprite.getSpriteLayer("spin1");
