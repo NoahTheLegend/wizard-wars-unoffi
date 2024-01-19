@@ -47,7 +47,7 @@ void onTick(CBlob@ this)
             {
                 Vec2f dir = b.getPosition()-this.getPosition();
                 dir.Normalize();
-                this.AddForce(dir * 0.25f);
+                this.AddForce(dir * 0.33f);
                 this.server_SetTimeToDie(2);
             }
         }
