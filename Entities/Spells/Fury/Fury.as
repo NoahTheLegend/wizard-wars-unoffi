@@ -10,7 +10,7 @@ void onInit(CBlob@ this)
 
 	this.Tag("projectile");
 	this.Tag("cantparry");
-    this.set_u8("despelled", 0);
+    this.Tag("counterable");
 	shape.SetGravityScale( 0.0f );
 
 	this.set_f32("damage", 1.0f);
@@ -24,15 +24,11 @@ void onInit(CBlob@ this)
 }
 
 f32 cap_dist = 256.0f;
-f32 angle_change_base = 3.0f;
+f32 angle_change_base = 5.0f;
 f32 damping = 0.975f;
 
 void onTick(CBlob@ this)
 {
-	if(this.get_u8("despelled") >= 2)
-    {
-        this.server_Die();
-    }
 
 	this.SetFacingLeft(true);
 	if (this.getTickSinceCreated()==0)

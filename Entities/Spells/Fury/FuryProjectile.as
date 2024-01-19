@@ -43,7 +43,7 @@ void onTick(CBlob@ this)
             if (p is null) continue;
             CBlob@ b = p.getBlob();
             if (b is null || b.getTeamNum() == this.getTeamNum()) continue;
-            if (b.getDistanceTo(this) < 80.0f)
+            if (b.getDistanceTo(this) < 96.0f)
             {
                 Vec2f dir = b.getPosition()-this.getPosition();
                 dir.Normalize();

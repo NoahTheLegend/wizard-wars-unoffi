@@ -58,7 +58,7 @@ namespace PaladinParams
 				SpellType::other, 30, 50, 0, 298.0f, false),
 							
 		Spell("fury", "Fury", 101, "Summons a homing ring. Doesn't deal impact damage, instead launches small homing blades around itself. Lasts until despelled while has a target. Overcharge increases blades spawnrate.",
-				SpellType::other, 50, 75, 14, 128.0f, true),	
+				SpellType::other, 40, 75, 8, 128.0f, true),	
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to attack in front of you. The spell follows you, however disables teleport and awaits some time before swipe.",
 				SpellType::other, 20, 45, 0, 0.0f),
