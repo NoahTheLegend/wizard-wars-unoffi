@@ -10,119 +10,144 @@ void onInit(CBlob@ this)
 
 	this.Tag("projectile");
 	this.Tag("counterable");
-	this.Tag("exploding");
 	shape.SetGravityScale( 0.0f );
-	this.Tag("die_in_divine_shield");
 
 	this.set_f32("damage", 1.0f);
 
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
+    this.server_SetTimeToDie(10);
 
-    this.server_SetTimeToDie(8);
+	this.set_bool("has_target", false);
+	this.set_u32("lock_time", 0);
 }
+
+f32 cap_dist = 256.0f;
+f32 angle_change_base = 3.0f;
+f32 damping = 0.975f;
 
 void onTick(CBlob@ this)
 {
-	//prevent leaving the map
-
+	this.SetFacingLeft(true);
 	if (this.getTickSinceCreated()==0)
 	{
 		this.getSprite().PlaySound("FireBlast4.ogg", 0.8f, 1.15f + XORRandom(21)*0.01f);
 	}
-	
-	Vec2f pos = this.getPosition();
-	if ( pos.x < 0.1f ||
-	pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f)
+
+	// find target
+	if (this.getTickSinceCreated() < 5) return;
+
+	f32 dist = cap_dist;
+	CBlob@ closest = null;
+
+	for (u8 i = 0; i < getPlayersCount(); i++)
 	{
-		this.server_Die();
-		return;
+		CPlayer@ p = getPlayer(i);
+		if (p is null || p.getBlob() is null) continue;
+
+		CBlob@ b = p.getBlob();
+		//if (!isEnemy(this, b)) continue;
+
+		f32 cur_dist = this.getDistanceTo(b);
+		if (cur_dist >= dist) continue;
+
+		f32 dist = cur_dist;
+		@closest = @b;
 	}
 
+	if (closest !is null)
+	{
+	    this.server_SetTimeToDie(5);
+		
+	    this.set_bool("has_target", true);
+	    if (this.get_u32("lock_time") == 0)
+			this.set_u32("lock_time", getGameTime());
+
+	    Vec2f vel = this.getVelocity();
+	    vel.Normalize();
+	    int vel_angle = -vel.Angle();
+
+	    Vec2f dir = closest.getPosition() - this.getPosition();
+	    int dir_angle = -dir.Angle();
+
+		f32 momentum = this.get_f32("momentum");
+		f32 target_speed = Maths::Clamp(dir.Length() / 16, 2.0f, 10.0f);
+		f32 speed_mod = Maths::Lerp(momentum, target_speed, 1.0f - damping);
+	    int cross = vel.x * dir.y - vel.y * dir.x;
+
+		this.set_f32("momentum", Maths::Max(speed_mod, target_speed));
+	
+	    f32 r = angle_change_base * Maths::Max(1.0f, speed_mod/4);
+	    f32 angle_shift = (cross > 0) ? r : (cross < 0) ? -r : 0;
+
+	    this.setVelocity(vel.RotateBy(angle_shift) * speed_mod);
+	}
+	else
+	{
+		this.set_bool("has_target", false);
+	    this.set_u32("lock_time", 0);
+	}
+	//this.setVelocity(Vec2f_zero);
+}
+
+void Particles(CBlob@ this, u8 amount, f32 force)
+{
+	if(!isClient())
+	{return;}
+	
 	CMap@ map = getMap();
 	if (map is null)
 	{return;}
 
-	if(getGameTime() % 5 == 0)
+	Vec2f pos = this.getOldPosition();
+	for(int i = 0; i < amount; i++)
 	{
-		CBlob@[] blobsInRadius;
-		map.getBlobsInRadius(this.getPosition(), 20.0f, @blobsInRadius);
-		for (uint i = 0; i < blobsInRadius.length; i++)
-		{
-			if(blobsInRadius[i] is null)
-			{continue;}
+		Vec2f rnd = Vec2f((XORRandom(amount*10)-amount*5)*0.1f, (XORRandom(amount*10)-amount*5)*0.1f);
+		Vec2f pPos = pos+Vec2f(this.getRadius() * (i%2==0?-1:1), 0).RotateBy(getGameTime()%360 * 8)+rnd;
+		Vec2f pVel = Vec2f(force, 0).RotateBy(-(pPos-pos).Angle()+90);
 
-			CBlob@ radiusBlob = blobsInRadius[i];
-
-			if (radiusBlob.getTeamNum() == this.getTeamNum() || radiusBlob.hasTag("burning"))
-			{continue;}
-
-			this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f_zero, 0.2f, Hitters::fire, false);
-		}
-	}
-
-	if(!isClient())
-	{return;}
-
-	for(int i = 0; i < 5; i ++)
-	{
-		float randomPVel = XORRandom(10) / 10.0f;
-		Vec2f particleVel = Vec2f( randomPVel ,0).RotateByDegrees(XORRandom(360));
-		particleVel += this.getVelocity();
-
-    	CParticle@ p = ParticlePixelUnlimited(this.getPosition(), particleVel, SColor(255,255,255,0), true);
+    	CParticle@ p = ParticlePixelUnlimited(pPos, pVel, SColor(255,255,75+XORRandom(155),XORRandom(85)), true);
    		if(p !is null)
-    	{
+    	{ // launch particles with angular velocity
     	    p.collides = false;
     	    p.gravity = Vec2f_zero;
     	    p.bounce = 1;
     	    p.lighting = false;
-    	    p.timeout = 60;
-			p.damping = 0.95;
+    	    p.timeout = 15;
+			p.damping = 0.9f + XORRandom(61)*0.001f;
     	}
 	}
 }
 
 void onTick(CSprite@ this) //rotating sprite
 {
-	CBlob@ b = this.getBlob();
-	if(this is null || b is null)
-	{return;}
+	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
 
-	if(!b.exists("spriteSetupDone") || !b.get_bool("spriteSetupDone"))
+	bool has_target = blob.get_bool("has_target");
+	u32 lock_time = blob.get_u32("lock_time");
+
+	f32 power = 8;
+	f32 scale = 2;
+	f32 mod = 5;
+
+	if (!has_target)
 	{
-		CSpriteLayer@ layer = this.addSpriteLayer("shine","spriteback_alpha.png",150,150,b.getTeamNum(),0);
-		if(layer is null)
-		{return;}
-        layer.SetRelativeZ(-1.0f);
-		layer.setRenderStyle(RenderStyle::additive);
-		layer.ScaleBy(0.3f, 0.3f);
-		b.set_bool("spriteSetupDone",true);
+		this.RotateBy(8+Maths::Sin(getGameTime()*0.33f)*5, Vec2f_zero);
+
+		Particles(blob, 2, 1.0f);
 	}
 	else
 	{
-    	CSpriteLayer@ layer = this.getSpriteLayer("shine");
-		if(layer is null)
-		{return;}
-	
-    	layer.RotateByDegrees(7,Vec2f_zero);
+		u32 diff = Maths::Min(power*scale*mod, getGameTime()-lock_time);
+		f32 rot = power+diff/mod;
+		this.RotateBy(rot, Vec2f_zero);
 
-		this.RotateByDegrees(-7,Vec2f_zero);
+		Particles(blob, 6, rot/power);
 	}
 }
 
-void onCollision( CBlob@ this, CBlob@ blob, bool solid )
-{	
-	if (blob !is null && this !is null)
-	{
-		if (isEnemy(this, blob))
-		{
-			this.server_Die();
-		}
-	}
-}
-
-void onDie( CBlob@ this )
+void onDie(CBlob@ this)
 {
 	if(!this.hasTag("exploding"))
 	{return;}
@@ -137,79 +162,24 @@ void onDie( CBlob@ this )
 	if (map is null)
 	{return;}
 
-	CBlob@[] blobsInRadius;
-	map.getBlobsInRadius(this.getPosition(), 50.0f, @blobsInRadius);
-	for (uint i = 0; i < blobsInRadius.length; i++)
-	{
-		if(blobsInRadius[i] is null)
-		{continue;}
-
-		CBlob@ radiusBlob = blobsInRadius[i];
-
-		CPlayer@ player = this.getDamageOwnerPlayer();
-		if(player !is null)
-		{
-			CBlob@ caster = player.getBlob();
-			if(caster !is null && radiusBlob is caster)
-			{
-				this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f_zero, damage, Hitters::fire, true);
-				continue;
-			}
-		}
-
-		if (radiusBlob.getTeamNum() == this.getTeamNum())
-		{continue;}
-
-		this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f_zero, damage, Hitters::fire, false);
-	}
-			
-	if ( isClient() ) 
+	if (isClient()) 
 	{
 		this.getSprite().PlaySound("GenericExplosion1.ogg", 0.8f, 0.8f + XORRandom(10)/10.0f);
-
-		//particles front
-
-		CParticle@ pa = ParticleAnimated( "fiery_boom.png",
-			this.getPosition(),
-			Vec2f(0,0),
-			0,
-			1.0f, 
-			3, 
-			0.0f, true );    
-		if ( pa !is null)
-		{
-			pa.bounce = 0;
-    		pa.fastcollision = true;
-			pa.Z = 10.0f;
-			pa.setRenderStyle(RenderStyle::additive);
-		}
-
-		//particles back
-	
-		CParticle@ pb = ParticleAnimated( "fiery_boom_back.png",
-			this.getPosition(),
-			Vec2f(0,0),
-			0,
-			1.0f, 
-			3, 
-			0.0f, true );    
-		if ( pb !is null)
-		{
-			pb.bounce = 0;
-    		pb.fastcollision = true;
-			pb.Z = -10.0f;
-			pb.setRenderStyle(RenderStyle::additive);
-		}
 	}
 }
 
-bool isEnemy( CBlob@ this, CBlob@ target )
+bool isEnemy(CBlob@ this, CBlob@ target)
 {
 	return 
 	(
-		(
-			target.hasTag("barrier") || (target.hasTag("flesh") && !target.hasTag("dead") )
-		)
-		&& target.getTeamNum() != this.getTeamNum() 
+		target.getPlayer() !is null && target.getTeamNum() != this.getTeamNum() 
 	);
+}
+
+void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
+{
+	if (solid)
+	{
+		this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 0.6f + XORRandom(3)/10.0f);
+	}
 }

@@ -4264,8 +4264,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
-
-		case -148838652511://fury
+		
+		case -258200095://fury
 		{
 			if (!isServer()){
            		return;
@@ -4296,12 +4296,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.setPosition( orbPos );
 				orb.setVelocity( orbVel );
 			}
-		}
-		break;
-
-		case 1375277208://burn
-		{
-			this.set_bool("burnState", true);
 		}
 		break;
 
@@ -4987,7 +4981,7 @@ void Barrier(CBlob@ blob, u16 time, u8 amount)
 		
 		sprite.PlaySound("Homerun.ogg", 1.15f, 1.75f + (0.05f * _spell_common_r.NextFloat()));
 		
-		for (u8 i = 0; i < amount; i++)
+		for (u8 i = 0; i < 16; i++)
 		{
 			string n = "hallowedbarrier_segment"+i;
 			CSpriteLayer@ l = sprite.getSpriteLayer(n);
@@ -4999,8 +4993,10 @@ void Barrier(CBlob@ blob, u16 time, u8 amount)
 	}
 
 	blob.set_u16("hallowedbarrier", time);
+	blob.set_u32("hallowedbarriertiming", getGameTime());
 	blob.set_u8("hallowedbarriermax", amount);
 	blob.set_u8("hallowedbarrieramount", amount);
+	blob.set_bool("hallowedbarrierfacing", blob.isFacingLeft());
 }
 
 void AirblastShield( CBlob@ blob, u16 airshieldTime )

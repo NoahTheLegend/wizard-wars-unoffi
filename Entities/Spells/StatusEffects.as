@@ -531,7 +531,7 @@ void onTick(CBlob@ this)
 			}
 		}
 		//disable
-	    else if (manatohealthtiming+1 > gt)
+	    else if (manatohealthtiming+ticks_for_disable+1 > gt)
 		{
 			for (int i = 0; i < amount*2; i++)
 			{
@@ -601,7 +601,7 @@ void onTick(CBlob@ this)
 			}
 		}
 		//disable
-	    else if (damagetomanatiming+1 > gt)
+	    else if (damagetomanatiming+ticks_for_disable+1 > gt)
 		{
 			for (int i = 0; i < amount*2; i++)
 			{
@@ -891,13 +891,13 @@ void onTick(CBlob@ this)
     	u8 amount = this.get_u8("hallowedbarrieramount");
 		hallowedbarrier--;
 
-		if (hallowedbarrier == 0 || amount == 0)
+		if (hallowedbarrier == 0 || amount == 0 || this.hasTag("dead"))
 		{
 			u8 amount = this.get_u8("hallowedbarriermax");
 			CSprite@ sprite = this.getSprite();
 			if (isClient())
 			{
-				for (u8 i = 0; i < amount; i++)
+				for (u8 i = 0; i < 16; i++)
 				{
 					string n = "hallowedbarrier_segment"+i;
 					CSpriteLayer@ l = sprite.getSpriteLayer(n);
@@ -909,6 +909,8 @@ void onTick(CBlob@ this)
 			}
 			sprite.PlaySound("Zap1.ogg", 0.5f, 1.5f);
 			hallowedbarrier = 0;
+			this.set_u32("hallowedbarriertiming", 0);
+			this.set_bool("hallowedbarrieractive", false);
 		}
 
 		this.set_u16("hallowedbarrier", hallowedbarrier);

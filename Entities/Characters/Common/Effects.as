@@ -1,7 +1,9 @@
 // Listener file for different effects, spells and operations that can't be
 // utilized through StatusEffects.as and with adding an own script
 // onHit() inputs 0 damage entry in an added script
-// everything else that would go in additional script is added here as well
+// everything else that would go in additional script is added here as well.
+// Still spaghetti code, however taking into account how different the stuff we add,
+// its not that time consuming at least
 
 #include "Hitters.as"
 
@@ -19,15 +21,15 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
     if (getMap() is null) return;
+    CSprite@ sprite = this.getSprite();
+    if (sprite is null) return;
 
     if (isClient())
-    {
-        CSprite@ sprite = this.getSprite();
-        if (sprite is null) return;
-
+    {   
         if (this.get_u16("dmgconnection") > 0) // spiritual connection
         {
             CBlob@ link = getBlobByNetworkID(this.get_u16("dmgconnection_id"));
+
             if (link !is null && this.getDistanceTo(link) < connection_dist
                 && link.getHealth()/link.getInitialHealth() > min_connection_health_ratio)
             {
@@ -40,68 +42,11 @@ void onTick(CBlob@ this)
 		    	}
             }
         }
+    }
 
-        if (this.get_u16("hallowedbarrier") > 0) // hallowed barrier, spinning shields
-        {
-            u8 initamount = this.get_u8("hallowedbarriermax");
-            u8 amount = this.get_u8("hallowedbarrieramount");
-
-            if (amount > 0)
-            {
-                f32 inline_width = 20;
-                f32 gap = inline_width / amount;
-
-                for (u8 i = 0; i < amount; i++)
-                {
-                    CSpriteLayer@ l = sprite.getSpriteLayer("hallowedbarrier_segment"+i);
-                    if (l is null)
-                    {
-                        @l = sprite.addSpriteLayer("hallowedbarrier_segment"+i, "ShieldSegment.png", 16, 16);
-                        if (l !is null)
-                        {
-                            Animation@ anim = l.addAnimation("default", 0, false);
-                            if (anim !is null)
-                            {
-                                int[] frames = {0,1,2,3,4};
-                                anim.AddFrames(frames);
-                                l.SetAnimation(anim);
-                                l.SetIgnoreParentFacing(true);
-
-                                Vec2f sort = Vec2f(inline_width/2 - gap/2 - gap*i, 0);
-                                l.SetOffset(sort);
-                            }
-                        }
-                    }
-
-                    if (l !is null)
-                    {
-                        Vec2f offset = l.getOffset();
-                        bool onleft = offset.x <= 0;
-                        f32 dist = Maths::Abs(offset.x);
-                        u8 frame = dist > inline_width/4 ? 2 : dist > inline_width/8 ? 1 : 0;
-                        if (frame > 0 && onleft) frame += 2;
-
-                        //l.SetFacingLeft(onleft);
-                        l.animation.frame = frame;
-                        l.SetRelativeZ(10.0f + inline_width-dist);
-                        l.setRenderStyle(RenderStyle::additive);
-
-                        f32 target = -inline_width/2;
-
-                        Vec2f new_offset = l.getOffset();
-                        f32 prox = calc_proximity(target, 0, -target, new_offset.x);
-
-                        l.SetOffset(new_offset-Vec2f(Maths::Max(0.1f, 2.0f * prox), 0));
-
-                        if (new_offset.x < target)
-                        {
-                            new_offset.x = -target;
-                            l.SetOffset(new_offset);
-                        }
-                    }
-                }
-            }
-        }
+    if (this.get_u16("hallowedbarrier") > 0) // hallowed barrier, spinning shields
+    {
+        DrawHallowedBarrier(this, sprite);
     }
 }
 
@@ -134,19 +79,24 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
             u8 initamount = this.get_u8("hallowedbarriermax");
             u8 amount = this.get_u8("hallowedbarrieramount");
             u8 missing = initamount-amount;
+            bool active = this.get_bool("hallowedbarrieractive");
 
-            if (damage > 0.05f && amount > 0)
+            if (active && damage > 0.05f && amount > 0)
             {
+                this.sub_u8("hallowedbarrieramount", 1);
+
                 if (isClient())
                 {
-                    this.sub_u8("hallowedbarrieramount", 1);
+                    CSprite@ sprite = this.getSprite();
 
                     string n = "hallowedbarrier_segment"+(amount-1);
-                    CSpriteLayer@ pop = this.getSprite().getSpriteLayer(n);
+                    CSpriteLayer@ pop = sprite.getSpriteLayer(n);
                     if (pop !is null)
                     {
                         ParticlesFromSprite(pop, pop.getWorldTranslation(), Vec2f(0, -0.75f).RotateBy(XORRandom(360)), 0, 3);
-					    this.getSprite().RemoveSpriteLayer(n);
+					    sprite.RemoveSpriteLayer(n);
+                        sprite.PlaySound("Zap1.ogg", 0.35f, 1.75f);
+                        // StatusEffects.as will clean our props if it was the last segment
                     }
                 }
                 if (isServer())
@@ -211,5 +161,82 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
     if (oldHealth < this.getHealth() && this.get_u16("healblock") > 0)
     {
         this.server_SetHealth(oldHealth);
+    }
+}
+
+void DrawHallowedBarrier(CBlob@ this, CSprite@ sprite)
+{
+    u8 initamount = this.get_u8("hallowedbarriermax");
+    u8 amount = this.get_u8("hallowedbarrieramount");
+    u32 timing = this.get_u32("hallowedbarriertiming");
+    u32 diff = (getGameTime()-timing);
+
+    if (amount > 0)
+    {
+        f32 inline_width = 20;
+        f32 gap = inline_width*4 / amount; // precise math
+
+        bool stacked = amount <= diff/gap;
+        this.set_bool("hallowedbarrieractive", stacked);
+
+        if (!isClient()) return;
+
+        for (u8 i = 0; i < (stacked ? amount : diff/gap); i++)
+        {
+            CSpriteLayer@ l = sprite.getSpriteLayer("hallowedbarrier_segment"+i);
+            if (l is null)
+            {
+                @l = sprite.addSpriteLayer("hallowedbarrier_segment"+i, "ShieldSegment.png", 16, 16);
+                if (l !is null)
+                {
+                    Animation@ anim = l.addAnimation("default", 0, false);
+                    if (anim !is null)
+                    {
+                        int[] frames = {0,1,2,3,4,5,6,7,8,9};
+                        anim.AddFrames(frames);
+                        l.SetAnimation(anim);
+                        l.SetIgnoreParentFacing(true);
+                        l.SetFacingLeft(this.get_bool("hallowedbarrierfacing"));
+                    }
+                }
+            }
+            if (l !is null)
+            {
+                Vec2f offset = l.getOffset();
+
+                bool back = offset.y != 0.0f;
+                f32 bf = back ? -1 : 1;
+                bool onleft = offset.x <= 0;
+
+                f32 dist = Maths::Abs(offset.x);
+                u8 frame = dist > inline_width/3 ? 2 : dist > inline_width/6 ? 1 : 0;
+                if (frame > 0 && onleft) frame += 2;
+                if (back) frame += 5;
+
+                l.animation.frame = frame;
+                l.SetRelativeZ((10.0f + Maths::Sqrt(inline_width-dist)) * bf);
+                l.setRenderStyle(RenderStyle::additive);
+                
+                f32 target = -inline_width/2*bf;
+                
+                Vec2f new_offset = l.getOffset();
+                f32 prox = calc_proximity(target*bf, 0, -target*bf, new_offset.x);
+
+                Vec2f set_offset = Vec2f(Maths::Max(0.1f, 2.0f * prox), 0);
+                l.SetOffset(!back ? new_offset - set_offset : new_offset + set_offset);
+
+                if (!back ? (new_offset.x < target) : (new_offset.x > target))
+                {
+                    if (!back && new_offset.y == 0.0f)
+                    {
+                        l.SetOffset(Vec2f(target, -0.1f));
+                    }
+                    if (back && new_offset.y != 0.0f)
+                    {
+                        l.SetOffset(Vec2f(target, 0.0f));
+                    }
+                }
+            }
+        }
     }
 }

@@ -29,7 +29,7 @@ void onTick(CBlob@ this)
 	if (this.getTickSinceCreated() == 1
 		|| (this.get_u16("target_id") == 0))
 	{
-		f32 closest = 999999.0f;
+		f32 closest = 99999.0f;
 		u16 id = 0;
 		for (u8 i = 0; i < getPlayersCount(); i++)
 		{

@@ -22,10 +22,10 @@ namespace PaladinParams
 	const ::Spell[] spells = 
 	{
 		Spell("templarhammer", "Templar Hammer", 92, "Throws a magic hammer affected by gravity.",
-				SpellType::other, 8, 22, 0, 120.0f, true),
+				SpellType::other, 7, 22, 0, 120.0f, true),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 25, 8, 0, 160.0f, true),
+			SpellType::other, 20, 8, 0, 160.0f, true),
 			 
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 25, 10, 3, 64.0f, true),
@@ -42,11 +42,13 @@ namespace PaladinParams
 		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 200% of received enemy damage and 100% of friendly damage.",
 				SpellType::other, 0, 15, 5, 0, true),
 
+		//Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge to gain more barriers.",
+		//		SpellType::other, 0, 15, 0, 0.0f),
 		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge to gain more barriers.",
-				SpellType::other, 40, 75, 10, 0.0f),
+				SpellType::other, 30, 70, 10, 0.0f),
 				
 		Spell("healblocker", "Humility", 96, "Nullifies incoming heal for target.",
-				SpellType::other, 15, 60, 0, 256.0f, true),
+				SpellType::other, 12, 30, 0, 256.0f, true),
 
 		Spell("majestyglyph", "Glyph of Majesty", 98, "Doubles spell recharge rate.",
 				SpellType::other, 20, 50, 12, 96.0f, true),
@@ -58,7 +60,7 @@ namespace PaladinParams
 				SpellType::other, 0, 15, 0, 64.0f),
 							
 		Spell("fury", "Fury", 101, "",
-				SpellType::other, 0, 15, 0, 128.0f),	
+				SpellType::other, 0, 15, 0, 128.0f, true),	
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
