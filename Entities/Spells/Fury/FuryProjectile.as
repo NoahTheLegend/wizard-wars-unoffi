@@ -46,8 +46,7 @@ void onTick(CBlob@ this)
             if (b.getDistanceTo(this) < 96.0f)
             {
                 Vec2f dir = b.getPosition()-this.getPosition();
-                dir.Normalize();
-                this.AddForce(dir * 0.33f);
+                this.AddForce(dir * 0.25f);
                 this.server_SetTimeToDie(2);
             }
         }

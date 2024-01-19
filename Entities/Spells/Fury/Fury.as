@@ -24,7 +24,7 @@ void onInit(CBlob@ this)
 }
 
 f32 cap_dist = 256.0f;
-f32 angle_change_base = 5.0f;
+f32 angle_change_base = 3.0f;
 f32 damping = 0.975f;
 
 void onTick(CBlob@ this)
