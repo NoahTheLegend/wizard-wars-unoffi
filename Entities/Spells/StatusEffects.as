@@ -161,6 +161,7 @@ void onTick(CBlob@ this)
 		this.set_u16("healblock", healblock);
 		Vec2f thisVel = this.getVelocity();
 
+		#ifndef STAGING // p.initpos is not existing in staging
 		if (isClient())
 		{
 			CParticle@[] ps;
@@ -206,6 +207,7 @@ void onTick(CBlob@ this)
 			
 			this.set("healblock_particles", ps);
 		}
+		#endif
 		
 		if (healblock == 0)
 		{
@@ -633,6 +635,7 @@ void onTick(CBlob@ this)
 		cdreduction--;
 		this.set_u16("cdreduction", cdreduction);
 		
+		#ifndef STAGING // p.initpos is not existing in staging
 		if (isClient())
 		{
 			CParticle@[] ps;
@@ -643,6 +646,7 @@ void onTick(CBlob@ this)
 				const f32 rad = 6.0f;
 				Vec2f random = Vec2f(XORRandom(150)-75, XORRandom(150)-75 ) * 0.015625f * rad;
 
+				
 				CParticle@ p = ParticleAnimated("MissileFire7.png", random, Vec2f(0,0), -random.Angle()+90, 1.0f, 1+XORRandom(2), 0.2f, true);
 				if (p !is null)
 				{
@@ -674,6 +678,7 @@ void onTick(CBlob@ this)
 			
 			this.set("cdreduction_particles", ps);
 		}
+		#endif
 		
 		if (cdreduction == 0)
 		{
