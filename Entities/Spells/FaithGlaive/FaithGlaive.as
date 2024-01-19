@@ -15,7 +15,7 @@ void onTick(CBlob@ this)
 {
 	this.set_u32("teleport_disable", getGameTime()+5);
 
-	bool remove = false;
+	bool remove = this.hasTag("dead");
 	u32 timing = this.get_u32("faithglaivetiming");
 	f32 diff = getGameTime() - timing;
 	Vec2f thispos = this.getPosition();
