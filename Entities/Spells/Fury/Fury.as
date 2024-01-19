@@ -90,6 +90,7 @@ void onTick(CBlob@ this)
 			CBlob@ proj = server_CreateBlob("furyprojectile", this.getTeamNum(), rndpos);
 			if (proj !is null)
 			{
+				proj.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 				proj.server_SetTimeToDie(2);
 				proj.set_f32("damping", 0.95f);
 				proj.set_f32("damage", 0.5f);
