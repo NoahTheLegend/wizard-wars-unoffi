@@ -22,6 +22,7 @@ void onInit(CBlob@ this)
 	CSprite@ sprite = this.getSprite();
 	sprite.setRenderStyle(RenderStyle::additive);
     sprite.RotateBy(-135, Vec2f_zero);
+	sprite.PlaySound("bunkercast.ogg", 1.5f, 1.3f+XORRandom(16)*0.01f);
 }
 
 void onTick(CBlob@ this)
@@ -66,7 +67,7 @@ void onTick(CBlob@ this)
 			float randomPVel = XORRandom(11) * 0.01f - 0.5f;
 			Vec2f particleVel = Vec2f(randomPVel, 0).RotateBy(XORRandom(721));
 
-    		CParticle@ p = ParticlePixelUnlimited(this.getPosition()+Vec2f(-3, 0).RotateByDegrees(this.getAngleDegrees()), particleVel, SColor(255,255,75+XORRandom(76),XORRandom(51)), true);
+    		CParticle@ p = ParticlePixelUnlimited(this.getPosition()+Vec2f(-5, 0).RotateByDegrees(this.getAngleDegrees()), particleVel, SColor(255,255,75+XORRandom(76),XORRandom(51)), true);
    			if(p !is null)
     		{
     		    p.collides = false;

@@ -1,5 +1,6 @@
 #include "Hitters.as";
 #include "SpellCommon.as";
+#include "TeamColour.as";
 
 void onInit(CBlob@ this)
 {
@@ -26,7 +27,6 @@ f32 stoprange = 48.0f;
 
 void onTick(CBlob@ this)
 {
-
 	Vec2f pos = this.getPosition();
 	Vec2f target_pos = this.get_Vec2f("target_pos");
 	bool back = this.get_bool("back");
@@ -39,7 +39,27 @@ void onTick(CBlob@ this)
 	f32 factor = 1.0f * Maths::Min(dist, stoprange) / stoprange;
 
 	// particles
-
+	if (isClient())
+	{
+		u8 t = this.getTeamNum();
+		for (u8 i = 0; i < 2; i++)
+		{
+			Vec2f dir = Vec2f(-4, 4 * (i%2==0?-1:1)).RotateBy(this.getAngleDegrees());
+			Vec2f ppos = this.getOldPosition()+dir;
+			Vec2f vel = this.getVelocity() + dir/4;
+			CParticle@ p = ParticlePixelUnlimited(ppos, vel, getTeamColor(t), true);
+    		if(p !is null)
+			{
+    			p.fastcollision = true;
+    			p.timeout = 15 + XORRandom(11);
+    			p.damping = 0.85f+XORRandom(101)*0.001f;
+				p.gravity = Vec2f(0,0);
+				p.collides = false;
+				p.Z = 510.0f;
+				p.setRenderStyle(RenderStyle::additive);
+			}
+		}
+	}
 
 	if (!isServer()) return;
 	

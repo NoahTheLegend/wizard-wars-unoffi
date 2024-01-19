@@ -31,9 +31,9 @@ namespace PaladinParams
 			SpellType::other, 25, 10, 3, 64.0f, true),
 			 
 		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards.",
-				SpellType::other, 15, 55, 2, 128.0f, true),
+				SpellType::other, 15, 40, 2, 128.0f, true),
 
-		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target transfers 33% of damage to you if nearby and your health is above 25%.",
+		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target transfers 33% of damage to you if nearby and your health is more than 25%.",
 				SpellType::other, 10, 30, 5, 256.0f, true),
 
 		Spell("manatohealth", "Aura: Sigma", 94, "Transfers your mana regeneration into health regeneration.",
@@ -55,13 +55,13 @@ namespace PaladinParams
 				SpellType::other, 0, 30, 6, 256.0f, true),
 
 		Spell("noblelance", "Noble Lance", 100, "Casts a piercing lance to move at chosen position. Goes back to caster position when stopped. Ignores tiles.",
-				SpellType::other, 25, 45, 0, 298.0f, true),
+				SpellType::other, 30, 50, 0, 298.0f, false),
 							
 		Spell("fury", "Fury", 101, "Summons a homing ring. Doesn't deal impact damage, instead launches small homing blades around itself. Lasts until despelled while has a target. Overcharge increases blades spawnrate.",
-				SpellType::other, 55, 65, 14, 128.0f, true),	
+				SpellType::other, 50, 75, 14, 128.0f, true),	
 
 		Spell("faithglaive", "Faith Glaive", 102, "",
-				SpellType::other, 0, 15, 0, 256.0f),
+				SpellType::other, 20, 45, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

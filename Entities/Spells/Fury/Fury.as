@@ -190,6 +190,6 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (solid)
 	{
-		this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 0.6f + XORRandom(3)/10.0f);
+		this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.5f, 0.6f + XORRandom(3)/10.0f);
 	}
 }

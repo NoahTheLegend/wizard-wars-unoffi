@@ -4316,7 +4316,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				case minimum_cast:
 				case medium_cast:
+				break;
+
 				case complete_cast:
+				{
+					velo += 2.0f;
+					orbDamage *= 1.25f;
+				}
 				break;
 				
 				case super_cast:
@@ -4356,9 +4362,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			switch(charge_state)
 			{
 				case minimum_cast:
+				{
+					return;
+				}
 				case medium_cast:
 				{
-					damage = 1.0f;
+					damage = 1.25f;
 				}
 				break;
 				case complete_cast:
@@ -4380,9 +4389,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			
 			if(!this.hasScript("FaithGlaive.as"))
 			{
+				this.getSprite().PlaySound("swordsummon.ogg", 1.5f, 0.85f+XORRandom(6)*0.01f);
+
+				this.set_bool("faithglaiveplaysound", true);
 				this.set_f32("faithglaivedamage", damage);
 				this.set_f32("faithglaiverotation", 0);
 				this.set_u32("faithglaivetiming", getGameTime());
+
 				this.AddScript("FaithGlaive.as");
 			}
 			else
@@ -4836,7 +4849,9 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			 || b.get_u16("airblastShield") > 0 
 			 || b.get_u16("stoneSkin") > 0
 			 || b.get_u16("waterbarrier") > 0
-			 || b.get_u16("dmgconnection") > 0)
+			 || b.get_u16("dmgconnection") > 0
+			 || b.get_u16("cdreduction") > 0
+			 )
 			 && !sameTeam )
 			{
 				if(b.get_u16("hastened") > 0)
@@ -4879,6 +4894,12 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				{
 					b.set_u16("dmgconnection", 1);
 					b.Sync("dmgconnection", true);
+				}
+
+				if (b.get_u16("cdreduction") > 0)
+				{
+					b.set_u16("cdreduction", 1);
+					b.Sync("cdreduction", true);
 				}
 					
 				countered = true;

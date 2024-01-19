@@ -13,13 +13,17 @@ const u8 particles_angle_rnd = 45;
 
 void onTick(CBlob@ this)
 {
+	this.set_u32("teleport_disable", getGameTime()+5);
+
 	bool remove = false;
 	u32 timing = this.get_u32("faithglaivetiming");
 	f32 diff = getGameTime() - timing;
 	Vec2f thispos = this.getPosition();
 	
+	bool wait = diff < wait_time;
+	
 	f32 last_angle = this.get_f32("faithglaiverotation");
-	f32 angle = diff < wait_time ? start_angle : Maths::Lerp(last_angle, target_angle, accel);
+	f32 angle = wait ? start_angle : Maths::Lerp(last_angle, target_angle, accel);
 	this.set_f32("faithglaiverotation", angle);
 
 	f32 angle_factor = Maths::Max(0, angle / target_angle);
@@ -32,9 +36,15 @@ void onTick(CBlob@ this)
 
 	if (isClient())
 	{
+		if (!wait && this.get_bool("faithglaiveplaysound"))
+		{
+			this.set_bool("faithglaiveplaysound", false);
+			sprite.PlaySound("glaiveswipe.ogg", 1.0f, 0.95f+XORRandom(11)*0.01f);
+		}
+
 		if (glaive !is null)
 		{
-			glaive.SetRelativeZ(30.0f);
+			glaive.SetRelativeZ(510.0f);
 
 			glaive.ResetTransform();
 			glaive.SetOffset(glaive_offset);
@@ -160,7 +170,7 @@ void makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, string filena
 
 	if (image.isLoaded())
 	{
-        Vec2f vel = this.getOldVelocity();
+        Vec2f vel = this.getOldVelocity()*0.75f;
         f32 deg = angle;
         bool fl = this.isFacingLeft();
         f32 layer = 510.0f;
