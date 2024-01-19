@@ -3971,7 +3971,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1676183192: // templar hammer
 		{
-			this.getSprite().PlaySound("hammercast.ogg", 1.5f, 0.95f+XORRandom(6)*0.01f);
+			this.getSprite().PlaySound("hammercast.ogg", 1.0f, 1.15f+XORRandom(6)*0.01f);
 
 			if (!isServer())
 			{return;}
@@ -4272,13 +4272,15 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 
 			f32 orbspeed = necro_shoot_speed * 0.25f;
-			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
-			f32 orbDamage = 0.25f * extraDamage;
+			bool extraDamage = this.hasTag("extra_damage");
+			int bladesRate = 10;
             
 			if (charge_state == super_cast) {
-				orbDamage *= 1.25f;
 				orbspeed *= 1.25f;
+				bladesRate -= 3;
 			}
+			if (extraDamage)
+				bladesRate -= 3;
 
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 			Vec2f orbVel = (aimpos - orbPos);
@@ -4288,13 +4290,111 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			CBlob@ orb = server_CreateBlob("fury");
 			if (orb !is null)
 			{
-				orb.set_f32("damage", orbDamage);
-
+				orb.set_f32("spawnrate", bladesRate);
 				orb.IgnoreCollisionWhileOverlapped( this );
 				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.server_setTeamNum( this.getTeamNum() );
 				orb.setPosition( orbPos );
 				orb.setVelocity( orbVel );
+			}
+		}
+		break;
+
+		case -1482927474://noble lance
+		{
+			this.getSprite().PlaySound("hammercast.ogg", 1.0f, 0.75f+XORRandom(6)*0.01f);
+
+			if (!isServer()){
+           		return;
+			}
+
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
+			f32 orbDamage = 1.0f * extraDamage;
+			f32 velo = 7.0f;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					velo += 2.0f;
+					orbDamage *= 1.25f;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+
+			CBlob@ orb = server_CreateBlob("noblelance",this.getTeamNum(),orbPos);
+			if (orb !is null)
+			{
+				orb.set_f32("damage", orbDamage);
+				orb.set_Vec2f("target_pos", aimpos);
+				orb.set_f32("speed", velo);
+				
+				Vec2f dir = aimpos - this.getPosition();
+				f32 deg = -dir.Angle();
+				orb.setAngleDegrees(deg);
+
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
+				orb.getShape().SetGravityScale(0);
+			}
+		}
+		break;
+
+		case -836474293://faith glaive
+		{
+			f32 damage = 1.0f;
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				{
+					damage = 1.0f;
+				}
+				break;
+				case complete_cast:
+				{
+					damage = 1.5f;
+				}
+				break;
+				
+				case super_cast:
+				{
+					damage = 2.0f;
+				}
+				break;
+				
+				default:return;
+			}
+
+			damage *= extraDamage;
+			
+			if(!this.hasScript("FaithGlaive.as"))
+			{
+				this.set_f32("faithglaivedamage", damage);
+				this.set_f32("faithglaiverotation", 0);
+				this.set_u32("faithglaivetiming", getGameTime());
+				this.AddScript("FaithGlaive.as");
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 			}
 		}
 		break;

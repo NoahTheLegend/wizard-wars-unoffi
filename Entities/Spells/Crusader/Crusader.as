@@ -19,6 +19,7 @@ void onInit(CBlob@ this)
 
 	this.set_u16("lifetime", 20);
     this.server_SetTimeToDie(20);
+	this.getSprite().SetRelativeZ(-30.0f);
 	
 	this.setAngleDegrees(90);
 }

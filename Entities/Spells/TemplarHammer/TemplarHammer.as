@@ -14,12 +14,13 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	shape.SetGravityScale(0.0f);
 
-	this.set_f32("damage", 1.0f);
+	this.set_f32("damage", 0.6f + XORRandom(3)*0.1f); // 3-4
 	this.getSprite().SetZ(9.0f);
 
     //dont collide with top of the map
     this.server_SetTimeToDie(3);
 	CSprite@ sprite = this.getSprite();
+	this.set_u16("smashtoparticles_probability", 1); // 1 is 100%, 2 is 50% and so on
 }
 
 void onTick(CBlob@ this)

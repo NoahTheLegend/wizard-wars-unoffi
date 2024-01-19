@@ -1,6 +1,6 @@
 void onDie(CBlob@ this) //so its synced
 {
-    if (!makeParticlesFromSpriteAccurate(this, this.getSprite()))
+    if (!makeParticlesFromSpriteAccurate(this, this.getSprite(), this.get_u16("smashtoparticles_probability")))
     {
         ParticlesFromSprite(this.getSprite());
     }
@@ -25,7 +25,7 @@ SColor blueRedSwap(SColor oldcol, u8 t)
     return SColor(newcol);
 }
 
-bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite)
+bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probability)
 {
     CFileImage@ image;
     @image = CFileImage(sprite.getConsts().filename);
@@ -47,6 +47,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite)
         while(image.nextPixel() && w != 0 && h != 0)
 		{
 			SColor px_col = image.readPixel();
+            if (XORRandom(probability) != 0) continue;
             if (px_col.getAlpha() != 255) continue;
             px_col = blueRedSwap(px_col, this.getTeamNum());
 

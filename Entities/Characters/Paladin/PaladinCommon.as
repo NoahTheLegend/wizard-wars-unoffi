@@ -21,7 +21,7 @@ namespace PaladinParams
 
 	const ::Spell[] spells = 
 	{
-		Spell("templarhammer", "Templar Hammer", 92, "Throws a magic hammer affected by gravity.",
+		Spell("templarhammer", "Templar Hammer", 92, "Throws a magic hammer that is affected by gravity.",
 				SpellType::other, 7, 22, 0, 120.0f, true),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
@@ -42,9 +42,7 @@ namespace PaladinParams
 		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 200% of received enemy damage and 100% of friendly damage.",
 				SpellType::other, 0, 15, 5, 0, true),
 
-		//Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge to gain more barriers.",
-		//		SpellType::other, 0, 15, 0, 0.0f),
-		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge to gain more barriers.",
+		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
 				SpellType::other, 30, 70, 10, 0.0f),
 				
 		Spell("healblocker", "Humility", 96, "Nullifies incoming heal for target.",
@@ -56,14 +54,14 @@ namespace PaladinParams
 		Spell("sealofwisdom", "Seal of Wisdom", 99, "Consumes 10 of your HP to restore 20 mana for an ally.",
 				SpellType::other, 0, 30, 6, 256.0f, true),
 
-		Spell("noblelance", "Noble Lance", 100, "",
-				SpellType::other, 0, 15, 0, 64.0f),
+		Spell("noblelance", "Noble Lance", 100, "Casts a piercing lance to move at chosen position. Goes back to caster position when stopped. Ignores tiles.",
+				SpellType::other, 25, 45, 0, 298.0f, true),
 							
-		Spell("fury", "Fury", 101, "",
-				SpellType::other, 0, 15, 0, 128.0f, true),	
+		Spell("fury", "Fury", 101, "Summons a homing ring. Doesn't deal impact damage, instead launches small homing blades around itself. Lasts until despelled while has a target. Overcharge increases blades spawnrate.",
+				SpellType::other, 55, 65, 14, 128.0f, true),	
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("faithglaive", "Faith Glaive", 102, "",
+				SpellType::other, 0, 15, 0, 256.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

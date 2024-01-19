@@ -51,7 +51,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	Vec2f f(x_side, y_side);
 
-	if (damage > 0.125f && customData != 41)
+	if (damage > 0.125f && customData != 41 && velocity.y != -0.69f)
 	{
 		this.AddForce(f * 40.0f * scale * Maths::Log(2.0f * (10.0f + (damage * 2.0f))));
 	}

@@ -45,6 +45,6 @@ void changeWizDefaultClass( CPlayer@ thisPlayer, string classConfig = "" )
 		
 	if (thisPlayer.isMyPlayer())
 	{
-		client_AddToChat("You will now be a " + classConfig + " the next time you respawn or get revived.", SColor(255,255,0,200));
+		client_AddToChat("You will be a " + classConfig + " the next time you respawn or get revived.", SColor(255,255,0,200));
 	}
 }

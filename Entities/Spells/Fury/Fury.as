@@ -31,7 +31,7 @@ void onTick(CBlob@ this)
 	this.SetFacingLeft(true);
 	if (this.getTickSinceCreated()==0)
 	{
-		this.getSprite().PlaySound("FireBlast4.ogg", 0.8f, 1.15f + XORRandom(21)*0.01f);
+		this.getSprite().PlaySound("flame_slash_sound.ogg", 1.75f, 1.45f + XORRandom(16)*0.01f);
 	}
 
 	// find target
@@ -46,7 +46,7 @@ void onTick(CBlob@ this)
 		if (p is null || p.getBlob() is null) continue;
 
 		CBlob@ b = p.getBlob();
-		//if (!isEnemy(this, b)) continue;
+		if (!isEnemy(this, b)) continue;
 
 		f32 cur_dist = this.getDistanceTo(b);
 		if (cur_dist >= dist) continue;
@@ -81,6 +81,19 @@ void onTick(CBlob@ this)
 	    f32 angle_shift = (cross > 0) ? r : (cross < 0) ? -r : 0;
 
 	    this.setVelocity(vel.RotateBy(angle_shift) * speed_mod);
+
+		if (isServer() && getGameTime() % this.get_f32("spawnrate") == 0)
+		{
+			Vec2f rndpos = this.getPosition() + Vec2f(this.getRadius(), 0).RotateBy(XORRandom(360));
+			CBlob@ proj = server_CreateBlob("furyprojectile", this.getTeamNum(), rndpos);
+			if (proj !is null)
+			{
+				proj.server_SetTimeToDie(2);
+				proj.set_f32("damping", 0.95f);
+				proj.set_f32("damage", 0.5f);
+				proj.setVelocity(Vec2f(8.0f+XORRandom(21)*0.1f, 0).RotateBy(-(rndpos-this.getPosition()).Angle()+90));
+			}
+		}
 	}
 	else
 	{
@@ -149,9 +162,6 @@ void onTick(CSprite@ this) //rotating sprite
 
 void onDie(CBlob@ this)
 {
-	if(!this.hasTag("exploding"))
-	{return;}
-
 	Vec2f thisPos = this.getPosition();
 	//Vec2f othPos = blob.getPosition();
 	//Vec2f kickDir = othPos - selfPos;
@@ -164,7 +174,7 @@ void onDie(CBlob@ this)
 
 	if (isClient()) 
 	{
-		this.getSprite().PlaySound("GenericExplosion1.ogg", 0.8f, 0.8f + XORRandom(10)/10.0f);
+		this.getSprite().PlaySound("Whack"+(1+XORRandom(3))+".ogg", 1.5f, 1.0f + XORRandom(10)/10.0f);
 	}
 }
 
