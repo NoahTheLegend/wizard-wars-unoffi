@@ -22,7 +22,7 @@ namespace PaladinParams
 	const ::Spell[] spells = 
 	{
 		Spell("templarhammer", "Templar Hammer", 92, "Throws a magic hammer that is affected by gravity.",
-				SpellType::other, 7, 22, 0, 120.0f, true),
+				SpellType::other, 6, 20, 0, 120.0f, true),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 20, 8, 0, 160.0f, true),
@@ -43,25 +43,25 @@ namespace PaladinParams
 				SpellType::other, 0, 15, 5, 0, true),
 
 		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
-				SpellType::other, 30, 70, 10, 0.0f),
+				SpellType::other, 30, 50, 10, 0.0f),
 				
 		Spell("healblocker", "Humility", 96, "Nullifies incoming heal for target.",
-				SpellType::other, 12, 30, 0, 256.0f, true),
+				SpellType::other, 12, 20, 0, 256.0f, true),
 
 		Spell("majestyglyph", "Glyph of Majesty", 98, "Doubles spell recharge rate.",
-				SpellType::other, 20, 50, 12, 96.0f, true),
+				SpellType::other, 20, 30, 12, 96.0f, true),
 				
 		Spell("sealofwisdom", "Seal of Wisdom", 99, "Consumes 10 of your HP to restore 20 mana for an ally.",
 				SpellType::other, 0, 30, 6, 256.0f, true),
 
 		Spell("noblelance", "Noble Lance", 100, "Casts a piercing lance to move at chosen position. Goes back to caster position when stopped. Ignores tiles.",
-				SpellType::other, 30, 50, 0, 298.0f, false),
+				SpellType::other, 30, 45, 0, 298.0f, false),
 							
 		Spell("fury", "Fury", 101, "Summons a homing ring. Doesn't deal impact damage, instead launches small homing blades around itself. Lasts until despelled while has a target. Overcharge increases blades spawnrate.",
 				SpellType::other, 40, 75, 8, 128.0f, true),	
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to attack in front of you. The spell follows you, however disables teleport and awaits some time before swipe.",
-				SpellType::other, 20, 45, 0, 0.0f),
+				SpellType::other, 20, 30, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
