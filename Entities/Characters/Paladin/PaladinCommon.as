@@ -64,7 +64,7 @@ namespace PaladinParams
 				SpellType::other, 15, 30, 0, 0.0f),
 
 		Spell("blesscircle", "Bless circle", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
-				SpellType::other, 25, 90, 18, 198.0f),
+				SpellType::other, 25, 90, 18, 198.0f, true),
 							
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
