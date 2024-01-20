@@ -544,7 +544,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
     		for (int i = 0; i < 64; i++)
 			{
 			    Vec2f pbPos = this.getOldPosition();
-			    SColor color = SColor(255,XORRandom(55)+125,25,255);
+			    SColor color = SColor(255,XORRandom(55)+155,25,255);
 
 			    CParticle@ pb = ParticlePixelUnlimited(pbPos, Vec2f(2+XORRandom(4), 0).RotateBy(XORRandom(360)), color, true);
 			    if(pb !is null)

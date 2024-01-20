@@ -23,8 +23,8 @@ void onInit(CBlob@ this)
 	this.set_u32("lock_time", 0);
 }
 
-f32 cap_dist = 256.0f;
-f32 angle_change_base = 3.0f;
+f32 cap_dist = 256.0f + 64.0f;
+f32 angle_change_base = 4.0f;
 f32 damping = 0.975f;
 
 void onTick(CBlob@ this)
@@ -80,7 +80,7 @@ void onTick(CBlob@ this)
 		this.set_f32("momentum", Maths::Max(speed_mod, target_speed));
 	
 	    f32 r = angle_change_base * Maths::Max(1.0f, speed_mod/4);
-	    f32 angle_shift = (cross > 0) ? r : (cross < 0) ? -r : 0;
+	    f32 angle_shift = (cross > 0) ? r : -r;
 
 	    this.setVelocity(vel.RotateBy(angle_shift) * speed_mod);
 

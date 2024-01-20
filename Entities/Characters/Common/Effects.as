@@ -9,9 +9,11 @@
 
 Random _sprk_r2(12345);
 
-f32 connection_dist = 256.0f;
-f32 connection_dmg_reduction = 0.33f;
-f32 min_connection_health_ratio = 0.25f;
+const f32 connection_dist = 256.0f;
+const f32 connection_dmg_reduction = 0.5f;
+const f32 connection_dmg_transfer = 0.25f;
+const f32 min_connection_health_ratio = 0.25f;
+const f32 barrier_dmg_decrease = 0.66f;
 
 void onInit(CBlob@ this)
 {
@@ -101,7 +103,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
                 }
                 if (isServer())
                 {
-                    damage *= 0.5f;
+                    damage *= barrier_dmg_decrease;
                 }
             }
         }
@@ -118,15 +120,16 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
                 if (link !is null && this.getDistanceTo(link) < connection_dist
                     && link.getHealth()/link.getInitialHealth() > min_connection_health_ratio)
                 {
-                    f32 dmg = damage*connection_dmg_reduction;
+                    f32 transfer_dmg = damage*connection_dmg_transfer;
+
                     if (hitterBlob !is null)
                     {
-                        hitterBlob.server_Hit(link, link.getPosition(), Vec2f_zero, dmg, Hitters::fall, true);
+                        hitterBlob.server_Hit(link, link.getPosition(), Vec2f_zero, transfer_dmg, Hitters::fall, true);
                     }
                     else
-                        this.server_Hit(link, link.getPosition(), Vec2f_zero, dmg, Hitters::fall, true);
+                        this.server_Hit(link, link.getPosition(), Vec2f_zero, transfer_dmg, Hitters::fall, true);
 
-                    damage *= (1.0f - connection_dmg_reduction);
+                    damage *= connection_dmg_reduction;
                 }
             }
         }

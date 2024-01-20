@@ -4239,7 +4239,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.set_u8("override_sprite_frame", 11);
 					orb.set_u8("mana_used", 1);
 					orb.set_u8("caster_mana", 1);
-					orb.set_u8("direct_restore", 20);
+					orb.set_u8("direct_restore", 25);
 					orb.set_bool("silent", false);
 
 					if(!targetless)

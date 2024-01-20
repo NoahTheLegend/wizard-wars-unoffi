@@ -1,7 +1,8 @@
 #include "MagicCommon.as";
 
 const u8 MIN_FOCUS_TIME = 5; //in seconds
-const f32 mana_to_health_ratio = 0.25f;
+const f32 mana_to_health_ratio = 0.0f;
+const f32 health_per_regen = 0.5f;
 
 void onInit(CBlob@ this)
 {
@@ -116,7 +117,7 @@ void onTick(CBlob@ this)
             if (this.isMyPlayer())
 			{
 				CBitStream params;
-				params.write_f32(adjustedManaRegenRate*mana_to_health_ratio*0.1f);
+				params.write_f32((adjustedManaRegenRate*mana_to_health_ratio+health_per_regen)*0.1f);
 				this.SendCommand(this.getCommandID("request_heal"), params);
 			}
         }

@@ -16,7 +16,7 @@ void onInit( CBlob@ this)
 	this.getCurrentScript().removeIfTag = "dead";
 }
 
-void onTick( CBlob@ this)
+void onTick(CBlob@ this)
 {	
 	bool casting = this.hasTag("in spell sequence");
 	if ( casting == false )
@@ -42,8 +42,8 @@ void onTick( CBlob@ this)
 		this.DisableMouse(true);
 		
 		//effects
-		if ( getNet().isClient() && currentTime % 4 == 0 )
-			makeFoNParticle( this, this.getPosition(), Vec2f(0,0) );
+		if (isClient() && currentTime % 4 == 0)
+			makeFoNParticle(this, this.getPosition(), Vec2f(0,0));
 	}
 	else if ( timeElapsed >= CAST_TIME )
 	{
@@ -65,7 +65,7 @@ void onTick( CBlob@ this)
 
 void updateFoNParticle( CParticle@ p )
 {
-	if ( !getNet().isClient() )
+	if (!isClient())
 		return;
 
 	CBlob@[] FoNCasters;
@@ -82,15 +82,18 @@ void updateFoNParticle( CParticle@ p )
 			Vec2f pPos = p.position;
 			Vec2f forceVec = bPos - pPos;
 			
-			f32 dist = forceVec.getLength();			
+			f32 dist = forceVec.getLength();
+			if (dist == 0.0f) dist += 1.0f;
+					
 			if (dist < best_dist)
 			{
 				best_dist=dist;
 				
 				Vec2f forceNorm = forceVec;
 				forceNorm.Normalize();
-				p.gravity = forceNorm*(Maths::Pow(2.0f/(dist+1), 2))*0.1f;
-				
+				p.gravity = forceNorm*(Maths::Pow(2.0f/dist+1, 2))*0.1f;
+				printf(""+dist);
+				//p.gravity = forceNorm*(2.0f/(dist+1)^2)*0.1f;
 				Vec2f pVelNorm = p.velocity;
 				pVelNorm.Normalize();
 				p.rotation = -pVelNorm;
@@ -111,7 +114,7 @@ void updateFoNParticle( CParticle@ p )
 Random _sprk_r(12345);
 void makeFoNParticle(CBlob@ this, Vec2f pos, Vec2f vel )
 {
-	if (isServer())
+	if (!isClient())
 		return;
 
 	u8 emitEffect = GetCustomEmitEffectID( "FoNEmit" );

@@ -9,7 +9,7 @@ const f32 fallend = 400;
 const f32 decel = 0.15f;
 // attack
 u8 radius = 12; // n tiles in both sides
-f32 force = 200.0f;
+f32 force = 235.0f;
 f32 depth = 64.0f;
 f32 hitradius = 12.0f;
 

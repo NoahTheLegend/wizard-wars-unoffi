@@ -14,7 +14,7 @@ void onInit( CBlob@ this )
     f32 new_force = BASE_DASH_FORCE;
     if (this.getName() == "paladin")
     {
-        new_force *= 0.8f;
+        new_force *= 0.85f;
     }
     this.set_f32("dash_force", new_force);
 }

@@ -488,12 +488,10 @@ void onTick(CBlob@ this)
 					sum += val;
 
 					Vec2f pbPos = this.getOldPosition() - Vec2f(0,h) + Vec2f(val, 0).RotateBy(360/amount*i);
-					SColor color = SColor(255,XORRandom(75)+100,25,255);
-					if (val > 3.0f)
-					{
-						color = SColor(255, 225+XORRandom(25), 65+XORRandom(25), 225);
-					}
-					
+
+					u8 rnd = XORRandom(75);
+					SColor color = SColor(255,255,25+rnd,25+rnd);
+
 					CParticle@ pb = ParticlePixelUnlimited(pbPos, this.getVelocity(), color , true);
 					if(pb !is null)
 					{
@@ -506,7 +504,7 @@ void onTick(CBlob@ this)
 						pb.Z = 500;
 					}
 				}
-				if (sum <= 5)
+				if (sum <= 8)
 				{
 					f32 angle = 67.5f;
 					for (u8 i = 0; i < amount; i++)
@@ -538,7 +536,8 @@ void onTick(CBlob@ this)
 			for (int i = 0; i < amount*2; i++)
 			{
 				Vec2f pbPos = this.getOldPosition() - Vec2f(0,h);
-				SColor color = SColor(255,XORRandom(55)+125,25,255);
+				u8 rnd = XORRandom(55);
+				SColor color = SColor(255,255,25+rnd,25+rnd);
 				
 				CParticle@ pb = ParticlePixelUnlimited(pbPos, Vec2f(4+XORRandom(2), 0).RotateBy(XORRandom(360)), color, true);
 				if(pb !is null)
@@ -585,8 +584,7 @@ void onTick(CBlob@ this)
 					sum += val;
 
 					Vec2f pbPos = this.getOldPosition() - Vec2f(0,h) + Vec2f(val, 0).RotateBy(360/amount*i);
-					u8 rnd = XORRandom(75);
-						SColor color = SColor(255,255,25+rnd,25+rnd);
+					SColor color = SColor(255,XORRandom(75)+100,25,255);
 					
 					CParticle@ pb = ParticlePixelUnlimited(pbPos, this.getVelocity(), color , true);
 					if(pb !is null)
@@ -609,7 +607,7 @@ void onTick(CBlob@ this)
 			{
 				Vec2f pbPos = this.getOldPosition() - Vec2f(0,h);
 				u8 rnd = XORRandom(75);
-				SColor color = SColor(255,255,25+rnd,25+rnd);
+				SColor color = SColor(255,XORRandom(55)+125,25,255);
 				
 				CParticle@ pb = ParticlePixelUnlimited(pbPos, Vec2f(2+XORRandom(2), 0).RotateBy(XORRandom(360)), color, true);
 				if(pb !is null)
@@ -645,7 +643,6 @@ void onTick(CBlob@ this)
 			{
 				const f32 rad = 6.0f;
 				Vec2f random = Vec2f(XORRandom(150)-75, XORRandom(150)-75 ) * 0.015625f * rad;
-
 				
 				CParticle@ p = ParticleAnimated("MissileFire7.png", random, Vec2f(0,0), -random.Angle()+90, 1.0f, 1+XORRandom(2), 0.2f, true);
 				if (p !is null)

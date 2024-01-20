@@ -148,14 +148,15 @@ void updateBlackHoleParticle( CParticle@ p )
 			Vec2f pPos = p.position;
 			Vec2f forceVec = bPos - pPos;
 			
-			f32 dist = forceVec.getLength();			
+			f32 dist = forceVec.getLength();
+			if (dist == 0.0f) dist += 1.0f;
 			if (dist < best_dist)
 			{
 				best_dist=dist;
 				
 				Vec2f forceNorm = forceVec;
 				forceNorm.Normalize();
-				p.gravity = forceNorm*(Maths::Pow(2.0f/(dist+1), 2));
+				p.gravity = forceNorm*(Maths::Pow(2.0f/dist+1, 2));
 				
 				Vec2f pVelNorm = p.velocity;
 				pVelNorm.Normalize();
