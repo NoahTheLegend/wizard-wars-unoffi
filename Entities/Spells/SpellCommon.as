@@ -4412,6 +4412,15 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -1260314500: //bless circle
+			if(isServer())
+			{
+				CBlob@ circle = server_CreateBlob('bless_circle',3,aimpos);
+				circle.SetDamageOwnerPlayer(this.getPlayer());
+				circle.set_s32("aliveTime",charge_state == 5 ? 1800 : 1350);
+			}
+		break;
+
 		default:
 		{
 			if (spell.type == SpellType::summoning)

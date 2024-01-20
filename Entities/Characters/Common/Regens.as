@@ -18,6 +18,7 @@ void onInit(CBlob@ this)
     this.set_bool("manatohealth", false); // avoid having null (random) value there on client
     this.set_bool("damagetomana", false);
     this.set_u16("manaburn", 0);
+    this.set_u32("overload mana regen", 0);
 
     this.addCommandID("request_heal");
 }
@@ -143,10 +144,11 @@ void onTick(CBlob@ this)
     return;
 
     u8 ogRegen = this.get_s32("OG_manaRegen");
+    bool extra = this.get_u32("overload mana regen") > getGameTime();
 
-    if(this.getVelocity() == Vec2f_zero)
+    if(this.getVelocity() == Vec2f_zero || extra)
     {
-        if(this.get_u16("focus") > (ticksPerSecond * MIN_FOCUS_TIME) )
+        if(this.get_u16("focus") > (ticksPerSecond * MIN_FOCUS_TIME) || extra)
         {
             if(ogRegen != 0)
             {
