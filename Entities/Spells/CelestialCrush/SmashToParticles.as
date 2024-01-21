@@ -8,6 +8,7 @@ void onDie(CBlob@ this) //so its synced
 
 //doing this shitcode bc i am tired of trying to connect it to palette swap, i will hang myself
 //if i get back to it again
+//doesnt support framing and particle props yet
 
 const int[] cols = {0xff2cafde,0xff1d85ab,0xff1a4e83,0xff222760,0xffd5543f,0xffb73333,0xff941b1b,0xff3b1406};
 
