@@ -22,7 +22,7 @@ namespace PaladinParams
 	const ::Spell[] spells = 
 	{
 		Spell("templarhammer", "Templar Hammer", 92, "Throws a magic hammer that is affected by gravity.",
-				SpellType::other, 6, 20, 0, 120.0f, true),
+				SpellType::other, 5, 20, 0, 120.0f, true),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 25, 8, 0, 160.0f, true),
@@ -31,7 +31,7 @@ namespace PaladinParams
 			SpellType::other, 25, 10, 3, 64.0f, true),
 			 
 		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards.",
-				SpellType::other, 15, 45, 4, 198.0f, true),
+				SpellType::other, 12, 45, 4, 198.0f, true),
 
 		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target transfers 25% of damage to you and receives 25% less damage (50% in total) if nearby and your health is more than 25%.",
 				SpellType::other, 20, 45, 8, 256.0f, true),
@@ -43,25 +43,25 @@ namespace PaladinParams
 				SpellType::other, 0, 15, 5, 0, true),
 
 		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
-				SpellType::other, 30, 45, 10, 0.0f),
+				SpellType::other, 25, 45, 10, 0.0f),
 				
 		Spell("healblocker", "Humility", 96, "Nullifies incoming heal for target.",
 				SpellType::other, 12, 20, 0, 256.0f, true),
 
 		Spell("majestyglyph", "Glyph of Majesty", 98, "Doubles spell recharge rate.",
-				SpellType::other, 25, 30, 12, 96.0f, true),
+				SpellType::other, 18, 30, 12, 96.0f, true),
 				
 		Spell("sealofwisdom", "Seal of Wisdom", 99, "Consumes 10 of your HP to restore 25 mana for an ally.",
 				SpellType::other, 0, 30, 6, 256.0f, true),
 
 		Spell("noblelance", "Noble Lance", 100, "Casts a piercing lance to move at chosen position. Goes back to caster position when stopped. Ignores tiles.",
-				SpellType::other, 35, 45, 0, 298.0f, false),
+				SpellType::other, 30, 45, 0, 298.0f, false),
 							
 		Spell("fury", "Fury", 101, "Summons a homing ring. Doesn't deal collision damage, launches small homing blades around itself instead. Lasts until despelled while has a target. Overcharge increases blades spawnrate.",
-				SpellType::other, 55, 75, 8, 128.0f, true),	
+				SpellType::other, 45, 75, 8, 128.0f, true),	
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to attack in front of you. The spell disables teleport and awaits some time before attack.",
-				SpellType::other, 20, 30, 0, 0.0f),
+				SpellType::other, 15, 30, 0, 0.0f),
 
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
 				SpellType::other, 25, 90, 18, 198.0f, true),
