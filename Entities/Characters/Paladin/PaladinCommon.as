@@ -63,7 +63,7 @@ namespace PaladinParams
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to attack in front of you. The spell disables teleport and awaits some time before attack.",
 				SpellType::other, 15, 30, 0, 0.0f),
 
-		Spell("blesscircle", "Bless circle", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
+		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
 				SpellType::other, 25, 90, 18, 198.0f, true),
 							
 		Spell("", "", 0, "Empty spell.",
