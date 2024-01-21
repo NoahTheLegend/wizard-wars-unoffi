@@ -33,13 +33,15 @@ void onInit( CBlob @ this )
 	CSprite@ thisSprite = this.getSprite();
 	thisSprite.getConsts().accurateLighting = false;
 	thisSprite.PlaySound("EnergyBolt1.ogg", 2.0f, 1.0f + XORRandom(5)/10.0f);
-	
+
+	this.set_bool("initialized", false);
+	this.server_SetTimeToDie(LIFETIME);
+
+	if (!isClient()) return;
+	if (this is null) return;
+
 	Setup(SColor(220, 237, 20, 20), "rend3", false);//Red Laser
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "Leech.as", "laserEffects");
-	
-	this.set_bool("initialized", false);
-	
-	this.server_SetTimeToDie(LIFETIME);
 }
 
 void setPositionToOwner(CBlob@ this)

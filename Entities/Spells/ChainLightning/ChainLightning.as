@@ -30,7 +30,13 @@ void onInit(CBlob @ this)
 	shape.SetStatic(true);
 	shape.SetGravityScale( 0.0f );
 	shape.SetRotationsAllowed(false);
-	  
+	
+	this.set_bool("initialized", false);
+	this.server_SetTimeToDie(LIFETIME);
+
+	if (!isClient()) return;
+	if (this is null) return;
+
 	CSprite@ thisSprite = this.getSprite();
 	thisSprite.getConsts().accurateLighting = false;
 	thisSprite.PlaySound("lightning_impact.ogg", 1.5f, 1.35f + XORRandom(26)*0.01f);
@@ -40,10 +46,6 @@ void onInit(CBlob @ this)
 	Setup(SColor(255, 100, 150, 235), "rend6", false);
 	Setup(SColor(255, 195, 195, 225), "rend7", false);
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "ChainLightning.as", "laserEffects");
-	
-	this.set_bool("initialized", false);
-	
-	this.server_SetTimeToDie(LIFETIME);
 }
 
 void setPositionToOwner(CBlob@ this)

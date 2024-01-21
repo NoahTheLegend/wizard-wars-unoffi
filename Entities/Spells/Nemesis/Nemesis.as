@@ -17,6 +17,9 @@ void onInit(CBlob@ this)
     this.server_SetTimeToDie(3.0f);
     this.getSprite().SetZ(-5.0f);
 
+    if (!isClient()) return;
+    if (this is null) return;
+
     Setup(SColor(55, 255, 255, 255), "nemesis", false);
     int cb_id = Render::addBlobScript(Render::layer_prehud, this, "Nemesis.as", "laserEffects");
 }
