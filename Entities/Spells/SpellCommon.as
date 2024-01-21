@@ -2016,6 +2016,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -1532527513://nemesis
 		{
+			if (!isServer()) return;
+			
 			CBlob@ orb = server_CreateBlob("nemesis" , this.getTeamNum() , aimpos);
 			if (orb !is null)
 			{
