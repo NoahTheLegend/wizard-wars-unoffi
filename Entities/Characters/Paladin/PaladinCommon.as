@@ -14,7 +14,7 @@ namespace PaladinParams
 
 	const ::f32 shoot_max_vel = 8.0f;
 	const ::f32 MAX_ATTACK_DIST = 360.0f;
-	const ::s32 MAX_MANA = 250;
+	const ::s32 MAX_MANA = 300;
 	const ::s32 MANA_REGEN = 3;
 	
 	const ::string[] zombieTypes = {"zombie", "skeleton", "greg", "wraith"};
