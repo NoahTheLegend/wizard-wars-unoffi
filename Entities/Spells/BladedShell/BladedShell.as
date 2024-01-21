@@ -9,8 +9,10 @@ void onTick(CBlob@ this)
 		this.set_u32("timeActive",(10*30) + getGameTime());//10 seconds from now
 		this.set_f32("effectRadius",8*2);// 2 block radius
 		this.set_u32("attackRate",15); // half a second
-		this.getSprite().AddScript("BladedShell.as");//need to do this to get the sprite hooks to run
-
+		if (isClient())
+		{
+			this.getSprite().AddScript("BladedShell.as");//need to do this to get the sprite hooks to run
+		}
 		this.set_bool("shellSetupDone",true);
 	}
 

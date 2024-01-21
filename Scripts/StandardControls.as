@@ -27,7 +27,7 @@ void onInit(CBlob@ this)
 
 	//add to the sprite
 	CSprite@ sprite = this.getSprite();
-	if (sprite !is null)
+	if (isClient() && sprite !is null)
 	{
 		sprite.AddScript("StandardControls.as");
 	}

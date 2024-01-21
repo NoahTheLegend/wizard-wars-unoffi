@@ -389,7 +389,7 @@ void intitializeClasses()
 													"Justice guardian. Handicapped in spells range and agility. Complexity: MEDIUM" +
 													"\n\n     Health: 150" +
 													"\n     Mana: 300" +
-													"\n     Mana Regen: 2 mana/sec",
+													"\n     Mana Regen: 3 mana/sec",
 													"paladin", 8, 0, 9, 0, "WizardWars");
 													
 /*	playerClassButtons.registerWWPlayerClassButton("Archer", 

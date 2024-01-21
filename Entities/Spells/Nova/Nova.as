@@ -12,10 +12,13 @@ void onInit( CBlob@ this )
 	this.Tag("projectile");
 	this.Tag("die_in_divine_shield");
 	
-	CSprite@ thisSprite = this.getSprite();
-	thisSprite.AddScript("Nova.as");
-	thisSprite.SetZ(500.0f);
-	thisSprite.ScaleBy(0.2f, 0.2f);
+	if (isClient())
+	{
+		CSprite@ thisSprite = this.getSprite();
+		thisSprite.AddScript("Nova.as");
+		thisSprite.SetZ(500.0f);
+		thisSprite.ScaleBy(0.2f, 0.2f);
+	}
 	
 	this.Tag("counterable");
 	

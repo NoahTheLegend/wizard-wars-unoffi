@@ -8,7 +8,10 @@ void onTick(CBlob@ this)
 	{
 		this.set_u32("endTime",(1*30) + getGameTime());//1 second from now
 		this.set_u32("timePassed", 0); //counter system
-		this.getSprite().AddScript("FlameSlash.as");//need to do this to get the sprite hooks to run
+		if (isClient())
+		{
+			this.getSprite().AddScript("FlameSlash.as");//need to do this to get the sprite hooks to run
+		}
 		this.set_bool("flame_slash_activation", false);
 
 		this.set_bool("slashSetupDone",true);

@@ -13,7 +13,11 @@ void onTick(CBlob@ this)
 	{
 		this.set_u32("remainingTime",(5*30) + getGameTime());//5 seconds from now
 		this.set_f32("effectRadius",9.7f);// increasing radius
-		this.getSprite().AddScript("VoltageField.as");//need to do this to get the sprite hooks to run
+
+		if (isClient())
+		{
+			this.getSprite().AddScript("VoltageField.as");//need to do this to get the sprite hooks to run
+		}
 
 		this.set_bool("voltageSetupDone",true);
 	}
@@ -39,43 +43,44 @@ void onTick(CBlob@ this)
 
 	Vec2f thisPos = this.getPosition();
 	CBlob@[] blobs;//blob handle array to store blobs we want to effect
-	map.getBlobsInRadius(thisPos,effectRadius, @blobs);//get the blobs
-
-	for(s32 i = 0; i < blobs.length(); i++)//itterate through blobs
+	if (map.getBlobsInRadius(thisPos,effectRadius, blobs))//get the blobs
 	{
-		CBlob@ target = blobs[i]; //standard null check for blobs in radius
-		if (target is null)
-		{continue;}
-
-		if(target.getTeamNum() == this.getTeamNum()){continue;}//skip over same team entities
-		if(!tagCheck(target)){continue;}//if target fails tag checks, skip
-
-		float damage = 0.4f;
-		Vec2f norm = (target.getPosition() - thisPos);
-		norm.Normalize();
-
-		if (target.hasTag("counterable"))
+		for(s32 i = 0; i < blobs.length(); i++)//itterate through blobs
 		{
-			Vec2f targetVel = target.getVelocity();
-			if(targetVel != Vec2f_zero)
+			CBlob@ target = blobs[i]; //standard null check for blobs in radius
+			if (target is null)
+			{continue;}
+
+			if(target.getTeamNum() == this.getTeamNum()){continue;}//skip over same team entities
+			if(!tagCheck(target)){continue;}//if target fails tag checks, skip
+
+			float damage = 0.4f;
+			Vec2f norm = (target.getPosition() - thisPos);
+			norm.Normalize();
+
+			if (target.hasTag("counterable"))
 			{
-				Vec2f targetNorm = targetVel;
-				targetNorm.Normalize();
-				float direcAngle = norm.getAngleDegrees();
-				float targetAngle = targetNorm.getAngleDegrees();
-				float difference = targetAngle-direcAngle;
-				if (difference > 90 || difference < -90)
+				Vec2f targetVel = target.getVelocity();
+				if(targetVel != Vec2f_zero)
 				{
-					targetVel.RotateByDegrees(difference);
-					target.setVelocity(targetVel);
+					Vec2f targetNorm = targetVel;
+					targetNorm.Normalize();
+					float direcAngle = norm.getAngleDegrees();
+					float targetAngle = targetNorm.getAngleDegrees();
+					float difference = targetAngle-direcAngle;
+					if (difference > 90 || difference < -90)
+					{
+						targetVel.RotateByDegrees(difference);
+						target.setVelocity(targetVel);
+					}
+					damage = 0.6;
 				}
-				damage = 0.6;
 			}
-		}
 
-		if (voltageFieldDamage(target))
-		{
-			this.server_Hit(target, target.getPosition(), norm*3,damage,Hitters::explosion);// hit em
+			if (voltageFieldDamage(target))
+			{
+				this.server_Hit(target, target.getPosition(), norm*3,damage,Hitters::explosion);// hit em
+			}
 		}
 	}
 }
