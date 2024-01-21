@@ -72,9 +72,14 @@ void onTick(CBlob@ this)
 		back = true;
 
 		CPlayer@ p = this.getDamageOwnerPlayer();
-		if (p is null || p.getBlob() is null) this.server_Die();
-
-		this.set_Vec2f("target_pos", p.getBlob().getPosition());
+		if (p is null || p.getBlob() is null)
+		{
+			this.server_Die();
+		}
+		else
+		{
+			this.set_Vec2f("target_pos", p.getBlob().getPosition());
+		}
 	}
 	if (vel.Length() >= 1.0f) this.setAngleDegrees(-this.getVelocity().Angle() + (back?180:0));
 }
