@@ -4359,7 +4359,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -836474293://faith glaive
 		{
 			f32 damage = 1.0f;
-			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
 
 			switch(charge_state)
 			{
@@ -4369,18 +4369,18 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 				case medium_cast:
 				{
-					damage = 1.25f;
+					damage = 1.5f;
 				}
 				break;
 				case complete_cast:
 				{
-					damage = 1.5f;
+					damage = 2.0f;
 				}
 				break;
 				
 				case super_cast:
 				{
-					damage = 2.0f;
+					damage = 3.0f;
 				}
 				break;
 				

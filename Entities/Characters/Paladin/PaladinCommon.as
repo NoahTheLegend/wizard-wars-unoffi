@@ -22,16 +22,16 @@ namespace PaladinParams
 	const ::Spell[] spells = 
 	{
 		Spell("templarhammer", "Templar Hammer", 92, "Throws a magic hammer that is affected by gravity.",
-				SpellType::other, 5, 20, 0, 120.0f, true),
+				SpellType::other, 4, 30, 0, 120.0f),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 25, 8, 0, 160.0f, true),
+			SpellType::other, 20, 8, 0, 160.0f, true),
 			 
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 25, 10, 3, 64.0f, true),
 			 
 		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards.",
-				SpellType::other, 12, 45, 4, 198.0f, true),
+				SpellType::other, 10, 45, 4, 198.0f, true),
 
 		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target transfers 25% of damage to you and receives 25% less damage (50% in total) if nearby and your health is more than 25%.",
 				SpellType::other, 20, 45, 8, 256.0f, true),
@@ -55,7 +55,7 @@ namespace PaladinParams
 				SpellType::other, 0, 30, 6, 256.0f, true),
 
 		Spell("noblelance", "Noble Lance", 100, "Casts a piercing lance to move at chosen position. Goes back to caster position when stopped. Ignores tiles.",
-				SpellType::other, 30, 45, 0, 298.0f, false),
+				SpellType::other, 25, 45, 0, 298.0f, false),
 							
 		Spell("fury", "Fury", 101, "Summons a homing ring. Doesn't deal collision damage, launches small homing blades around itself instead. Lasts until despelled while has a target. Overcharge increases blades spawnrate.",
 				SpellType::other, 45, 75, 8, 128.0f, true),	
@@ -64,7 +64,7 @@ namespace PaladinParams
 				SpellType::other, 15, 30, 0, 0.0f),
 
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
-				SpellType::other, 25, 90, 18, 198.0f, true),
+				SpellType::other, 20, 90, 18, 198.0f, true),
 							
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
