@@ -70,7 +70,7 @@ namespace ShamanParams
 			SpellType::other, 25, 40, 0, 0.0f),
 
 		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
-			SpellType::other, 25, 30, 0, 120.0f),
+			SpellType::other, 25, 30, 0, 128.0f),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

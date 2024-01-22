@@ -25,7 +25,7 @@ namespace PaladinParams
 				SpellType::other, 4, 30, 0, 120.0f),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 20, 8, 0, 160.0f, true),
+			SpellType::other, 20, 8, 0, 270.0f, true),
 			 
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 25, 10, 3, 64.0f, true),
