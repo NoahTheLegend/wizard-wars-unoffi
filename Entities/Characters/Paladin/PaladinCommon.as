@@ -43,7 +43,7 @@ namespace PaladinParams
 				SpellType::other, 0, 15, 5, 0, true),
 
 		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
-				SpellType::other, 25, 45, 10, 0.0f),
+				SpellType::other, 20, 30, 10, 0.0f),
 				
 		Spell("healblocker", "Humility", 96, "Nullifies incoming heal for target.",
 				SpellType::other, 12, 20, 0, 256.0f, true),
@@ -55,7 +55,7 @@ namespace PaladinParams
 				SpellType::other, 0, 30, 6, 256.0f, true),
 
 		Spell("noblelance", "Noble Lance", 100, "Casts a piercing lance to move at chosen position. Goes back to caster position when stopped. Ignores tiles.",
-				SpellType::other, 25, 45, 0, 298.0f, false),
+				SpellType::other, 20, 45, 0, 298.0f, false),
 							
 		Spell("fury", "Fury", 101, "Summons a homing ring. Doesn't deal collision damage, launches small homing blades around itself instead. Lasts until despelled while has a target. Overcharge increases blades spawnrate.",
 				SpellType::other, 45, 75, 8, 128.0f, true),	
@@ -64,7 +64,7 @@ namespace PaladinParams
 				SpellType::other, 15, 30, 0, 0.0f),
 
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
-				SpellType::other, 20, 90, 18, 198.0f, true),
+				SpellType::other, 10, 90, 18, 198.0f, true),
 							
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
