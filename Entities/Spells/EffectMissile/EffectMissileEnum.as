@@ -13,4 +13,5 @@ enum EffectMissileNumbered
 	dmgconnection_effect_missile,
 	healblock_effect_missile,
 	cooldownreduce_effect_missile,
+	antidebuff_effect_missile,
 };

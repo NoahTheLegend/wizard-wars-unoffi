@@ -21,7 +21,8 @@ namespace WizardRainTypes
         meteorRain,
 		meteorStrike,
         skeletonRain,
-		arrowRain
+		arrowRain,
+        smite
     }
 }
 
@@ -95,6 +96,20 @@ class WizardRain
                 objectsAmount += XORRandom(100);
             time = 1;
         }
+        else if (type == WizardRainTypes::meteorRain)
+        {
+            objectsAmount = 3;
+            if (level == WizardParams::extra_ready)
+                objectsAmount += 1;
+            time = 1;
+        }
+        else if (type == WizardRainTypes::smite)
+        {
+            objectsAmount = 6;
+            if (level == WizardParams::extra_ready)
+                objectsAmount += 2;
+            time = 1;
+        }
     }
 
     void Manage( CBlob@ this )
@@ -137,15 +152,31 @@ class WizardRain
 				if (arrow !is null)
 				{
 					arrow.set_u8("arrow type", XORRandom(4));
+                    arrow.server_setTeamNum(team);
+					arrow.setPosition( Vec2f(position.x + XORRandom(100) - 50, 0.0f) );
 					arrow.Init();
 
 					arrow.IgnoreCollisionWhileOverlapped(this);
 					arrow.SetDamageOwnerPlayer(this.getPlayer());
-					arrow.server_setTeamNum(team);
-					arrow.setPosition( Vec2f(position.x + XORRandom(100) - 50, 0.0f) );
 					arrow.setVelocity(Vec2f(0.0f, 8.0f));
 				}
                 time = 1 + XORRandom(2);
+            }
+            else if (type == WizardRainTypes::smite)
+            {
+                CBlob@ blob = server_CreateBlobNoInit("templarhammer");
+                if (blob !is null)
+                {
+                    blob.set_bool("smite", true);
+                    blob.server_setTeamNum(team);
+                    blob.setPosition(Vec2f(position.x, 10.0f));
+                    blob.Init();
+                    blob.getShape().SetGravityScale(2.5f);
+                    blob.setAngleDegrees(90);
+                    blob.set_f32("damage", 1.5f);
+                }
+
+                time = 1;
             }
             objectsAmount -= 1;
             if (objectsAmount <= 0)
@@ -213,6 +244,8 @@ void addRain(CBlob@ this, string type, u8 level, Vec2f pos)
         rains.insertLast(WizardRain(this, WizardRainTypes::skeletonRain, level, pos));
     else if(type == "arrow_rain")
         rains.insertLast(WizardRain(this, WizardRainTypes::arrowRain, level, pos));
+    else if(type == "smite")
+        rains.insertLast(WizardRain(this, WizardRainTypes::smite, level, pos));
 }
 
 void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
@@ -225,7 +258,6 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         addRain(this, type, charge_state, aimpos);
     }
 }
-
 
 /*
 void ManageRains( CBlob@ this )

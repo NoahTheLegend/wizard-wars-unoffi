@@ -2600,6 +2600,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 1761466304://meteor_rain
 		case 1137221912://meteor_strike
 		case 1057572449://arrow_rain
+		case 1693590535://smite
 		{
 			if (!isServer())
 			{
@@ -3984,8 +3985,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1676183192: // templar hammer
 		{
-			this.getSprite().PlaySound("hammercast.ogg", 1.0f, 1.15f+XORRandom(6)*0.01f);
-
 			if (!isServer())
 			{return;}
 
@@ -4008,7 +4007,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				default:return;
 			}
 
-			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbPos = thispos + Vec2f(0.0f,0);
 			Vec2f orbVel = (aimpos - orbPos);
 			
 			f32 angle = 10.0f;
@@ -4023,6 +4022,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.server_setTeamNum(this.getTeamNum());
 					orb.getShape().SetGravityScale(0.0f);
 					orb.setPosition(orbPos);
+					orb.getShape().SetGravityScale(0.0f);
 				
 					Vec2f aim = aimpos;
 					Vec2f vel = aim - thispos;
@@ -4212,25 +4212,37 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case -842442030://sealofwisdom
+		case -842442030://seal of wisdom
 		{
-			f32 takeHealth = 2.0f;
-			if (this.getHealth() <= takeHealth)
-			{
-				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			f32 orbspeed = 4.0f;
+			u16 effectTime = 900;
 
-				return;
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				{
+					orbspeed *= 1.0f;
+					effectTime = 900;
+				}
+				break;
+				
+				case super_cast:
+				{
+					effectTime = 900;
+					AntiDebuff(this, effectTime);
+					return;
+				}
+				break;
+				
+				default:return;
 			}
 
-			f32 orbspeed = 3.0f;
-			
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 			Vec2f orbVel = (aimpos - orbPos);
 			orbVel.Normalize();
 			orbVel *= orbspeed;
-
-			ManaInfo@ manaInfo;
-			if (!this.get( "manaInfo", @manaInfo )) {return;}
 
 			if (isServer())
 			{
@@ -4245,16 +4257,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					targetless = false;
 				}
 
-				CBlob@ orb = server_CreateBlob( "effect_missile", this.getTeamNum(), orbPos ); 
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
 				if (orb !is null)
 				{
-					orb.set_u8("effect", mana_effect_missile);
+					orb.set_u8("effect", antidebuff_effect_missile);
 					orb.set_u8("override_sprite_frame", 11);
-					orb.set_u8("mana_used", 1);
-					orb.set_u8("caster_mana", 1);
-					orb.set_u8("direct_restore", 25);
-					orb.set_bool("silent", false);
-
+					orb.set_u16("effect_time", effectTime);
+					
 					if(!targetless)
 					{
 						CBlob@ target = blobs[bestIndex];
@@ -4265,14 +4274,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						}
 					}
 
-					if (isServer())
-					{
-						this.server_Hit(this, this.getPosition(), Vec2f_zero, takeHealth, Hitters::fall, true);
-					}
-
-					orb.IgnoreCollisionWhileOverlapped( this );
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
-					orb.setVelocity( orbVel );
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
 				}
 			}
 		}
@@ -4873,6 +4877,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			 || b.get_u16("waterbarrier") > 0
 			 || b.get_u16("dmgconnection") > 0
 			 || b.get_u16("cdreduction") > 0
+			 || b.get_u16("antidebuff") > 0
 			 )
 			 && !sameTeam )
 			{
@@ -4922,6 +4927,12 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				{
 					b.set_u16("cdreduction", 1);
 					b.Sync("cdreduction", true);
+				}
+
+				if (b.get_u16("antidebuff") > 0)
+				{
+					b.set_u16("antidebuff", 1);
+					b.Sync("antidebuff", true);
 				}
 					
 				countered = true;
@@ -5061,6 +5072,14 @@ void CooldownReduce(CBlob@ blob, u16 time, f32 power)
 
 	blob.getSprite().PlaySound("negentropySound.ogg", 0.75f, 2.5f + XORRandom(1)/10.0f);
 	blob.getSprite().PlaySound("SlowOff.ogg", 0.75f, 1.5f + XORRandom(1)/10.0f);
+}
+
+void AntiDebuff(CBlob@ blob, u16 time)
+{	
+	blob.set_u16("antidebuff", time);
+	blob.Sync("antidebuff", true);
+
+	blob.getSprite().PlaySound("PlantShotLaunch.ogg", 1.0f, 1.0f + XORRandom(16)*0.01f);
 }
 
 void Sidewind( CBlob@ blob, u16 windTime )

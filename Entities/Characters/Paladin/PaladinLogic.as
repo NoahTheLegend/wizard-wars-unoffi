@@ -513,7 +513,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 	}
 }
 
-f32 dmg_to_mana_ratio = 1.0f;
+f32 dmg_to_mana_ratio = 1.5f; // 1.0f is 200% of damage 
 f32 friendly_damage_factor = 0.5f;
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)

@@ -40,7 +40,7 @@ namespace WizardParams
 			SpellType::other, 15, 45, 0, 360.0f), 
 			 
 		Spell("firebomb", "Fire Bomb", 11, "Throw a high velocity condensed ball of flames that explodes on contact with enemies, igniting them. Has a minimum engagement distance of about 4 blocks.",
-			SpellType::other, 35, 40, 0, 360.0f, true),
+			SpellType::other, 40, 40, 0, 360.0f, true),
 			 
 		Spell("fire_sprite", "Fire Sprites", 12, "Create long-ranged explosive balls of energy which follow your aim for an extended period of time.",
 			SpellType::other, 25, 35, 0, 360.0f, true),	
@@ -64,7 +64,7 @@ namespace WizardParams
 				SpellType::other, 35, 30, 0, 180.0f, true),
 
 		Spell("mana_drain_circle", "Circle of Disenchant", 33, "Those who stand inside this circle lose their mana and are slowed to a crawl",
-				SpellType::other,35,40,15,360, true),			
+				SpellType::other,45,60,15,360, true),			
 
 		Spell("mana_transfer", "Mana Transfer", 48, "Transfers mana equivalent to the target's regen. Generates 1 extra mana if overcharged.",
 				SpellType::other, 10, 10, 0, 360.0f, true),

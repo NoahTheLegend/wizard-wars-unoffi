@@ -72,7 +72,7 @@ namespace PriestParams
 				SpellType::other, 20, 45, 5, 16.0f, true),
 
 		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied.",
-				SpellType::other, 25, 45, 0, 360.0f, true),
+				SpellType::other, 30, 65, 10, 360.0f, true),
 
 		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
 				SpellType::other, 30, 45, 1, 360.0f, true),

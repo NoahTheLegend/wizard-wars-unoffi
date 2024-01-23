@@ -147,12 +147,12 @@ class NecromancerRain
 					if (arrow !is null)
 					{
 						arrow.set_u8("arrow type", XORRandom(4));
+                        arrow.IgnoreCollisionWhileOverlapped(this);
+                        arrow.server_setTeamNum(team);
+						arrow.setPosition( Vec2f(position.x + XORRandom(xVariation*2) - xVariation, XORRandom(16)));
 						arrow.Init();
-
-						arrow.IgnoreCollisionWhileOverlapped(this);
+			
 						arrow.SetDamageOwnerPlayer(this.getPlayer());
-						arrow.server_setTeamNum(team);
-						arrow.setPosition( Vec2f(position.x + XORRandom(xVariation*2) - xVariation, XORRandom(yVariation*2) - 2.0f*yVariation) + Vec2f(0,8) );
 						arrow.setVelocity(Vec2f(0.0f, 8.0f));
 					}
 				}

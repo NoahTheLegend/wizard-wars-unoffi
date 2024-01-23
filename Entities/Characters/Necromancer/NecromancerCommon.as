@@ -75,7 +75,7 @@ namespace NecromancerParams
 				SpellType::other, 10, 10, 0, 100.0f, true),	
 							
 		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied.",
-				SpellType::other, 30, 45, 0, 360.0f, true),
+				SpellType::other, 35, 75, 10, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),	

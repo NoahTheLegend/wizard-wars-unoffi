@@ -65,6 +65,7 @@ void onTick( CBlob@ this)
 			case regen_effect_missile:
 			case dmgconnection_effect_missile:
 			case cooldownreduce_effect_missile:
+			case antidebuff_effect_missile:
 			{
 				targetType = 0;
 			}
@@ -283,6 +284,12 @@ void onTick( CBlob@ this)
 					case cooldownreduce_effect_missile:
 					{
 						CooldownReduce(blob, this.get_u16("effect_time"), 0.5f);
+					}
+					break;
+
+					case antidebuff_effect_missile:
+					{
+						AntiDebuff(blob, this.get_u16("effect_time"));
 					}
 					break;
 

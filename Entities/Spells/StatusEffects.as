@@ -42,6 +42,56 @@ void onTick(CBlob@ this)
 		this.DisableKeys(0);
 		this.DisableMouse(false);
 	}
+
+	//ANTI DEBUFF // requires to be first in order to stop other spells from running in same tick when applied
+	u16 antidebuff = this.get_u16("antidebuff");
+
+	if (antidebuff > 0)
+	{
+		antidebuff--;
+		this.set_u16("antidebuff", antidebuff);
+		
+		if ( antidebuff % 2 == 0 )
+		{
+			for (int i = 0; i < 1; i++)
+			{		
+				if(getNet().isClient()) 
+				{
+					const f32 rad = 6.0f;
+					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+					CParticle@ p = ParticleAnimated( "MissileFire8.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true );
+					if ( p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+						if ( XORRandom(2) == 0 )
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+					}
+				}
+			}
+		}
+
+		else if (this.get_u16("slowed") > 0)
+		{				
+			this.set_u16("slowed", 0);
+		}
+		else if (this.get_u16("manaburn") > 0)
+		{				
+			this.set_u16("manaburn", 0);
+		}
+		else if (this.get_u16("healblock") > 0)
+		{				
+			this.set_u16("healblock", 0);
+		}
+		
+		if (antidebuff == 0)
+		{
+			thisSprite.PlaySound("HasteOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
+			this.Sync("hastened", true);
+		}
+	}
 	
 	//SLOW	
 	u16 slowed = this.get_u16("slowed");

@@ -25,8 +25,13 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (this.getTickSinceCreated() == 1)
+	{
+		this.getSprite().PlaySound("hammercast.ogg", 1.0f, 1.15f+XORRandom(6)*0.01f);
+	}
 	this.setAngleDegrees(-this.getOldVelocity().Angle());
-	if (this.getTickSinceCreated() > 5)
+	
+	if (isServer() && !this.get_bool("smite") && this.getTickSinceCreated() > 5)
 	{
 		this.getShape().SetGravityScale(Maths::Min(this.getShape().getGravityScale()+add_grav, max_grav));
 	}
