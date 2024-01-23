@@ -47,6 +47,8 @@ void onTick(CBlob@ this)
 	}
 	else if ( timeElapsed >= CAST_TIME )
 	{
+		if (!isServer()) return;
+		
 		CBlob@ orb = server_CreateBlob( "force_of_nature" );
 		if (orb !is null)
 		{

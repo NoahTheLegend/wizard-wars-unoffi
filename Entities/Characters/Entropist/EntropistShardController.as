@@ -104,7 +104,7 @@ void onTick( CBlob@ this )
 		shardMovePos.RotateBy(shardWheelRot + anglePerShard*i, thisPos);
 		shardMovePos += deviation;
 
-		if(casterShards.length <= i)
+		if(isServer() && casterShards.length <= i)
 		{
 			CBlob@ orb = server_CreateBlob( "shard" );
 			if (orb !is null)
@@ -124,7 +124,7 @@ void onTick( CBlob@ this )
 		}
 
 		CBlob@ b = casterShards[i];
-		if(b is null)
+		if(isServer() && b is null)
 		{
 			CBlob@ orb = server_CreateBlob( "shard" );
 			if (orb !is null)

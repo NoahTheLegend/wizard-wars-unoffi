@@ -411,7 +411,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -377943487: //forceorb
 		{
-			 f32 orbspeed = necro_shoot_speed;
+			if (!isServer())
+				return;
+
+			f32 orbspeed = necro_shoot_speed;
 			f32 orbDamage = 0.0f;
 
 			if (charge_state == NecromancerParams::cast_1) {
@@ -1717,6 +1720,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 603057094://executioner
 		{
 			this.getSprite().PlaySound("execast.ogg");
+
 			if (!isServer()){
            		return;
 			}
@@ -1832,6 +1836,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -1661937901://impaler
 		{
 			this.getSprite().PlaySound("ImpCast.ogg", 100.0f);
+
 			if (!isServer()){
            		return;
 			}
@@ -1966,32 +1971,35 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					break;
 					case 1: //projectiles that follow mouse
 					{
-						CBlob@ orb = server_CreateBlob(other.getName(),this.getTeamNum(),other.getPosition());
-						if (orb !is null)
+						if (isServer())
 						{
-							if(other.exists("explosive_damage"))
+							CBlob@ orb = server_CreateBlob(other.getName(),this.getTeamNum(),other.getPosition());
+							if (orb !is null)
 							{
-								orb.set_f32("explosive_damage", other.get_f32("explosive_damage"));
-							}
-							if(other.exists("damage"))
-							{
-								orb.set_f32("damage", other.get_f32("damage"));
-							}
-							if(other.exists("lifetime"))
-							{
-								orb.set_f32("lifetime", other.get_f32("lifetime"));
-							}
-							if(other.hasTag("extra_damage"))
-							{
-                        		orb.Tag("extra_damage");
-							}
+								if(other.exists("explosive_damage"))
+								{
+									orb.set_f32("explosive_damage", other.get_f32("explosive_damage"));
+								}
+								if(other.exists("damage"))
+								{
+									orb.set_f32("damage", other.get_f32("damage"));
+								}
+								if(other.exists("lifetime"))
+								{
+									orb.set_f32("lifetime", other.get_f32("lifetime"));
+								}
+								if(other.hasTag("extra_damage"))
+								{
+                        			orb.Tag("extra_damage");
+								}
 
-							orb.IgnoreCollisionWhileOverlapped( other );
-							orb.SetDamageOwnerPlayer( this.getPlayer() );
-							orb.getShape().SetGravityScale(0);
-							
-							other.Untag("exploding");
-							other.server_Die();
+								orb.IgnoreCollisionWhileOverlapped( other );
+								orb.SetDamageOwnerPlayer( this.getPlayer() );
+								orb.getShape().SetGravityScale(0);
+
+								other.Untag("exploding");
+								other.server_Die();
+							}
 						}
 					}
 					break;
@@ -2081,6 +2089,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			this.getSprite().PlaySound("ImpCast.ogg", 10.0f, 1.1f);
 			this.getSprite().PlaySound("swordlaunch.ogg", 1.0f, 1.15f);
+
 			if (!isServer()){
            		return;
 			}
@@ -2118,6 +2127,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -1418908460://bunker_buster
 		{
 			this.getSprite().PlaySound("bunkercast.ogg", 100.0f);
+
 			if (!isServer()){
            		return;
 			}
@@ -2907,6 +2917,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 491688572://singularity
 		{
+			if (!isServer()) return;
 			CBlob@ orb = server_CreateBlob( "singularity" , this.getTeamNum() , aimpos);
 			if (orb !is null)
 			{
@@ -4696,7 +4707,7 @@ void Revive( CBlob@ blob )
 	int playerId = blob.get_u16( "owner_player" );
 	CPlayer@ deadPlayer = getPlayerByNetworkId( playerId );
 	
-	if( deadPlayer !is null )
+	if( isServer() && deadPlayer !is null )
 	{
 		PlayerPrefsInfo@ playerPrefsInfo;
 		if ( !deadPlayer.get( "playerPrefsInfo", @playerPrefsInfo ) || playerPrefsInfo is null )
@@ -4734,7 +4745,7 @@ void UnholyRes( CBlob@ blob )
 	int playerId = blob.get_u16( "owner_player" );
 	CPlayer@ deadPlayer = getPlayerByNetworkId( playerId );
 	
-	if( deadPlayer !is null )
+	if( isServer() && deadPlayer !is null )
 	{
 		CBlob @newBlob = server_CreateBlob( "wraith", deadPlayer.getTeamNum(), blob.getPosition() );		
 		if( newBlob !is null )

@@ -76,14 +76,16 @@ void onTick(CBlob@ this)
 void onDie( CBlob@ this )
 {
 	Vec2f thisPos = this.getPosition();
-
 	u16 lifetime = this.get_u16("lifetime");
 
-	CBlob@ plant = server_CreateBlob( "plant_aura", this.getTeamNum(), thisPos);
-	if (plant !is null)
+	if (isServer())
 	{
-		plant.set_u16("lifetime", lifetime);
-		plant.SetDamageOwnerPlayer( this.getDamageOwnerPlayer() );
+		CBlob@ plant = server_CreateBlob( "plant_aura", this.getTeamNum(), thisPos);
+		if (plant !is null)
+		{
+			plant.set_u16("lifetime", lifetime);
+			plant.SetDamageOwnerPlayer( this.getDamageOwnerPlayer() );
+		}
 	}
 	blast( thisPos , 10);
 }
