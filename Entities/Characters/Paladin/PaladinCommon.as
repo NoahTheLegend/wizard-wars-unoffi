@@ -42,8 +42,8 @@ namespace PaladinParams
 		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 200% of received enemy damage and 100% of friendly damage.",
 				SpellType::other, 0, 15, 5, 0, true),
 
-		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 33% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
-				SpellType::other, 20, 30, 10, 0.0f),
+		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 50% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
+				SpellType::other, 20, 45, 10, 0.0f),
 				
 		Spell("healblocker", "Humility", 96, "Nullifies incoming heal for target.",
 				SpellType::other, 12, 20, 0, 256.0f, true),

@@ -13,7 +13,7 @@ const f32 connection_dist = 256.0f;
 const f32 connection_dmg_reduction = 0.5f;
 const f32 connection_dmg_transfer = 0.25f;
 const f32 min_connection_health_ratio = 0.25f;
-const f32 barrier_dmg_decrease = 0.66f;
+const f32 barrier_dmg_decrease = 0.5f;
 
 void onInit(CBlob@ this)
 {
