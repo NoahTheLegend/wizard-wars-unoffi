@@ -156,7 +156,7 @@ class NecromancerRain
 						arrow.setVelocity(Vec2f(0.0f, 8.0f));
 					}
 				}
-				}
+
                 time = 8;
             }
             objectsAmount -= 1;
