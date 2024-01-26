@@ -100,8 +100,6 @@ void onTick( CBlob@ this )
 
 	for (int i = 0; i < shardAmount; i++)
 	{
-		if (i >= casterShards.size()) continue;
-		
 		Vec2f shardMovePos = shardPos;
 		shardMovePos.RotateBy(shardWheelRot + anglePerShard*i, thisPos);
 		shardMovePos += deviation;
