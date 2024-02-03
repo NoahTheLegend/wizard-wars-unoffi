@@ -59,6 +59,7 @@ void onTick(CBlob@ this)
                     orb.Tag("die_on_collide");
                     orb.Tag("no_spike_collision");
                     orb.setVelocity(Vec2f(0, -8).RotateBy(i*float(360/this.get_u8("spikes")))-Vec2f(0,2));
+                    orb.SetDamageOwnerPlayer(this.getPlayer());
                 }
             }
         }

@@ -2298,20 +2298,23 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			orbVel.Normalize();
 			orbVel *= orbspeed;
 
-			CBlob@ orb = server_CreateBlob( "negatisphere" , this.getTeamNum() , orbPos);
-			if (orb !is null)
+			for (u8 i = 0; i < 3; i++)
 			{
-				orb.set_Vec2f("caster", orbPos);
-				orb.set_s8("lifepoints", 10); //"life" that drains when cancelling other spells.
-
-				orb.IgnoreCollisionWhileOverlapped( this );
-				orb.SetDamageOwnerPlayer( this.getPlayer() );
-				orb.setVelocity( orbVel );
-
-				if(this.get_bool("shifting"))
+				CBlob@ orb = server_CreateBlob( "negatisphere" , this.getTeamNum() , orbPos);
+				if (orb !is null)
 				{
-					orb.set_Vec2f("target", aimpos);
-					orb.set_bool("launch", true);
+					orb.set_Vec2f("caster", orbPos);
+					orb.set_s8("lifepoints", 10); //"life" that drains when cancelling other spells.
+
+					orb.IgnoreCollisionWhileOverlapped( this );
+					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.setVelocity( orbVel );
+
+					if(this.get_bool("shifting"))
+					{
+						orb.set_Vec2f("target", aimpos);
+						orb.set_bool("launch", true);
+					}
 				}
 			}
 		}
@@ -2727,6 +2730,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			shardAmount++;
 			this.set_u8("shard_amount",shardAmount); //increases by one
+			this.Sync("shard_amount", true);
 		}
 		break;
 

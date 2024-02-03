@@ -94,6 +94,7 @@ void onTick(CBlob@ this)
 				orb.server_setTeamNum(this.getTeamNum());
 				orb.setPosition(orbPos);
                 orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+                orb.Tag("nemesis");
 
                 orb.set_Vec2f("nemesis_vel", orbVel);
                 orb.Tag("nemesis_proj");

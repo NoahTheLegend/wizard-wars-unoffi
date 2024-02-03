@@ -24,7 +24,7 @@ namespace WizardParams
 	const ::Spell[] spells = 
 	{
 		Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
-			SpellType::other, 2, 40, 0, 360.0f),
+			SpellType::other, 3, 40, 0, 360.0f),
 							// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
@@ -37,7 +37,7 @@ namespace WizardParams
 			SpellType::other, 12, 30, 0, 360.0f, true),
 			
 		Spell("heal", "Lesser Heal", 14, "Salves the least of your allies' wounds to restore a moderate portion of their health. Fully charge in order to heal yourself with less efficiency.",
-			SpellType::other, 15, 45, 0, 360.0f), 
+			SpellType::other, 20, 45, 0, 360.0f), 
 			 
 		Spell("firebomb", "Fire Bomb", 11, "Throw a high velocity condensed ball of flames that explodes on contact with enemies, igniting them. Has a minimum engagement distance of about 4 blocks.",
 			SpellType::other, 40, 40, 0, 360.0f, true),
@@ -70,7 +70,7 @@ namespace WizardParams
 				SpellType::other, 10, 10, 0, 360.0f, true),
 
 		Spell("negatisphere", "NegatiSphere", 50, "Moving magic field that negates other counterable spells. Press SHIFT to launch them in the direction of your aim.",
-				SpellType::other, 10, 10, 1, 360.0f, true),
+				SpellType::other, 30, 60, 1, 360.0f, true),
 				
 		Spell("plasma_shot", "Plasma Shot", 17, "Fires a burst of slow moving plasma that explodes on impact or after reaching its destination.",
 				SpellType::other, 20, 20, 0, 500.0f, true),

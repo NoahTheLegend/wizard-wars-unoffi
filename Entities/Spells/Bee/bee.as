@@ -7,7 +7,7 @@ void onInit(CBlob@ this){
     this.Tag("projectile");
     this.getShape().SetGravityScale(0);
     this.set_f32("targetAngle",0);
-    this.set_f32("heal_ammount",0.1);
+    this.set_f32("heal_ammount",0.05);
     this.Tag("die_in_divine_shield");
     //this.set_netid("caster",0);
     if(!isServer()){return;}

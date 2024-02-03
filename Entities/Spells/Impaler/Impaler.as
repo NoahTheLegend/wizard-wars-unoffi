@@ -145,6 +145,11 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				{
 					if(blob !is null)
 					{
+						if (this.hasTag("nemesis"))
+						{
+							this.Tag("dead");
+							this.server_Die();
+						}
 						//if (blob.getShape().getConsts().mapCollisions)
 						{
 							this.getSprite().PlaySound("ImpStuck.ogg", 100.0f);

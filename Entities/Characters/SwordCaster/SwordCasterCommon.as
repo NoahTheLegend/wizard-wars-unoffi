@@ -16,7 +16,7 @@ namespace SwordCasterParams
 
 	const ::f32 shoot_max_vel = 8.0f;
 	const ::f32 MAX_ATTACK_DIST = 400.0f;
-	const ::s32 MAX_MANA = 85;
+	const ::s32 MAX_MANA = 100;
 	const ::s32 MANA_REGEN = 3;
 	
 	const ::string[] zombieTypes = {"zombie", "skeleton", "greg", "wraith"};
@@ -46,22 +46,22 @@ namespace SwordCasterParams
 				SpellType::other, 35, 75, 0, 0.0f, true),
 			 
 		Spell("impaler", "Impaler", 45, "Sharpen your enemies and use them as a weapon against themselves.",
-				SpellType::other, 10, 15, 0, 360.0f, true),
+				SpellType::other, 7, 15, 0, 360.0f, true),
 			 
 		Spell("parry", "Parry", 46, "Reflect enemy attacks.",
 				SpellType::other, 10, 10, 0, 20.0f, true),
 			 
 		Spell("vectorial_dash", "Vectorial Dash", 47, "Cheap movement spell for specific situations. Has a long cooldown.",
-				SpellType::other, 6, 5, 9, 180.0f, true),
+				SpellType::other, 0, 5, 8, 180.0f, true),
 			 
 		Spell("flame_slash", "Flame Slash", 64, "Forward slash that incinerates your enemies.",
-				SpellType::other, 12, 25, 1, 70.0f, true),
+				SpellType::other, 10, 25, 1, 70.0f, true),
 			
 		Spell("nemesis", "Nemesis", 85, "Summons a row of falling swords from the sky. Overcharge increases the amount of swords and decreases the delay between load and launch.",
-				SpellType::other, 25, 30, 3, 384.0f),
+				SpellType::other, 30, 30, 3, 384.0f),
 			 
 		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press | USE | button to cut the rope off. Disables dashing and teleporting while active. Overcharge increases throw distance.",
-				SpellType::other, 12, 15, 2, 256.0f),
+				SpellType::other, 5, 15, 2, 256.0f),
 			
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
