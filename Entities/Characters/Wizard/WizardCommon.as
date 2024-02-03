@@ -31,7 +31,7 @@ namespace WizardParams
 			SpellType::other, 15, 6, 0, 270.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 15, 10, 3, 64.0f, true),
+			SpellType::other, 15, 10, 0, 64.0f, true),
 			
 		Spell("frost_ball", "Ball of Frost", 13, "Send forth a slow travelling ball of pure cold essence to freeze your enemies in place and deal a small amount of damage. Freeze duration increases as your own health declines.",
 			SpellType::other, 12, 30, 0, 360.0f, true),
