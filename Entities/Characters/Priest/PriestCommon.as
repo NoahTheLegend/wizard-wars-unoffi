@@ -71,7 +71,7 @@ namespace PriestParams
 		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, however takes your dash ability and slows down.\nCast again to disable.",
 				SpellType::other, 20, 45, 5, 16.0f, true),
 
-		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied.",
+		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied. Disables mana regen.",
 				SpellType::other, 30, 65, 10, 360.0f, true),
 
 		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",

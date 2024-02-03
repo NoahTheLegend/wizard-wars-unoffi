@@ -74,7 +74,7 @@ namespace NecromancerParams
 		Spell("no_teleport_barrier", "Teleport Block", 49, "Prevents enemies from teleporting past this barrier.",
 				SpellType::other, 10, 10, 0, 100.0f, true),	
 							
-		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied.",
+		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied. Disables mana regen.",
 				SpellType::other, 35, 75, 10, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
