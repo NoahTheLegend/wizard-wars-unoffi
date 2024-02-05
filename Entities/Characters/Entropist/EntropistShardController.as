@@ -97,7 +97,6 @@ void onTick( CBlob@ this )
 
 	CBlob@[] casterShards;
 	getBlobsByTag(casterShardTag, @casterShards);
-	printf(""+shardAmount);
 
 	for (int i = 0; i < shardAmount; i++)
 	{

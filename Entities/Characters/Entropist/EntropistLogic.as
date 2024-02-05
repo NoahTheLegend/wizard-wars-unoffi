@@ -32,6 +32,7 @@ void onInit( CBlob@ this )
 	this.set_Vec2f("spell blocked pos", Vec2f(0.0f, 0.0f));
 	this.set_bool("casting", false);
 	this.set_bool("shifted", false);
+	this.set_u8("shard_amount", 0);
 	
 	this.Tag("player");
 	this.Tag("flesh");
