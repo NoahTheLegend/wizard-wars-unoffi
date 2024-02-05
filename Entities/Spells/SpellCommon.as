@@ -3686,7 +3686,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case minimum_cast:
 				{
 					this.set_u8("icicles", 10);
-					this.set_u8("icicle_delay", 6);
+					this.set_u8("icicle_delay", 5);
 					this.set_u8("icicle_wait", 45);
 					this.set_u8("icicle_launch_delay",45);
 					this.set_Vec2f("icicles_aimPos", aimpos);
@@ -3695,8 +3695,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case medium_cast:
 				{
 					this.set_u8("icicles", 10);
-					this.set_u8("icicle_delay", 5);
-					this.set_u8("icicle_wait", 40);
+					this.set_u8("icicle_delay", 4);
+					this.set_u8("icicle_wait", 30);
 					this.set_u8("icicle_launch_delay", 3);
 					this.set_Vec2f("icicles_aimPos", aimpos);
 					this.set_bool("static", true);
@@ -3705,8 +3705,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case complete_cast:
 				{
 					this.set_u8("icicles", 13);
-					this.set_u8("icicle_delay", 4);
-					this.set_u8("icicle_wait", 30);
+					this.set_u8("icicle_delay", 3);
+					this.set_u8("icicle_wait", 20);
 					this.set_u8("icicle_launch_delay", 2);
 					this.set_Vec2f("icicles_aimPos", aimpos);
 					this.set_bool("static", true);
@@ -3720,13 +3720,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					this.set_u8("icicles", 16);
 					this.set_u8("icicle_delay", 3);
-					this.set_u8("icicle_wait", 20);
+					this.set_u8("icicle_wait", 15);
 					this.set_u8("icicle_launch_delay", 2);
 					this.set_bool("static", false);
 
 					if (this.hasTag("extra_damage"))
 					{
 						this.set_u8("icicles", 20);
+						this.set_u8("icicle_delay", 2);
 					}
 				}
 				break;

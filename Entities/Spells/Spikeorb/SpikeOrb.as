@@ -87,7 +87,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	bool causeSparks = false;
 	bool blobDeath = false;
 
-	if (solid && blob is null)
+	if (solid)
 	{
 		causeSparks = true;
 
@@ -134,6 +134,9 @@ void onDie( CBlob@ this )
 		{
 			CBlob@ b = aoeBlobs[i]; //standard null check for blobs in radius
 			if (b is null || b.getName() == "spikes")
+			{continue;}
+
+			if (!isEnemy(this, b))
 			{continue;}
 
 			if ( !map.rayCastSolidNoBlobs( pos, b.getPosition() ) )
