@@ -87,7 +87,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	bool causeSparks = false;
 	bool blobDeath = false;
 
-	if (solid)
+	if (solid && blob is null)
 	{
 		causeSparks = true;
 
