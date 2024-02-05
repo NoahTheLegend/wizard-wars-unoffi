@@ -100,6 +100,8 @@ void onTick( CBlob@ this )
 
 	for (int i = 0; i < shardAmount; i++)
 	{
+		if (i > shardAmount) continue;
+		
 		Vec2f shardMovePos = shardPos;
 		shardMovePos.RotateBy(shardWheelRot + anglePerShard*i, thisPos);
 		shardMovePos += deviation;
@@ -137,8 +139,12 @@ void onTick( CBlob@ this )
 				orb.setPosition( shardMovePos );
 				orb.setVelocity( Vec2f_zero );
 				orb.Tag(casterShardTag);
+
 				orb.set_netid("owner",this.getNetworkID());
 				orb.set_s8("shardID",(i+1) );
+
+				orb.Sync("owner", true);
+				orb.Sync("shardID", true);
 			}
 		}
 		else
