@@ -97,11 +97,10 @@ void onTick( CBlob@ this )
 
 	CBlob@[] casterShards;
 	getBlobsByTag(casterShardTag, @casterShards);
+	printf(""+shardAmount);
 
 	for (int i = 0; i < shardAmount; i++)
 	{
-		if (i >= shardAmount) continue;
-
 		Vec2f shardMovePos = shardPos;
 		shardMovePos.RotateBy(shardWheelRot + anglePerShard*i, thisPos);
 		shardMovePos += deviation;
@@ -147,7 +146,7 @@ void onTick( CBlob@ this )
 				orb.Sync("shardID", true);
 			}
 		}
-		else
+		else if (b !is null)
 		{
 			b.setPosition( shardMovePos );
 			b.setVelocity( Vec2f_zero );
