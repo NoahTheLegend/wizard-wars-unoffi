@@ -15,6 +15,7 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
 	shape.SetGravityScale(0.0f);
 	shape.getConsts().mapCollisions = false;
+	shape.getConsts().net_threshold_multiplier = 0.5f;
 
 	this.set_netid("owner",0);
 	this.set_s8("shardID",-1);

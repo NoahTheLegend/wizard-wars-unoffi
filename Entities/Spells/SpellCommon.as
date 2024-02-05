@@ -2767,12 +2767,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 			}
 
-			if (isServer())
-			{
-				shardAmount--;
-				this.set_u8("shard_amount",shardAmount); //decreases by one
-				this.Sync("shard_amount", true);
-			}
+			
+			shardAmount--;
+			this.set_u8("shard_amount",shardAmount); //decreases by one
+			this.Sync("shard_amount", true);
 		}
 		break;
 
@@ -3763,7 +3761,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				return;
 			}
 
-			f32 orbspeed = necro_shoot_speed * 0.4f;
+			f32 orbspeed = necro_shoot_speed * 2.0f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
 			f32 orbDamage = 0.5f * extraDamage;
 
