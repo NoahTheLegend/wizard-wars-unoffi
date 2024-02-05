@@ -11,7 +11,7 @@ void onInit(CBlob@ this)
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("exploding");
-	shape.SetGravityScale( 0.4f );
+	shape.SetGravityScale( 0.375f );
 
 	this.set_u8("lavadrop_time", 75);
 	this.set_u8("lavadrop_amount", 4);
