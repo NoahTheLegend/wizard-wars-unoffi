@@ -29,6 +29,7 @@ f32 damping = 0.975f;
 
 void onTick(CBlob@ this)
 {
+	if (this.hasTag("dead")) return;
 
 	this.SetFacingLeft(true);
 	if (this.getTickSinceCreated()==0)
@@ -40,9 +41,9 @@ void onTick(CBlob@ this)
 	if (this.getTickSinceCreated() < 5) return;
 
 	f32 dist = cap_dist;
-	CBlob@ closest = null;
+	u16 closest_id = 0;
 
-	for (u8 i = 0; i < getPlayersCount(); i++)
+	for (int i = 0; i < getPlayersCount(); i++)
 	{
 		CPlayer@ p = getPlayer(i);
 		if (p is null || p.getBlob() is null) continue;
@@ -54,9 +55,10 @@ void onTick(CBlob@ this)
 		if (cur_dist >= dist) continue;
 
 		f32 dist = cur_dist;
-		@closest = @b;
+		closest_id = b.getNetworkID();
 	}
 
+	CBlob@ closest = getBlobByNetworkID(closest_id);
 	if (closest !is null)
 	{
 	    this.server_SetTimeToDie(5);
@@ -81,6 +83,12 @@ void onTick(CBlob@ this)
 	
 	    f32 r = angle_change_base * Maths::Max(1.0f, speed_mod/4);
 	    f32 angle_shift = (cross > 0) ? r : -r;
+
+		if (vel == Vec2f_zero)
+		{
+			vel.x += 1.0f - XORRandom(3);
+			vel.y += 1.0f - XORRandom(3);
+		}
 
 	    this.setVelocity(vel.RotateBy(angle_shift) * speed_mod);
 
@@ -108,6 +116,9 @@ void onTick(CBlob@ this)
 
 void Particles(CBlob@ this, u8 amount, f32 force)
 {
+	if (this.hasTag("dead"))
+	{return;}
+
 	if(!isClient())
 	{return;}
 	
@@ -155,7 +166,7 @@ void onTick(CSprite@ this) //rotating sprite
 	}
 	else
 	{
-		u32 diff = Maths::Min(power*scale*mod, getGameTime()-lock_time);
+		int diff = Maths::Clamp(Maths::Min(power*scale*mod, getGameTime()-lock_time), 0, 50);
 		f32 rot = power+diff/mod;
 		this.RotateBy(rot, Vec2f_zero);
 
@@ -165,18 +176,14 @@ void onTick(CSprite@ this) //rotating sprite
 
 void onDie(CBlob@ this)
 {
-	Vec2f thisPos = this.getPosition();
-	//Vec2f othPos = blob.getPosition();
-	//Vec2f kickDir = othPos - selfPos;
-
-	float damage = this.get_f32("damage");
-
-	CMap@ map = getMap();
-	if (map is null)
-	{return;}
-
 	if (isClient()) 
 	{
+		Vec2f thisPos = this.getPosition();
+
+		CMap@ map = getMap();
+		if (map is null)
+		{return;}
+
 		this.getSprite().PlaySound("Whack"+(1+XORRandom(3))+".ogg", 1.5f, 1.0f + XORRandom(10)/10.0f);
 	}
 }

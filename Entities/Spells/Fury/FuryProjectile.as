@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
     if (isServer()) this.setVelocity(this.getVelocity() * this.get_f32("damping"));
-    this.setAngleDegrees(-this.getOldVelocity().Angle());
+    this.setAngleDegrees(Maths::Clamp(Maths::Abs(-this.getOldVelocity().Angle()), 0, 720));
     
 	if (this.getTickSinceCreated()==0)
 	{
@@ -37,7 +37,7 @@ void onTick(CBlob@ this)
 
     if (isServer())
     {
-        for (u8 i = 0; i < getPlayersCount(); i++)
+        for (int i = 0; i < getPlayersCount(); i++)
         {
             CPlayer@ p = getPlayer(i);
             if (p is null) continue;
@@ -52,6 +52,9 @@ void onTick(CBlob@ this)
         }
     }
 
+	if (this.hasTag("dead"))
+	{return;}
+
 	CMap@ map = getMap();
 	if (map is null)
 	{return;}
@@ -64,7 +67,7 @@ void onTick(CBlob@ this)
 		for(int i = 0; i < 3; i ++)
 		{
 			float randomPVel = XORRandom(11) * 0.01f - 0.5f;
-			Vec2f particleVel = Vec2f(randomPVel, 0).RotateBy(XORRandom(721));
+			Vec2f particleVel = Vec2f(randomPVel, 0).RotateBy(XORRandom(361));
 
     		CParticle@ p = ParticlePixelUnlimited(this.getPosition()+Vec2f(-5, 0).RotateByDegrees(this.getAngleDegrees()), particleVel, SColor(255,255,75+XORRandom(76),XORRandom(51)), true);
    			if(p !is null)
@@ -78,6 +81,11 @@ void onTick(CBlob@ this)
     		}
 		}
 	}
+}
+
+void onDie(CBlob@ this)
+{
+	this.Tag("dead");
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
