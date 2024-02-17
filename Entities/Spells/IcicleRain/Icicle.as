@@ -128,7 +128,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 				this.server_Die();
 				return;
 			}
-			f32 dmg = 0.33f;
+			f32 dmg = 0.5f;
 			if (blob.get_u16("waterbarrier") > 0) dmg *= 2.5f;
 			this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.1f), dmg, Hitters::arrow, true);
 		}
