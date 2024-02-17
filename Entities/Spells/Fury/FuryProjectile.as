@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
     if (isServer()) this.setVelocity(this.getVelocity() * this.get_f32("damping"));
-    this.setAngleDegrees(Maths::Clamp(Maths::Abs(-this.getOldVelocity().Angle()+90), 0, 720));
+    this.setAngleDegrees(-this.getVelocity().Angle() % 360);
     
 	if (this.getTickSinceCreated()==0)
 	{
