@@ -23,10 +23,12 @@ namespace ShamanParams
 	
 	const ::Spell[] spells = 
 	{
-		Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
-			SpellType::other, 4, 35, 0, 360.0f),
-							// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
-			
+		//Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
+		//	SpellType::other, 4, 35, 0, 360.0f),
+		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
+		Spell("flameorb", "Flame Orb", 75, "Ignites enemies on impact.",
+			SpellType::other, 6, 25, 0, 256.0f),
+
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 20, 6, 0, 270.0f, true), 
 			
@@ -42,8 +44,8 @@ namespace ShamanParams
 		Spell("fire_ward", "Fire Ward", 57, "Form a heat protection aura around yourself. Completely nullifies fire damage.",
 			SpellType::other, 15, 30, 0, 360.0f, true),
 
-		Spell("flameorb", "Flame Orb", 75, "Ignites enemies on impact.",
-			SpellType::other, 8, 25, 0, 256.0f),
+		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
+			SpellType::other, 25, 30, 0, 164.0f),
 
 		Spell("firetotem", "Totem of Fire", 76, "Shoots flames at nearby enemies. Ignites everything in close range upon death. Overcharge increases lifetime and fire rate.",
 			SpellType::other, 25, 60, 4, 156.0f),
@@ -69,8 +71,8 @@ namespace ShamanParams
 		Spell("waterbarrier", "Water Barrier", 83, "Covers yourself in a bubble of water, which slows down enemies and some of their spells. While under this effect, you are unable to use fire spells and receive more damage from electricity and ice.",
 			SpellType::other, 25, 40, 0, 0.0f),
 
-		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
-			SpellType::other, 25, 30, 0, 164.0f),
+		Spell("", "", 0, "Empty spell.",
+			SpellType::other, 1, 1, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

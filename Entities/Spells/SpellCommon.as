@@ -167,6 +167,79 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
+
+		case -726215270: //vinewaver
+		{
+			if (!isServer()){
+           		return;
+			}
+
+			bool extraDamage = this.hasTag("extra_damage");
+
+			f32 orbspeed = 2.25f;
+			f32 orbDamage = 0.4f + (extraDamage ? 0.2f : 0);
+
+			Vec2f orbPos = thispos;
+			Vec2f orbVel = (aimpos - this.getPosition());
+			bool spawn_second = false;
+			f32 ttd = extraDamage ? 5.0f : 3.0f;
+            
+			switch(charge_state)
+			{
+				case super_cast:
+				{
+					orbspeed = 2.0f;
+					spawn_second = true;
+					ttd += 1.0f;
+				}
+				break;
+
+				default: break;
+			}
+
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			{
+				CBlob@ orb = server_CreateBlobNoInit("vinewaver");
+				if (orb !is null)
+				{
+					orb.Init();
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.server_setTeamNum(this.getTeamNum());
+					orb.setPosition(orbPos);
+					orb.setVelocity(orbVel);
+					orb.server_SetTimeToDie(ttd);
+
+					orb.setAngleDegrees(-orbVel.Angle());
+					orb.set_Vec2f("initvel", orbVel);
+					orb.set_f32("dmg", orbDamage);
+				}
+			}
+			if (spawn_second)
+			{
+				CBlob@ orb = server_CreateBlobNoInit("vinewaver");
+				if (orb !is null)
+				{
+					orb.Init();
+					orb.set_bool("back", true);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.server_setTeamNum(this.getTeamNum());
+					orb.setPosition(orbPos);
+					orb.setVelocity(orbVel);
+					orb.server_SetTimeToDie(ttd);
+
+					orb.setAngleDegrees(-orbVel.Angle());
+					orb.set_Vec2f("initvel", orbVel);
+					orb.set_f32("dmg", orbDamage);
+				}
+			}
+		}
+		break;
 		
 		case 1299162377://boulder_throw
 		{
@@ -3211,7 +3284,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 			Vec2f orbVel = (aimpos - orbPos);
 			orbVel.Normalize();
-			orbVel *= orbspeed*(1.25f-orbs*0.2f);
+			orbVel *= orbspeed*(1.5f-orbs*0.175f);
 
 			CBlob@ orb = server_CreateBlobNoInit( "epicorbmain" );
 			if (orb !is null)

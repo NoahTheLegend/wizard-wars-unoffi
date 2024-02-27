@@ -23,15 +23,17 @@ namespace SwordCasterParams
 	
 	const ::Spell[] spells = 
 	{
-		Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
-			SpellType::other, 3, 40, 0, 360.0f),
-							// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
-			
+		//Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
+		//	SpellType::other, 3, 40, 0, 360.0f),
+		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
+		Spell("impaler", "Impaler", 45, "Sharpen your enemies and use them as a weapon against themselves.",
+				SpellType::other, 6, 15, 0, 360.0f, true),
+				
 		Spell("teleport", "Teleport", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 20, 6, 0, 250.0f, true), 
+				SpellType::other, 20, 6, 0, 250.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 30, 10, 0, 64.0f, true),
+				SpellType::other, 30, 10, 0, 64.0f, true),
 			
 		Spell("executioner", "Executioner", 43, "The Executioner was a sword used, as the name implies, in execution by decapitation. Today, it serves another purpose. Press SHIFT to launch them in the direction of your mouse.",
 				SpellType::other, 30, 45, 3, 360.0f, true),
@@ -45,8 +47,8 @@ namespace SwordCasterParams
 		Spell("bladed_shell", "Bladed Shell", 44, "A circle of shear death... or at least it would be if you used the edge. This spell makes you weak to some magic attacks.",
 				SpellType::other, 35, 75, 0, 0.0f, true),
 			 
-		Spell("impaler", "Impaler", 45, "Sharpen your enemies and use them as a weapon against themselves.",
-				SpellType::other, 7, 15, 0, 360.0f, true),
+		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press | USE | button to cut the rope off. Disables dashing and teleporting while active. Overcharge increases throw distance.",
+				SpellType::other, 5, 15, 2, 256.0f),
 			 
 		Spell("parry", "Parry", 46, "Reflect enemy attacks.",
 				SpellType::other, 10, 10, 0, 20.0f, true),
@@ -60,8 +62,8 @@ namespace SwordCasterParams
 		Spell("nemesis", "Nemesis", 85, "Summons a row of falling swords from the sky. Overcharge increases the amount of swords and decreases the delay between load and launch.",
 				SpellType::other, 30, 30, 3, 384.0f),
 			 
-		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press | USE | button to cut the rope off. Disables dashing and teleporting while active. Overcharge increases throw distance.",
-				SpellType::other, 5, 15, 2, 256.0f),
+		Spell("", "", 0, "Empty spell.",
+				SpellType::other, 1, 1, 0, 0.0f),
 			
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
