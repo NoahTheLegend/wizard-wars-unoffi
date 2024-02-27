@@ -3763,14 +3763,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				return;
 			}
 
-			f32 orbspeed = necro_shoot_speed * 1.05f;
+			f32 orbspeed = necro_shoot_speed * 0.75f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
 			f32 orbDamage = 0.5f * extraDamage;
 
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 			Vec2f orbVel = (aimpos - orbPos);
-			orbVel.Normalize();
-			orbVel *= orbspeed;
 
 			CBlob@ orb = server_CreateBlob( "lavashot" );
 			if (orb !is null)
@@ -3778,14 +3776,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (charge_state == complete_cast) {
 					orb.set_u8("lavadrop_time", 30);
 					orb.set_u8("lavadrop_amount", 12);
-					orbDamage *= 1.25f;
+					orbDamage *= 1.15f;
+					orbspeed *= 1.15f;
 				}
 				else if (charge_state == super_cast) {
 					orb.set_u8("lavadrop_time", 20);
 					orb.set_u8("lavadrop_amount", 16);
-					orbDamage *= 1.5f;
+					orbDamage *= 1.33f;
+					orbspeed *= 1.33f;
 				}
 				orb.set_f32("damage", orbDamage);
+
+				orbVel.Normalize();
+				orbVel *= orbspeed;
 
 				orb.IgnoreCollisionWhileOverlapped( this );
 				orb.SetDamageOwnerPlayer( this.getPlayer() );

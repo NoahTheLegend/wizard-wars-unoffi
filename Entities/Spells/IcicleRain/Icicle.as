@@ -45,6 +45,9 @@ void onTick(CBlob@ this)
 		this.set_u32("launch_delay", getGameTime()+this.get_u8("wait_time"));
 
 		if (this.getTickSinceCreated() > 1) this.setAngleDegrees(Maths::Clamp(0, 360, -this.getVelocity().Angle()-90));
+
+		ShapeConsts@ consts = shape.getConsts();
+		consts.mapCollisions = true;
 	}
 	else if (!this.hasTag("arrived"))
 	{
@@ -63,6 +66,9 @@ void onTick(CBlob@ this)
 		this.setVelocity(Vec2f(0,-4).RotateBy(-(this.getPosition()-this.get_Vec2f("moveTo")).Angle()-90));
 
 		if (this.getTickSinceCreated() > 1) this.setAngleDegrees(Maths::Clamp(0, 360, -this.getVelocity().Angle()-90));
+		
+		ShapeConsts@ consts = shape.getConsts();
+		consts.mapCollisions = false;
 	}
 	else
 	{

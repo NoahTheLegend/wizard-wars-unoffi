@@ -9,7 +9,6 @@ void onInit(CBlob@ this)
 	consts.bullet = false;
 
 	this.Tag("projectile");
-	this.Tag("cantparry");
     this.Tag("counterable");
 	shape.SetGravityScale( 0.0f );
 

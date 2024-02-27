@@ -24,7 +24,8 @@ void onTick(CBlob@ this)
             {
                 orb.set_Vec2f("aimPos", this.get_Vec2f("icicles_aimPos"));
             }
-            
+
+            orb.SetDamageOwnerPlayer(this.getPlayer());
             orb.server_SetTimeToDie(30.0f);
         }
     }

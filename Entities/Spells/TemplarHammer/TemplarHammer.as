@@ -51,6 +51,21 @@ void onTick(CBlob@ this)
 			p.damping = 0.95;
     	}
 	}
+	
+	CMap@ map = getMap();
+	if (map is null) return;
+
+	HitInfo@[] bs;
+	if (map.getHitInfosFromRay(this.getPosition(), this.getAngleDegrees(), this.getVelocity().Length(), this, @bs))
+	{
+		for (u16 i = 0; i < bs.size(); i++)
+		{
+			CBlob@ b = bs[i].blob;
+			if (b is null) continue;
+
+			onCollision(this, b, false);
+		}
+	}
 }
 
 void onTick(CSprite@ this) //rotating sprite

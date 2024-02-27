@@ -23,6 +23,7 @@ void onInit( CBlob @ this )
 {
 	this.Tag("phase through spells");
 	this.Tag("counterable");
+	this.Tag("cantparry");
 
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags( u8(CBlob::map_collide_none) | u8(CBlob::map_collide_nodeath) );

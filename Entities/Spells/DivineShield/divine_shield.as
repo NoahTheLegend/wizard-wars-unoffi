@@ -70,6 +70,7 @@ void onTick(CBlob@ this)
                                 f32 dmg;
                                 dmg = (!b.exists("explosive_damage") || b.get_f32("damage") >= b.get_f32("explosive_damage")) ? b.get_f32("damage") * 0.5 : b.get_f32("explosive_damage") * 0.33f;
                                 b.server_setTeamNum(this.getTeamNum());
+                                b.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
                                 if (b.getName()=="bunker_buster") dmg *= 2.0f;
                                 else if (b.getName() == "force_of_nature") this.server_SetTimeToDie(1.0f);
                                 this.server_Hit(this, this.getPosition(), this.getVelocity(), dmg, Hitters::arrow, true);
