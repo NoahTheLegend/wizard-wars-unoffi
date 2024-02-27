@@ -145,6 +145,11 @@ void onTick(CMovement@ this)
 	shape.SetGravityScale(1.0f);
 	shape.getVars().onladder = false;
 
+	if (blob.exists("divine_protection") && blob.get_u32("divine_protection") > getGameTime())
+	{
+		shape.SetGravityScale(0.33f);
+	}
+
 	//swimming - overrides other movement partially
 	if (blob.isInWater() && !isknocked)
 	{
