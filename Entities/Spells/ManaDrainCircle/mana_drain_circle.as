@@ -201,7 +201,6 @@ void onTick(CSprite@ this)
 
     }
     blob.set("ParticleList",particleList);
-
 }
 
 SColor randomManaColor()

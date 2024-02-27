@@ -9,6 +9,7 @@ void onInit(CBlob@ this)
     this.SetLight(true);
 
     this.getSprite().SetRelativeZ(-10.1f);
+    this.set("colour", SColor(255,200,0,255));
 }
 
 const int effectRadius = 8*10;
@@ -96,6 +97,64 @@ void onTick(CSprite@ this)
             s.RotateByDegrees(deg,Vec2f_zero);
         }
     }
+
+    const Vec2f aimPos = b.getPosition();
+
+    CParticle@[] particleList;
+    SColor col;
+    b.get("ParticleList",particleList);
+    b.get("colour", col);
+
+    for(int a = 0; a < 3 + XORRandom(5); a++)
+    {
+        CParticle@ p = ParticlePixelUnlimited(getRandomVelocity(0,80,360) + aimPos, Vec2f(0,0), col,
+            true);
+            
+        if (p !is null)
+        {
+            p.fastcollision = true;
+            p.gravity = Vec2f(0,0);
+            p.bounce = 0;
+            p.Z = -10;
+            p.timeout = 75;
+            particleList.push_back(p);
+        }
+    }
+
+
+    for(int a = 0; a < particleList.length(); a++)
+    {
+        CParticle@ particle = particleList[a];
+        //check
+        if(particle.timeout < 1)
+        {
+            particleList.erase(a);
+            a--;
+            continue;
+        }
+
+        //Gravity
+        Vec2f tempGrav = Vec2f(0,0);
+        tempGrav.x = -(particle.position.x - aimPos.x);
+        tempGrav.y = -(particle.position.y - aimPos.y);
+        tempGrav.RotateBy(-62);
+
+
+        //Colour
+        SColor col = particle.colour;
+        col.setRed(col.getRed() - 1);
+        col.setGreen(Maths::Clamp(col.getGreen() + 4, 0, 255));
+        col.setBlue(col.getBlue() - 1);
+
+        //set stuff
+        particle.colour = col;
+        particle.forcecolor = col;
+        particle.gravity = tempGrav / 2000;
+
+        //particleList[a] = @particle;
+
+    }
+    b.set("ParticleList",particleList);
 }
 
 void onDie(CBlob@ this)
