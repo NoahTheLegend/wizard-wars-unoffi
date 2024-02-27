@@ -67,6 +67,11 @@ void onTick(CBlob@ this)
 	if(!isClient())
 	{return;}
 
+	{
+		makeSmokePuff(this);
+		if (getGameTime()%3==0) smoke(this.getPosition()-this.getVelocity(), 1, 3.0f);
+	}
+
 	for(int i = 0; i < 3; i ++)
 	{
 		float randomPVel = XORRandom(16) * 0.01f - 0.75f;
@@ -88,6 +93,7 @@ void onTick(CBlob@ this)
 void onTick(CSprite@ this) //rotating sprite
 {
 	CBlob@ b = this.getBlob();
+	
 	if(this is null || b is null)
 	{return;}
 }
@@ -164,13 +170,14 @@ void onDie( CBlob@ this )
 	if (isClient())
 	{
 		this.getSprite().PlaySound("MolotovExplosion.ogg", 1.0f, 0.65f+XORRandom(26)*0.01f);
-		blast(this.getPosition()-Vec2f(0,8), 10);
+		blast(this.getPosition()-this.getVelocity()-Vec2f(0,8), 10);
+		smoke(this.getPosition()-this.getVelocity(), 5);	
 	}
 	#endif
 	if(!this.hasTag("exploding"))
 	{
 		return;
-	}
+	}	
 
 	Vec2f thisPos = this.getPosition();
 	//Vec2f othPos = blob.getPosition();
@@ -222,4 +229,60 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 		)
 		&& target.getTeamNum() != this.getTeamNum() 
 	);
+}
+
+void makeSmokeParticle(CBlob@ this, const Vec2f vel, const string filename = "Smoke")
+{
+	if( !getNet().isClient() ) 
+		return;
+	//warn("making smoke");
+
+	const f32 rad = 4.0f;
+	Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+	CParticle@ p = ParticleAnimated( "RocketFire1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.0f, false );
+	if ( p !is null)
+	{
+		p.bounce = 0;
+    	p.fastcollision = true;
+		p.Z = 300.0f;
+	}
+	
+	//warn("smoke made");
+}
+
+void makeSmokePuff(CBlob@ this, const f32 velocity = 3.0f, const int smallparticles = 10, const bool sound = true)
+{
+	f32 randomness = (XORRandom(24) + 24)*0.015625f * 0.5f + 0.75f;
+	Vec2f vel = getRandomVelocity( -90, velocity * randomness, 360.0f );
+	makeSmokeParticle(this, vel);
+}
+
+Random _smoke_r(0x10001);
+void smoke(Vec2f pos, int amount, f32 vellen = 6.0f)
+{
+	if ( !getNet().isClient() )
+		return;
+
+	for (int i = 0; i < amount; i++)
+    {
+        Vec2f vel(vellen + _smoke_r.NextFloat() * vellen, 0);
+        vel.RotateBy(_smoke_r.NextFloat() * 360.0f);
+
+        CParticle@ p = ParticleAnimated( CFileMatcher("GenericSmoke2.png").getFirst(), 
+									pos, 
+									vel, 
+									float(XORRandom(360)), 
+									1.0f, 
+									4 + XORRandom(8), 
+									0.0f, 
+									false );
+									
+        if(p is null) return; //bail if we stop getting particles
+
+    	p.fastcollision = true;
+        p.scale = 1.0f + _smoke_r.NextFloat()*0.5f;
+        p.damping = 0.8f;
+		p.Z = 200.0f;
+		p.lighting = false;
+    }
 }
