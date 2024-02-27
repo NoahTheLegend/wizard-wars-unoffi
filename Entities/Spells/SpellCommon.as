@@ -176,7 +176,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			bool extraDamage = this.hasTag("extra_damage");
 
-			f32 orbspeed = 2.25f;
+			f32 orbspeed = 3.0f;
 			f32 orbDamage = 0.4f + (extraDamage ? 0.2f : 0);
 
 			Vec2f orbPos = thispos;
@@ -188,7 +188,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				case super_cast:
 				{
-					orbspeed = 2.0f;
+					orbspeed = 3.0f;
 					spawn_second = true;
 					ttd += 1.0f;
 				}
