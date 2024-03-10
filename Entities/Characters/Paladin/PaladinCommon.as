@@ -57,8 +57,8 @@ namespace PaladinParams
 		Spell("noblelance", "Noble Lance", 100, "Casts a piercing lance to move at chosen position. Goes back to caster position when stopped. Ignores tiles.",
 				SpellType::other, 20, 45, 0, 298.0f, false),
 							
-		Spell("fury", "Fury", 101, "Summons a homing ring. Doesn't deal collision damage, launches small homing blades around itself instead. Lasts until despelled while has a target. Overcharge increases blades spawnrate.",
-				SpellType::other, 50, 75, 8, 128.0f, true),	
+		Spell("smite", "Smite", 104, "Summons hammers from the sky.",
+				SpellType::other, 30, 45, 0, 198.0f, true),
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to attack in front of you. The spell disables teleport and awaits some time before attack.",
 				SpellType::other, 15, 30, 0, 0.0f),
@@ -66,8 +66,8 @@ namespace PaladinParams
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
 				SpellType::other, 10, 90, 18, 198.0f, true),
 							
-		Spell("smite", "Smite", 104, "Summons hammers from the sky.",
-				SpellType::other, 30, 45, 0, 198.0f, true),
+		Spell("", "", 0, "Empty spell.",
+				SpellType::other, 1, 1, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
