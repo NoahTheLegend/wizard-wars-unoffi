@@ -331,7 +331,6 @@ void onTick( CBlob@ this)
 
 				case revive_knight_effect_missile:
 				{
-					printf("ae");
 					ReviveKnight(blob);
 				}
 				break;
