@@ -3860,6 +3860,50 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -412789577://frost_spirit
+		{
+			if (!isServer())
+			{return;}
+
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
+			f32 orbspeed = 6.0f;
+			f32 orbDamage = 1.0f * extraDamage;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+
+				case super_cast:
+				{
+					orbspeed *= 1.2f;
+					orbDamage += 0.4f;
+				}
+				break;
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob( "frost_spirit" );
+			if (orb !is null)
+			{
+				orb.set_f32("damage", 2.0f * extraDamage);
+
+				orb.IgnoreCollisionWhileOverlapped( this );
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
+				orb.server_setTeamNum( this.getTeamNum() );
+				orb.setPosition( orbPos );
+				orb.setVelocity( orbVel );
+			}
+		}
+		break;
+
 		case 1050564475: //lavashot
 		{
 			if (!isServer()){
