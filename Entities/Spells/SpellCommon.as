@@ -4077,7 +4077,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{return;}
 
 			bool extra_damage = this.hasTag("extra_damage");
-			int numOrbs = extra_damage ? 2 : 1;
+			int numOrbs = extra_damage ? 3 : 1;
 			
             switch(charge_state)
 			{
@@ -4088,7 +4088,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				case super_cast:
 				{
-					numOrbs += 1;
+					numOrbs += 2;
 				}
 				break;
 				
@@ -4098,7 +4098,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			Vec2f orbPos = thispos + Vec2f(0.0f,0);
 			Vec2f orbVel = (aimpos - orbPos);
 			
-			f32 angle = 10.0f;
+			f32 angle = 5.0f;
 			f32 tot_angle = numOrbs * angle;
 			for (int i = 0; i < numOrbs; i++)
 			{

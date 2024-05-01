@@ -13,6 +13,7 @@ void onInit(CBlob@ this)
 	this.Tag("projectile");
 	this.Tag("counterable");
 	shape.SetGravityScale(0.0f);
+	this.SetMapEdgeFlags(CBlob::map_collide_none);
 
 	this.set_f32("damage", 0.6f + XORRandom(3)*0.1f); // 3-4
 	this.getSprite().SetZ(9.0f);
@@ -20,7 +21,7 @@ void onInit(CBlob@ this)
     //dont collide with top of the map
     this.server_SetTimeToDie(3);
 	CSprite@ sprite = this.getSprite();
-	this.set_u16("smashtoparticles_probability", 1); // 1 is 100%, 2 is 50% and so on
+	this.set_u16("smashtoparticles_probability", 4); // 1 is 100%, 2 is 50% and so on
 }
 
 void onTick(CBlob@ this)

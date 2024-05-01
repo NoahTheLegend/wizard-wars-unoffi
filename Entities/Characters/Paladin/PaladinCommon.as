@@ -22,7 +22,7 @@ namespace PaladinParams
 	const ::Spell[] spells = 
 	{
 		Spell("templarhammer", "Templar Hammer", 92, "Throws a magic hammer that is affected by gravity.",
-				SpellType::other, 4, 40, 0, 120.0f),
+				SpellType::other, 4, 35, 0, 120.0f),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 25, 8, 0, 270.0f, true),
@@ -31,7 +31,7 @@ namespace PaladinParams
 			SpellType::other, 25, 10, 0, 64.0f, true),
 			 
 		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards.",
-				SpellType::other, 12, 45, 4, 198.0f, true),
+				SpellType::other, 10, 40, 3, 198.0f, true),
 
 		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target transfers 25% of damage to you and receives 25% less damage (50% in total) if nearby and your health is more than 25%.",
 				SpellType::other, 20, 45, 8, 256.0f, true),
@@ -58,7 +58,7 @@ namespace PaladinParams
 				SpellType::other, 20, 45, 0, 298.0f, false),
 							
 		Spell("smite", "Smite", 104, "Summons hammers from the sky.",
-				SpellType::other, 35, 45, 0, 198.0f, true),
+				SpellType::other, 35, 45, 6, 198.0f, true),
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to attack in front of you. The spell disables teleport and awaits some time before attack.",
 				SpellType::other, 15, 30, 0, 0.0f),
