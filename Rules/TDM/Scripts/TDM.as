@@ -475,7 +475,7 @@ shared class TDMCore : RulesCore
 
 	void AddPlayer(CPlayer@ player, u8 team = 0, string default_config = "")
 	{
-		TDMPlayerInfo p(player.getUsername(), player.getTeamNum(), player.isBot() ? "knight" : "wizard" );
+		TDMPlayerInfo p(player.getUsername(), player.getTeamNum(), player.isBot() && sv_test ? "knight" : "wizard" );
 		players.push_back(p);
 		ChangeTeamPlayerCount(p.team, 1);
 	}

@@ -648,15 +648,8 @@ void onTick(CBlob@ this)
 				Vec2f blobPos = b.getPosition();
 				Vec2f kickDir = blobPos - thisPos;
 				kickDir.Normalize();
-				Vec2f kickVel = kickDir * 7.5f; //push force
 
-				CPlayer@ targetPlayer = b.getPlayer();
-				if (targetPlayer == null)
-				{
-					b.AddForce(-kickVel);
-				}
-
-				if (isClient())
+				if (isClient() && !isZombie)
 				{
 					Vec2f rayVec = blobPos - thisPos;
 					int steps = rayVec.getLength();

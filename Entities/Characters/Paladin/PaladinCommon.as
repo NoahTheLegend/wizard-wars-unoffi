@@ -44,7 +44,7 @@ namespace PaladinParams
 		Spell("manatohealth", "Aura: Sigma", 94, "Transfers your mana regeneration into health regeneration.",
 				SpellType::other, 0, 15, 5, 0, true),
 
-		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 300% of received enemy damage and 150% of friendly damage. Pulls enemies nearby and deals returns deals everything 20% of damage.",
+		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 300% of received enemy damage and 150% of friendly damage. Returns 20% of damage to enemies in radius.",
 				SpellType::other, 0, 15, 5, 0, true),
 
 		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 50% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
