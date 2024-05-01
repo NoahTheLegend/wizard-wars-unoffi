@@ -1,6 +1,6 @@
 #include "Hitters.as"
 
-f32 max_angle = 22.5f; // max capture angle, actually doubled so this is 135 degree coverage
+f32 max_angle = 35.0f; // max capture angle, actually doubled so this is 135 degree coverage
 const f32 MIN_FROZEN_TIME = 1.0f;
 const f32 MAX_FROZEN_TIME = 5;
 
@@ -132,7 +132,7 @@ void onTick( CBlob@ this)
 		}
 	}
 
-	this.setVelocity(Vec2f(0,-1.5f * (1.0f + Maths::Min(5.0f, (this.getTickSinceCreated() / 30.0f)))).RotateBy(this.getAngleDegrees()));
+	this.setVelocity(Vec2f(0,-2.0f * (1.0f + Maths::Min(5.0f, (this.getTickSinceCreated() / 30.0f)))).RotateBy(this.getAngleDegrees()));
 
 	if (this.getPosition().y < 0 || this.getPosition().x < 0
 		|| this.getPosition().y > getMap().tilemapheight*8

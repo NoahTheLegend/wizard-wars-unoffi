@@ -1070,6 +1070,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (orb !is null)
 				{
 					orb.set_u8("effect", revive_knight_effect_missile);
+					orb.set_u8("override_sprite_frame", 3);
 
 					orb.IgnoreCollisionWhileOverlapped( this );
 					orb.SetDamageOwnerPlayer( this.getPlayer() );
