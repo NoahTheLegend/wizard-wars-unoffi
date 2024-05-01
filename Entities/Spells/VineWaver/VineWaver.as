@@ -23,7 +23,7 @@ void onInit(CBlob@ this)
 }
 
 f32 pi = 3.14f;
-const f32 angle_change = 65.0f;
+const f32 angle_change = 35.0f;
 f32 dev = 0.15f; // deviation speed
 
 void onTick(CBlob@ this)

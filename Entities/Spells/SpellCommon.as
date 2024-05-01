@@ -42,6 +42,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 	aimVector -= aimNorm*4;
 	aimpos -= aimNorm*4;
 
+	f32 aim_angle = aimVector.Angle();
+
 	switch(spellName.getHash())
 	{
 		case 1476886618:
@@ -199,6 +201,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			orbVel.Normalize();
 			orbVel *= orbspeed;
+			Vec2f offset = spawn_second ? Vec2f(0,8).RotateBy(aim_angle) : Vec2f_zero;
 
 			{
 				CBlob@ orb = server_CreateBlobNoInit("vinewaver");
@@ -209,7 +212,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.IgnoreCollisionWhileOverlapped(this);
 					orb.SetDamageOwnerPlayer(this.getPlayer());
 					orb.server_setTeamNum(this.getTeamNum());
-					orb.setPosition(orbPos);
+					orb.setPosition(orbPos-offset);
 					orb.setVelocity(orbVel);
 					orb.server_SetTimeToDie(ttd);
 
@@ -229,7 +232,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.IgnoreCollisionWhileOverlapped(this);
 					orb.SetDamageOwnerPlayer(this.getPlayer());
 					orb.server_setTeamNum(this.getTeamNum());
-					orb.setPosition(orbPos);
+					orb.setPosition(orbPos+offset);
 					orb.setVelocity(orbVel);
 					orb.server_SetTimeToDie(ttd);
 
@@ -997,6 +1000,46 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		break;
 
 		case 545705456://revive
+		{
+			f32 orbspeed = 4.0f;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.3f;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;	
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob( "effect_missile", this.getTeamNum(), orbPos ); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", revive_effect_missile);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		case -1686119404://knight_revive
 		{
 			f32 orbspeed = 4.0f;
 
@@ -4794,7 +4837,7 @@ void makeHealParticles(CBlob@ this, const f32 velocity = 1.0f, const int smallpa
 	}
 }
 
-void Revive( CBlob@ blob )
+void Revive(CBlob@ blob)
 {			
 	int playerId = blob.get_u16( "owner_player" );
 	CPlayer@ deadPlayer = getPlayerByNetworkId( playerId );
@@ -4832,7 +4875,38 @@ void Revive( CBlob@ blob )
 	makeReviveParticles(blob);
 }
 
-void UnholyRes( CBlob@ blob )
+void ReviveKnight(CBlob@ blob)
+{			
+	int playerId = blob.get_u16("owner_player");
+	CPlayer@ deadPlayer = getPlayerByNetworkId(playerId);
+	
+	if (isServer() && deadPlayer !is null)
+	{
+		CBlob @newBlob = server_CreateBlob("knight", deadPlayer.getTeamNum(), blob.getPosition());		
+		if(newBlob !is null)
+		{
+			f32 health = newBlob.getHealth();
+			f32 initHealth = newBlob.getInitialHealth();
+	
+			newBlob.server_SetPlayer(deadPlayer);
+			
+			ManaInfo@ manaInfo;
+			if (newBlob.get( "manaInfo", @manaInfo)) 
+			{
+				manaInfo.mana = 0;
+			}			
+			
+			makeReviveParticles(newBlob);
+			
+			blob.server_Die();
+		}
+	}
+		
+	blob.getSprite().PlaySound("Revive.ogg", 0.8f, 1.0f);
+	makeReviveParticles(blob);
+}
+
+void UnholyRes(CBlob@ blob)
 {			
 	int playerId = blob.get_u16( "owner_player" );
 	CPlayer@ deadPlayer = getPlayerByNetworkId( playerId );

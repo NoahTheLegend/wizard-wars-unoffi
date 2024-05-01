@@ -254,6 +254,11 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 			if (tokens.length > 1)
 			{
+				if (tokens[0] == "!class")
+				{
+					CBlob@ b = server_CreateBlob(tokens[1], blob.getTeamNum(), blob.getPosition());
+					if (b !is null) b.server_SetPlayer(player);
+				}
 				//(see above for crate parsing example)
 				if (tokens[0] == "!crate")
 				{

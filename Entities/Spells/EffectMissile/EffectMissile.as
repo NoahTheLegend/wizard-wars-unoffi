@@ -72,6 +72,7 @@ void onTick( CBlob@ this)
 			break;
 			
 			case revive_effect_missile:
+			case revive_knight_effect_missile:
 			case unholyRes_effect_missile:
 			{
 				targetType = 1;
@@ -318,13 +319,19 @@ void onTick( CBlob@ this)
 				return;
 			}
 		}
-		else if ( blob.getName() == "gravestone" && sameTeam && targetType == 1 )	//ally revive spells
+		else if (blob.getName() == "gravestone" && sameTeam && targetType == 1)	//ally revive spells
 		{
 			switch(effectType)
 			{
 				case revive_effect_missile:
 				{
 					Revive(blob);
+				}
+				break;
+
+				case revive_knight_effect_missile:
+				{
+					ReviveKnight(blob);
 				}
 				break;
 			
