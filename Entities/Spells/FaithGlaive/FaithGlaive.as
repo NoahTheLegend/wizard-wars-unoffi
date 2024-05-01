@@ -2,14 +2,21 @@
 #include "TeamColour.as";
 
 const u16 target_angle = 90;
-const f32 start_angle = -45;
+const f32 start_angle = -15;
 const f32 accel = 0.5f;
 const u8 wait_time = 20;
-const Vec2f glaive_offset = Vec2f(-16,-8);
-const Vec2f rotation_offset = Vec2f(14, 12);
+const Vec2f glaive_offset = Vec2f(-12,-8);
+const Vec2f rotation_offset = Vec2f(12, 6);
 const u8 particles_starttime = 3;
 const u8 particles_endtime = 3;
 const u8 particles_angle_rnd = 45;
+const f32 scale = 1.25f; // both for sprite and distance
+const f32 extra_distance = 8; // attack distance
+
+f32 getAimAngle(CBlob@ this)
+{
+	return (this.getAimPos() - this.getPosition()).Angle();
+}
 
 void onTick(CBlob@ this)
 {
@@ -21,6 +28,8 @@ void onTick(CBlob@ this)
 	Vec2f thispos = this.getPosition();
 	
 	bool wait = diff < wait_time;
+	f32 aimangle = -getAimAngle(this);
+	if (this.isFacingLeft()) aimangle += 180;
 	
 	f32 last_angle = this.get_f32("faithglaiverotation");
 	f32 angle = wait ? start_angle : Maths::Lerp(last_angle, target_angle, accel);
@@ -30,7 +39,11 @@ void onTick(CBlob@ this)
 
 	CSprite@ sprite = this.getSprite();
 	CSpriteLayer@ glaive = sprite.getSpriteLayer("faithglaive");
-	if (glaive is null) @glaive = sprite.addSpriteLayer("faithglaive", "FaithGlaive.png", 32, 32);
+	if (glaive is null)
+	{
+		@glaive = sprite.addSpriteLayer("faithglaive", "FaithGlaive.png", 32, 32);
+		glaive.ScaleBy(Vec2f(scale, scale));
+	}
 
 	s8 fl = this.isFacingLeft() ? -1 : 1;
 
@@ -48,7 +61,7 @@ void onTick(CBlob@ this)
 
 			glaive.ResetTransform();
 			glaive.SetOffset(glaive_offset);
-			glaive.RotateBy(fl*(start_angle+angle), Vec2f(fl*rotation_offset.x,rotation_offset.y));
+			glaive.RotateBy(fl*(start_angle+angle) + aimangle, Vec2f(fl*rotation_offset.x,rotation_offset.y));
 		}
 
 		if (angle >= target_angle-particles_endtime || diff < particles_starttime)
@@ -101,7 +114,7 @@ void onTick(CBlob@ this)
 			if (map !is null)
 			{
 				HitInfo@[] list;
-				map.getHitInfosFromArc(thispos + Vec2f(0 * fl, 0), this.isFacingLeft() ? 180-start_angle : start_angle, Maths::Abs(start_angle) + Maths::Abs(target_angle), 36, this, @list);
+				map.getHitInfosFromArc(thispos + Vec2f(0 * fl, 0), aimangle + (this.isFacingLeft() ? 180-start_angle : start_angle), Maths::Abs(start_angle) + Maths::Abs(target_angle), extra_distance + 32 * scale, this, @list);
 
 				for (u16 i = 0; i < list.size(); i++)
 				{
@@ -113,14 +126,6 @@ void onTick(CBlob@ this)
 					this.server_Hit(b, b.getPosition(), this.getVelocity(), this.get_f32("faithglaivedamage"), Hitters::sword);
 				}
 			}
-		}
-
-		if (isClient())
-		{
-			// mfw
-			Vec2f offset = Vec2f(glaive_offset.x*fl - (fl==-1?22:-26), glaive_offset.y - (fl==1?13:9)).RotateBy(angle*fl);
-			makeParticlesFromSpriteAccurate(this, sprite, "FaithGlaive",
-				this.getOldPosition()+offset, (angle+start_angle)*fl, 1);
 		}
 
 		sprite.RemoveSpriteLayer("faithglaive");
@@ -161,40 +166,6 @@ SColor blueRedSwap(SColor oldcol, u8 t)
     }
     
     return SColor(newcol);
-}
-
-void makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, string filename, Vec2f pos, f32 angle, u16 probability)
-{
-    CFileImage@ image;
-    @image = CFileImage(filename);
-
-	if (image.isLoaded())
-	{
-        Vec2f vel = this.getOldVelocity()*0.75f;
-        f32 deg = angle;
-        bool fl = this.isFacingLeft();
-        f32 layer = 510.0f;
-        
-        int w = image.getWidth(); 
-        int h = image.getHeight();
-        
-        Vec2f center = Vec2f(-w/2, -h/2) + sprite.getOffset(); // shift it to upper left corner for 1/2 of sprite size
-
-        while(image.nextPixel() && w != 0 && h != 0)
-		{
-			SColor px_col = image.readPixel();
-            if (XORRandom(probability) != 0) continue;
-            if (px_col.getAlpha() != 255) continue;
-            px_col = blueRedSwap(px_col, this.getTeamNum());
-
-            Vec2f px_pos = image.getPixelPosition();
-            if (fl) px_pos.x = w-px_pos.x;
-
-            Vec2f offset = center + px_pos;
-            offset.RotateBy(deg);
-            MakeParticle(pos + offset, vel * (0.5f + XORRandom(51)*0.01f), px_col, layer);
-        }
-    }
 }
 
 void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer)
