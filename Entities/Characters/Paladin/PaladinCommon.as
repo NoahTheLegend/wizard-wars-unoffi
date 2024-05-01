@@ -58,7 +58,7 @@ namespace PaladinParams
 				SpellType::other, 20, 45, 0, 298.0f, false),
 							
 		Spell("smite", "Smite", 104, "Summons hammers from the sky.",
-				SpellType::other, 30, 45, 0, 198.0f, true),
+				SpellType::other, 35, 45, 0, 198.0f, true),
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to attack in front of you. The spell disables teleport and awaits some time before attack.",
 				SpellType::other, 15, 30, 0, 0.0f),

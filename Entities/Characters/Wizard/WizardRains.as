@@ -180,12 +180,14 @@ class WizardRain
                         f32 offsetX = (i % 2 == 0) ? i / 2 * (8 * gap) : -(i / 2 + 1) * (8 * gap);
                         if (quantity % 2 == 0) offsetX += 8;
                         f32 offsetY = Maths::Abs(position.x - (position.x + offsetX));
+                        if (this.getTeamNum() == 1) offsetX += 4;
+                        else offsetX -= 4;
                         blob.setPosition(Vec2f(position.x + offsetX, -64 + 8.0f * initobjectsAmount - offsetY));
                         
                         blob.Init();
                         blob.getShape().SetGravityScale(2.5f);
                         blob.setAngleDegrees(90);
-                        blob.set_f32("damage", 1.0f);
+                        blob.set_f32("damage", 1.5f);
                     }
                 }
 
