@@ -35,6 +35,7 @@ class WizardRain
 
     uint time;
     uint objectsAmount;
+    uint initobjectsAmount;
 
     WizardRain(CBlob@ blob, u8 i_type, u8 i_level, Vec2f pos)
     {
@@ -110,6 +111,8 @@ class WizardRain
                 objectsAmount += 2;
             time = 1;
         }
+
+        initobjectsAmount = objectsAmount;
     }
 
     void Manage( CBlob@ this )
@@ -164,16 +167,26 @@ class WizardRain
             }
             else if (type == WizardRainTypes::smite)
             {
-                CBlob@ blob = server_CreateBlobNoInit("templarhammer");
-                if (blob !is null)
+                f32 gap = 2; // mod
+                int quantity = initobjectsAmount - objectsAmount + 1;
+                for (u8 i = 0; i < quantity; i++)
                 {
-                    blob.set_bool("smite", true);
-                    blob.server_setTeamNum(team);
-                    blob.setPosition(Vec2f(position.x, 10.0f));
-                    blob.Init();
-                    blob.getShape().SetGravityScale(2.5f);
-                    blob.setAngleDegrees(90);
-                    blob.set_f32("damage", 1.5f);
+                    CBlob@ blob = server_CreateBlobNoInit("templarhammer");
+                    if (blob !is null)
+                    {
+                        blob.set_bool("smite", true);
+                        blob.server_setTeamNum(team);
+
+                        f32 offsetX = (i % 2 == 0) ? i / 2 * (8 * gap) : -(i / 2 + 1) * (8 * gap);
+                        if (quantity % 2 == 0) offsetX += 8;
+                        f32 offsetY = Maths::Abs(position.x - (position.x + offsetX));
+                        blob.setPosition(Vec2f(position.x + offsetX, -64 + 8.0f * initobjectsAmount - offsetY));
+                        
+                        blob.Init();
+                        blob.getShape().SetGravityScale(2.5f);
+                        blob.setAngleDegrees(90);
+                        blob.set_f32("damage", 1.0f);
+                    }
                 }
 
                 time = 1;
