@@ -24,7 +24,6 @@ void ManageCursors(CBlob@ this)
 		if (this.isAttached() && this.isAttachedToPoint("GUNNER"))
 		{
 			getHUD().SetCursorImage("Entities/Characters/Archer/ArcherCursor.png", Vec2f(32, 32));
-			getHUD().SetCursorOffset(Vec2f(-32, -32));
 		}
 		else
 		{
@@ -40,6 +39,7 @@ void onRender(CSprite@ this)
 
 	CBlob@ blob = this.getBlob();
 	CPlayer@ player = blob.getPlayer();
+	getHUD().SetCursorOffset(Vec2f(-24, -24));
 
 	ManageCursors(blob);
 

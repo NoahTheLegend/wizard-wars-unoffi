@@ -2,6 +2,10 @@
 #include "RunnerCommon.as"
 #include "MagicCommon.as";
 #include "SplashWater.as";
+#include "TeamColour.as";
+#include "PaladinCommon.as";
+
+Random _r(94712);
 
 void onTick(CBlob@ this)
 {
@@ -611,67 +615,132 @@ void onTick(CBlob@ this)
 		u32 origindamagetomanatiming = this.get_u32("origindamagetomanatiming");
 		u32 damagetomanatiming = this.get_u32("damagetomanatiming");
 		u32 disabledamagetomanatiming = this.get_u32("disabledamagetomanatiming");
-
 		u8 ticks_for_disable = 1; // for how long to run disable code
 
-		// particles
-		f32 amount = 31;
-		f32 sum = 0;
-		f32 h = 16;
+		Vec2f thisPos = this.getPosition();
+		Vec2f thisVel = this.getVelocity();
+		int teamNum = this.getTeamNum();
+		u32 diff = getGameTime() - origindamagetomanatiming;
 
 		if (damagetomana)
 		{
-			Vec2f thisVel = this.getVelocity();
 			this.set_u32("damagetomanatiming", gt);
-			u32 diff = getGameTime() - origindamagetomanatiming;
 
-			//particles
-			if (isClient())
+			CMap@ map = getMap();
+			CBlob@[] enemiesInRadius;
+			map.getBlobsInRadius(thisPos, aura_omega_radius, @enemiesInRadius);
+			for (uint i = 0; i < enemiesInRadius.length; i++)
 			{
-				for (int i = 0; i < amount; i++)
-				{
-					f32 val = Maths::Abs(Maths::Sin(gt * (i%3) * 0.1f))*4;
-					sum += val;
+				CBlob@ b = enemiesInRadius[i];
+				if (b is null)
+				{ continue; }
 
-					Vec2f pbPos = this.getOldPosition() - Vec2f(0,h) + Vec2f(val, 0).RotateBy(360/amount*i);
-					SColor color = SColor(255,XORRandom(75)+100,25,255);
-					
-					CParticle@ pb = ParticlePixelUnlimited(pbPos, this.getVelocity(), color , true);
-					if(pb !is null)
-					{
-						pb.timeout = 0.01f;
-						pb.gravity = Vec2f_zero;
-						pb.collides = false;
-						pb.fastcollision = true;
-						pb.bounce = 0;
-						pb.lighting = false;
-						pb.Z = 500;
+				if (b.getTeamNum() == teamNum)
+				{ continue; }
+
+				if (!b.hasTag("hull") && !b.hasTag("flesh") && !b.hasTag("counterable"))
+				{ continue; }
+
+				if (b.hasTag("dead")) continue;
+
+				bool isZombie = b.hasTag("zombie");
+
+				Vec2f blobPos = b.getPosition();
+				Vec2f kickDir = blobPos - thisPos;
+				kickDir.Normalize();
+				Vec2f kickVel = kickDir * 7.5f; //push force
+
+				CPlayer@ targetPlayer = b.getPlayer();
+				if (targetPlayer == null)
+				{
+					b.AddForce(-kickVel);
+				}
+
+				if (isClient())
+				{
+					Vec2f rayVec = blobPos - thisPos;
+					int steps = rayVec.getLength();
+
+					Vec2f rayNorm = rayVec;
+					rayNorm.Normalize();
+
+					Vec2f rayDeviation = rayNorm;
+					rayDeviation.RotateByDegrees(90);
+					rayDeviation *= 4.0f; //perpendicular particle deviation
+
+					SColor color = getTeamColor(teamNum);
+
+					for(int i = 0; i < steps; i++)
+   					{
+						f32 chance = _r.NextFloat(); //chance to not spawn particle
+						if (chance > 0.3f)
+						{ continue; }
+
+						f32 waveTravel = i - getGameTime(); //forward and backwards wave travel
+						f32 sinInput = waveTravel * 0.2f;
+						f32 stepDeviation = Maths::Sin(sinInput); //particle deviation multiplier
+
+						if (i < 8)
+						{
+							f32 deviationReduction = float(i) / 8.0f;
+							stepDeviation *= deviationReduction;
+						}
+						if (i > (steps - 8))
+						{
+							f32 deviationReduction = -1.0f * ((float(i) - float(steps)) / 8.0f);
+							stepDeviation *= deviationReduction;
+						}
+
+						Vec2f finalRayDeviation = rayDeviation * stepDeviation;
+
+						Vec2f pPos = (rayNorm * i) + finalRayDeviation;
+						pPos += thisPos;
+
+ 	    				CParticle@ p = ParticlePixelUnlimited(pPos, Vec2f_zero, color, true);
+ 	    				if(p !is null)
+  	    				{
+							p.collides = false;
+							p.gravity = Vec2f_zero;
+							p.bounce = 0;
+							p.Z = 8;
+							p.timeout = 3;
+						}
+
+						if (isZombie)
+						{ i++; }
 					}
 				}
 			}
-		}
-		//disable
-	    else if (damagetomanatiming+ticks_for_disable+1 > gt)
-		{
-			for (int i = 0; i < amount*2; i++)
-			{
-				Vec2f pbPos = this.getOldPosition() - Vec2f(0,h);
-				u8 rnd = XORRandom(75);
-				SColor color = SColor(255,XORRandom(55)+125,25,255);
-				
-				CParticle@ pb = ParticlePixelUnlimited(pbPos, Vec2f(2+XORRandom(2), 0).RotateBy(XORRandom(360)), color, true);
-				if(pb !is null)
-				{
-					pb.timeout = 15+XORRandom(16);
-					pb.collides = true;
-					pb.gravity = Vec2f(0,0.5f);
-					pb.damping = 0.85f;
-					pb.fastcollision = true;
-					pb.bounce = 0;
-					pb.lighting = false;
-					pb.Z = 500;
-				}
-			}
+			
+			u16 particleNum = v_fastrender ? 15 : 40;
+			SColor color = getTeamColor(teamNum);
+
+			for(int i = 0; i < particleNum; i++)
+    		{
+				u8 alpha = 40 + (170.0f * _r.NextFloat()); //randomize alpha
+				color.setAlpha(alpha);
+
+				f32 randomDeviation = (i*0.3f) * _r.NextFloat(); //random pixel deviation
+				Vec2f prePos = Vec2f(aura_omega_radius - randomDeviation, 0); //distance
+				prePos.RotateByDegrees(360.0f * _r.NextFloat()); //random 360 rotation
+
+				Vec2f pPos = thisPos + prePos;
+				Vec2f pGrav = -prePos * 0.005f; //particle gravity
+
+				prePos.Normalize();
+				prePos *= 2.0f;
+
+    		    CParticle@ p = ParticlePixelUnlimited(pPos, prePos, color, true);
+    		    if(p !is null)
+    		    {
+    		        p.collides = false;
+    		        p.gravity = pGrav;
+    		        p.bounce = 0;
+    		        p.Z = 7;
+    		        p.timeout = 12;
+					p.setRenderStyle(RenderStyle::light);
+    		    }
+    		}
 		}
 	}
 

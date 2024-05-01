@@ -441,23 +441,6 @@ void onTick(CBlob@ this)
 	{
 		knight_clear_actor_limits(this);
 	}
-
-	if(isServer()) //bomb refill
-	{
-		if ( (getGameTime() % 240 == 0) )
-		{
-			CInventory@ kninv = this.getInventory();
-			if (!kninv.isFull())
-			{
-    	    	CBlob@ blub = server_CreateBlob("mat_bombs", this.getTeamNum(), this.getPosition());
-    	    	if (blub != null)
-    	   		{
-    	    	    this.server_PutInInventory(blub);
-    	   		}
-    		}
-		}
-	}
-
 }
 
 bool getInAir(CBlob@ this)

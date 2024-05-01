@@ -38,7 +38,7 @@ namespace PriestParams
 			SpellType::other, 20, 10, 0, 64.0f, true),
 			 
 		Spell("revive", "Revive", 15, "Fully bring trusty allies back from the dead by aiming a reviving missile at their gravestone.",
-				SpellType::other, 60, 60, 30, 360.0f, true),
+				SpellType::other, 70, 60, 30, 360.0f, true),
 
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
 				SpellType::other, 20, 25, 0, 360.0f, true), 

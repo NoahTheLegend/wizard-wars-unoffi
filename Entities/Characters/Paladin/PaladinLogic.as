@@ -513,52 +513,76 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 	}
 }
 
-f32 dmg_to_mana_ratio = 1.5f; // 1.0f is 200% of damage 
-f32 friendly_damage_factor = 0.5f;
-
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (isClient() && damage > 0.1f && this.get_bool("damagetomana")) // has effect
+	if (damage > 0.1f && this.get_bool("damagetomana")) // has effect
 	{
-		bool hbn = hitterBlob is null;
-		bool friendly = !hbn && hitterBlob.getTeamNum() == this.getTeamNum();
-
-    	ManaInfo@ manaInfo;
-		if (this.get("manaInfo", @manaInfo)) // && (hbn || (!hbn && hitterBlob.getTeamNum() != this.getTeamNum())))
+		if (isServer())
 		{
-			s32 mana = manaInfo.mana;
-			s32 maxMana = manaInfo.maxMana;
-			s32 maxtestmana = manaInfo.maxtestmana;
-				
-        	s32 amount = damage * 10 * dmg_to_mana_ratio;
-			if (friendly) amount *= friendly_damage_factor;
-
-			if (mana < maxMana)
+			Vec2f thisPos = this.getPosition();
+			u8 teamNum = this.getTeamNum();
+			CMap@ map = getMap();
+			CBlob@[] enemiesInRadius;
+			map.getBlobsInRadius(thisPos, aura_omega_radius, @enemiesInRadius);
+			for (uint i = 0; i < enemiesInRadius.length; i++)
 			{
-				if (maxMana - mana >= amount)
-					manaInfo.mana += amount;
-        	    else
-        	        manaInfo.mana = maxMana;
-        	}
+				CBlob@ b = enemiesInRadius[i];
+				if (b is null)
+				{ continue; }
 
-    		for (int i = 0; i < 64; i++)
+				if (b.getTeamNum() == teamNum)
+				{ continue; }
+
+				if (!b.hasTag("hull") && !b.hasTag("flesh") && !b.hasTag("counterable"))
+				{ continue; }
+
+				if (b.hasTag("dead")) continue;
+			
+				this.server_Hit(b, b.getPosition(), Vec2f_zero, damage * aura_omega_damage_mod, Hitters::burn, true);
+			}
+		}
+		if (isClient())
+		{
+			bool hbn = hitterBlob is null;
+			bool friendly = !hbn && hitterBlob.getTeamNum() == this.getTeamNum();
+
+    		ManaInfo@ manaInfo;
+			if (this.get("manaInfo", @manaInfo)) // && (hbn || (!hbn && hitterBlob.getTeamNum() != this.getTeamNum())))
 			{
-			    Vec2f pbPos = this.getOldPosition();
-			    SColor color = SColor(255,XORRandom(55)+155,25,255);
+				s32 mana = manaInfo.mana;
+				s32 maxMana = manaInfo.maxMana;
+				s32 maxtestmana = manaInfo.maxtestmana;
 
-			    CParticle@ pb = ParticlePixelUnlimited(pbPos, Vec2f(2+XORRandom(4), 0).RotateBy(XORRandom(360)), color, true);
-			    if(pb !is null)
-			    {
-			    	pb.timeout = 15+XORRandom(16);
-			    	pb.collides = true;
-			    	pb.gravity = Vec2f(0,0.5f);
-			    	pb.damping = 0.9f;
-			    	pb.fastcollision = true;
-			    	pb.bounce = 0;
-			    	pb.lighting = false;
-			    	pb.Z = 500;
-			    }
-    		}
+        		s32 amount = damage * 10 * dmg_to_mana_ratio;
+				if (friendly) amount *= friendly_damage_factor;
+
+				if (mana < maxMana)
+				{
+					if (maxMana - mana >= amount)
+						manaInfo.mana += amount;
+        		    else
+        		        manaInfo.mana = maxMana;
+        		}
+
+    			for (int i = 0; i < 64; i++)
+				{
+				    Vec2f pbPos = this.getOldPosition();
+				    SColor color = SColor(255,XORRandom(55)+155,25,255);
+
+				    CParticle@ pb = ParticlePixelUnlimited(pbPos, Vec2f(2+XORRandom(4), 0).RotateBy(XORRandom(360)), color, true);
+				    if(pb !is null)
+				    {
+				    	pb.timeout = 15+XORRandom(16);
+				    	pb.collides = true;
+				    	pb.gravity = Vec2f(0,0.5f);
+				    	pb.damping = 0.9f;
+				    	pb.fastcollision = true;
+				    	pb.bounce = 0;
+				    	pb.lighting = false;
+				    	pb.Z = 500;
+				    }
+    			}
+			}
 		}
 	}
 

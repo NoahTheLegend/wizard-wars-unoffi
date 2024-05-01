@@ -1,5 +1,10 @@
 #include "MagicCommon.as";
 
+const f32 aura_omega_radius = 64.0f;
+const f32 aura_omega_damage_mod = 0.2f;
+f32 dmg_to_mana_ratio = 1.5f; // 1.0f is 200% of damage 
+f32 friendly_damage_factor = 0.5f;
+
 namespace PaladinParams
 {
 	enum Aim 
@@ -39,7 +44,7 @@ namespace PaladinParams
 		Spell("manatohealth", "Aura: Sigma", 94, "Transfers your mana regeneration into health regeneration.",
 				SpellType::other, 0, 15, 5, 0, true),
 
-		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 300% of received enemy damage and 150% of friendly damage.",
+		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 300% of received enemy damage and 150% of friendly damage. Pulls enemies nearby and deals returns deals everything 20% of damage.",
 				SpellType::other, 0, 15, 5, 0, true),
 
 		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 50% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
@@ -66,8 +71,8 @@ namespace PaladinParams
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
 				SpellType::other, 10, 90, 18, 198.0f, true),
 							
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("knight_revive", "Revive", 106, "Summon a noble warrior back from the dead by aiming a reviving missile at their gravestone.",
+				SpellType::other, 70, 60, 25, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
