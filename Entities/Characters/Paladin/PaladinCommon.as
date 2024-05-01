@@ -65,7 +65,7 @@ namespace PaladinParams
 		Spell("smite", "Smite", 104, "Summons hammers from the sky.",
 				SpellType::other, 35, 45, 6, 198.0f, true),
 
-		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to attack in front of you. The spell disables teleport and awaits some time before attack.",
+		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to slash in front of you. The spell disables teleport and awaits some time before attack.",
 				SpellType::other, 15, 30, 0, 0.0f),
 
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
