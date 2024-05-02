@@ -1,3 +1,5 @@
+funcdef void ControlsSwitch(CBitStream@);
+funcdef void ControlsCycle(CBitStream@);
 
 void server_Pickup(CBlob@ this, CBlob@ picker, CBlob@ pickBlob)
 {
