@@ -204,7 +204,7 @@ void onTick(CSprite@ sprite)
 	sprite.SetEmitSoundVolume(Maths::Min(2.0f, this.getTickSinceCreated()*0.025f));
 	
 	if (!this.isOnScreen()) return;
-	orbit(this.get_Vec2f("init_pos"), 1, this, 32.0f);
+	orbit(this.get_Vec2f("init_pos"), 1, this, Maths::Min(32.0f, Maths::Lerp(this.getTickSinceCreated(), 32.0f, 0.1f)));
 }
 
 void orbit(Vec2f pos, int amount, CBlob@ this, f32 radius)
