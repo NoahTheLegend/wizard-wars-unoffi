@@ -5,6 +5,7 @@
 
 void onInit(CRules@ this)
 {
+	getNet().legacy_cmd = true;
 	LoadDefaultMapLoaders();
 	LoadDefaultGUI();
 
