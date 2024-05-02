@@ -105,9 +105,9 @@ bool doesCollideWithBlob( CBlob@ this, CBlob@ b )
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
-	this.getSprite().PlaySound("SpriteFire3.ogg", 0.05f, 0.5f + XORRandom(10)/20.0f);
-
 	if(blob is null || this is null){return;}
+	if (this.getSprite() is null) return;
+	this.getSprite().PlaySound("SpriteFire3.ogg", 0.05f, 0.5f + XORRandom(10)/20.0f);
 
 	if( isEnemy( this , blob ) ) //will not affect same team negatispheres
 	{
