@@ -35,12 +35,7 @@ void onTick(CBlob@ this)
 
 		if( time_passed == 6 )
 		{
-			float damage = 0.2f;
-			if(this.hasTag("super_flame_slash"))
-			{
-				damage = 1.0f;
-				this.Untag("super_flame_slash");
-			}
+			float damage = 1.0f;
 
 			CMap@ map = getMap();
 			if(map is null)
