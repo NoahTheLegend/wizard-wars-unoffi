@@ -1,7 +1,7 @@
 
 
-const u8 charge_delay = 3;
-const u8 activation_delay = 30;
+const u8 charge_delay = 2;
+const u8 activation_delay = 10;
 
 void onTick(CBlob@ this)
 {
