@@ -33,8 +33,10 @@ void onInit(CRules@ this)
 	//also restart stuff
 	onRestart(this);
 
+	#ifndef STAGING
 	if (s_gamemusic)
 		s_musicvolume = 0.5f;
+	#endif
 }
 
 bool need_sky_check = true;

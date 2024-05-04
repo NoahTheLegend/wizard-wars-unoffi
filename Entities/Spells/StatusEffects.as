@@ -916,9 +916,9 @@ void onTick(CBlob@ this)
 			CSpriteLayer@ layer = thisSprite.addSpriteLayer("water_ward","WaterBarrier.png",64,64);
 			if (layer !is null)
 			{
-				layer.SetRelativeZ(-5.75f);
+				layer.SetRelativeZ(65.75f);
 				layer.ScaleBy(Vec2f(1.33f,1.33f));
-				layer.setRenderStyle(RenderStyle::additive);
+				layer.setRenderStyle(RenderStyle::light);
 			}
 			this.set_bool("waterSetupDone",true);
 		}
@@ -929,8 +929,8 @@ void onTick(CBlob@ this)
 			if (layer !is null)
 			{
 				layer.SetFacingLeft(false);
-				layer.RotateBy(Maths::Sin(getGameTime()*0.1f)*2.0f, Vec2f(0,0));
-				layer.setRenderStyle(RenderStyle::additive);
+				layer.RotateBy(2, Vec2f_zero);
+				layer.setRenderStyle(RenderStyle::light);
 			}
 		}
 
@@ -966,9 +966,9 @@ void onTick(CBlob@ this)
 			CSpriteLayer@ layer = thisSprite.addSpriteLayer("dmgconnection_ward","SpiritualConnection.png",64,64);
 			if (layer !is null)
 			{
-				layer.SetRelativeZ(-5.75f);
+				layer.SetRelativeZ(65.55f);
 				layer.ScaleBy(Vec2f(0.75f,0.75f));
-				layer.setRenderStyle(RenderStyle::additive);
+				layer.setRenderStyle(RenderStyle::light);
 			}
 			this.set_bool("dmgconnectionSetupDone",true);
 		}
@@ -979,8 +979,8 @@ void onTick(CBlob@ this)
 			if (layer !is null)
 			{
 				layer.SetFacingLeft(false);
-				layer.RotateBy(Maths::Sin(getGameTime()*0.1f)*1.5f, Vec2f(0,0));
-				layer.setRenderStyle(RenderStyle::additive);
+				layer.RotateBy(3, Vec2f_zero);
+				layer.setRenderStyle(RenderStyle::light);
 			}
 		}
 

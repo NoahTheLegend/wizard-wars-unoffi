@@ -52,34 +52,36 @@ void onTick( CBlob@ this )
 		if (amo > 0)
 		{
 			int mana_to_give = Maths::Min(MANA_GIVE_RATE, storedMana)/amo;
-			for (uint step = 0; step < amo; step++)
-			{	
-				CBlob@ touchBlob = ps[step];
-				bool allowed_to_consume = touchBlob !is null && !touchBlob.hasTag("no_mana_pool")
-					&& (touchBlob.getName() != "entropist" || !touchBlob.get_bool("burnState"));
+			if (storedMana >= MANA_GIVE_RATE)
+			{
+				for (uint step = 0; step < amo; step++)
+				{	
+					CBlob@ touchBlob = ps[step];
+					bool allowed_to_consume = touchBlob !is null && !touchBlob.hasTag("no_mana_pool")
+						&& (touchBlob.getName() != "entropist" || !touchBlob.get_bool("burnState"));
 
-				if (allowed_to_consume)
-				{
-					ManaInfo@ manaInfo;
-					if (touchBlob.get("manaInfo", @manaInfo) && !touchBlob.hasTag("dead"))
+					if (allowed_to_consume)
 					{
-						s32 wizMana = manaInfo.mana;
-						s32 wizMaxMana = manaInfo.maxMana;
-
-						if ( storedMana >= mana_to_give && wizMana < (wizMaxMana-mana_to_give) )
+						ManaInfo@ manaInfo;
+						if (touchBlob.get("manaInfo", @manaInfo) && !touchBlob.hasTag("dead"))
 						{
-							storedMana -= mana_to_give;
-							manaInfo.mana = wizMana + mana_to_give;
+							s32 wizMana = manaInfo.mana;
+							s32 wizMaxMana = manaInfo.maxMana;
 
-							if (step == 0) touchBlob.getSprite().PlaySound("ManaGain.ogg", 1.0f, 1.0f + XORRandom(2)/10.0f);
+							if ( storedMana >= mana_to_give && wizMana < (wizMaxMana-mana_to_give) )
+							{
+								storedMana -= mana_to_give;
+								manaInfo.mana = wizMana + mana_to_give;
 
-							if (storedMana < mana_to_give)
-								touchBlob.getSprite().PlaySound("ManaEmpty.ogg", 0.5f, 1.0f + XORRandom(2)/10.0f);
-								break;
+								if (step == 0) touchBlob.getSprite().PlaySound("ManaGain.ogg", 1.0f, 1.0f + XORRandom(2)/10.0f);
 
-							currRegenCooldown = REGEN_COOLDOWN_SECS*ticksPerSec;
-						}
-					}				
+								if (storedMana < mana_to_give)
+									touchBlob.getSprite().PlaySound("ManaEmpty.ogg", 0.5f, 1.0f + XORRandom(2)/10.0f);
+
+								currRegenCooldown = REGEN_COOLDOWN_SECS*ticksPerSec;
+							}
+						}				
+					}
 				}
 			}
 		}
