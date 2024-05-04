@@ -71,6 +71,7 @@ void onTick(CBlob@ this)
 				p.collides = false;
 				p.fastcollision = true;
 				p.timeout = 30;
+				p.growth = -0.025f;
 				p.frame = this.getSprite().animation.frame;
 				p.deadeffect = -1;
 				p.diesonanimate = false;
@@ -102,7 +103,7 @@ void sparks(CBlob@ this, Vec2f pos, int amount)
 {
 	for (int i = 0; i < amount; i++)
     {
-        Vec2f vel(_sprk_r.NextFloat() * 0.75f, 0);
+        Vec2f vel(_sprk_r.NextFloat() * 0.25f, 0);
         vel.RotateBy(_sprk_r.NextFloat() * 360.0f);
 
 		SColor col = SColor(255, 0, 75 + _sprk_r.NextRanged(125), 0);
