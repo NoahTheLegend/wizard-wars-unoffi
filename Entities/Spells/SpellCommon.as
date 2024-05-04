@@ -3652,6 +3652,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			f32 distance = 48.0f;
 			f32 power = 1.0f;
 			bool cancel = false;
+			bool short_self = this.hasTag("extra_damage");
 
 			switch(charge_state)
 			{
@@ -3676,6 +3677,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					distance = 142.0f;
 					power = 1.33f;
+					short_self = true;
 
 					if (this.hasTag("extra_damage"))
 					{
@@ -3702,8 +3704,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					if (this.isMyPlayer())
 					{
 						CBitStream params;
+						f32 pow = 2.0f*power;
+						if (short_self && b.isMyPlayer()) pow /= 2;
 						params.write_u16(b.getNetworkID());
-						params.write_f32(2.0f*power);
+						params.write_f32(pow);
 						this.SendCommand(this.getCommandID("freeze"), params);
 					}
 
