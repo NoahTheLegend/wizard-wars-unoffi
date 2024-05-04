@@ -233,7 +233,6 @@ void ExplodeWithFire(CBlob@ this)
 			if (b !is null)
 			{
 				Vec2f bPos = b.getPosition();
-				if ( !map.rayCastSolid(thisPos, bPos) )
 				{
 					if(b.get_u16("fireProt") > 0)
 					{
