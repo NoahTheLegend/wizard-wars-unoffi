@@ -5,6 +5,7 @@ void onInit(CBlob@ this)
     this.set_s32("aliveTime",300);
     this.set_s32("nextSpore",getGameTime());
     this.Tag("counterable");
+    this.Tag("totem");
 }
 
 void onTick(CBlob@ this)
