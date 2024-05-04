@@ -916,7 +916,7 @@ void onTick(CBlob@ this)
 			CSpriteLayer@ layer = thisSprite.addSpriteLayer("water_ward","WaterBarrier.png",64,64);
 			if (layer !is null)
 			{
-				layer.SetRelativeZ(65.75f);
+				layer.SetRelativeZ(565.75f);
 				layer.ScaleBy(Vec2f(1.33f,1.33f));
 				layer.setRenderStyle(RenderStyle::light);
 			}
@@ -966,9 +966,9 @@ void onTick(CBlob@ this)
 			CSpriteLayer@ layer = thisSprite.addSpriteLayer("dmgconnection_ward","SpiritualConnection.png",64,64);
 			if (layer !is null)
 			{
-				layer.SetRelativeZ(65.55f);
+				layer.SetRelativeZ(565.55f);
 				layer.ScaleBy(Vec2f(0.75f,0.75f));
-				layer.setRenderStyle(RenderStyle::light);
+				layer.setRenderStyle(RenderStyle::additive);
 			}
 			this.set_bool("dmgconnectionSetupDone",true);
 		}
@@ -980,7 +980,7 @@ void onTick(CBlob@ this)
 			{
 				layer.SetFacingLeft(false);
 				layer.RotateBy(3, Vec2f_zero);
-				layer.setRenderStyle(RenderStyle::light);
+				layer.setRenderStyle(RenderStyle::additive);
 			}
 		}
 
