@@ -32,7 +32,7 @@ void onInit( CBlob @ this )
 
 
 	this.getShape().SetRotationsAllowed(true);
-	this.getShape().SetGravityScale( 0.7f );
+	this.getShape().SetGravityScale( 0.8f );
 	this.getShape().getVars().waterDragScale = 8.0f;
 	this.getShape().getConsts().collideWhenAttached = true;
 	
