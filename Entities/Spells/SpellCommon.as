@@ -201,7 +201,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			orbVel.Normalize();
 			orbVel *= orbspeed;
-			Vec2f offset = spawn_second ? Vec2f(0,8).RotateBy(aim_angle) : Vec2f_zero;
+			Vec2f offset = spawn_second ? Vec2f(0,8).RotateBy(-aim_angle) : Vec2f_zero;
 
 			{
 				CBlob@ orb = server_CreateBlobNoInit("vinewaver");

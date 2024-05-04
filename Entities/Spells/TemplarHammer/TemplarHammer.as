@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 	this.Tag("projectile");
 	this.Tag("counterable");
 	shape.SetGravityScale(0.0f);
-	shape.getConsts().net_threshold_multiplier = 0.5f;
+	shape.getConsts().net_threshold_multiplier = 0.25f;
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 
 	this.set_f32("damage", 0.6f + XORRandom(3)*0.1f); // 3-4

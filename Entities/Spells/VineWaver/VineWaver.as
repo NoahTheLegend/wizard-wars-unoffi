@@ -14,7 +14,7 @@ void onInit(CBlob@ this)
 
 	shape.SetGravityScale(0);
 	shape.getConsts().mapCollisions = false;
-	shape.getConsts().net_threshold_multiplier = 0.5f;
+	shape.getConsts().net_threshold_multiplier = 0.25f;
 
 	this.set_bool("back", false);
 

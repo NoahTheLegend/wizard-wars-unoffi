@@ -372,7 +372,7 @@ void intitializeClasses()
 													"entropist", 5, 0, 6, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Priest", 
-													"Has a breathe of smite and holy water. Has expensive, but impactful AOE damage and useful optional spells, including heal. Complexity: MEDIUM" +
+													"Has a breathe of smite and holy water. Owns expensive, but impactful AOE spells. Complexity: MEDIUM" +
 													"\n\n     Health: 80" +
 													"\n     Mana: 150" +
 													"\n     Mana Regen: 4 mana/sec",
