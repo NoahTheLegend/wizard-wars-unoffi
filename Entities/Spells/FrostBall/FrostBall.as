@@ -110,7 +110,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 			CBlob@ icePrison = server_CreateBlob( "ice_prison", this.getTeamNum(), this.getPosition() );
 			if ( icePrison !is null )
 			{
-				icePrison.server_SetTimeToDie(15)
+				icePrison.server_SetTimeToDie(15);
 			}
 		}
 	}
