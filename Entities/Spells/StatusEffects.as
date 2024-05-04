@@ -458,7 +458,9 @@ void onTick(CBlob@ this)
 				for (u16 i = 0; i < bs.length; i++)
 				{
 					CBlob@ b = bs[i];
-					if (b is null || b.getPlayer() is null || b.getTeamNum() != this.getTeamNum() || b is this || b.getTickSinceCreated() < 90 || b.hasTag("dead")) continue;
+					if (b is null || b.getPlayer() is null || b.getTeamNum() != this.getTeamNum()
+						|| b is this || b.getTickSinceCreated() < 90 || b.hasTag("dead") 
+						|| b.get_u32("damage_boost") >= gt+30) continue;
 					b.set_u32("damage_boost", gt+20);
 					b.Sync("damage_boost", true);
 				}
