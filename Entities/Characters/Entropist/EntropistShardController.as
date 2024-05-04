@@ -104,7 +104,7 @@ void onTick( CBlob@ this )
 		shardMovePos.RotateBy(shardWheelRot + anglePerShard*i, thisPos);
 		shardMovePos += deviation;
 
-		if(isServer() && casterShards.length <= i)
+		if(casterShards.length <= i)
 		{
 			CBlob@ orb = server_CreateBlob( "shard" );
 			if (orb !is null)
@@ -122,47 +122,40 @@ void onTick( CBlob@ this )
 			}
 			break;
 		}
-		
-		if (casterShards.size() > i)
+
+		CBlob@ b = casterShards[i];
+		if(b is null)
 		{
-			CBlob@ b = casterShards[i];
-			if(isServer() && b is null)
+			CBlob@ orb = server_CreateBlob( "shard" );
+			if (orb !is null)
 			{
-				CBlob@ orb = server_CreateBlob( "shard" );
-				if (orb !is null)
-				{
-					orb.server_SetTimeToDie(60);
+				orb.server_SetTimeToDie(60);
 
-					orb.IgnoreCollisionWhileOverlapped( this );
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
-					orb.server_setTeamNum( this.getTeamNum() );
-					orb.setPosition( shardMovePos );
-					orb.setVelocity( Vec2f_zero );
-					orb.Tag(casterShardTag);
-
-					orb.set_netid("owner",this.getNetworkID());
-					orb.set_s8("shardID",(i+1) );
-
-					orb.Sync("owner", true);
-					orb.Sync("shardID", true);
-				}
+				orb.IgnoreCollisionWhileOverlapped( this );
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
+				orb.server_setTeamNum( this.getTeamNum() );
+				orb.setPosition( shardMovePos );
+				orb.setVelocity( Vec2f_zero );
+				orb.Tag(casterShardTag);
+				orb.set_netid("owner",this.getNetworkID());
+				orb.set_s8("shardID",(i+1) );
 			}
-			else if (b !is null)
-			{
-				b.setPosition( shardMovePos );
-				b.setVelocity( Vec2f_zero );
+		}
+		else
+		{
+			b.setPosition( shardMovePos );
+			b.setVelocity( Vec2f_zero );
 
-				if(isClient())
-				{
-					CSprite@ bSprite = b.getSprite();
-					if(bSprite is null)
-					{continue;}
-					Vec2f shardDir = shardMovePos - thisPos;
-					float spriteAngle = shardDir.getAngleDegrees();
-					bSprite.ResetTransform();
-					float polarityAngle = this.get_bool("attack") ? 90.0f : -90.0f;
-					bSprite.RotateBy((-spriteAngle)+polarityAngle, Vec2f_zero);
-				}
+			if(isClient())
+			{
+				CSprite@ bSprite = b.getSprite();
+				if(bSprite is null)
+				{continue;}
+				Vec2f shardDir = shardMovePos - thisPos;
+				float spriteAngle = shardDir.getAngleDegrees();
+				bSprite.ResetTransform();
+				float polarityAngle = this.get_bool("attack") ? 90.0f : -90.0f;
+				bSprite.RotateBy((-spriteAngle)+polarityAngle, Vec2f_zero);
 			}
 		}
 	}

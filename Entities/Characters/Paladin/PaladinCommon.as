@@ -4,6 +4,11 @@ const f32 aura_omega_radius = 64.0f;
 const f32 aura_omega_damage_mod = 0.2f;
 f32 dmg_to_mana_ratio = 1.5f; // 1.0f is 200% of damage 
 f32 friendly_damage_factor = 0.5f;
+const f32 connection_dist = 356.0f;
+const f32 connection_dmg_reduction = 0.5f;
+const f32 connection_dmg_transfer = 0.25f;
+const f32 min_connection_health_ratio = 0.25f;
+const f32 barrier_dmg_decrease = 0.5f;
 
 namespace PaladinParams
 {
@@ -38,7 +43,7 @@ namespace PaladinParams
 		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards.",
 				SpellType::other, 10, 40, 3, 198.0f, true),
 
-		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target transfers 25% of damage to you and receives 25% less damage (50% in total) if nearby and your health is more than 25%.",
+		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target receives 50% less damage but transfers 25% back to you when nearby and if your health is more than 25%.",
 				SpellType::other, 20, 45, 8, 256.0f, true),
 
 		Spell("manatohealth", "Aura: Sigma", 94, "Transfers your mana regeneration into health regeneration.",

@@ -2845,12 +2845,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				return;
 			}
 
-			if (isServer())
-			{
-				shardAmount++;
-				this.set_u8("shard_amount",shardAmount); //increases by one
-				this.Sync("shard_amount", true);
-			}
+			shardAmount++;
+			this.set_u8("shard_amount",shardAmount); //increases by one
 		}
 		break;
 
@@ -2884,12 +2880,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 			}
 
-			if (isServer())
-			{
-				shardAmount--;
-				this.set_u8("shard_amount",shardAmount); //decreases by one
-				this.Sync("shard_amount", true);
-			}
+			shardAmount--;
+			this.set_u8("shard_amount",shardAmount); //decreases by one
 		}
 		break;
 
