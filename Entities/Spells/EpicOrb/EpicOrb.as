@@ -16,9 +16,8 @@ void onInit(CBlob@ this)
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	CShape@ shape = this.getShape();
 	//shape.getConsts().net_threshold_multiplier = 2.0f;
+	shape.getConsts().net_threshold_multiplier = 0.5f;
 	
-	this.getShape().getConsts().bullet = true;
-
 	bool is_main = this.getName() == "epicorbmain";
 	if (is_main)
 	{

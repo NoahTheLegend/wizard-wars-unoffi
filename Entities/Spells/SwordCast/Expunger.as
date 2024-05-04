@@ -1,6 +1,5 @@
 #include "Hitters.as";
 #include "ArcherCommon.as";
-#include "SpellCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -19,7 +18,6 @@ void onInit(CBlob@ this)
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
     this.server_SetTimeToDie(20);
-
 }
 
 void onTick(CBlob@ this)

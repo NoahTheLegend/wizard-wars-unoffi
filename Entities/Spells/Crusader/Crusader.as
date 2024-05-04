@@ -1,6 +1,5 @@
 #include "Hitters.as";
 #include "ArcherCommon.as";
-#include "SpellCommon.as";
 
 void onInit(CBlob@ this)
 {

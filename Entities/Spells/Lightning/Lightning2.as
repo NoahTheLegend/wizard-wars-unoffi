@@ -1,6 +1,5 @@
 #include "/Entities/Common/Attacks/Hitters.as";	   
 #include "/Entities/Common/Attacks/LimitedAttacks.as";
-#include "SpellCommon.as";
 #include "LightningPositionUpdate.as";
 
 const f32 RANGE = 2000.0f;

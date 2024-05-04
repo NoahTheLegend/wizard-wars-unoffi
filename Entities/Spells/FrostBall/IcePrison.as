@@ -16,7 +16,7 @@ void onInit(CBlob @ this)
 
 	this.set_u8("launch team", 255);
 	this.server_setTeamNum(-1);
-	this.Tag("super heavy weight");
+	this.Tag("medium weight");
 	this.set_bool("inprisoning", false);
 
 	LimitedAttack_setup(this);

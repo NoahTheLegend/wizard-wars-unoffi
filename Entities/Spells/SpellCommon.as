@@ -297,8 +297,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.server_setTeamNum( this.getTeamNum() );
 				orb.setPosition( orbPos );
-				//orb.AddForce( Vec2f(2000.0f,-1500.0f) );
-				orb.AddForce(Vec2f(aimpos - this.getPosition()).RotateBy(this.isFacingLeft()?5.0f:-5.0f)*85.0f);
+				Vec2f vec = aimNorm.RotateBy(this.isFacingLeft()?5.0f:-5.0f)*1000.0f;
+				orb.AddForce(Vec2f(vec.x + (this.getVelocity().x*50), vec.y + (this.getVelocity().y*50)));
 				orb.server_SetTimeToDie(10.0f);
 			}
 		}

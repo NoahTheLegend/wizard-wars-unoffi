@@ -1,6 +1,5 @@
 #include "Hitters.as";
 #include "ArcherCommon.as";
-#include "SpellCommon.as";
 #include "TextureCreation.as";
 
 const f32 arrowMediumSpeed = 8.0f;

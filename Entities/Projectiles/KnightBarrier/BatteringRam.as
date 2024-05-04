@@ -1,7 +1,5 @@
 #include "Hitters.as"
-#include "SpellCommon.as";
 #include "TeamColour.as";
-
 #include "FireCommon.as"
 
 void onInit(CBlob@ this)

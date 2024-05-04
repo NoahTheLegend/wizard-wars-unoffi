@@ -8,11 +8,11 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = true;
-	consts.bullet = false;
 
 	this.Tag("projectile");
 	this.Tag("counterable");
 	shape.SetGravityScale(0.0f);
+	shape.getConsts().net_threshold_multiplier = 0.5f;
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 
 	this.set_f32("damage", 0.6f + XORRandom(3)*0.1f); // 3-4

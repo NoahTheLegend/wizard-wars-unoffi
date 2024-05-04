@@ -13,8 +13,8 @@ void onInit(CBlob@ this)
 	//shape.getConsts().net_threshold_multiplier = 2.0f;
 
 	shape.SetGravityScale(0);
-	shape.getConsts().bullet = true;
 	shape.getConsts().mapCollisions = false;
+	shape.getConsts().net_threshold_multiplier = 0.5f;
 
 	this.set_bool("back", false);
 

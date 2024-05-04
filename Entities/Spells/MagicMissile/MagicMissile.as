@@ -1,6 +1,5 @@
 #include "/Entities/Common/Attacks/Hitters.as";	   
 #include "/Entities/Common/Attacks/LimitedAttacks.as";
-#include "SpellCommon.as";
 
 const int LIFETIME = 10;
 const f32 SEARCH_RADIUS = 128.0f;
