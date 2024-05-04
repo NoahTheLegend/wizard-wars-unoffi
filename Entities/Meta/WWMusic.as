@@ -52,6 +52,7 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	this.set_bool("initialized game", true);
 	mixer.ResetMixer();
 	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/CBoyarde.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/BruteBlaster.ogg", world_home);
 	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/MarioKart.ogg", world_home);
 	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/LogHorizon1.ogg", world_home);
 	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/LogHorizon2.ogg", world_home);
