@@ -39,7 +39,7 @@ namespace DruidParams
 			SpellType::other, 100, 60, 30, 360.0f, true),
 			
 		Spell("nature's helpers", "Nature's Helpers", 29, "Fires a swarm of bees. Can heal friends or attack foes.",
-			SpellType::other, 35, 80, 10, 360.0f, true),	
+			SpellType::other, 40, 80, 12, 360.0f, true),	
 										
 		Spell("spikeorb", "SpikeBall", 30, "The spikeball is natures punishment to those that tread her woods unwelcomed",
 			SpellType::other, 2, 20, 0, 360.0f),			
