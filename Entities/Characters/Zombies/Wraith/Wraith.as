@@ -345,7 +345,9 @@ void MadAt( CBlob@ this, CBlob@ hitterBlob )
 }
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
-{		
+{
+	if(customData == Hitters::suicide) return 0;
+	
 	if (damage>this.getHealth() && this.getHealth()>0)
 	{
 		if (hitterBlob.hasTag("player"))
