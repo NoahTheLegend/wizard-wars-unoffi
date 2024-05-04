@@ -59,6 +59,7 @@ void onTick( CBlob@ this)
 
 		if (p !is null)
 		{
+			p.Z = 520.0f;
 			p.setRenderStyle(RenderStyle::additive);
 			p.growth = -0.05f;
 			p.scale = 0.75f;
@@ -238,7 +239,7 @@ void makeSmokeParticle(CBlob@ this, const Vec2f vel, const string filename = "Sm
 	{
 		p.bounce = 0;
     	p.fastcollision = true;
-		p.Z = 400.0f;
+		p.Z = 520.0f;
 	}
 }
 
@@ -262,10 +263,10 @@ void blast(Vec2f pos, int amount)
 									false );
 									
         if(p is null) return; //bail if we stop getting particles
-
+		
     	p.fastcollision = true;
         p.damping = 0.85f;
-		p.Z = 500.0f;
+		p.Z = 520.0f;
 		p.lighting = false;
     }
 }
@@ -288,6 +289,6 @@ void sparks(Vec2f pos, int amount, Vec2f gravity, Vec2f vel, f32 damping)
         p.timeout = 10 + _sprk_r.NextRanged(10);
         p.scale = 0.5f + _sprk_r.NextFloat();
         p.damping = damping;
-		p.Z = -1.0f;
+		p.Z = 519.0f;
     }
 }

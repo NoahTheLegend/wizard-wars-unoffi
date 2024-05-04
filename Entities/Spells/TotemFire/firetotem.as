@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
     this.set_s32("nextorb", getGameTime());
     this.Tag("counterable");
     this.set_u16("fire_delay", 120);
+    this.Tag("totem");
 
     this.Tag("exploding");
 	this.set_f32("explosive_radius", 32.0f);

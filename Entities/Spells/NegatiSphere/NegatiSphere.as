@@ -30,6 +30,10 @@ void onTick( CBlob@ this )
 		this.getCurrentScript().tickFrequency = 2;
 	}
 
+	if ((getGameTime()+Maths::Pow(this.getNetworkID(), 2)) % 60 == 0
+		&& !this.get_bool("launch"))
+		this.AddForce(Vec2f(this.getMass()*1.5f, 0).RotateBy(XORRandom(360)));
+
 	if(!this.get_bool("launch"))
 	{
 		CPlayer@ p = this.getDamageOwnerPlayer();
@@ -91,8 +95,8 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 	return 
 	(
 		target != null
-		&& target.hasTag("counterable") //all counterables
-		&& !target.hasTag("dead") 
+		&& (target.hasTag("counterable") || target.hasTag("sentry")) //all counterables
+		&& !target.hasTag("dead")
 		&& target.getTeamNum() != this.getTeamNum() //as long as they're on the enemy side
 		&& !target.hasTag("black hole")  //as long as it's not a black hole, go as normal.
 	);
@@ -107,12 +111,12 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if(blob is null || this is null){return;}
 	if (this.getSprite() is null) return;
-	this.getSprite().PlaySound("SpriteFire3.ogg", 0.05f, 0.5f + XORRandom(10)/20.0f);
 
 	if( isEnemy( this , blob ) ) //will not affect same team negatispheres
 	{
 		if ( isClient() ) //temporary Counterspell effect
 		{
+			this.getSprite().PlaySound("SpriteFire3.ogg", 0.5f, 0.75f + XORRandom(10)/20.0f);
 			Vec2f dispelPos = this.getPosition();
 			CParticle@ p = ParticleAnimated( "Flash2.png",
 					dispelPos,

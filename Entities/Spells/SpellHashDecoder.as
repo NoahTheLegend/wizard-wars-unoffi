@@ -338,11 +338,9 @@ s8 parryTargetIdentifier( CBlob@ b )
 		case _force_of_nature:
 		case _plant_aura_shot:
 		case _plant_aura:
-		case _mushroom:
 		case _rock_wall:
 		case _ice_prison:
 		case _leech:
-		case _impaler:
 		case _plasma_shot:
 		{
 			return -1; //doesn't affect
