@@ -95,7 +95,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 	return 
 	(
 		target != null
-		&& (target.hasTag("counterable") || target.hasTag("sentry")) //all counterables
+		&& (target.hasTag("counterable") || target.hasTag("totem")) //all counterables
 		&& !target.hasTag("dead")
 		&& target.getTeamNum() != this.getTeamNum() //as long as they're on the enemy side
 		&& !target.hasTag("black hole")  //as long as it's not a black hole, go as normal.
