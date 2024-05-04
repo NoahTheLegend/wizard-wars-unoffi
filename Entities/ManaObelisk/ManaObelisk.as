@@ -54,6 +54,7 @@ void onTick( CBlob@ this )
 			int mana_to_give = Maths::Min(MANA_GIVE_RATE, storedMana)/amo;
 			if (storedMana >= MANA_GIVE_RATE)
 			{
+				bool was_sound = false;
 				for (uint step = 0; step < amo; step++)
 				{	
 					CBlob@ touchBlob = ps[step];
@@ -73,8 +74,12 @@ void onTick( CBlob@ this )
 								storedMana -= mana_to_give;
 								manaInfo.mana = wizMana + mana_to_give;
 
-								if (step == 0) touchBlob.getSprite().PlaySound("ManaGain.ogg", 1.0f, 1.0f + XORRandom(2)/10.0f);
-
+								if (!was_sound)
+								{
+									touchBlob.getSprite().PlaySound("ManaGain.ogg", 1.0f, 1.0f + XORRandom(2)/10.0f);
+									was_sound = true;
+								}
+								
 								if (storedMana < mana_to_give)
 									touchBlob.getSprite().PlaySound("ManaEmpty.ogg", 0.5f, 1.0f + XORRandom(2)/10.0f);
 
