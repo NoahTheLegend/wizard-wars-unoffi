@@ -60,7 +60,7 @@ namespace EntropistParams
 				SpellType::other, 0, 15, 0, 0.0f, true),
 				
 		Spell("polarity", "Shards Polarity", 63, "Switch between attack and defense mode.",
-				SpellType::other, 8, 15, 15, 0.0f, true),
+				SpellType::other, 5, 30, 3, 0.0f, true),
 				
 		Spell("dmine", "Disruption Mine", 87, "Places an invisible to enemies mine on the ground. They still can see it in 3 blocks radius. Overcharge increases duration.",
 				SpellType::other, 20, 60, 0, 64.0f),

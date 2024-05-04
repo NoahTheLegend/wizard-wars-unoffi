@@ -7,8 +7,9 @@
 #include "TeamColour.as";
 #include "SpellHashDecoder.as";
 #include "CommonFX.as";
-
 #include "FireCommon.as"
+
+const int timeout_time = 360;
 
 void onInit(CBlob@ this)
 {
@@ -168,7 +169,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
 			if(doesShardDefend( blob ))
 			{
-				this.set_u32("deadTimer", 120);
+				this.set_u32("deadTimer", timeout_time);
 			}
 		}
 	}
