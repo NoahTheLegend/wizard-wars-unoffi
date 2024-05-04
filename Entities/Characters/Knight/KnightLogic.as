@@ -80,6 +80,7 @@ void onInit(CBlob@ this)
 	this.getShape().SetRotationsAllowed(false);
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 	this.Tag("player");
+	this.Tag("no_mana_pool");
 	this.Tag("flesh");
 
 	ChargeInfo chargeInfo;
