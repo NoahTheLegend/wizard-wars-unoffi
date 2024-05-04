@@ -22,8 +22,7 @@ void onTick(CBlob@ this){
     getMap().getBlobsInRadius(this.getPosition(),radius,@blobs);
 
     CPlayer@ damageOwnerPlayer = this.getDamageOwnerPlayer();
-
-
+    
     int index = closestBlobIndex(this,blobs,this.getDamageOwnerPlayer());
     if(index == -1) return;
 
@@ -43,7 +42,7 @@ void onTick(CBlob@ this){
         this.setVelocity(newVelocity * 3);
     }
 
-    if(this.getDistanceTo(target) <= 2) //hit detection
+    if(this.getDistanceTo(target) <= 4) //hit detection
     {
         if(target.getTeamNum() == this.getTeamNum())
         {
@@ -76,11 +75,13 @@ void onTick(CSprite@ this){
 
 int closestBlobIndex(CBlob@ this, CBlob@[] blobs, CPlayer@ caster)
 {
+    if (this.getTickSinceCreated() < 15) return -1;
+
     f32 bestDistance = 99999999;
     int bestIndex = -1;
 
     for(int i = 0; i < blobs.length; i++){
-        if((this.getTeamNum() == blobs[i].getTeamNum() && blobs[i].getHealth() == blobs[i].getInitialHealth()) || (caster !is null && blobs[i] is caster.getBlob()) || blobs[i].getPlayer() is null){
+        if((this.getTeamNum() == blobs[i].getTeamNum() && blobs[i].getHealth() == blobs[i].getInitialHealth()) || blobs[i].getPlayer() is null){
             continue;
         }
         f32 dist = this.getDistanceTo(blobs[i]);
