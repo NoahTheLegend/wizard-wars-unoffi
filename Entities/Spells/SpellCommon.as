@@ -136,26 +136,26 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case 1:
 						case 2:
 						{
-							ttd = 5;
+							ttd = 10;
 							mush.set_s32("aliveTime", 180);
 							break;
 						}
 						case 3:
 						{
-							ttd = 10;
+							ttd = 15;
 							mush.set_s32("aliveTime", 180);
 							break;
 						}
 						case 4:
 						{
-							ttd = 15;
+							ttd = 20;
 							mush.set_s32("aliveTime", 240);
 							break;
 						}
 						case 5:
 						{
 							mush.set_s32("aliveTime", 300);
-							ttd = 20;
+							ttd = 30;
 							break;
 						}
 					}
