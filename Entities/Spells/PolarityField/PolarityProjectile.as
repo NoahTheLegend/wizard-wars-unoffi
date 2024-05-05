@@ -49,20 +49,20 @@ bool isEnemy(CBlob@ this, CBlob@ target)
 	if (this.getTickSinceCreated() < 2) return false;
 	return 
 	(
-		(target.getTeamNum() != this.getTeamNum() && (target.hasTag("door") || target.getName() == "trap_block"))
+		((target.getTeamNum() != this.getTeamNum() && (target.hasTag("door") || target.hasTag("barrier") || target.getName() == "trap_block"))
 		||
 		(
-			(target.hasTag("flesh")  || target.hasTag("zombie"))
+			(target.hasTag("flesh") || target.hasTag("zombie"))
 			&& !target.hasTag("dead") 
-			&& target.getTeamNum() != this.getTeamNum() 
-		)
+		))
+		&& target.getTeamNum() != this.getTeamNum() 
 	);
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	if (blob.hasTag("projectile")) return false;
-	return this.getTickSinceCreated() > 30 && (isEnemy(this, blob) || blob.hasTag("barrier"));
+	return this.getTickSinceCreated() > 30 && isEnemy(this, blob);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
