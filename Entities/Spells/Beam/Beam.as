@@ -145,8 +145,12 @@ void onTick( CBlob@ this)
 		Vec2f aimVec = aimPos - thisPos;
 		Vec2f aimNorm = aimVec;
 		aimNorm.Normalize();
-		this.setAngleDegrees(-aimNorm.Angle());
-		this.getShape().SetAngleDegrees(-aimNorm.Angle());
+
+		if (isServer())
+		{
+			this.setAngleDegrees(-aimNorm.Angle());
+			this.getShape().SetAngleDegrees(-aimNorm.Angle());
+		}
 		
 		Vec2f shootVec = aimNorm*RANGE;
 		
