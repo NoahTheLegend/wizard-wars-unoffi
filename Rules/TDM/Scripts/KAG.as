@@ -34,7 +34,7 @@ void onInit(CRules@ this)
 	onRestart(this);
 
 	#ifndef STAGING
-	if (s_gamemusic)
+	if (s_gamemusic && s_musicvolume == 0)
 		s_musicvolume = 0.5f;
 	#endif
 }
