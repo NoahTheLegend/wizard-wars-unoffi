@@ -37,7 +37,6 @@ shared class PlayerPrefsInfo
 	u8[] hotbarAssignments_Priest;
 	u8[] hotbarAssignments_Shaman;
 	u8[] hotbarAssignments_Paladin;
-	
 	s32[] spell_cooldowns;
 
 	PlayerPrefsInfo()

@@ -17,15 +17,14 @@ void onInit(CBlob@ this)
 
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
-
-	this.set_u16("lifetime", 15);
-    this.server_SetTimeToDie(15);
 	
 	this.setAngleDegrees(90);
 
 	this.addCommandID("sync_shard_params");
 	this.getSprite().PlaySound("WizardShoot.ogg", 1.5f, 1.5f);
 }
+
+const f32 damp = 0.95f;
 
 void onTick(CBlob@ this)
 {
@@ -50,50 +49,59 @@ void onTick(CBlob@ this)
 		}
 	}
 	if (this.hasTag("static")) return;
-	this.setVelocity(this.getVelocity()*0.96f);
+	this.setVelocity(this.getVelocity()*damp);
 
 	if (this.getTickSinceCreated() < 1) this.Sync("stage", true);
 	if (isServer()) // shatter into 2 other shards
 	{
-		if (this.get_u8("stage") >= 5) this.server_Die();
-		if (this.getTickSinceCreated() == (this.get_u8("stage") == 0 ? 75 : 30) && !this.getShape().isStatic())
+		if (this.get_u8("stage") < 5)
 		{
-			CBlob@ lshard = server_CreateBlob("holystrike");
-			CBlob@ rshard = server_CreateBlob("holystrike");
-			if (lshard !is null && rshard !is null)
+			if (this.getTickSinceCreated() == (this.get_u8("stage") == 0 ? 75 : 30) && !this.getShape().isStatic())
 			{
-				u32 shooTime = getGameTime();
+				CBlob@ lshard = server_CreateBlob("holystrike");
+				CBlob@ rshard = server_CreateBlob("holystrike");
+				if (lshard !is null && rshard !is null)
 				{
-					lshard.set_f32("damage", this.get_f32("damage")*0.75f);
-					lshard.set_u32("shooTime", shooTime);
-					lshard.set_u16("lifetime", this.getTimeToDie());
+					u32 shooTime = getGameTime();
+					{
+						lshard.set_f32("damage", this.get_f32("damage")*0.75f);
+						lshard.set_u32("shooTime", shooTime);
+						lshard.set_u16("lifetime", this.getTimeToDie());
+						lshard.server_SetTimeToDie(this.getTimeToDie());
 
-					lshard.server_setTeamNum(this.getTeamNum());
-					lshard.setPosition(Vec2f(this.getPosition() + Vec2f(6.0f-(1.0f*this.get_u8("stage")),0).RotateBy(this.getAngleDegrees()-90)));
+						lshard.server_setTeamNum(this.getTeamNum());
+						lshard.setPosition(Vec2f(this.getPosition() + Vec2f(6.0f-(1.0f*this.get_u8("stage")),0).RotateBy(this.getAngleDegrees()-90)));
 
-					lshard.SetDamageOwnerPlayer( this.getDamageOwnerPlayer() );
-					lshard.getShape().SetGravityScale(0);
-					lshard.getShape().SetAngleDegrees(this.getAngleDegrees()-22.5f);
-					lshard.set_u8("stage", this.get_u8("stage")+1);
-					lshard.Tag("sync");
+						lshard.SetDamageOwnerPlayer( this.getDamageOwnerPlayer() );
+						lshard.getShape().SetGravityScale(0);
+						lshard.getShape().SetAngleDegrees(this.getAngleDegrees()-22.5f);
+						lshard.set_u8("stage", this.get_u8("stage")+1);
+						lshard.Tag("sync");
+					}
+					{
+						rshard.set_f32("damage", this.get_f32("damage")*0.75f);
+						rshard.set_u32("shooTime", shooTime);
+						rshard.set_u16("lifetime", this.getTimeToDie());
+						rshard.server_SetTimeToDie(this.getTimeToDie());
+
+						rshard.server_setTeamNum(this.getTeamNum());
+						rshard.setPosition(Vec2f(this.getPosition() + Vec2f(-6.0f+(1.0f*this.get_u8("stage")),0).RotateBy(this.getAngleDegrees()-90)));
+
+						rshard.SetDamageOwnerPlayer( this.getDamageOwnerPlayer() );
+						rshard.getShape().SetGravityScale(0);
+						rshard.getShape().SetAngleDegrees(this.getAngleDegrees()+22.5f);
+						rshard.set_u8("stage", this.get_u8("stage")+1);
+						rshard.Tag("sync");
+					}
+
+					this.server_Die();
 				}
-				{
-					rshard.set_f32("damage", this.get_f32("damage")*0.75f);
-					rshard.set_u32("shooTime", shooTime);
-					rshard.set_u16("lifetime", this.getTimeToDie());
-
-					rshard.server_setTeamNum(this.getTeamNum());
-					rshard.setPosition(Vec2f(this.getPosition() + Vec2f(-6.0f+(1.0f*this.get_u8("stage")),0).RotateBy(this.getAngleDegrees()-90)));
-
-					rshard.SetDamageOwnerPlayer( this.getDamageOwnerPlayer() );
-					rshard.getShape().SetGravityScale(0);
-					rshard.getShape().SetAngleDegrees(this.getAngleDegrees()+22.5f);
-					rshard.set_u8("stage", this.get_u8("stage")+1);
-					rshard.Tag("sync");
-				}
-
-				this.server_Die();
 			}
+		}
+		else
+		{
+			if (this.getVelocity().Length() < 1.0f)
+				this.server_Die();
 		}
 	}
 
@@ -112,7 +120,7 @@ void onTick(CBlob@ this)
 			if (sprite !is null)
 			{
 				sprite.ScaleBy((Vec2f(1.0f, 1.0f) * (1.0f-0.15f*this.get_u8("stage"))));
-				sprite.SetOffset(Vec2f(-1.5f*this.get_u8("stage"), 0));
+				sprite.SetOffset(Vec2f(-2.0f*this.get_u8("stage"), 0));
 				this.Tag("scaled");
 			}
 		}
@@ -154,7 +162,7 @@ void onTick(CBlob@ this)
 	{
 		if (lTime > shooTime)  //timer system for roboteching
 		{
-			this.AddForce(Vec2f(0, 78-(8*this.get_u8("stage"))).RotateBy(this.getAngleDegrees()-90)*0.95f);
+			this.AddForce(Vec2f(0, this.getMass()*2 + (8*this.get_u8("stage"))).RotateBy(this.getAngleDegrees()-90));
 			shape.SetStatic(false);
 			this.Tag("cruiseMode"); //stops
 		}

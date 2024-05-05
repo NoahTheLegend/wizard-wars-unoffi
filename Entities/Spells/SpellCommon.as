@@ -2902,62 +2902,54 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1637274485://holystrike
 		{
-			u32 landheight = getLandHeight(aimpos);
-			if(landheight != 0)
+            if (!isServer())
+			{return;}
+
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
+			f32 orbDamage = 1.5f * extraDamage;
+			u8 lt = 25;
+
+			switch(charge_state)
 			{
-                if (!isServer())
-				{return;}
-
-				f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
-				f32 orbDamage = 1.5f * extraDamage;
-
-				switch(charge_state)
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
 				{
-					case minimum_cast:
-					case medium_cast:
-					case complete_cast:
-					break;
-				
-					case super_cast:
-					{
-						orbDamage *= 1.25f;
-					}
-					break;
-					default:return;
+					lt = 30;
 				}
-
-				Vec2f baseSite = Vec2f(aimpos.x, landheight);
-				const int numOrbs = 1;
-				for (int i = 0; i < numOrbs; i++)
+				break;
+			
+				case super_cast:
 				{
-					Vec2f cruSpawn = baseSite + Vec2f(0, (aimpos.y+24.0f < baseSite.y-270.0f ? -270.0f : aimpos.y-baseSite.y));
+					lt = 40;
+					orbDamage *= 1.25f;
+				}
+				break;
+				default:return;
+			}
 
-					CBlob@ orb = server_CreateBlob( "holystrike" );
-					if (orb !is null)
-					{
-						orb.set_f32("damage", orbDamage);
-						u32 shooTime = getGameTime() + ( (15.0f * _spell_common_r.NextFloat()) + 42.0f ); //half a second randomness for fall delay (makes it look cooler)
-						orb.set_u32("shooTime", shooTime);
-						orb.set_u16("lifetime", 15);
+			Vec2f baseSite = aimpos;
+			const int numOrbs = 1;
+			for (int i = 0; i < numOrbs; i++)
+			{
+				Vec2f cruSpawn = baseSite + Vec2f(0, (aimpos.y+24.0f < baseSite.y-270.0f ? -270.0f : aimpos.y-baseSite.y));
 
-						orb.SetDamageOwnerPlayer( this.getPlayer() );
-						orb.getShape().SetGravityScale(0);
-						orb.server_setTeamNum( this.getTeamNum() );
-						//orb.setPosition( cruSpawn );
-						orb.setPosition( aimpos );
-					}
+				CBlob@ orb = server_CreateBlob( "holystrike" );
+				if (orb !is null)
+				{
+					orb.set_f32("damage", orbDamage);
+					u32 shooTime = getGameTime() + ( (15.0f * _spell_common_r.NextFloat()) + 42.0f ); //half a second randomness for fall delay (makes it look cooler)
+					orb.set_u32("shooTime", shooTime);
+					orb.set_u16("lifetime", lt);
+					orb.server_SetTimeToDie(lt);
+
+					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.getShape().SetGravityScale(0);
+					orb.server_setTeamNum( this.getTeamNum() );
+					//orb.setPosition( cruSpawn );
+					orb.setPosition( aimpos );
 				}
 			}
-            else//Can't place this under the map
-            {
-				ManaInfo@ manaInfo;
-				if (!this.get( "manaInfo", @manaInfo ))
-				{return;}
-				
-				manaInfo.mana += spell.mana;
-				
-				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
-            }
 		}
 		break;
 

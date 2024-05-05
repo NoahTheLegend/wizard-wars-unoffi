@@ -107,6 +107,9 @@ void onTick(CBlob@ this)
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
 {
+    f32 damage_mod = f32(this.getTickSinceCreated())/this.get_s32("aliveTime");
+    damage *= damage_mod;
+    printf(""+damage_mod);
     if (this.hasTag("dying")) return 0;
     if (isServer() && this.getHealth() - damage <= 1.0f)
     {
