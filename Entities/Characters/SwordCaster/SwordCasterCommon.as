@@ -48,7 +48,7 @@ namespace SwordCasterParams
 				SpellType::other, 35, 75, 0, 0.0f, true),
 			 
 		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press | USE | button to cut the rope off. Disables dashing and teleporting while active. Overcharge increases throw distance.",
-				SpellType::other, 5, 15, 2, 256.0f),
+				SpellType::other, 6, 15, 0, 256.0f),
 			 
 		Spell("parry", "Parry", 46, "Reflect enemy attacks.",
 				SpellType::other, 10, 10, 0, 20.0f, true),
