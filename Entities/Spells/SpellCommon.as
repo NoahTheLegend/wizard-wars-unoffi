@@ -2211,8 +2211,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				return;
 			}
 
-			this.getSprite().PlaySound("ImpCast.ogg", 10.0f, 1.1f);
-			this.getSprite().PlaySound("swordlaunch.ogg", 1.0f, 1.15f);
+			this.getSprite().PlaySound("swordsummon.ogg", 1.0f, 1.33f);
 
 			if (!isServer()){
            		return;

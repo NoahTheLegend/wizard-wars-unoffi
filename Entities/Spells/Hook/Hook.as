@@ -209,7 +209,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, Vec2f p2)
 {	
 	float expundamage = this.get_f32("damage");
-	if (solid && blob is null)
+	if (solid && blob is null && !this.hasTag("collided_blob"))
 	{
 		ArrowHitMap(this, p2, Vec2f_zero, 0, 0);
 	}
@@ -222,7 +222,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 			{
 				this.server_Die();
 			}
-			else if (!this.hasTag("collided_blob"))
+			else if (!this.hasTag("collided_blob") && !this.getShape().isStatic())
 			{
 				this.Tag("collided_blob");
 				this.Tag("return");
