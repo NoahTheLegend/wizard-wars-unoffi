@@ -145,6 +145,7 @@ void onTick( CBlob@ this)
 		Vec2f aimVec = aimPos - thisPos;
 		Vec2f aimNorm = aimVec;
 		aimNorm.Normalize();
+		this.setAngleDegrees(-aimNorm.Angle());
 		this.getShape().SetAngleDegrees(-aimNorm.Angle());
 		
 		Vec2f shootVec = aimNorm*RANGE;
@@ -154,7 +155,7 @@ void onTick( CBlob@ this)
 		CMap@ map = this.getMap();
 		f32 shortestHitDist = 9999.9f;
 		HitInfo@[] hitInfos;
-		int attackAngle = -aimNorm.getAngle();
+		int attackAngle = this.getAngleDegrees();
 		bool hasHit = map.getHitInfosFromRay(thisPos, attackAngle, RANGE, this, @hitInfos);
 		bool no_reset = false;
 		if (hasHit)
