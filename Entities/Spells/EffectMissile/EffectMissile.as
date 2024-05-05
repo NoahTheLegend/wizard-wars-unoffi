@@ -233,7 +233,8 @@ void onTick( CBlob@ this)
 		{return;}
 
 		bool sameTeam = blob.getTeamNum() == this.getTeamNum();
-
+		this.set_bool("onCollision triggered", false);
+		
 		if (blob.hasTag("player") && !blob.hasTag("dead"))
 		{
 			if ( sameTeam && targetType == 0 && !isOwnerBlob(this, blob) )	//buff status effects
