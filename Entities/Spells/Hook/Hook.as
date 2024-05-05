@@ -10,9 +10,9 @@ void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
-	consts.mapCollisions = false;	 // we have our own map collision
-	consts.bullet = false;
-	consts.net_threshold_multiplier = 0.1f;
+	consts.mapCollisions = true;	 // we have our own map collision
+	consts.bullet = true;
+	consts.net_threshold_multiplier = 0.25f;
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("die_in_divine_shield");
@@ -92,6 +92,8 @@ void onTick(CBlob@ this)
 				Vec2f op = owner.getPosition();
 				Vec2f force = (tp-op);
 
+				this.setPosition(this.get_Vec2f("lock"));
+
 				if (this.getDistanceTo(owner) < max_dist/1.25f)
 				{
 					if (owner.isKeyJustPressed(key_use))
@@ -139,7 +141,6 @@ void onTick(CBlob@ this)
 		if(this.hasTag("primed"))
 		{
     	    angle = (this.getVelocity()).Angle();
-			Pierce(this);   //Pierce call
 			this.setAngleDegrees(-angle);
 		}
 		
@@ -161,18 +162,6 @@ void onTick(CBlob@ this)
     }
 }
 
-void Pierce(CBlob@ this, CBlob@ blob = null)
-{
-	Vec2f end;
-	CMap@ map = this.getMap();
-	Vec2f position = blob is null ? this.getPosition() : blob.getPosition();
-
-	if (!this.hasTag("collided_blob") && map.rayCastSolidNoBlobs(this.getShape().getVars().oldpos, position, end))
-	{
-		ArrowHitMap(this, end, this.getOldVelocity(), 0.5f, Hitters::arrow);
-	}
-}
-
 void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 customData)
 {
 	if (velocity.Length() > arrowFastSpeed)
@@ -184,30 +173,11 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 		this.getSprite().PlaySound("ArrowHitGround.ogg");
 	}
 
-	if (this.getDamageOwnerPlayer() !is null)
-	{
-		CBlob@ owner = this.getDamageOwnerPlayer().getBlob();
-		if (owner !is null)
-		{
-			owner.setVelocity(owner.getVelocity()+(this.getPosition()-owner.getPosition())/(18+XORRandom(3)));
-			//if (owner.getVelocity().y > 8.0f) owner.setVelocity(Vec2f(owner.getVelocity().x, owner.getVelocity().y*0.5f));
-
-			this.getShape().SetStatic(true);
-			this.getShape().SetGravityScale(0.0f);
-			this.server_SetTimeToDie(10.0f);
-		}
-	}
-
 	f32 radius = this.getRadius();
-
 	f32 angle = velocity.Angle();
-
 	this.set_u8("angle", Maths::get256DegreesFrom360(angle));
 
-	Vec2f norm = velocity;
-	norm.Normalize();
-	norm *= (1.5f);
-	Vec2f lock = worldPoint - norm;
+	Vec2f lock = worldPoint;
 	this.set_Vec2f("lock", lock);
 
 	this.Sync("lock", true);
@@ -220,11 +190,29 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	this.Tag("collided");
 	this.Untag("primed");
 
+	if (this.getDamageOwnerPlayer() !is null)
+	{
+		CBlob@ owner = this.getDamageOwnerPlayer().getBlob();
+		if (owner !is null)
+		{
+			owner.setVelocity(owner.getVelocity()+(this.getPosition()-owner.getPosition())/(18+XORRandom(3)));
+			//if (owner.getVelocity().y > 8.0f) owner.setVelocity(Vec2f(owner.getVelocity().x, owner.getVelocity().y*0.5f));
+
+			this.setVelocity(Vec2f_zero);
+			this.getShape().SetStatic(true);
+			this.getShape().SetGravityScale(0.0f);
+			this.server_SetTimeToDie(10.0f);
+		}
+	}
 }
 
-void onCollision( CBlob@ this, CBlob@ blob, bool solid )
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, Vec2f p2)
 {	
 	float expundamage = this.get_f32("damage");
+	if (solid && blob is null)
+	{
+		ArrowHitMap(this, p2, Vec2f_zero, 0, 0);
+	}
 
 	if (blob !is null)
 	{
