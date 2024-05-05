@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 	this.set_f32("map_damage_radius", 15.0f);
 	this.set_f32("map_damage_ratio", -1.0f);
     this.set_string("custom_explosion_sound", "OrbExplosion.ogg");
-	
+    this.set_s32("nextorb", getGameTime()+90); // a short delay before first shot
 
     this.getSprite().PlaySound("WizardShoot.ogg", 2.0f, 0.75f);
     this.addCommandID("sync");
