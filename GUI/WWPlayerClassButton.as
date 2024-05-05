@@ -381,7 +381,7 @@ void intitializeClasses()
 	playerClassButtons.registerWWPlayerClassButton("Shaman", 
 													"A powerful elementalist, so known totemist. Has a variety of counterattack spells which deal more damage near or from inside enemy groups. Complexity: MEDIUM" +
 													"\n\n     Health: 80" +
-													"\n     Mana: 100" +
+													"\n     Mana: 125" +
 													"\n     Mana Regen: 4 mana/sec",
 													"shaman", 7, 0, 8, 0, "WizardWars");
 
