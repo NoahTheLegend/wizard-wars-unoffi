@@ -27,13 +27,13 @@ namespace ShamanParams
 		//	SpellType::other, 4, 35, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("flameorb", "Flame Orb", 75, "Ignites enemies on impact.",
-			SpellType::other, 6, 25, 0, 256.0f),
+			SpellType::other, 8, 30, 0, 256.0f, true),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 20, 6, 0, 270.0f, true), 
+			SpellType::other, 25, 6, 0, 270.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 20, 10, 0, 64.0f, true),
+			SpellType::other, 25, 10, 0, 64.0f, true),
 
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
 			SpellType::other, 10, 20, 0, 360.0f, true),
@@ -48,13 +48,13 @@ namespace ShamanParams
 			SpellType::other, 25, 30, 0, 164.0f),
 
 		Spell("firetotem", "Totem of Fire", 76, "Shoots flames at nearby enemies. Ignites everything in close range upon death. Overcharge increases lifetime and fire rate.",
-			SpellType::other, 25, 60, 4, 156.0f),
+			SpellType::other, 30, 60, 4, 156.0f, true),
 
 		Spell("watertotem", "Totem of Water", 77, "Heals most damaged nearby ally. Only one totem can heal a target. Generates heal charges passively. Overchage increases durability and generation rate. Pushes everything away upon death.",
 			SpellType::other, 50, 90, 8, 128.0f, true),
 		
 		Spell("earthtotem", "Totem of Earth", 78, "Slows down enemies nearby. Overcharge increases effect distance and time. Releases different effects when removed.",
-			SpellType::other, 40, 75, 10, 224.0f, true),
+			SpellType::other, 50, 75, 10, 224.0f, true),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freezes everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
 			SpellType::other, 20, 45, 15, 0.0f, true),
