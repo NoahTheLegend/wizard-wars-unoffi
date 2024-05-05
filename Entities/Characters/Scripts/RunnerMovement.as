@@ -155,7 +155,7 @@ void onTick(CMovement@ this)
 		ShapeVars@ bshape = blob.getShape().getVars();
         if (bshape !is null)
         {
-			bool in_water = blob.get_u32("in_water") > getGameTime();
+			bool in_water = blob.get_u32("in_water") > getGameTime() || blob.isInWater();
             bshape.inwater = in_water;
 			bshape.old_inwater = in_water;
         }
