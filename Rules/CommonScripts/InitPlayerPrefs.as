@@ -25,6 +25,7 @@ void onInit( CRules@ this )
 	setStartingPlatinum( this );
 	//setStartingUnlocks( this );
 }
+
 bool security_reloaded = false;
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
@@ -78,6 +79,20 @@ void onRestart( CRules@ this )
 {
 	setStartingPlatinum( this );
 	//setStartingUnlocks( this );
+
+	CPlayer@ localPlayer = getLocalPlayer();
+	if (localPlayer is null)
+	{
+		return;
+	}
+	
+	PlayerPrefsInfo@ playerPrefsInfo;
+	if (!localPlayer.get("playerPrefsInfo", @playerPrefsInfo))
+	{
+		return;
+	}
+
+	ResetCooldowns(playerPrefsInfo);
 }
 
 void onTick(CRules@ this)
@@ -134,6 +149,17 @@ void ManageCooldowns(PlayerPrefsInfo@ playerPrefsInfo)
 		
 		if ( currCooldown > 0 )
 			playerPrefsInfo.spell_cooldowns[i] = Maths::Max( currCooldown - 1, 0 );
+	}
+}
+
+void ResetCooldowns(PlayerPrefsInfo@ playerPrefsInfo)
+{
+	for (uint i = 0; i < MAX_SPELLS; ++i)
+	{
+		s32 currCooldown = playerPrefsInfo.spell_cooldowns[i];
+		
+		if ( currCooldown > 0 )
+			playerPrefsInfo.spell_cooldowns[i] = 0;
 	}
 }
 
