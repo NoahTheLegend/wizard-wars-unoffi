@@ -160,7 +160,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						}
 					}
 
-					mush.server_SetTimeToDie(ttd*30);
+					mush.server_SetTimeToDie(ttd);
 				}
 			}
 			else
