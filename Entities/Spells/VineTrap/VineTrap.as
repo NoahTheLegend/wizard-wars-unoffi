@@ -39,13 +39,15 @@ void onTick(CBlob@ this)
 {
 	CMap@ map = getMap();
 
-	if(this.get_u8("despelled") >= 1 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
+	if(this.get_u8("despelled") >= 1 || this.get_s32("trap_time") > this.get_s32("aliveTime"))
     {
         this.server_Die();
     }
 	
 	if (this.get_u16("trapped_id") > 0)
 	{
+		this.add_s32("trap_time", 1);
+		
 		CBlob@ trapped = getBlobByNetworkID(this.get_u16("trapped_id"));
 		if (trapped !is null)
 		{

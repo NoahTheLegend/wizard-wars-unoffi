@@ -129,31 +129,38 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					CBlob@ mush = server_CreateBlob("vinetrap",this.getTeamNum(),Vec2f(aimpos.x,height) );
 					mush.SetDamageOwnerPlayer(this.getPlayer());
+					u8 ttd;
 
 					switch (charge_state)
 					{
 						case 1:
 						case 2:
 						{
+							ttd = 5;
 							mush.set_s32("aliveTime", 180);
 							break;
 						}
 						case 3:
 						{
+							ttd = 10;
 							mush.set_s32("aliveTime", 180);
 							break;
 						}
 						case 4:
 						{
+							ttd = 15;
 							mush.set_s32("aliveTime", 240);
 							break;
 						}
 						case 5:
 						{
 							mush.set_s32("aliveTime", 300);
+							ttd = 20;
 							break;
 						}
 					}
+
+					mush.server_SetTimeToDie(ttd*30);
 				}
 			}
 			else
