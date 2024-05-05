@@ -183,6 +183,6 @@ void sparks(Vec2f pos, Vec2f offset, f32 angle)
     	p.fastcollision = true;
         p.gravity = Vec2f_zero;
         p.timeout = 30 + _sprk_r.NextRanged(20);
-        p.damping = 0.975f;
+        p.damping = 0.9f+XORRandom(33)*0.001f;
     }
 }
