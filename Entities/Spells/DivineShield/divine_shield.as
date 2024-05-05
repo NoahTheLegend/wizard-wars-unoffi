@@ -63,9 +63,16 @@ void onTick(CBlob@ this)
                 {
                     if (b.getShape() !is null)
                     {
-                        if (isServer())
+                        Vec2f tpos = this.getPosition();
+                        Vec2f bpos = b.getPosition();
+                        Vec2f vec = bpos-tpos;
+                        vec.Normalize();
+                        vec *= effectRadius*1.15f;
+                        f32 hitangle = -(tpos-bpos).Angle();
+
+                        if (b.hasTag("projectile") && b.getName() != "arrow")
                         {
-                            if (b.hasTag("projectile") && b.getName() != "arrow")
+                            if (isServer())
                             {
                                 f32 dmg;
                                 dmg = (!b.exists("explosive_damage") || b.get_f32("damage") >= b.get_f32("explosive_damage")) ? b.get_f32("damage") * 0.5 : b.get_f32("explosive_damage") * 0.33f;
@@ -75,10 +82,25 @@ void onTick(CBlob@ this)
                                 else if (b.getName() == "force_of_nature") this.server_SetTimeToDie(1.0f);
                                 this.server_Hit(this, this.getPosition(), this.getVelocity(), dmg, Hitters::arrow, true);
                             }
-                            if (b.hasTag("die_in_divine_shield") || b.getName() == "arrow") b.server_Die();
+                            if (isClient())
+                            {
+                                sparks(tpos, vec, hitangle);
+                            }
+                        }
+                        if (b.hasTag("die_in_divine_shield") || b.getName() == "arrow")
+                        {
+                            if (isServer())
+                            {
+                                b.server_Die();
+                            }
+                            if (isClient())
+                            {
+                                sparks(tpos, vec, hitangle);
+                            }
                         }
                         //b.getShape().SetAngleDegrees(b.getAngleDegrees()+180-(XORRandom(21)-10));
-                        b.setVelocity(-b.getVelocity());
+                        f32 vellen = b.getVelocity().Length();
+                        b.setVelocity(Vec2f(-vellen, 0).RotateBy(hitangle)); // todo: calculate normal through b.angledegrees() and reflect in correct way
                         this.getSprite().PlaySound("shield_create.ogg", 1.0f, 2.0f+XORRandom(10)*0.1f);
                     }
                 }
@@ -109,7 +131,7 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 {
     f32 damage_mod = f32(this.getTickSinceCreated())/this.get_s32("aliveTime");
     damage *= damage_mod;
-    printf(""+damage_mod);
+
     if (this.hasTag("dying")) return 0;
     if (isServer() && this.getHealth() - damage <= 1.0f)
     {
@@ -145,4 +167,22 @@ void onTick(CSprite@ this)
 void onDie(CBlob@ this)
 {
 
+}
+
+Random _sprk_r(21342);
+void sparks(Vec2f pos, Vec2f offset, f32 angle)
+{
+	for (int i = 0; i < 20; i++)
+    {
+        Vec2f ppos = pos + offset + Vec2f(1.0f * _sprk_r.NextRanged(3), 0).RotateBy(XORRandom(360));
+        Vec2f vel = (ppos-(pos+offset)) * 0.1f + Vec2f(-1,0).RotateBy(angle);
+
+        CParticle@ p = ParticlePixelUnlimited(ppos, vel, SColor( 255, 255, 200+_sprk_r.NextRanged(55), _sprk_r.NextRanged(128)), true);
+        if(p is null) return; //bail if we stop getting particles
+
+    	p.fastcollision = true;
+        p.gravity = Vec2f_zero;
+        p.timeout = 30 + _sprk_r.NextRanged(20);
+        p.damping = 0.975f;
+    }
 }
