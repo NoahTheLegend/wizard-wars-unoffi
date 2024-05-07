@@ -63,10 +63,18 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/MetaKnight.ogg", world_home);
 	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/MuteCity.ogg", world_home);
 	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Targets.ogg", world_home);
-	//mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/music_ssbu.ogg", world_home);
-	//mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/RainbowRoad.ogg", world_home);
-	//mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Hyrule.ogg", world_home);
-	//mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/GreenHills.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/DeathMinor.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/DecisiveBattle.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/OneWhoGetsInOurWay.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Battle.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/CastleBoss.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/CourtoomLobby.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Lake.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/League.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Objection.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/SteelSamurai.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Trainer.ogg", world_home);
+	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/GoldenCountry.ogg", world_home);
 }
 
 uint timer = 0;

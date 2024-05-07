@@ -47,7 +47,7 @@ namespace SwordCasterParams
 		Spell("bladed_shell", "Bladed Shell", 44, "A circle of shear death... or at least it would be if you used the edge. This spell makes you weak to some magic attacks.",
 				SpellType::other, 35, 75, 0, 0.0f, true),
 			 
-		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press | USE | button to cut the rope off. Disables dashing and teleporting while active. Overcharge increases throw distance.",
+		Spell("hook", "Hook", 86, "Throws a sticky knife which pulls enemies or yourself to a wall. press [USE (E)] button to cut the rope off. Disables teleporting while active. Overcharge increases throw distance.",
 				SpellType::other, 8, 12, 0, 256.0f, true),
 			 
 		Spell("parry", "Parry", 46, "Reflect enemy attacks.",
