@@ -45,7 +45,7 @@ namespace EntropistParams
 				SpellType::other, 25, 60, 6, 1.0f, true),
 			
 		Spell("nova", "Nova", 55, "Releases a homing, concentrated energy star. Explodes on contact.",
-				SpellType::other, 30, 45, 6, 100.0f, true),
+				SpellType::other, 30, 45, 25, 100.0f, true),
 			
 		Spell("burn", "Burn", 60, "Ignite your mana reserves and fuel your magic with blinding heat. Reduces mana generation by 1.",
 				SpellType::other, 20, 60, 45, 0.0f, true),
@@ -66,7 +66,7 @@ namespace EntropistParams
 				SpellType::other, 20, 60, 0, 64.0f),
 							
 		Spell("magicarrows", "Magic Arrows", 88, "Launches magic arrows, which slightly home at closest enemy if the angle is not too step. Overcharge increases arrows amount and decreases launch delay.",
-				SpellType::other, 13, 45, 0, 128.0f),
+				SpellType::other, 15, 45, 5, 128.0f),
 				
 		Spell("polarityfield", "Polarity Breaker", 90, "Summons a massive sphere that summons explosive projectiles to orbit around.\nOvercharge changes rotation side for each second level.",
 				SpellType::other, 70, 105, 25, 256.0f, true),
