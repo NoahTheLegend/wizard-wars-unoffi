@@ -150,19 +150,8 @@ void onTick(CMovement@ this)
 		shape.SetGravityScale(0.33f);
 	}
 
-	if (blob.exists("in_water"))
-	{
-		ShapeVars@ bshape = blob.getShape().getVars();
-        if (bshape !is null)
-        {
-			bool in_water = blob.get_u32("in_water") > getGameTime() || blob.isInWater();
-            bshape.inwater = in_water;
-			bshape.old_inwater = in_water;
-        }
-	}
-
 	//swimming - overrides other movement partially
-	if (blob.isInWater() && !isknocked)
+	if ((blob.isInWater() ||  blob.get_u32("in_water") > getGameTime()) && !isknocked)
 	{
 		CMap@ map = getMap();
 
