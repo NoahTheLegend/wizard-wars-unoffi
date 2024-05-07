@@ -39,7 +39,7 @@ namespace ShamanParams
 			SpellType::other, 10, 20, 0, 360.0f, true),
 
 		Spell("airblast_shield", "Airblast Shield", 56, "Cover your team or yourself in a volatile wind barrier that blasts away nearby enemies whenever you take damage.",
-			SpellType::other, 20, 45, 0, 360.0f, true),
+			SpellType::other, 15, 30, 0, 360.0f, true),
 
 		Spell("fire_ward", "Fire Ward", 57, "Form a heat protection aura around yourself. Completely nullifies fire damage.",
 			SpellType::other, 15, 30, 0, 360.0f, true),
@@ -60,19 +60,19 @@ namespace ShamanParams
 			SpellType::other, 20, 45, 15, 0.0f, true),
 		
 		Spell("lavashot", "Lava Shot", 80, "Launches a slowly-moving sphere, which shatters into many drops of lava on impact. Periodically drops a bit of lava while moving. Overcharge increases the rate of dropping lava and amount from impact.",
-			SpellType::other, 30, 45, 2, 256.0f, true),
+			SpellType::other, 25, 45, 2, 256.0f, true),
 		
 		Spell("spikeburst", "Spike Burst", 81, "Throws a bunch of spikes that die on touch, around the player. Overcharge increases amount of spikes",
-			SpellType::other, 12, 30, 0, 16.0f),
+			SpellType::other, 10, 30, 0, 16.0f),
 		
 		Spell("iciclerain", "Magic Icicles", 82, "Launches icicles above, then forwards them to your aim position. Overcharge increases amount of icicles and decreases their delay. Overcharge fully to control aim position while icicles are being released.",
 			SpellType::other, 25, 30, 6, 512.0f),
 
 		Spell("waterbarrier", "Water Barrier", 83, "Covers yourself in a bubble of water, which slows down enemies and some of their spells. While under this effect, you are unable to use fire spells and receive more damage from electricity and ice.",
-			SpellType::other, 25, 40, 0, 0.0f),
+			SpellType::other, 20, 40, 0, 0.0f),
 
 		Spell("frost_spirit", "Glacial Spirit", 107, "Summon a homing spirit of frost to freeze your foes.",
-			SpellType::other, 35, 60, 6, 360.0f, true),
+			SpellType::other, 25, 60, 6, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),
