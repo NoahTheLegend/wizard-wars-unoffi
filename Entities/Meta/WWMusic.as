@@ -51,30 +51,42 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 
 	this.set_bool("initialized game", true);
 	mixer.ResetMixer();
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/CBoyarde.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/BruteBlaster.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/MarioKart.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/LogHorizon1.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/LogHorizon2.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Corneria.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Cornered.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Guile.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/KingDedede.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/MetaKnight.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/MuteCity.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Targets.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/DeathMinor.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/DecisiveBattle.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/OneWhoGetsInOurWay.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Battle.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/CastleBoss.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/CourtoomLobby.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Lake.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/League.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Objection.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/SteelSamurai.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/Trainer.ogg", world_home);
-	mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/GoldenCountry.ogg", world_home);
+
+	array<string> trackNames = {
+		"CBoyarde.ogg",
+		"BruteBlaster.ogg",
+		"MarioKart.ogg",
+		"LogHorizon1.ogg",
+		"LogHorizon2.ogg",
+		"Corneria.ogg",
+		"Cornered.ogg",
+		"Guile.ogg",
+		"KingDedede.ogg",
+		"MetaKnight.ogg",
+		"MuteCity.ogg",
+		"Targets.ogg",
+		"DeathMinor.ogg",
+		"DecisiveBattle.ogg",
+		"OneWhoGetsInOurWay.ogg",
+		"Battle.ogg",
+		"CastleBoss.ogg",
+		"CourtoomLobby.ogg",
+		"Lake.ogg",
+		"League.ogg",
+		"Objection.ogg",
+		"SteelSamurai.ogg",
+		"Trainer.ogg",
+		"GoldenCountry.ogg"
+	};
+
+	array<bool> addedTracks(trackNames.length(), false);
+
+	for (uint i = 0; i < trackNames.length(); ++i)
+	{
+		uint randomIndex = XORRandom(trackNames.length() - i) + i;
+		mixer.AddTrack("../Mods/WizardWars_Music/Sounds/Music/" + trackNames[randomIndex], world_home);
+		trackNames.erase(randomIndex);
+	}
 }
 
 uint timer = 0;
