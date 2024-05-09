@@ -27,7 +27,7 @@ namespace DruidParams
 		//	SpellType::other, 1, 50, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("sporeshot", "SporeShot", 31, "A foul fungus that is painful to the touch, lighter than air",
-			SpellType::other, 3, 15, 0, 360.0f, true),	
+			SpellType::other, 2, 5, 0, 360.0f, true),	
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 20, 6, 0, 270.0f, true), 
@@ -39,13 +39,13 @@ namespace DruidParams
 			SpellType::other, 100, 60, 30, 360.0f, true),
 			
 		Spell("nature's helpers", "Nature's Helpers", 29, "Fires a swarm of bees. Can heal friends or attack foes.",
-			SpellType::other, 40, 80, 12, 360.0f, true),	
+			SpellType::other, 35, 80, 12, 360.0f, true),	
 										
 		Spell("spikeorb", "SpikeBall", 30, "The spikeball is natures punishment to those that tread her woods unwelcomed",
-			SpellType::other, 2, 20, 0, 360.0f),			
+			SpellType::other, 2, 5, 0, 360.0f, true),			
 				
 		Spell("vinewaver", "Vine Waver", 105, "Sends a waving phasing projectile.",
-			SpellType::other, 16, 40, 0, 128.0f, true),
+			SpellType::other, 15, 40, 0, 128.0f, true),
 				
 		Spell("rock_wall", "Rock Wall", 36, "Create a wall of ordinary rock in front of you that blocks most things both ways. Its not exactly durable though.",
 			SpellType::other, 10, 15, 0, 30.0f),
