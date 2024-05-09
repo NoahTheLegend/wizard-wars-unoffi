@@ -1,6 +1,8 @@
 #include "Hitters.as"
 
 f32 max_angle = 67.5f; // max capture angle, actually doubled so this is 135 degree coverage
+f32 vel = 5.0f;
+f32 turn_rate = 0.15f;
 
 void onInit(CBlob@ this)
 {
@@ -86,15 +88,15 @@ void onTick(CBlob@ this)
 			|| (angle >= 360-max_angle && this.getAngleDegrees() <= max_angle))
 		{
 			//printf("a "+angle+" d "+this.getAngleDegrees());
-			this.setAngleDegrees((angle == 0 ? 180 : 0) + Maths::Lerp(this.getAngleDegrees()+(this.getPosition().x<=target.getPosition().x?90:-90), angle, 0.2f));
+			this.setAngleDegrees((angle == 0 ? 180 : 0) + Maths::Lerp(this.getAngleDegrees()+(this.getPosition().x<=target.getPosition().x?90:-90), angle, turn_rate));
 		}
 		else
 		{
-			this.setAngleDegrees(Maths::Lerp(this.getAngleDegrees(), angle, 0.2f));
+			this.setAngleDegrees(Maths::Lerp(this.getAngleDegrees(), angle, turn_rate));
 		}
 	}
 
-	this.setVelocity(Vec2f(0,-8).RotateBy(this.getAngleDegrees()));
+	this.setVelocity(Vec2f(0,-vel).RotateBy(this.getAngleDegrees()));
 
 	if (this.getPosition().y < 0 || this.getPosition().x < 0
 		|| this.getPosition().y > getMap().tilemapheight*8
