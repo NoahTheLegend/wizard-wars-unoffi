@@ -1704,7 +1704,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 		
-		case 482205956://sword_cast - also known as Expunger
+		case 482205956: //expunger
 		{
 			this.getSprite().PlaySound("swordsummon.ogg");
 
@@ -1759,16 +1759,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.getShape().SetGravityScale(0);
 					orb.setPosition( orbPos );
 
-					Vec2f spawnVel; //random sword spread system
-					if(extra_damage && charged)
-					{
-						float randomness = (3.0f * _spell_common_r.NextFloat()) + 1;
-						spawnVel = Vec2f( 0 , randomness );
-					}
-					else
-					{
-						spawnVel = Vec2f( 0 , 3 );
-					}
+					Vec2f spawnVel = Vec2f(0,3);
 
 					spawnVel.RotateBy(swordWheelRot + anglePerOrb*i, Vec2f());
 					orb.setVelocity(spawnVel);
