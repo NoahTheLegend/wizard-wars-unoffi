@@ -2387,6 +2387,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 			f32 orbspeed = necro_shoot_speed*0.5f;
+			int amount = this.hasTag("extra_damage") ? 4 : 3;
 
 			switch(charge_state)
 			{
@@ -2401,19 +2402,23 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					orbspeed *= 1.3f;
+					amount = 4;
 				}
 				break;
 				
 				default:return;
 			}
 
-			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
-			Vec2f orbVel = (aimpos - orbPos);
-			orbVel.Normalize();
-			orbVel *= orbspeed;
+			
+			f32 angle_per_circle = 360/amount;
 
-			for (u8 i = 0; i < 3; i++)
+			for (u8 i = 0; i < amount; i++)
 			{
+				Vec2f orbPos = thispos + Vec2f(0.0f,-16.0f).RotateBy(i * angle_per_circle);
+				Vec2f orbVel = (aimpos - orbPos);
+				orbVel.Normalize();
+				orbVel *= orbspeed;
+
 				CBlob@ orb = server_CreateBlob( "negatisphere" , this.getTeamNum() , orbPos);
 				if (orb !is null)
 				{
