@@ -72,7 +72,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 
 bool doesCollideWithBlob( CBlob@ this, CBlob@ b )
 {
-	return ( isEnemy( this, b ) || b.hasTag("player") );
+	return (isEnemy( this, b ) || b.hasTag("player")) && b.getShape() !is null && !b.getShape().isStatic();
 }
 
 Random _sprk_r(32432);
