@@ -60,7 +60,7 @@ namespace ShamanParams
 			SpellType::other, 20, 45, 15, 0.0f, true),
 		
 		Spell("lavashot", "Lava Shot", 80, "Launches a slowly-moving sphere, which shatters into many drops of lava on impact. Periodically drops a bit of lava while moving. Overcharge increases the rate of dropping lava and amount from impact.",
-			SpellType::other, 25, 45, 2, 256.0f, true),
+			SpellType::other, 30, 60, 3, 256.0f, true),
 		
 		Spell("spikeburst", "Spike Burst", 81, "Throws a bunch of spikes that die on touch, around the player. Overcharge increases amount of spikes",
 			SpellType::other, 10, 30, 0, 16.0f),
