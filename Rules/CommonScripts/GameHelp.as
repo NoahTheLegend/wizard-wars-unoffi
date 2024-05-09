@@ -497,7 +497,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 {
 	if (this.getCommandID("unlockAchievement") == cmd){
 		string playerName = params.read_string(), achieveName = params.read_string();
-		client_AddToChat("***"+playerName+" has got the achievement \""+achieveName+"\"!***", SColor(255,0,196,155));
+		client_AddToChat("***"+playerName+" has got the achievement \""+achieveName+"\"!***", SColor(255,200,96,145));
 	}
 	else if (this.getCommandID("requestAchieves") == cmd)
 	{	
