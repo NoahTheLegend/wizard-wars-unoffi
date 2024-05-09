@@ -1,7 +1,7 @@
 #include "Hitters.as"
 
 f32 max_angle = 67.5f; // max capture angle, actually doubled so this is 135 degree coverage
-f32 vel = 5.0f;
+f32 vel = 6.0f;
 f32 turn_rate = 0.15f;
 
 void onInit(CBlob@ this)
