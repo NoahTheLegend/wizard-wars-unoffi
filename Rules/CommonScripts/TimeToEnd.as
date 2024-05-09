@@ -23,6 +23,7 @@ void onReset( CRules@ this)
         this.set_u8("spawnbuff", 3);
     }
 }
+
 void onTick(CRules@ this)
 {
 	if (!getNet().isServer() || !this.isMatchRunning() || this.get_bool("no timer"))
@@ -30,6 +31,21 @@ void onTick(CRules@ this)
 		return;
 	}
 
+	u8 players = 0;
+	for (u8 i = 0; i < getPlayersCount(); i++)
+	{
+		CPlayer@ p = getPlayer(i);
+		if (p is null) continue;
+		if (p.getTeamNum() == this.getSpectatorTeamNum()) continue;
+
+		players++;
+	}
+	if (players <= 2)
+	{
+		this.add_u32("game_end_time", 1);
+		return;
+	}
+	
 	u32 gameEndTime = this.get_u32("game_end_time");
 
 	if (gameEndTime == 0) return; //-------------------- early out if no time.
