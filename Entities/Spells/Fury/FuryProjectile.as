@@ -4,7 +4,7 @@ void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
-	consts.mapCollisions = true;
+	consts.mapCollisions = false;
 	consts.bullet = true;
 	shape.SetGravityScale(0.0f);
 
@@ -22,6 +22,7 @@ void onInit(CBlob@ this)
 	sprite.setRenderStyle(RenderStyle::additive);
     sprite.RotateBy(-135, Vec2f_zero);
 	sprite.PlaySound("bunkercast.ogg", 1.5f, 1.3f+XORRandom(16)*0.01f);
+	sprite.SetRelativeZ(531.0f);
 }
 
 void onTick(CBlob@ this)
@@ -99,10 +100,6 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 			this.server_Die();
 		}
 	}
-    else if (solid)
-    {
-        this.server_Die();
-    }
 }
 
 bool isEnemy( CBlob@ this, CBlob@ target )

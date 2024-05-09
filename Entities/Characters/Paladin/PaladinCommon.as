@@ -77,10 +77,10 @@ namespace PaladinParams
 				SpellType::other, 10, 90, 18, 198.0f, true),
 							
 		Spell("knight_revive", "Revive", 106, "Summon a noble warrior back from the dead by aiming a reviving missile at their gravestone.",
-				SpellType::other, 70, 60, 25, 360.0f, true),
+				SpellType::other, 60, 60, 25, 360.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("fury", "Fury", 101, "A homing disk releasing sharp flame blades to anyone nearby. Overcharge increases spell lifetime, damage and fire rate.",
+				SpellType::other, 60, 75, 16, 64.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

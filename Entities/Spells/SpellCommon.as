@@ -4041,7 +4041,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 1909995520: // spiritual connection
 		{
 			f32 orbspeed = 4.2f;
-			u16 effectTime = 900;
+			u16 effectTime = 1350;
 
 			switch(charge_state)
 			{
@@ -4053,7 +4053,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					orbspeed *= 1.6f;
-					effectTime *= 1.25f;
+					effectTime *= 1.5f;
 				}
 				break;
 				
@@ -4231,7 +4231,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 1006366403: //healblock
 		{
 			f32 orbspeed = 3.25f;
-			u16 effectTime = 900;
+			u16 effectTime = 1800;
 
 			switch(charge_state)
 			{
@@ -4275,7 +4275,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -774033844://hallowedbarrier
 		{
 			u8 amount = 3;
-			u16 effectTime = 900;
+			u16 effectTime = 1800;
 
 			switch(charge_state)
 			{
@@ -4315,7 +4315,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -1347011254://majesty glyph
 		{
 			f32 orbspeed = 4.0f;
-			u16 effectTime = 900;
+			u16 effectTime = 1350;
 
 			switch(charge_state)
 			{
@@ -4330,7 +4330,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				case super_cast:
 				{
-					effectTime = 1350;
+					effectTime *= 1.5f;
 					CooldownReduce(this, effectTime, 0.5f);
 					return;
 				}
@@ -4385,7 +4385,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -842442030://seal of wisdom
 		{
 			f32 orbspeed = 4.0f;
-			u16 effectTime = 900;
+			u16 effectTime = 1350;
 
 			switch(charge_state)
 			{
@@ -4394,13 +4394,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case complete_cast:
 				{
 					orbspeed *= 1.0f;
-					effectTime = 900;
+					effectTime = 1500;
 				}
 				break;
 				
 				case super_cast:
 				{
-					effectTime = 900;
+					effectTime = 1800;
 					AntiDebuff(this, effectTime);
 					return;
 				}
@@ -4464,12 +4464,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
             
 			if (charge_state == super_cast) {
 				orbspeed *= 1.25f;
-				bladesRate -= 3;
+				bladesRate -= 2;
 			}
 			if (extraDamage)
-				bladesRate -= 3;
+				bladesRate -= 2;
 
-			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbPos = thispos;
 			Vec2f orbVel = (aimpos - orbPos);
 			orbVel.Normalize();
 			orbVel *= orbspeed;

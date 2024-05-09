@@ -4,7 +4,7 @@ void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
-	consts.mapCollisions = true;
+	consts.mapCollisions = false;
 	consts.bullet = false;
 
 	this.Tag("projectile");
@@ -19,6 +19,8 @@ void onInit(CBlob@ this)
 
 	this.set_bool("has_target", false);
 	this.set_u32("lock_time", 0);
+
+	this.getSprite().SetRelativeZ(531.0f);
 }
 
 f32 cap_dist = 256.0f + 64.0f;
@@ -34,6 +36,11 @@ void onTick(CBlob@ this)
 	{
 		this.getSprite().PlaySound("flame_slash_sound.ogg", 1.75f, 1.45f + XORRandom(16)*0.01f);
 	}
+
+	CMap@ map = getMap();
+	if (map is null) return;
+	if (this.getPosition().y > map.tilemapheight*8 - 16.0f)
+		this.AddForce(Vec2f(0, -this.getMass() * 4));
 
 	// find target
 	if (this.getTickSinceCreated() < 5) return;
@@ -99,7 +106,7 @@ void onTick(CBlob@ this)
 				proj.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 				proj.server_SetTimeToDie(2);
 				proj.set_f32("damping", 0.95f);
-				proj.set_f32("damage", 0.5f);
+				proj.set_f32("damage", 0.2f);
 				proj.setVelocity(Vec2f(8.0f+XORRandom(21)*0.1f, 0).RotateBy(-(rndpos-this.getPosition()).Angle()+90));
 			}
 		}
@@ -192,12 +199,4 @@ bool isEnemy(CBlob@ this, CBlob@ target)
 	(
 		target.getPlayer() !is null && target.getTeamNum() != this.getTeamNum() 
 	);
-}
-
-void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
-{
-	if (solid)
-	{
-		this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.5f, 0.6f + XORRandom(3)/10.0f);
-	}
 }
