@@ -254,8 +254,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		
 		case 1299162377://boulder_throw
 		{
-			this.getSprite().PlaySound("Rubble" + (XORRandom(2) + 1) + ".ogg", 0.75f, 0.85f);
-			this.getSprite().PlaySound("rock_hit3.ogg", 0.75f, 0.85f);
+			this.getSprite().PlaySound("Rubble" + (XORRandom(2) + 1) + ".ogg", 1.25f, 1.1f);
+			this.getSprite().PlaySound("rock_hit3.ogg", 1.25f, 0.85f);
 
 			if (!isServer()){
            		return;
