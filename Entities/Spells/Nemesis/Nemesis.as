@@ -55,7 +55,6 @@ void onTick(CBlob@ this)
 
         if (getGameTime()%2==0 && (this.get_u32("stop_sound") > getGameTime() || !this.hasTag("ss")))
         {
-
             sprite.PlaySound("swordlaunch.ogg", 1.0f, 1.33f+XORRandom(max*2)*0.01f);
             if (!this.hasTag("ss"))
             {
@@ -79,9 +78,16 @@ void onTick(CBlob@ this)
         {
             this.server_SetTimeToDie(3.0f);
 			f32 orbDamage = 1.5f;
+            
+            if (dir.Length() < 256.0f)
+            {
+                dir.Normalize();
+                dir *= 256;
+            }
 
 			Vec2f orbPos = top_pos;
 			Vec2f orbVel = (dir);
+        
 			//orbVel.Normalize();
 
 			CBlob@ orb = server_CreateBlob("impaler");
