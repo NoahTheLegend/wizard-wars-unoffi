@@ -27,7 +27,7 @@ namespace DruidParams
 		//	SpellType::other, 1, 50, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("sporeshot", "Spore Shot", 31, "A foul fungus that is painful to the touch, lighter than air",
-			SpellType::other, 2, 5, 0, 360.0f, true),	
+			SpellType::other, 2, 11, 0, 360.0f, true),	
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 20, 6, 0, 270.0f, true), 
@@ -42,7 +42,7 @@ namespace DruidParams
 			SpellType::other, 35, 80, 12, 360.0f, true),	
 										
 		Spell("spikeorb", "SpikeBall", 30, "The spikeball is natures punishment to those that tread her woods unwelcomed",
-			SpellType::other, 2, 5, 0, 360.0f, true),			
+			SpellType::other, 2, 9, 0, 360.0f, true),			
 				
 		Spell("vinewaver", "Vine Waver", 105, "Sends a waving phasing projectile.",
 			SpellType::other, 15, 40, 0, 128.0f, true),
@@ -57,7 +57,7 @@ namespace DruidParams
 			SpellType::other, 10, 15, 0, 60.0f),
 
 		Spell("boulder_throw", "Rock Throw", 35, "Throws a heavy rock that is highly affected by gravity.",
-			SpellType::other, 20, 30, 2, 16.0f),
+			SpellType::other, 20, 30, 1, 16.0f),
 				
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
 			SpellType::other, 20, 20, 0, 360.0f, true), 
