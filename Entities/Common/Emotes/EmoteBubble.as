@@ -17,7 +17,7 @@ void onInit(CBlob@ blob)
 	if (emote !is null)
 	{
 		emote.SetOffset(Vec2f(0, -sprite.getBlob().getRadius() * 1.5f - 16));
-		emote.SetRelativeZ(100.0f);
+		emote.SetRelativeZ(1000.0f);
 		{
 			Animation@ anim = emote.addAnimation("default", 0, true);
 
