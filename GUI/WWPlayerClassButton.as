@@ -55,7 +55,7 @@ class WWPlayerClassButton
 		@classFrame = @Rectangle(Vec2f(232,0),Vec2f(760,490), SColor(0,0,0,0));
 		playerClassButtons.addChild(classFrame);
 		
-		@swapButton = @Button(Vec2f(80,-24), Vec2f(200,24), "Respawn as "+_name, SColor(255,255,255,255));
+		@swapButton = @Button(Vec2f(0,-24), Vec2f(200,24), "Respawn as "+_name, SColor(255,255,255,255));
 		swapButton.name = _configFilename;
 		classFrame.addChild(swapButton);
 		swapButton.addClickListener(SwapButtonHandler);
