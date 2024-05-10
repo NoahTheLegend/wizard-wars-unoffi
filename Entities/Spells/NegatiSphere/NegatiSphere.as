@@ -32,7 +32,7 @@ void onTick( CBlob@ this )
 
 	if ((getGameTime()+Maths::Pow(this.getNetworkID(), 2)) % 60 == 0
 		&& !this.get_bool("launch"))
-		this.AddForce(Vec2f(this.getMass()*1.5f, 0).RotateBy(XORRandom(360)));
+		this.AddForce(Vec2f(this.getMass(), 0).RotateBy(XORRandom(360)));
 
 	if(!this.get_bool("launch"))
 	{
