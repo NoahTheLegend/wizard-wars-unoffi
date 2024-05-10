@@ -32,6 +32,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 	}
 
 	CMap@ map = getMap();
+	CPlayer@ player = this.getPlayer();
 
     string spellName = spell.typeName;
 
@@ -3203,14 +3204,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					this.getSprite().PlaySound("Teleport.ogg", 0.8f, 1.0f);
 					this.getSprite().PlaySound("Heal.ogg", 0.8f, 0.95f);
 				}
-				else
+				else // heal self
 				{
 					if (isServer())
 					{
 						f32 mod = this.getHealth()/this.getInitialHealth();
 						f32 base_heal = 1.5f;
 						base_heal *= 3.0f-(3.0f*mod);
-						base_heal = Maths::Min(5.0f, base_heal);
+						base_heal = Maths::Min(2.5f, base_heal);
 						
 						if (this.getHealth()+base_heal >= this.getInitialHealth())
 							this.server_SetHealth(this.getInitialHealth());

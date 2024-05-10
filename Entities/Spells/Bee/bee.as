@@ -46,7 +46,11 @@ void onTick(CBlob@ this){
     {
         if(target.getTeamNum() == this.getTeamNum())
         {
-            Heal(target,this.get_f32("heal_amount"));
+            f32 amo = this.get_f32("heal_amount");
+            if (target.getPlayer() is this.getDamageOwnerPlayer())
+                amo /= 2;
+                
+            Heal(target,amo);
             this.server_Die();
         }
         else
