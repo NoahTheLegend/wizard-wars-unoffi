@@ -170,7 +170,6 @@ SColor blueRedSwap(SColor oldcol, u8 t)
 
 void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer)
 {
-    //printf(""+(pos-getBlobByName('paladin').getPosition()).Length());
     CParticle@ p = ParticlePixelUnlimited(pos, vel, col, true);
     if(p !is null)
     {

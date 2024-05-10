@@ -12,6 +12,7 @@
 #include "PriestCommon.as"
 #include "ShamanCommon.as"
 #include "PaladinCommon.as"
+#include "JesterCommon.as"
 
 #define CLIENT_ONLY
 
@@ -26,6 +27,7 @@ enum spellClass
     Priest,
     Shaman,
     Paladin,
+    Jester,
 }
 
 void onInit(CRules@ rules)
@@ -132,6 +134,11 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
         _class = Paladin;
         spells_length = PaladinParams::spells.length;
     }
+    else if(blob_name == "jester")
+    {
+        _class = Jester;
+        spells_length = JesterParams::spells.length;
+    }
     else
     {
         return;
@@ -173,6 +180,9 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
             break;
             case Paladin:
                 spell = PaladinParams::spells[i];
+            break;
+            case Jester:
+                spell = JesterParams::spells[i];
             break;
 
             default:

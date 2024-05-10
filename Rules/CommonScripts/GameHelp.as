@@ -67,7 +67,6 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
 	Label@ particleText;
     Label@ itemDistanceText;
     Label@ hoverDistanceText;
-	Button@ changeBtn;
 	Button@ infoBtn;
 	Button@ introBtn;
 	Button@ optionsBtn;
@@ -94,7 +93,6 @@ bool isGUINull()
 		|| particleText is null
         || itemDistanceText is null
         || hoverDistanceText is null
-		|| changeBtn is null
 		|| infoBtn is null
 		|| introBtn is null
 		|| optionsBtn is null
@@ -137,15 +135,6 @@ void onInit( CRules@ this )
 }
 
 void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button click handler for KGUI
-	if(sender is changeBtn){
-		changeText.isEnabled = true;
-		infoText.isEnabled = false;
-		introText.isEnabled = false;
-		helpIcon.isEnabled = false;
-		optionsFrame.isEnabled = false;
-		shipAchievements.isEnabled = false;
-		playerClassButtons.isEnabled = false;
-	}
 	if(sender is infoBtn){
 		changeText.isEnabled = false;
 		infoText.isEnabled = true;
@@ -276,8 +265,6 @@ void onTick( CRules@ this )
 
 		@changeText  = @Label(Vec2f(20,40),Vec2f(780,34),"",SColor(255,0,0,0),false);
 		changeText.setText(changeText.textWrap(lastChangesInfo));
-		@changeBtn = @Button(Vec2f(215,495),Vec2f(100,30),"Change Log",SColor(255,255,255,255));
-		changeBtn.addClickListener(ButtonClickHandler);
 
 		@introText  = @Label(Vec2f(20,10),Vec2f(780,15),"",SColor(255,0,0,0),false);
 		introText.setText(introText.textWrap("Welcome to Wizard Wars, a mod created by Chrispin with help from The Sopranos and \nother community members! (Press F1 to close this window)"));
@@ -287,7 +274,7 @@ void onTick( CRules@ this )
 		@helpText  = @Label(Vec2f(6,10),Vec2f(100,34),"",SColor(255,0,0,0),false);
 		helpText.setText(helpText.textWrap(lastChangesInfo));
 
-		@optionsBtn = @Button(Vec2f(320,495),Vec2f(100,30),"Options",SColor(255,255,255,255));
+		@optionsBtn = @Button(Vec2f(215,495),Vec2f(100,30),"Options",SColor(255,255,255,255));
 		optionsBtn.addClickListener(ButtonClickHandler);
 		
 		@barNumBtn = @Button(Vec2f(10,10),Vec2f(200,30),"",SColor(255,255,255,255));
@@ -304,10 +291,10 @@ void onTick( CRules@ this )
 
         
 
-		@achievementBtn = @Button(Vec2f(425,495),Vec2f(120,30),"Achievements",SColor(255,255,255,255));
+		@achievementBtn = @Button(Vec2f(320,495),Vec2f(120,30),"Achievements",SColor(255,255,255,255));
 		achievementBtn.addClickListener(ButtonClickHandler);
 		
-		@classesBtn = @Button(Vec2f(550,495),Vec2f(120,30),"Classes Menu",SColor(255,255,255,255));
+		@classesBtn = @Button(Vec2f(445,495),Vec2f(120,30),"Classes Menu",SColor(255,255,255,255));
 		classesBtn.addClickListener(ButtonClickHandler);
 
         @togglemenuBtn = @Button(Vec2f(702,06),Vec2f(90,30),"Exit Menu",SColor(255,255,255,255));//How do close menu? durp. The pain i have gone through has warrented this.
@@ -334,7 +321,6 @@ void onTick( CRules@ this )
 		helpWindow.addChild(changeText);
 		helpWindow.addChild(introBtn);
 		helpWindow.addChild(infoBtn);
-		helpWindow.addChild(changeBtn);
 		helpWindow.addChild(optionsBtn);
 		helpWindow.addChild(optionsFrame);
 		helpWindow.addChild(achievementBtn);

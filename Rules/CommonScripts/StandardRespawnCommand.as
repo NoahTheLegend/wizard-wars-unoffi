@@ -68,6 +68,7 @@ void InitClasses(CBlob@ this)
 	addPlayerClass(this, "Priest", "$priest_class_icon$", "priest", "Warhammer reference.");
 	addPlayerClass(this, "Shaman", "$shaman_class_icon$", "shaman", "Does drugs.");
 	addPlayerClass(this, "Paladin", "$paladin_class_icon$", "paladin", "Fat ass.");
+	addPlayerClass(this, "Jester", "$jester_class_icon$", "jester", "Bozo.");
 }
 
 void BuildRespawnMenuFor(CBlob@ this, CBlob @caller)

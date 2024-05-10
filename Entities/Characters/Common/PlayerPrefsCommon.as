@@ -7,6 +7,7 @@
 #include "PriestCommon.as";
 #include "ShamanCommon.as";
 #include "PaladinCommon.as";
+#include "JesterCommon.as";
 #include "MagicCommon.as";
 
 const u8 MAX_SPELLS = 20;
@@ -19,6 +20,7 @@ const u8 ENTROPIST_TOTAL_HOTKEYS = 18;
 const u8 PRIEST_TOTAL_HOTKEYS = 18;
 const u8 SHAMAN_TOTAL_HOTKEYS = 18;
 const u8 PALADIN_TOTAL_HOTKEYS = 18;
+const u8 JESTER_TOTAL_HOTKEYS = 18;
 
 shared class PlayerPrefsInfo
 {
@@ -37,6 +39,7 @@ shared class PlayerPrefsInfo
 	u8[] hotbarAssignments_Priest;
 	u8[] hotbarAssignments_Shaman;
 	u8[] hotbarAssignments_Paladin;
+	u8[] hotbarAssignments_Jester;
 	s32[] spell_cooldowns;
 
 	PlayerPrefsInfo()
@@ -130,6 +133,12 @@ void assignHotkey( CPlayer@ this, const u8 hotkeyID, const u8 spellID, string pl
 		int hotbarLength = playerPrefsInfo.hotbarAssignments_Paladin.length;
 		playerPrefsInfo.hotbarAssignments_Paladin[Maths::Min(hotkeyID,hotbarLength-1)] = spellID;
 		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Paladin[Maths::Min(playerPrefsInfo.primaryHotkeyID,hotbarLength-1)];
+	}
+	else if ( playerClass == "jester" )
+	{
+		int hotbarLength = playerPrefsInfo.hotbarAssignments_Jester.length;
+		playerPrefsInfo.hotbarAssignments_Jester[Maths::Min(hotkeyID,hotbarLength-1)] = spellID;
+		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Jester[Maths::Min(playerPrefsInfo.primaryHotkeyID,hotbarLength-1)];
 	}
 	
 	saveHotbarAssignments( this );
@@ -327,6 +336,29 @@ void defaultHotbarAssignments( CPlayer@ this, string playerClass )
 				playerPrefsInfo.hotbarAssignments_Paladin.push_back(3);	//assign aux2 to something
 		}	
 	}
+	else if ( playerClass == "jester" )
+	{
+		playerPrefsInfo.hotbarAssignments_Paladin.clear();
+		
+		int spellsLength = JesterParams::spells.length;
+		for (uint i = 0; i < JESTER_TOTAL_HOTKEYS; i++)
+		{
+			if ( i > spellsLength )
+			{
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(0);
+				continue;
+			}
+				
+			if ( i < 15 )
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(i);
+			else if ( i == 15 )
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(1);	//assign secondary to teleport
+			else if ( i == 16 )
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(2);	//assign aux1 to counter spell
+			else if ( i == 17 )
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(3);	//assign aux2 to something
+		}	
+	}
 }
 
 void saveHotbarAssignments( CPlayer@ this )
@@ -379,6 +411,11 @@ void saveHotbarAssignments( CPlayer@ this )
 		for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Paladin.length; i++)
 		{	
 			cfg.add_u32("paladin hotkey" + i, playerPrefsInfo.hotbarAssignments_Paladin[i]);
+		}
+
+		for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Jester.length; i++)
+		{	
+			cfg.add_u32("jester hotkey" + i, playerPrefsInfo.hotbarAssignments_Jester[i]);
 		}
 
 		cfg.saveFile( "WW_PlayerPrefs.cfg" );
@@ -760,5 +797,52 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 		}
 		
 		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Paladin[Maths::Min(0,hotbarLength-1)];
+	}
+
+	else if ( playerClass == "jester" )
+	{
+		playerPrefsInfo.hotbarAssignments_Jester.clear();
+		
+		int spellsLength = JesterParams::spells.length;
+		for (uint i = 0; i < JESTER_TOTAL_HOTKEYS; i++)
+		{
+			if ( i == 15 )
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(1);	//assign secondary to teleport
+			else if ( i == 16 )
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(2);	//assign aux1 to counter spell
+			else if ( i == 17 )
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(3);	//assign aux2 to something
+			else if ( i >= spellsLength )
+			{
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(0);
+				continue;
+			}	
+			else if ( i < 15 )
+				playerPrefsInfo.hotbarAssignments_Jester.push_back(i);
+		}
+		
+		int hotbarLength = playerPrefsInfo.hotbarAssignments_Jester.length;
+		if (isClient()) 
+		{	
+			u8[] loadedHotkeys;
+			ConfigFile cfg;
+			if ( cfg.loadFile("../Cache/WW_PlayerPrefs.cfg") )
+			{
+				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Jester.length; i++)
+				{		
+					if ( cfg.exists( "jester hotkey" + i ) )
+					{
+						u32 iHotkeyAssignment = cfg.read_u32("jester hotkey" + i);
+						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
+					}
+					else
+						loadedHotkeys.push_back(0);
+				}
+				playerPrefsInfo.hotbarAssignments_Jester = loadedHotkeys;
+				//print("Hotkey config file loaded.");
+			}
+		}
+		
+		playerPrefsInfo.primarySpellID = playerPrefsInfo.hotbarAssignments_Jester[Maths::Min(0,hotbarLength-1)];
 	}
 }
