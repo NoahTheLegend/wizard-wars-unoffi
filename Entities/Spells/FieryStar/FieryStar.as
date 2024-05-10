@@ -110,6 +110,14 @@ void onTick(CSprite@ this) //rotating sprite
 	}
 }
 
+void onChangeTeam(CBlob@ this, const int oldTeam)
+{
+	CSpriteLayer@ layer = this.getSprite().getSpriteLayer("shine");
+	if(layer is null)
+	{return;}
+	layer.setRenderStyle(RenderStyle::additive);
+}
+
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {	
 	if (blob !is null && this !is null)
