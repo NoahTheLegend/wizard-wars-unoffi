@@ -393,36 +393,16 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (!isServer()){
            		return;
 			}
-			f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
-			f32 orbDamage = 0.2f * extraDamage;
+			f32 extraDamage = this.hasTag("extra_damage") ? 0.25f : 0.0f;
+			f32 orbDamage = 0.5f + extraDamage;
 			f32 orbspeed = necro_shoot_speed / 2;
 
 			switch(charge_state)
 			{
-				case minimum_cast:
-				{
-					orbspeed *= (2.0f/3.0f);
-				}
-				break;
-
-				case medium_cast:
-				{
-					orbspeed *= 0.8f;
-					orbDamage *= 2.0f;
-				}
-				break;
-
-				case complete_cast:
-				{
-					orbspeed *= 1.0f;
-					orbDamage *= 3.0f;
-				}
-				break;
-
 				case super_cast:
 				{
-					orbspeed *= 1.2f;
-					orbDamage *= 6.0f;
+					orbspeed *= 1.5f;
+					orbDamage += 0.25f;
 				}
 				break;
 				default:return;
