@@ -570,9 +570,9 @@ class GenericGUIItem : IGUIItem{
 	}
 
 	void updateClickStates(){
-		if (_isLocked)return;
 		_isClickedWithLButton = false;
 		_isClickedWithRButton = false;
+		if (_isLocked) return;
 		if(_isPressedWithLButton && !_mouseLeftButtonHold && isHovered && !_isDragging){
 			invokeClickListeners(_mousePosition.x,_mousePosition.y,KEY_LBUTTON);
 			_isClickedWithLButton = true;
