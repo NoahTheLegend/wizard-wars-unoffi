@@ -27,7 +27,7 @@ namespace DruidParams
 		//	SpellType::other, 1, 50, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("sporeshot", "Spore Shot", 31, "A foul fungus that is painful to the touch, lighter than air",
-			SpellType::other, 2, 11, 0, 360.0f, true),	
+			SpellType::other, 3, 11, 0, 360.0f, true),	
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 20, 6, 0, 270.0f, true), 
@@ -54,7 +54,7 @@ namespace DruidParams
 			SpellType::other, 25, 30, 5, 128.0f, true),
 
 		Spell("mushroom", "Dancing Shroom", 34, "A happy mushroom that will create it's own cloud of spores for you.",
-			SpellType::other, 10, 15, 0, 60.0f),
+			SpellType::other, 12, 15, 0, 60.0f),
 
 		Spell("boulder_throw", "Rock Throw", 35, "Throws a heavy rock that is highly affected by gravity.",
 			SpellType::other, 20, 30, 1, 16.0f),
