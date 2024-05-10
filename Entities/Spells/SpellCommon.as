@@ -254,6 +254,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		
 		case 1299162377://boulder_throw
 		{
+			this.getSprite().PlaySound("Rubble" + (XORRandom(2) + 1) + ".ogg", 0.75f, 0.85f);
+			this.getSprite().PlaySound("rock_hit3.ogg", 0.75f, 0.85f);
+
 			if (!isServer()){
            		return;
 			}
@@ -293,10 +296,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				default:return;
 			}
 
-			Vec2f orbPos = thispos + Vec2f(0.0f,-4.0f);
-
-			this.getSprite().PlaySound("Rubble" + (XORRandom(2) + 1) + ".ogg", 0.75f, 0.85f);
-			this.getSprite().PlaySound("rock_hit3.ogg", 0.75f, 0.85f);	
+			Vec2f orbPos = thispos + Vec2f(0.0f,-4.0f);	
 
 			CBlob@ orb = server_CreateBlob( "boulder" );
 			if (orb !is null)
