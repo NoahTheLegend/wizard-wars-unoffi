@@ -4591,8 +4591,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -1436608895: //jestergas
 		{
-			this.getSprite().PlayRandomSound("gasleak", 1.0f, 0.95f+XORRandom(26)*0.1f);
-			this.getSprite().PlayRandomSound("klaxon"+XORRandom(4), 0.66f, 1.25f+XORRandom(16)*0.01f);
+			this.getSprite().PlayRandomSound("gasleak", 0.85f, 0.85f+XORRandom(26)*0.01f);
+			//this.getSprite().PlayRandomSound("klaxon"+XORRandom(4), 0.66f, 1.25f+XORRandom(16)*0.01f);
 			
 			if (!isServer()){
            		return;
@@ -4641,6 +4641,90 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
+		
+		case -1962610873: //flowerpad
+		{
+			if (isClient())
+			{
+				this.getSprite().PlayRandomSound("VineReveal", 1.0f, 1.3f+XORRandom(31)*0.01f);
+			}
+
+			{
+				CBlob@[] totems;
+				getBlobsByName("flowerpad",@totems);
+
+				if (this.getPlayer() is null)
+				{return;}
+
+				for(int i = 0; i < totems.length; i++)
+				{
+					if (totems[i] is null)
+					{continue;}
+					if (totems[i].getDamageOwnerPlayer() is null)
+					{continue;}
+					if(totems[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
+					{
+						totems[i].server_Die();
+						break;
+					}
+				}
+
+				int height = getLandHeight(aimpos);
+				if(height != 0)
+				{
+					if(isServer())
+					{
+						CBlob@ tot = server_CreateBlob("flowerpad",this.getTeamNum(),Vec2f(aimpos.x,height-8) );
+						tot.SetDamageOwnerPlayer(this.getPlayer());
+
+						switch (charge_state)
+						{
+							case 1:
+							case 2:
+							{
+								tot.set_s32("aliveTime", 1800);
+								break;
+							}
+							case 3:
+							{
+								tot.set_u16("charge_delay", 120);
+								tot.set_s32("aliveTime", 2100); //1m10s
+								break;
+							}
+							case 4:
+							{
+								tot.set_u16("charge_delay", 115);
+								tot.set_s32("aliveTime", 2400);//1m20s
+								break;
+							}
+							case 5:
+							{
+								tot.set_u16("charge_delay", 105);
+								tot.set_s32("aliveTime", 2700); //1m30s
+								break;
+							}
+						}
+						if (this.hasTag("extra_damage"))
+						{
+							tot.set_s32("aliveTime", 2700); //1m30s
+							tot.set_u16("charge_delay", 105);
+						}
+					}
+				}
+				else
+				{
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
+					}
+					
+					manaInfo.mana += spell.mana;
+					
+					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+				}
+			}
+			break;
+		}
 
 		default:
 		{

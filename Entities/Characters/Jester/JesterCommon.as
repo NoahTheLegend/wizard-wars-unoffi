@@ -27,7 +27,7 @@ namespace JesterParams
 		//	SpellType::other, 3, 40, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("jestergas", "Rejoicing Gas", 108, "Splash a dense gas to poison enemies.",
-				SpellType::other, 0, 30, 0, 360.0f, true),
+				SpellType::other, 0, 15, 0, 360.0f, true),
 				
 		Spell("teleport", "Teleport", 40, "Point to any visible position and teleport there.",
 				SpellType::other, 0, 6, 0, 250.0f, true),
@@ -35,8 +35,8 @@ namespace JesterParams
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 				SpellType::other, 0, 10, 0, 64.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("flowerpad", "Flower Pad", 109, "Raise a soft bouncing flower.",
+				SpellType::other, 0, 30, 0, 128.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

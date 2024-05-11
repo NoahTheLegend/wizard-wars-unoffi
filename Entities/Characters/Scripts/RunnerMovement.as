@@ -46,7 +46,7 @@ void onTick(CMovement@ this)
 
 	if (is_client && getGameTime() % 3 == 0)
 	{
-		const string fallscreamtag = "_fallingscream";
+		/*const string fallscreamtag = "_fallingscream";
 		if (vel.y > 0.2f)
 		{
 			if (vel.y > BaseFallSpeed() * 1.8f && !blob.isInInventory())
@@ -63,7 +63,7 @@ void onTick(CMovement@ this)
 			blob.Untag(fallscreamtag);
 		}
 
-		/* unfortunately, this doesn't work with archer bow draw stuff;
+		unfortunately, this doesn't work with archer bow draw stuff;
 			might need to bind separate sounds cause this solution is much better.
 
 			if (vel.y > BaseFallSpeed() * 1.1f)
