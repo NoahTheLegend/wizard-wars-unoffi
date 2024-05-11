@@ -45,7 +45,7 @@ void onTick(CBlob@ this)
 	
 	if (this.get_u16("trapped_id") > 0)
 	{
-		this.Untag("counterable");
+		this.Tag("cantparry");
 		this.add_s32("trap_time", 1);
 		
 		CBlob@ trapped = getBlobByNetworkID(this.get_u16("trapped_id"));
