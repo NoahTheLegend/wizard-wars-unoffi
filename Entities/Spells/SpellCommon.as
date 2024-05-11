@@ -5148,7 +5148,9 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			float angleDiff = bAngle - aimAngle;
 			angleDiff = (angleDiff + 180) % 360 - 180;
 
-			if( ((angleDiff > arcLimitDegrees || angleDiff < -arcLimitDegrees) && bVec.getLength() > counterspellRangeInner) || b.hasTag("invincible"))
+			if( !b.isOverlapping(this) && (((angleDiff > arcLimitDegrees
+				|| angleDiff < -arcLimitDegrees)
+					&& bVec.getLength() > counterspellRangeInner) || b.hasTag("invincible")))
 			{
 				continue;
 			}

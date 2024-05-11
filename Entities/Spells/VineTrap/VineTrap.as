@@ -8,7 +8,6 @@ void onInit(CBlob@ this)
 	shape.getConsts().collidable = false;
 	
 	this.addCommandID("sync_id");
-	this.set_u8("despelled", 0);
 	this.Tag("counterable");
 
 	//default values
@@ -39,7 +38,7 @@ void onTick(CBlob@ this)
 {
 	CMap@ map = getMap();
 
-	if(this.get_u8("despelled") >= 1 || this.get_s32("trap_time") > this.get_s32("aliveTime"))
+	if(this.get_s32("trap_time") > this.get_s32("aliveTime"))
     {
         this.server_Die();
     }
