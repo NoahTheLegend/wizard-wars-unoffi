@@ -25,31 +25,33 @@ void onChangeTeam(CBlob@ this, const int oldTeam)
 	this.getSprite().setRenderStyle(RenderStyle::additive);
 }
 
-const u8 hitrate = 8;
+const u8 hitrate = 5;
 void onTick(CBlob@ this)
 {
 	if (isServer())
 	{
+		if (this.hasTag("dead")) return;
 		CMap@ map = getMap();
-		if (map !is null && getGameTime()%hitrate==0)
+		if (map !is null && (getGameTime()+this.getNetworkID())%hitrate==0)
 		{
-			u8 hits = 0;
 			CBlob@[] bs;
 			map.getBlobsInRadius(this.getPosition(), this.getRadius()*2, @bs);
 
-			u8 max_hits = this.exists("max_hits") ? this.get_u8("max_hits") : 1;
 			for (u16 i = 0; i < bs.size(); i++)
 			{
 				CBlob@ b = bs[i];
 				if (b is null) continue;
 				if (isEnemy(this, b))
 				{
-					hits++;
 					this.server_Hit(b, b.getPosition(), Vec2f_zero, this.get_f32("dmg"), Hitters::fall, true);
-					this.server_Hit(this, this.getPosition(), Vec2f_zero, this.getInitialHealth()/max_hits, Hitters::fall, true);
-					if (hits >= max_hits)
+					this.server_Hit(this, this.getPosition(), Vec2f_zero, this.getHealth()/this.get_s8("hits"), Hitters::fall, true);
+					
+					this.sub_s8("hits", 1);
+					if (this.get_s8("hits") <= 0)
 					{
-						break;
+						this.Tag("dead");
+						this.server_Die();
+						return;
 					}
 				}
 			}
@@ -62,13 +64,8 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	if (!isClient()) return;
 
 	f32 hp = this.getHealth();
-	if (oldHealth > hp) return;
-
-	f32 inithp = this.getInitialHealth();
-	f32 damage = Maths::Abs(oldHealth-hp);
-
-	f32 val = damage / inithp;
-	this.getSprite().ScaleBy(Vec2f(val, val));
+	if (oldHealth < hp) return;
+	this.getSprite().ScaleBy(Vec2f(0.9f, 0.9f));
 }
 
 bool isEnemy( CBlob@ this, CBlob@ target )
@@ -87,4 +84,10 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return blob.hasTag("gas") || blob.hasTag("barrier");
+}
+
+void onDie(CBlob@ this)
+{
+	if (!isClient()) return;
+	ParticlesFromSprite(this.getSprite());
 }

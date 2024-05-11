@@ -26,7 +26,7 @@ namespace JesterParams
 		//Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
 		//	SpellType::other, 3, 40, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
-		Spell("jestergas", "Rejoicing Gas", 45, "todo",
+		Spell("jestergas", "Rejoicing Gas", 108, "Splash a dense gas to poison enemies.",
 				SpellType::other, 0, 30, 0, 360.0f, true),
 				
 		Spell("teleport", "Teleport", 40, "Point to any visible position and teleport there.",

@@ -4592,15 +4592,15 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -1436608895: //jestergas
 		{
 			this.getSprite().PlayRandomSound("gasleak", 1.0f, 0.95f+XORRandom(26)*0.1f);
-			this.getSprite().PlayRandomSound("klaxon"+XORRandom(4), 1.0f, 1.05f+XORRandom(16)*0.1f);
+			this.getSprite().PlayRandomSound("klaxon"+XORRandom(4), 0.66f, 1.25f+XORRandom(16)*0.01f);
 			
 			if (!isServer()){
            		return;
 			}
-			f32 extraDamage = this.hasTag("extra_damage") ? 0.2f : 0.0f;
-			f32 orbspeed = 3 + XORRandom(11)*0.1f;
+			f32 extraDamage = this.hasTag("extra_damage") ? 0.1f : 0.0f;
+			f32 orbspeed = 2.5f + XORRandom(6)*0.1f;
 			f32 orbDamage = 0.2f + extraDamage;
-			u8 max_hits = this.hasTag("extra_damage") ? 6 : 4;
+			u8 max_hits = this.hasTag("extra_damage") ? 7 : 5;
 
 			switch(charge_state)
 			{
@@ -4608,17 +4608,17 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case medium_cast:
 				case complete_cast:
 				{
-					orbspeed *= 0.75f;
 				}
 				break;
 
 				case super_cast:
 				{
-					orbDamage += 0.2f;
+					orbDamage += 0.1f;
 					orbspeed *= 1.5f;
 					max_hits += 1;
 				}
 				break;
+
 				default:return;
 			}
 
@@ -4631,7 +4631,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (orb !is null)
 			{
 				orb.set_f32("dmg", orbDamage);
-				orb.set_u8("max_hits", max_hits);
+				orb.set_s8("hits", max_hits);
 				orb.IgnoreCollisionWhileOverlapped( this );
 				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.server_setTeamNum( this.getTeamNum() );
