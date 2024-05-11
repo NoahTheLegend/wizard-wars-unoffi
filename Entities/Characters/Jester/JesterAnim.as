@@ -196,8 +196,7 @@ const bool firing = blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_acti
 		else
 		{
 			this.SetAnimation("shoot");
-			if (spell_ready)
-				this.SetFrameIndex(1);
+			this.SetFrameIndex(jester.charge_state + 1);
 		}
     }
     else if (inair)
