@@ -4587,6 +4587,61 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		break;
 
+		// JESTER
+
+		case -1436608895: //jestergas
+		{
+			this.getSprite().PlayRandomSound("gasleak", 1.0f, 0.95f+XORRandom(26)*0.1f);
+			this.getSprite().PlayRandomSound("klaxon"+XORRandom(4), 1.0f, 1.05f+XORRandom(16)*0.1f);
+			
+			if (!isServer()){
+           		return;
+			}
+			f32 extraDamage = this.hasTag("extra_damage") ? 0.2f : 0.0f;
+			f32 orbspeed = 3 + XORRandom(11)*0.1f;
+			f32 orbDamage = 0.2f + extraDamage;
+			u8 max_hits = this.hasTag("extra_damage") ? 6 : 4;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				{
+					orbspeed *= 0.75f;
+				}
+				break;
+
+				case super_cast:
+				{
+					orbDamage += 0.2f;
+					orbspeed *= 1.5f;
+					max_hits += 1;
+				}
+				break;
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob("jestergas");
+			if (orb !is null)
+			{
+				orb.set_f32("dmg", orbDamage);
+				orb.set_u8("max_hits", max_hits);
+				orb.IgnoreCollisionWhileOverlapped( this );
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
+				orb.server_setTeamNum( this.getTeamNum() );
+				orb.setPosition( orbPos );
+				orb.setVelocity( orbVel );
+				orb.server_SetTimeToDie(15+XORRandom(6));
+			}
+		}
+		break;
+
 		default:
 		{
 			if (spell.type == SpellType::summoning)
