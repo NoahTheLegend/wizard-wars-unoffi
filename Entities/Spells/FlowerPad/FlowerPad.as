@@ -7,8 +7,9 @@ void onInit(CBlob@ this)
     this.Tag("totem");
     
     this.getSprite().SetZ(-10.0f);
-    this.set_u16("smashtoparticles_probability", 2);
+    this.set_u16("smashtoparticles_probability", 1);
     this.SetFacingLeft(false);
+    this.getSprite().setRenderStyle(RenderStyle::additive);
 }
 
 void onTick(CBlob@ this)
@@ -16,6 +17,32 @@ void onTick(CBlob@ this)
     if(this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
         this.server_Die();
+    }
+
+    if (isClient())
+    {
+        f32 time = 15;
+        CSprite@ sprite = this.getSprite();
+        sprite.SetOffset(Vec2f(0, -7 + Maths::Clamp(Maths::Round(16.0f * (1.0f-this.getTickSinceCreated()/10.0f)*10.0f)/time, 0, 16)));
+    }
+
+    if (isClient() && !this.hasTag("prep"))
+    {
+        this.Tag("prep");
+
+        CSprite@ sprite = this.getSprite();
+        sprite.setRenderStyle(RenderStyle::normal);
+
+        for (u8 i = 0; i < 50 + XORRandom(100); i++)
+        {
+            CParticle@ p = makeGibParticle("GenericGibs", this.getPosition()+Vec2f(XORRandom(48)-24, XORRandom(32)-16), getRandomVelocity(100, 1 , 270), 
+		    	7, 3 + XORRandom(4), Vec2f(8, 8), 1.0f, 0, "", 0);
+            if (p !is null)
+		    {
+		    	p.gravity = Vec2f(0, 0.05f);
+                p.timeout = 45+XORRandom(30);
+		    }
+        }
     }
 
     if (isServer() && this.hasTag("spawn_gas"))
@@ -53,7 +80,7 @@ void onTick(CBlob@ this)
         f32 angle = (-bvel).Angle();
         if (angle > 180 || angle < 1
             || ((bvel.Length() < 4.0f || bpos.y >= this.getPosition().y - 8)
-                && !b.isKeyPressed(key_up))
+                && (!b.isKeyPressed(key_up) || bvel.Length() < 2.0f))
                 || (b.isKeyPressed(key_down) && !b.isKeyPressed(key_right) && !b.isKeyPressed(key_left))) continue;
 
         HitInfo@[] infos;
@@ -73,15 +100,26 @@ void onTick(CBlob@ this)
             if (isClient())
             {
                 CSprite@ sprite = this.getSprite();
-                sprite.PlaySound("GrassWiggleWeak.ogg", Maths::Clamp(bvel.Length()/8, 0.25f, 1.0f), 0.9f + XORRandom(31)*0.01f);
+                sprite.PlaySound("GrassWiggleWeak.ogg", Maths::Clamp(bvel.Length()/6, 1.0f, 2.0f), 0.9f + XORRandom(31)*0.01f);
                 if (bvel.Length() >= 12.0f)
-                    sprite.PlaySound("GrassWiggleStrong.ogg", 0.5f, 1.5f + XORRandom(21)*0.01f);
+                    sprite.PlaySound("GrassWiggleStrong.ogg", 1.0f, 1.5f + XORRandom(21)*0.01f);
 
                 sprite.animation.frame = 0;
                 sprite.animation.timer = 0;
                 sprite.SetAnimation("bounce");
 
                 sparks(this.getPosition() - Vec2f(1.5f,8), Maths::Clamp(bvel.Length()*3, 10, 50), bvel);
+
+                for (u8 i = 0; i < bvel.Length(); i++)
+                {
+                    CParticle@ p = makeGibParticle("GenericGibs", this.getPosition()+Vec2f(XORRandom(32)-16, XORRandom(8)), getRandomVelocity(100, 1 , 270), 
+	                	7, 3 + XORRandom(4), Vec2f(8, 8), 1.0f, 0, "", 0);
+                    if (p !is null)
+	                {
+	                	p.gravity = Vec2f(0, 0.05f);
+                        p.timeout = 30+XORRandom(11);
+	                }
+                }
             }
 
             b.setVelocity(Vec2f(bvel.x, -b.getOldVelocity().y));

@@ -38,17 +38,17 @@ namespace JesterParams
 		Spell("flowerpad", "Flower Pad", 109, "Raise a soft bouncing flower.",
 				SpellType::other, 0, 30, 0, 128.0f),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("mitten", "Enchanted Mitten", 110, "",
+				SpellType::other, 0, 10, 0, 218.0f),
 
 		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+				SpellType::other, 0, 1, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+				SpellType::other, 0, 1, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+				SpellType::other, 0, 1, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

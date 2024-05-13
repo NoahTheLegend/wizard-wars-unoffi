@@ -4646,7 +4646,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			if (isClient())
 			{
-				this.getSprite().PlayRandomSound("VineReveal", 1.0f, 1.3f+XORRandom(31)*0.01f);
+				this.getSprite().PlayRandomSound("VineReveal", 1.25f, 1.3f+XORRandom(31)*0.01f);
+				this.getSprite().PlayRandomSound("TreeGrow", 0.75f, 1.1f+XORRandom(21)*0.01f);
 			}
 
 			{
@@ -4725,6 +4726,56 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 			break;
 		}
+		
+		case 1127025508: //mitten 
+		{
+			this.getSprite().PlaySound("MittenSpawn", 1.25f, 1.5f + XORRandom(21)*0.01f);
+
+			if (!isServer()){
+           		return;
+			}
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-32.0f);
+			if (player !is null)
+			{
+				CBlob@[] bs;
+				getBlobsByTag(player.getUsername(), bs);
+				if (bs.size() > 0)
+				{
+					CBlob@ mitten = bs[0];
+					if (mitten !is null)
+					{
+						mitten.server_Die();
+					}
+				}
+			}
+
+			CBlob@ orb = server_CreateBlob("mitten", this.getTeamNum(), aimpos);
+			if (orb !is null)
+			{
+				orb.set_u16("caster", this.getNetworkID());
+				orb.IgnoreCollisionWhileOverlapped(this);
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+				orb.setAngleDegrees(-(this.getAimPos()-orb.getPosition()).Angle());
+			}
+		}
+		break;
 
 		default:
 		{
