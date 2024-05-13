@@ -18,6 +18,7 @@ void onInit(CBlob@ this)
 	this.set_bool("back", false);
 
 	this.getSprite().SetRelativeZ(33.0f);
+	this.getSprite().setRenderStyle(RenderStyle::additive);
 }
 
 void onChangeTeam(CBlob@ this, const int oldTeam)
@@ -30,6 +31,9 @@ void onTick(CBlob@ this)
 {
 	if (isServer())
 	{
+		if (this.getTickSinceCreated() < this.get_u8("ignore_time"))
+			return;
+			
 		if (this.hasTag("dead")) return;
 		CMap@ map = getMap();
 		if (map !is null && (getGameTime()+this.getNetworkID())%hitrate==0)

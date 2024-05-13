@@ -47,18 +47,22 @@ void onTick(CBlob@ this)
 
     if (isServer() && this.hasTag("spawn_gas"))
     {
-        CBlob@ orb = server_CreateBlob("jestergas");
-		if (orb !is null)
-		{
-			orb.set_s8("hits", 1);
-            orb.set_f32("dmg", 0.2f);
-			orb.IgnoreCollisionWhileOverlapped(this);
-			orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
-			orb.server_setTeamNum(this.getTeamNum());
-			orb.setPosition(this.getPosition()-Vec2f(0,10));
-			orb.setVelocity(Vec2f(0, -1-XORRandom(11)*0.1f).RotateBy(-20+XORRandom(41)));
-			orb.server_SetTimeToDie(5+XORRandom(3));
-		}
+        for (u8 i = 0; i < 1 + XORRandom(3); i++)
+        {
+            CBlob@ orb = server_CreateBlob("jestergas");
+		    if (orb !is null)
+		    {
+		    	orb.set_s8("hits", 1);
+                orb.set_f32("dmg", 0.2f);
+                orb.set_u8("ignore_time", 20+XORRandom(11));
+		    	orb.IgnoreCollisionWhileOverlapped(this);
+		    	orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+		    	orb.server_setTeamNum(this.getTeamNum());
+		    	orb.setPosition(this.getPosition()-Vec2f(0,10));
+		    	orb.setVelocity(Vec2f(0, -1-XORRandom(11)*0.1f).RotateBy(-20+XORRandom(41)));
+		    	orb.server_SetTimeToDie(5+XORRandom(3));
+		    }
+        }
 
         this.Untag("spawn_gas");
     }

@@ -1,5 +1,6 @@
 #include "Hitters.as";
 #include "MakeDustParticle.as";
+#include "MagicCommon.as";
 
 const Vec2f follow_offset = Vec2f(-32.0f, -32.0f);
 const Vec2f fire_offset = Vec2f(32.0f,-8.0f);
@@ -15,8 +16,10 @@ void onInit(CBlob@ this)
 	this.Tag("cantparry");
 	this.addCommandID("shoot_fx");
 
-    this.getShape().SetGravityScale(0.0f);
-	this.getShape().getConsts().mapCollisions = false;
+	CShape@ shape = this.getShape();
+    shape.SetGravityScale(0.0f);
+	shape.getConsts().mapCollisions = false;
+	shape.getConsts().net_threshold_multiplier = 0.25f;
 	this.getSprite().SetZ(510);
 	
 	this.set_Vec2f("target_pos", Vec2f_zero);
@@ -43,24 +46,26 @@ void onTick( CBlob@ this )
 	u32 gt = getGameTime();
 
 	f32 lerp = 0.25f;
-	f32 lerp_angle = Maths::Min(0.75f, this.getTickSinceCreated()/10.0f);
-	f32 angle_max_diff = 30;
+	f32 lerp_angle = Maths::Min(0.5f, this.getTickSinceCreated()/10.0f);
+	f32 rotate_diff_lerp = 30; // actual lerp_angle idk im bad at math
 
+	Vec2f caimpos = caster.getAimPos();
 	bool was_fl = this.get_bool("was_fl");
 	bool fl = caster.isFacingLeft();
 	f32 wave_speed = 0.075f;
 
+	if ((fl && !was_fl) || (!fl && was_fl))
+		rotate_diff_lerp = 360;
+
 	Vec2f cpos_wof = cpos + Vec2f(fl ? -follow_offset.x : follow_offset.x, follow_offset.y); // idle
 	cpos_wof += Vec2f(0, Maths::Sin(gt*wave_speed)*2);
-	this.SetFacingLeft(fl);
 
 	if (!this.hasTag("prep"))
 	{
 		this.Tag("prep");
 		this.set_Vec2f("target_pos", cpos);
 	}
-
-	Vec2f caimpos = caster.getAimPos();
+	
 	Vec2f dir = caimpos-(pos+Vec2f(0, fire_offset.y));
 	dir.Normalize();
 	
@@ -78,8 +83,8 @@ void onTick( CBlob@ this )
 	if (angleDiff > 180.0f) angleDiff -= 360.0f;
 	else if (angleDiff < -180.0f) angleDiff += 360.0f;
 
-	if (angleDiff > angle_max_diff) angleDiff = angle_max_diff;
-	else if (angleDiff < -angle_max_diff) angleDiff = -angle_max_diff;
+	if (angleDiff > rotate_diff_lerp) angleDiff = rotate_diff_lerp;
+	else if (angleDiff < -rotate_diff_lerp) angleDiff = -rotate_diff_lerp;
 
 	f32 angle = currentAngle + angleDiff * lerp_angle;
 
@@ -87,18 +92,34 @@ void onTick( CBlob@ this )
 	while (angle >= 360.0f) angle -= 360.0f;
 
 	u32 time_diff = gt-this.get_u32("last_shot");
-	f32 extra_angle = (fl ? 1 : -1) * (time_diff < recoil_falloff_delay ? max_visual_recoil : Maths::Max(0, Maths::Min(
-		max_visual_recoil,max_visual_recoil*(1.0f-Maths::Pow((time_diff-recoil_falloff_delay), recoil_falloff_accel)/recoil_time))));
+
+	f32 max_visual_recoil_new = max_visual_recoil;
+	f32 recoil_falloff_accel_new = recoil_falloff_accel;
+	f32 recoil_time_new = recoil_time; 
+	f32 recoil_falloff_delay_new = recoil_falloff_accel;
+
+	int shoot_delay_new = shoot_delay;
+	if (caster.hasTag("extra_damage"))
+	{
+		shoot_delay_new /= 4;
+		wave_speed *= 2;
+		max_visual_recoil_new /= 1;
+		recoil_falloff_accel_new *= 1;
+		recoil_time_new /= 4;
+		recoil_falloff_delay_new /= 4;
+	}
+
+	f32 extra_angle = (fl ? 1 : -1) * (time_diff < recoil_falloff_delay_new ? max_visual_recoil_new : Maths::Max(0, Maths::Min(
+		max_visual_recoil_new,max_visual_recoil_new*(1.0f-Maths::Pow((time_diff-recoil_falloff_delay_new), recoil_falloff_accel_new)/recoil_time_new))));
+
 
 	this.set_f32("target_angle", angle);
-	this.setAngleDegrees(angle + extra_angle);
-	//if ((fl && !was_fl) || (!fl && was_fl))
-	//	this.setAngleDegrees(this.getAngleDegrees()+180);
+	if (isServer()) this.setAngleDegrees(angle + extra_angle);
 
 	Vec2f tpos = this.get_Vec2f("target_pos");
 	Vec2f move_to = Vec2f_lerp(tpos, cpos_wof, lerp);
 	this.set_Vec2f("target_pos", move_to);
-	this.setPosition(move_to);
+	if (isServer()) this.setPosition(move_to);
 
 	Vec2f bullet_offset = fire_offset;
 	if (fl)
@@ -110,17 +131,17 @@ void onTick( CBlob@ this )
 
 	if (isClient())
 	{
-		if (gt%3==0 && time_diff < shoot_delay)
+		if (gt%3==0 && time_diff < shoot_delay_new)
 			smoke(shoot_pos, 2+XORRandom(2), 1, 3, true);
 		
-		if (time_diff == shoot_delay)
+		if (time_diff == shoot_delay_new)
 			this.getSprite().PlaySound("HandReload", 0.75f, 1.1f+XORRandom(6)*0.01f);
 	}
 
 	if (isServer())
 	{
 		this.server_setTeamNum(caster.getTeamNum());
-		if (caster.get_bool("shifting") && this.get_u32("last_shot") + shoot_delay < gt)
+		if (caster.get_bool("shift_shoot") && this.get_u32("last_shot") + shoot_delay_new < gt)
 		{
 			CBlob@ bullet = shoot(this, shoot_pos);
 			if (bullet !is null)
@@ -139,6 +160,7 @@ void onTick( CBlob@ this )
 		}
 	}
 
+	if (isServer()) this.SetFacingLeft(fl);
 	this.set_bool("was_fl", fl);
 }
 
@@ -174,7 +196,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 			CSprite@ sprite = this.getSprite();
 			sprite.SetAnimation("fire");
-			sprite.PlaySound("HandShoot", 1.0f+XORRandom(26)*0.01f, 1.1f+XORRandom(11)*0.01f);
+			sprite.PlaySound("HandShoot", 1.0f+XORRandom(26)*0.01f, 1.5f+XORRandom(16)*0.01f);
+
+			CBlob@ caster = getBlobByNetworkID(this.get_u16("caster"));
+			if (caster is null || caster.hasTag("dead"))
+			{
+				this.server_Die();
+				return;
+			}
+
+			ManaInfo@ manaInfo;
+			if (!caster.get( "manaInfo", @manaInfo )) {
+				return;
+			}
+
+			manaInfo.mana -= 3;
 		}
 	}
 }

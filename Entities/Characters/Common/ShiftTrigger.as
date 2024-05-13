@@ -1,5 +1,6 @@
 #include "EntropistCommon.as"
 #include "SpellCommon.as"
+#include "MagicCommon.as"
 
 void onInit( CBlob@ this )
 {
@@ -21,18 +22,18 @@ void onTick( CBlob@ this )
         if(!this.get_bool("shifting"))
         {
             params.write_bool(true);
-            /*
-            if (this.get( "entropistInfo", @entropist )) 
-	        {
-		        if(entropist.pulse_amount > 0)
-		        {
-                    entropist.pulse_amount -= 1;
-                    this.SendCommand(this.getCommandID("negentropy"), params);
-                }
-	        }
-            */
-            this.SendCommand(this.getCommandID("shiftpress"), params);
+
             this.set_bool("shifting", true);
+
+            ManaInfo@ manaInfo;
+			if (this.get( "manaInfo", @manaInfo) && manaInfo.mana > 0)
+            {
+				this.set_bool("shift_shoot", true);
+                params.write_bool(true);
+			}
+            else params.write_bool(false);
+
+            this.SendCommand(this.getCommandID("shiftpress"), params);
         }
     }
     else
@@ -42,6 +43,7 @@ void onTick( CBlob@ this )
             params.write_bool(false);
             this.SendCommand(this.getCommandID("shiftpress"), params);
             this.set_bool("shifting", false);
+            this.set_bool("shift_shoot", false);
         }
     }
 }
@@ -53,10 +55,16 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         if(params.read_bool())
         {
             this.set_bool("shifting", true);
+
+            if (params.read_bool())
+            {
+                this.set_bool("shift_shoot", true);
+			}
         }
         else
         {
             this.set_bool("shifting", false);
+            this.set_bool("shift_shoot", false);
         }
     }
     /*

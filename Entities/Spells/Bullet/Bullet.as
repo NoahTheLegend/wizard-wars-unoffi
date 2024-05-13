@@ -5,51 +5,33 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.Tag("exploding");
 	this.set_f32("explosive_radius", 24.0f);
-	this.set_f32("explosive_damage", 4.0f);
-	this.set_f32("map_damage_radius", 15.0f);
+	this.set_f32("explosive_damage", 1.0f);
+	this.set_f32("map_damage_radius", 0.0f);
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
-	this.getShape().getConsts().bullet = true;
+	CShape@ shape = this.getShape();
+	shape.getConsts().bullet = true;
+	shape.SetGravityScale(0.0f);
+	shape.ResolveInsideMapCollision();
+	shape.checkCollisionsAgain = true;
 }
 
 void onTick(CBlob@ this)
 {
 	this.setAngleDegrees(-this.getVelocity().Angle());
-	
-	if (this.getCurrentScript().tickFrequency == 1)
+
+	if (isClient())
 	{
-		this.getShape().SetGravityScale(0.0f);
-		this.SetLight(true);
-		this.SetLightRadius(24.0f);
-		this.SetLightColor(SColor(255, 211, 121, 224));
-		this.set_string("custom_explosion_sound", "OrbExplosion.ogg");
-		this.getSprite().SetZ(1000.0f);
-
-		//makes a stupid annoying sound
-		//ParticleZombieLightning( this.getPosition() );
-
-		// done post init
-		this.getCurrentScript().tickFrequency = 10;
-	}
-
-	{
-		u16 id = this.get_u16("target");
-		if (id != 0xffff && id != 0)
+		smoke(this, this.getOldPosition(), 1);
+		if (!this.hasTag("prep"))
 		{
-			CBlob@ b = getBlobByNetworkID(id);
-			if (b !is null)
-			{
-				Vec2f vel = this.getVelocity();
-				if (vel.LengthSquared() < 9.0f)
-				{
-					Vec2f dir = b.getPosition() - this.getPosition();
-					dir.Normalize();
-
-
-					this.setVelocity(vel + dir * 3.0f);
-				}
-			}
+			this.Tag("prep");
+			this.SetLight(true);
+			this.SetLightRadius(24.0f);
+			this.SetLightColor(SColor(255, 211, 121, 224));
+			this.set_string("custom_explosion_sound", "OrbExplosion.ogg");
+			this.getSprite().SetZ(1000.0f);
 		}
 	}
 }
@@ -73,7 +55,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return ( isEnemy(this, blob) || blob.hasTag("barrier") );
 }
 
-void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (solid || blob.hasTag("kill other spells"))
 	{
@@ -117,5 +99,34 @@ void sparks(Vec2f pos, int amount)
         p.timeout = 10 + _sprk_r.NextRanged(20);
         p.scale = 0.5f + _sprk_r.NextFloat();
         p.damping = 0.95f;
+    }
+}
+
+Random _smoke_r(0x10001);
+void smoke(CBlob@ this, Vec2f pos, int amount)
+{
+	for (int i = 0; i < amount; i++)
+    {
+        Vec2f vel = -this.getVelocity()/4+Vec2f(XORRandom(1.0f - (XORRandom(21)*0.1f)), 1.0f - (XORRandom(21)*0.1f));
+
+        CParticle@ p = ParticleAnimated( CFileMatcher("GenericSmoke2.png").getFirst(), 
+									pos, 
+									vel, 
+									float(XORRandom(360)), 
+									1.0f, 
+									2, 
+									0.0f, 
+									false );
+									
+        if(p is null) return; //bail if we stop getting particles
+
+    	p.fastcollision = true;
+        p.scale = 0.75f;
+		p.growth = -0.05f;
+		p.timeout = 30+XORRandom(6);
+        p.damping = 0.9f;
+		p.Z = 200.0f;
+		p.lighting = false;
+		p.setRenderStyle(RenderStyle::additive);
     }
 }
