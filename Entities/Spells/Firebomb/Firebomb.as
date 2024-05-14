@@ -122,7 +122,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 	if ( solid )
 	{
 		this.set_bool("bomb armed", true);
-		this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 1.0f + XORRandom(20)/10.0f);
+		this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 1.25f + XORRandom(20)/100.0f);
 	}
 }
 

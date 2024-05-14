@@ -1,4 +1,4 @@
-void Setup(SColor ImageColor, string test_name, bool is_fuzzy)
+void Setup(SColor ImageColor, string test_name, bool is_fuzzy, bool override_tex = false)
 {
 	//ensure texture for our use exists
 	if(!Texture::exists(test_name))
@@ -42,5 +42,16 @@ void Setup(SColor ImageColor, string test_name, bool is_fuzzy)
 				warn("texture update failed");
 			}
 		}
+	}
+	if (override_tex)
+	{
+		ImageData@ edit = Texture::data(test_name);
+		
+		for(int i = 0; i < edit.size(); i++)
+		{
+			edit[i] = ImageColor;
+		}
+
+		Texture::update(test_name, edit);
 	}
 }

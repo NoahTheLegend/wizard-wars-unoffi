@@ -4729,11 +4729,11 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		
 		case 1127025508: //mitten 
 		{
-			this.getSprite().PlaySound("MittenSpawn", 1.25f, 1.5f + XORRandom(21)*0.01f);
-
 			if (!isServer()){
            		return;
 			}
+
+			u8 state = 1;
 
 			switch(charge_state)
 			{
@@ -4744,35 +4744,45 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				case super_cast:
 				{
-					
+					state = 3;
 				}
 				break;
 				
 				default:return;
 			}
 
+			bool respawn = true;
 			Vec2f orbPos = thispos + Vec2f(0.0f,-32.0f);
 			if (player !is null)
 			{
 				CBlob@[] bs;
 				getBlobsByTag(player.getUsername(), bs);
-				if (bs.size() > 0)
+				for (u8 i = 0; i < bs.size(); i++)
 				{
-					CBlob@ mitten = bs[0];
-					if (mitten !is null)
+					CBlob@ mitten = bs[i];
+					if (mitten !is null && mitten.get_u8("state") == 0)
 					{
-						mitten.server_Die();
+						respawn = false;
+						mitten.set_u8("state", state);
+						mitten.set_Vec2f("aimpos", aimpos);
+						mitten.set_bool("force_fl", aimpos.x < this.getPosition().x);
+						mitten.server_SetTimeToDie(30);
+
+						mitten.getSprite().SetAnimation("transform");
 					}
 				}
 			}
 
-			CBlob@ orb = server_CreateBlob("mitten", this.getTeamNum(), aimpos);
-			if (orb !is null)
+			if (respawn)
 			{
-				orb.set_u16("caster", this.getNetworkID());
-				orb.IgnoreCollisionWhileOverlapped(this);
-				orb.SetDamageOwnerPlayer(this.getPlayer());
-				orb.setAngleDegrees(-(this.getAimPos()-orb.getPosition()).Angle());
+				CBlob@ orb = server_CreateBlob("mitten", this.getTeamNum(), aimpos);
+				if (orb !is null)
+				{
+					orb.set_u16("caster", this.getNetworkID());
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setAngleDegrees(-(this.getAimPos()-orb.getPosition()).Angle());
+				}
 			}
 		}
 		break;
