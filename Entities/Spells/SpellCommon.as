@@ -4787,6 +4787,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -1428802522://pogostick
+		{
+			if (this.hasScript("PogoStick.as"))
+			{
+				this.Tag("pogo_remove");
+			}
+
+			if (!this.hasScript("PogoStick.as"))
+			{
+				this.AddScript("PogoStick.as");
+			}
+		}
+		break;
+
 		default:
 		{
 			if (spell.type == SpellType::summoning)

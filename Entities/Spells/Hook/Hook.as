@@ -52,7 +52,7 @@ void onTick(CBlob@ this)
 				this.Tag("return");
 			}
 			owner.set_u8("dashCoolDown", 2);
-			owner.set_bool("dashing", true);
+			owner.set_bool("disable_dash", true);
 			owner.set_u32("teleport_disable", getGameTime()+2);
 
 			if ((this.getTickSinceCreated() > 10 && this.hasTag("returning") && !shape.isStatic() && this.getDistanceTo(owner) <= 24.0f)
@@ -234,7 +234,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 				this.setVelocity(Vec2f_zero);
 
 				blob.set_u8("dashCoolDown", 30);
-				blob.set_bool("dashing", true);
+				blob.set_bool("disable_dash", true);
 				blob.set_u32("teleport_disable", getGameTime()+30);
 
 				this.Tag("returning");

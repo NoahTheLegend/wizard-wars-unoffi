@@ -8,13 +8,13 @@ const f32 DASH_FORCE = 275.0f;//force applied
 void onInit( CBlob@ this )
 {
     this.set_u8( "dashCoolDown", 0 );
-    this.set_bool( "dashing", false );
+    this.set_bool( "disable_dash", false );
     this.getCurrentScript().removeIfTag = "dead";
 }
  
 void onTick( CBlob@ this )
 {
-    bool dashing = this.get_bool( "dashing" );
+    bool dashing = this.get_bool( "disable_dash" );
      
     Vec2f vel = this.getVelocity();
     const bool onground = this.isOnGround() || this.isOnLadder();
@@ -26,7 +26,7 @@ void onTick( CBlob@ this )
     {
         if ( down && ( left || right ) )
         {
-            this.set_bool( "dashing", true );
+            this.set_bool( "disable_dash", true );
             this.set_u8( "dashCoolDown", 0 );
 			
 			if (getNet().isClient())
@@ -64,6 +64,6 @@ void onTick( CBlob@ this )
         u8 dashCoolDown = this.get_u8( "dashCoolDown" );
         this.set_u8( "dashCoolDown", ( dashCoolDown + 1 ) );
         if ( ( onground && ( !down || ( !left && !right ) ) && dashCoolDown > DASH_COOLDOWN ) || dashCoolDown > DASH_COOLDOWN * 3 )
-            this.set_bool( "dashing", false );
+            this.set_bool( "disable_dash", false );
     }
 }

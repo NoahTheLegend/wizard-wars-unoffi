@@ -170,7 +170,11 @@ const bool firing = blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_acti
 	Vec2f shiny_offset = Vec2f( 12.0f, 0.0f );
 	shiny_offset.RotateBy( this.isFacingLeft() ?  -angle : (angle+180));
 
-	if (knocked > 0 || frozen)
+	if (blob.hasScript("PogoStick.as"))
+	{
+		this.SetAnimation("pogostick");
+	}
+	else if (knocked > 0 || frozen)
 	{
 		if (inair) {
 			this.SetAnimation("knocked_air");

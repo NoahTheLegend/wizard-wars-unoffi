@@ -26,23 +26,23 @@ namespace JesterParams
 		//Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
 		//	SpellType::other, 3, 40, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
-		Spell("jestergas", "Rejoicing Gas", 108, "Splash a dense gas to poison enemies.",
+		Spell("jestergas", "Rejoicing Gas", 108, "In misty shroud, foes gasp and wheeze, as dense gas spreads with sinister ease.",
 				SpellType::other, 0, 15, 0, 360.0f, true),
 				
-		Spell("teleport", "Teleport", 40, "Point to any visible position and teleport there.",
+		Spell("teleport", "Teleport", 40, "A swift command, a gesture fair, to unseen realms, teleport with flair.",
 				SpellType::other, 0, 6, 0, 250.0f, true),
 			
-		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
+		Spell("counter_spell", "Counter Spell", 16, "With arcane might, spells break and tear, summoned beasts tremble, in fear they stare.",
 				SpellType::other, 0, 10, 0, 64.0f, true),
 
-		Spell("flowerpad", "Flower Pad", 109, "Raise a soft bouncing flower.",
-				SpellType::other, 0, 30, 0, 128.0f),
+		Spell("flowerpad", "Flower Pad", 109, "From earth's embrace, a bloom does rise, bouncing softly, under clear skies.",
+				SpellType::other, 0, 30, 0, 128.0f, true),
 
-		Spell("mitten", "Enchanted Mitten", 110, "",
-				SpellType::other, 0, 10, 0, 218.0f),
+		Spell("mitten", "Enchanted Mitten", 110, "A mitten alive, fingers strong and bold, casting bullet hell, its power untold.",
+				SpellType::other, 0, 30, 0, 256.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 0, 1, 0, 0.0f),
+		Spell("pogostick", "Pogo Stick", 111, "A spring, a bounce, a leap so high, on pogo stick, touch the sky.",
+				SpellType::other, 0, 15, 0, 0.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 0, 1, 0, 0.0f),

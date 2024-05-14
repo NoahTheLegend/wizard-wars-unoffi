@@ -446,7 +446,7 @@ void onTick(CBlob@ this)
 			Vec2f thisVel = this.getVelocity();
 			this.set_u32("damageauratiming", gt);
 
-			this.set_bool("dashing", true); // disable dash
+			this.set_bool("disable_dash", true);
 			moveVars.walkFactor *= 0.85f;
 			moveVars.jumpFactor *= 0.85f;
 
