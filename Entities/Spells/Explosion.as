@@ -55,7 +55,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 
 	if (!this.exists("custom_explosion_sound"))
 	{
-		Sound::Play("Bomb.ogg", this.getPosition());
+		Sound::Play("Bomb.ogg", this.getPosition(), this.exists("explosion_pitch") ? this.get_f32("explosion_pitch") : 1.0f);
 	}
 	else
 	{

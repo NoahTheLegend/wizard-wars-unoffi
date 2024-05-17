@@ -44,8 +44,8 @@ namespace JesterParams
 		Spell("pogostick", "Pogo Stick", 111, "A spring, a bounce, a leap so high, on pogo stick, touch the sky.",
 				SpellType::other, 0, 15, 0, 0.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 0, 1, 0, 0.0f),
+		Spell("bouncybomb", "Gum Bomb", 113, "Bouncy gum bomb",
+				SpellType::other, 0, 15, 0, 16.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 0, 1, 0, 0.0f),

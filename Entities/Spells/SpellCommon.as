@@ -4801,6 +4801,51 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -649643723://bouncybomb
+		{
+			if (!isServer()){
+           		return;
+			}
+			f32 extraDamage = this.hasTag("extra_damage") ? 0.5f : 0.0f;
+			f32 orbDamage = 1.5f + extraDamage;
+			f32 orbspeed = 4;
+			f32 explode_radius = 24.0f;
+			f32 ttd = this.hasTag("extra_damage") ? 10.0f : 7.5f;
+
+			switch(charge_state)
+			{
+				case complete_cast:
+				break;
+				case super_cast:
+				{
+					orbspeed *= 1.5f;
+					explode_radius += 8.0f;
+					ttd += 2.5f;
+				}
+				break;
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob("bouncybomb");
+			if (orb !is null)
+			{
+				orb.set_f32("damage", orbDamage);
+				orb.IgnoreCollisionWhileOverlapped( this );
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
+				orb.server_setTeamNum( this.getTeamNum() );
+				orb.set_f32("explode_radius", explode_radius);
+				orb.server_SetTimeToDie(ttd);
+				orb.setPosition( orbPos );
+				orb.setVelocity( orbVel );
+			}
+		}
+		break;
+
 		default:
 		{
 			if (spell.type == SpellType::summoning)

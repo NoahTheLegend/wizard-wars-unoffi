@@ -328,7 +328,7 @@ void onDie(CBlob@ this)
 	if (isClient())
 	{
 		blast(this.getPosition(), 3+XORRandom(3), 4, true);
-		this.getSprite().PlaySound("8bit_disappear", 1.0f, 1.1f + XORRandom(16)*0.01f);
+		this.getSprite().PlaySound("8bit_disappear", 1.5f, 1.1f + XORRandom(16)*0.01f);
 	}
 	if (isServer() && this.get_u8("state") == 2)
 	{

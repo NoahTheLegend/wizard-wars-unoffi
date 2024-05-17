@@ -20,7 +20,7 @@ f32 getAimAngle(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	this.set_u32("teleport_disable", getGameTime()+5);
+	this.set_u32("teleport_disable", getGameTime()+3);
 
 	bool remove = this.hasTag("dead");
 	u32 timing = this.get_u32("faithglaivetiming");
