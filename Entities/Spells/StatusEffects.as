@@ -110,7 +110,7 @@ void onTick(CBlob@ this)
 		
 
 		//makeSmokeParticle(this, Vec2f(), "Smoke");
-		if ( slowed % 2 == 0 )
+		if (slowed % 2 == 0)
 		{
 			for (int i = 0; i < 1; i++)
 			{		
@@ -118,8 +118,8 @@ void onTick(CBlob@ this)
 				{
 					const f32 rad = 6.0f;
 					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-					CParticle@ p = ParticleAnimated( "MissileFire1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true );
-					if ( p !is null)
+					CParticle@ p = ParticleAnimated("MissileFire1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
+					if (p !is null)
 					{
 						p.bounce = 0;
     					p.fastcollision = true;
@@ -132,10 +132,57 @@ void onTick(CBlob@ this)
 			}
 		}
 		
-		if ( slowed == 0 )
+		if (slowed == 0)
 		{
 			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
 			this.Sync("slowed", true);
+		}
+	}
+
+	//CONFUSE
+	u16 confused = this.get_u16("confused");
+
+	if (confused > 0)
+	{
+		confused--;
+		this.set_u16("confused", confused);
+
+		if (confused % 7 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{		
+				if(getNet().isClient())
+				{
+					const f32 rad = 2.0f;
+					Vec2f random = Vec2f(XORRandom(256)-128, XORRandom(256)-128) * 0.015625f * rad;
+					f32 angle = 45.0f;
+
+					f32 pangle = angle-XORRandom(angle*2+1);
+					CParticle@ p = ParticleAnimated("Confuse1.png", this.getPosition()+random, Vec2f(0,-(2+XORRandom(21)*0.1f)).RotateBy(pangle), pangle, 1.0f, 3+XORRandom(2), 0.2f, true);
+					if ( p !is null)
+					{
+						p.bounce = 0;
+    					p.collides = false;
+						if (XORRandom(2) == 0)
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+
+						p.gravity = Vec2f_zero;
+						p.damping = 0.9f;
+						p.scale = 0.5f + XORRandom(26)*0.01f;
+						p.deadeffect = -1;
+						p.frame = XORRandom(4);
+						p.colour = SColor(255,220+XORRandom(35),25+XORRandom(50),100+XORRandom(50));
+						//p.setRenderStyle(RenderStyle::additive);
+					}
+				}
+			}
+		}
+		
+		if (confused == 0)
+		{
+			this.Sync("confused", true);
 		}
 	}
 

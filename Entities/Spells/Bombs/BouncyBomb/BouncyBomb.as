@@ -46,7 +46,7 @@ void onTick(CBlob@ this)
 		this.SetLight(true);
 		this.SetLightRadius(24.0f);
 		this.SetLightColor(SColor(255, 230, 195, 24));
-		this.getSprite().PlaySound("WizardShoot.ogg", 2.0f);
+		this.getSprite().PlaySound("BombCreate.ogg", 1.0f, 1.0f);
 	}
 
 	if (!isClient()) return;
@@ -221,7 +221,7 @@ void makeSmokeParticle(CBlob@ this, const Vec2f vel, const string filename = "Sm
 		}
 	}
 	{
-		CParticle@ p = ParticleAnimated("GenericBlast6.png", 
+		CParticle@ p = ParticleAnimated("GenericBlast5.png", 
 										this.getPosition(), 
 										vel, 
 										float(XORRandom(360)), 

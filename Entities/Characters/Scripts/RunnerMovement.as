@@ -27,8 +27,16 @@ void onTick(CMovement@ this)
 		HandleStuckAtTop(blob);
 	}
 
-	const bool left		= blob.isKeyPressed(key_left);
-	const bool right	= blob.isKeyPressed(key_right);
+	bool left		= blob.isKeyPressed(key_left);
+	bool right		= blob.isKeyPressed(key_right);
+
+	if (blob.exists("confused") && blob.get_u16("confused") > 0)
+	{
+		bool temp = left;
+		left = right;
+		right = temp;
+	}
+
 	const bool up		= blob.isKeyPressed(key_up);
 	const bool down		= blob.isKeyPressed(key_down);
 
@@ -836,13 +844,29 @@ bool checkForSolidMapBlob(CMap@ map, Vec2f pos, CBlob@ blob = null)
 				Vec2f runnerPos = blob.getPosition();
 				Vec2f platPos = _tempBlob.getPosition();
 
-				if (angle == 90.0f && runnerPos.x > platPos.x && (blob.isKeyPressed(key_left) || blob.wasKeyPressed(key_left)))
+				bool left = blob.isKeyPressed(key_left);
+				bool was_left = blob.wasKeyPressed(key_left);
+				bool right = blob.isKeyPressed(key_right);
+				bool was_right = blob.wasKeyPressed(key_right);
+
+				if (blob.exists("confused") && blob.get_u16("confused") > 0)
+				{
+					bool temp = left;
+					left = right;
+					right = temp;
+
+					temp = was_left;
+					was_left = was_right;
+					was_right = temp;
+				}
+
+				if (angle == 90.0f && runnerPos.x > platPos.x && (left || was_left))
 				{
 					// platform is facing right
 					return true;
 
 				}
-				else if(angle == 270.0f && runnerPos.x < platPos.x && (blob.isKeyPressed(key_right) || blob.wasKeyPressed(key_right)))
+				else if(angle == 270.0f && runnerPos.x < platPos.x && (right || was_right))
 				{
 					// platform is facing left
 					return true;

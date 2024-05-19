@@ -478,12 +478,12 @@ class PNGLoader
 	{
 		// sky
 		map.CreateSky(color_black, Vec2f(1.0f, 1.0f), 200, "Sprites/Back/cloud", 0);
-		map.CreateSkyGradient("Sprites/skygradient.png"); // override sky color with gradient
+		map.CreateSkyGradient("Sprites/skygradient.png");
 
 		// background
-		map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -18.0f), Vec2f(0.3f, 0.3f), color_white);
-		map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -5.0f), Vec2f(0.4f, 0.4f), color_white);
-		map.AddBackground("Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, 0.0f), Vec2f(0.6f, 0.6f), color_white);
+		map.AddBackground("back.png", Vec2f(0.0f, -8.0f), Vec2f(0.06f, 20.0f), color_white);
+		map.AddBackground("mid.png", Vec2f(0.0f,  -48.0f),  Vec2f(0.18f, 70.0f), color_white);
+		map.AddBackground("front.png", Vec2f(0.0f, -96.0f), Vec2f(0.3f, 160.0f), color_white);
 
 		// fade in
 		SetScreenFlash(255,   0,   0,   0);

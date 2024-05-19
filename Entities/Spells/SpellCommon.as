@@ -4793,7 +4793,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				this.Tag("pogo_remove");
 			}
-
 			if (!this.hasScript("PogoStick.as"))
 			{
 				this.AddScript("PogoStick.as");
@@ -5463,6 +5462,13 @@ void Slow( CBlob@ blob, u16 slowTime )
 		blob.Sync("slowed", true);
 		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
 	}
+}
+
+void Confuse( CBlob@ blob, u16 confuseTime )
+{	
+	blob.set_u16("confused", confuseTime);
+	blob.Sync("confused", true);
+	blob.getSprite().PlaySound("confuseOn.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
 }
 
 void ManaBurn( CBlob@ blob, u16 burnTime )

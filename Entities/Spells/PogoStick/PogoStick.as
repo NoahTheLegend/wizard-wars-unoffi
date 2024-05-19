@@ -1,5 +1,7 @@
 #include "RunnerCommon.as";
 
+const f32 jump_mod = 3;
+
 void onTick(CBlob@ this)
 {
 	if(this is null)
@@ -19,7 +21,7 @@ void onTick(CBlob@ this)
 		this.set_bool("pogoSetupDone",true);
         this.set_f32("lean", 90);
         this.set_u32("landed", 0);
-        this.AddForce(Vec2f(0, -this.getMass()*4));
+        this.AddForce(Vec2f(0, -this.getMass()*jump_mod));
 	}
 
     this.set_bool("disable_dash", true);
@@ -101,7 +103,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
         if (this.isOnWall() || this.isOnCeiling())
             return;
         
-        force.y *= Maths::Max(4, Maths::Clamp((this.isKeyPressed(key_down) ? 0.5f : 1.0f) * this.getOldVelocity().y, 0, 8));
+        force.y *= Maths::Clamp((this.isKeyPressed(key_down) ? 0.5f : 1.0f) * this.getOldVelocity().y, jump_mod, jump_mod*2);
         this.AddForce(force);
 
         if (isClient())

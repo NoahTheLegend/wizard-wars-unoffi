@@ -26,8 +26,17 @@ void onTick( CBlob@ this )
      
     Vec2f vel = this.getVelocity();
     const bool onground = this.isOnGround() || this.isOnLadder();
-    const bool left = this.isKeyPressed( key_left );
-    const bool right = this.isKeyPressed( key_right );
+
+    bool left		= this.isKeyPressed(key_left);
+	bool right		= this.isKeyPressed(key_right);
+
+	if (this.exists("confused") && this.get_u16("confused") > 0)
+	{
+		bool temp = left;
+		left = right;
+		right = temp;
+	}
+    
     const bool down = this.isKeyPressed( key_down );
  
     if ( !dashing )
