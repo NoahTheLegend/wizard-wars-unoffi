@@ -28,6 +28,7 @@ void onInit(CBlob@ this)
 	sprite.SetEmitSoundPaused(false);
 
 	this.server_SetTimeToDie(4);
+	this.set_u32("aliveTime", this.getTimeToDie());
 }
 
 void onTick(CBlob@ this)
@@ -40,6 +41,16 @@ void onTick(CBlob@ this)
 		this.SetLightRadius(24.0f);
 		this.SetLightColor(SColor(255, 230, 195, 24));
 		this.getSprite().PlaySound("BombCreate.ogg", 1.0f, 1.0f);
+	}
+
+	if (!isClient()) return;
+
+	if (this.exists("aliveTime"))
+	{
+		int tsc = this.getTickSinceCreated();
+		f32 ttdf = f32(tsc)/(this.get_u32("aliveTime")*30);
+		Vec2f offset = Vec2f(-10 + 5*ttdf, -11 + 11 * (ttdf > 0.75f ? (ttdf-0.75f) : 0));
+		sparks(this.getPosition() + this.getVelocity() + offset.RotateBy(this.get_f32("angle")), 2);
 	}
 }
 
@@ -234,4 +245,26 @@ bool isOwnerBlob(CBlob@ this, CBlob@ target)
 		return true;
 	}
 	return false;
+}
+
+Random _sprk_r(21342);
+void sparks(Vec2f pos, int amount)
+{
+	if (!getNet().isClient())
+		return;
+
+	for (int i = 0; i < amount; i++)
+    {
+        Vec2f vel(_sprk_r.NextFloat() * 1.0f, 0);
+        vel.RotateBy(_sprk_r.NextFloat() * 360.0f);
+
+        CParticle@ p = ParticlePixelUnlimited( pos, vel, SColor( 255, 255, 128+_sprk_r.NextRanged(128), _sprk_r.NextRanged(128)), true);
+        if(p is null) return; //bail if we stop getting particles
+
+    	p.fastcollision = true;
+        p.timeout = 10 + _sprk_r.NextRanged(10);
+        p.scale = 0.5f + _sprk_r.NextFloat();
+        p.damping = 0.85f;
+		p.gravity = Vec2f(0, -0.5f);
+    }
 }

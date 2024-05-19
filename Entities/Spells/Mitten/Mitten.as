@@ -55,7 +55,7 @@ void onTick( CBlob@ this )
 
 	if (caster.getPlayer() is null) return;
 	if (this.get_u8("state") == 0)
-		this.Tag(""+caster.getPlayer().getUsername());
+		this.Tag("mitten_"+caster.getPlayer().getUsername());
 
 	Vec2f pos = this.getPosition();
 	Vec2f cpos = caster.getPosition();

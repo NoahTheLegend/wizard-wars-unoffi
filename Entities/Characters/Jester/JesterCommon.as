@@ -27,7 +27,7 @@ namespace JesterParams
 		//	SpellType::other, 3, 40, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("jestergas", "Rejoicing Gas", 108, "In misty shroud, foes gasp and wheeze, as dense gas spreads with sinister ease.",
-				SpellType::other, 0, 15, 0, 360.0f, true),
+				SpellType::other, 0, 15, 0, 360.0f),
 				
 		Spell("teleport", "Teleport", 40, "A swift command, a gesture fair, to unseen realms, teleport with flair.",
 				SpellType::other, 0, 6, 0, 250.0f, true),
@@ -44,11 +44,11 @@ namespace JesterParams
 		Spell("pogostick", "Pogo Stick", 111, "A spring, a bounce, a leap so high, on pogo stick, touch the sky.",
 				SpellType::other, 0, 15, 0, 0.0f, true),
 
-		Spell("bouncybomb", "Gum Bomb", 113, "Bouncy gum bomb",
+		Spell("bouncybomb", "Gum Bomb", 113, "Very bouncy gum bomb which will explode on impact with foe",
 				SpellType::other, 0, 15, 0, 16.0f),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 0, 1, 0, 0.0f),
+		Spell("carddeck", "A deck of Cards", 114, "Six cards with different effects, overcharge will force them to orbit around caster",
+				SpellType::other, 0, 15, 0, 128.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

@@ -4606,11 +4606,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				case minimum_cast:
 				case medium_cast:
-				case complete_cast:
 				{
+					max_hits -= 2;
+					orbspeed *= 0.8f;
 				}
 				break;
-
+				case complete_cast:
+				break;
 				case super_cast:
 				{
 					orbDamage += 0.1f;
@@ -4756,7 +4758,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (player !is null)
 			{
 				CBlob@[] bs;
-				getBlobsByTag(player.getUsername(), bs);
+				getBlobsByTag("mitten_"+player.getUsername(), bs);
 				for (u8 i = 0; i < bs.size(); i++)
 				{
 					CBlob@ mitten = bs[i];
@@ -4764,7 +4766,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					{
 						respawn = false;
 						mitten.set_u8("state", state);
-						mitten.set_Vec2f("aimpos", aimpos);
+						Vec2f normalAimdir = aimpos-this.getPosition();
+						normalAimdir.Normalize();
+						mitten.set_Vec2f("aimpos", aimpos + normalAimdir*mitten.getRadius()/2);
 						mitten.set_bool("force_fl", aimpos.x < this.getPosition().x);
 						mitten.server_SetTimeToDie(30);
 
@@ -4805,6 +4809,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (!isServer()){
            		return;
 			}
+
 			f32 extraDamage = this.hasTag("extra_damage") ? 0.5f : 0.0f;
 			f32 orbDamage = 1.5f + extraDamage;
 			f32 orbspeed = 4;
@@ -4813,6 +4818,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			switch(charge_state)
 			{
+				case minimum_cast:
+				case medium_cast:
+				{
+					ttd -= 2.5f;
+					orbDamage -= 0.5f;
+				}
+				break;
 				case complete_cast:
 				break;
 				case super_cast:
@@ -4834,13 +4846,89 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (orb !is null)
 			{
 				orb.set_f32("damage", orbDamage);
-				orb.IgnoreCollisionWhileOverlapped( this );
-				orb.SetDamageOwnerPlayer( this.getPlayer() );
-				orb.server_setTeamNum( this.getTeamNum() );
+				orb.IgnoreCollisionWhileOverlapped(this);
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+				orb.server_setTeamNum(this.getTeamNum());
 				orb.set_f32("explode_radius", explode_radius);
 				orb.server_SetTimeToDie(ttd);
-				orb.setPosition( orbPos );
-				orb.setVelocity( orbVel );
+				orb.set_u32("aliveTime", ttd);
+				orb.Sync("aliveTime", true);
+				orb.setPosition(orbPos);
+				orb.setVelocity(orbVel);
+			}
+		}
+		break;
+
+		case -258027614://carddeck
+		{
+			if (!isServer()){
+           		return;
+			}
+
+			f32 orbspeed = 8;
+			int amount = 6;
+			f32 dmg = this.hasTag("extra_damage") ? 0.75f : 0.5f;
+			bool overcharge = false;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+				case complete_cast:
+				break;		
+				case super_cast:
+				{
+					orbspeed += 4;
+					dmg += 0.25f;
+					overcharge = true;
+				}
+				break;
+
+				default:return;
+			}
+
+			u8[] pool;
+			for (u8 i = 0; i < amount; i++)
+			{
+				pool.push_back(i);
+			}
+
+			string un = player.getUsername();
+			CBlob@[] cards;
+			getBlobsByTag("card_"+un, cards);
+			for (u8 i = 0; i < cards.size(); i++)
+			{
+				CBlob@ c = cards[i];
+				if (c is null) continue;
+
+				c.server_Die();
+			}
+
+			for (u8 i = 0; i < amount; i++)
+			{
+				CBlob@ orb = server_CreateBlob("card", this.getTeamNum(), aimpos);
+				if (orb !is null)
+				{
+					orb.set_f32("dmg", dmg);
+					orb.set_Vec2f("vel", Vec2f(orbspeed, 0));
+
+					orb.set_Vec2f("origin", aimpos);
+					orb.Sync("origin", true);
+					u8 rnd = XORRandom(pool.size());
+					orb.set_u8("index", i);
+					orb.Sync("index", true);
+					orb.set_u8("type", pool[rnd]);
+					orb.Sync("type", true);
+					pool.erase(rnd);
+					orb.Tag("card_"+un);
+					orb.Sync("card_"+un, true);
+					orb.Tag("overcharge");
+					orb.Sync("overcharge", true);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+				}
 			}
 		}
 		break;

@@ -5,7 +5,7 @@ const float MAX_ROTATION_SPEED = 60.0f;
 
 void onInit(CBlob@ this)
 {
-	f32 angle = (this.getNetworkID() * 977) % 360;
+	f32 angle = 0;
 	this.set_f32("angle", angle);
 	this.set_f32("old_angle", angle);
 
