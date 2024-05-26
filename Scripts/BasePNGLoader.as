@@ -482,8 +482,8 @@ class PNGLoader
 
 		// background
 		map.AddBackground("back.png", Vec2f(0.0f, -8.0f), Vec2f(0.06f, 20.0f), color_white);
-		map.AddBackground("mid.png", Vec2f(0.0f,  -56.0f),  Vec2f(0.18f, 70.0f), color_white);
-		map.AddBackground("front.png", Vec2f(0.0f, -96.0f), Vec2f(0.3f, 160.0f), color_white);
+		map.AddBackground("mid.png", Vec2f(0.0f,  -64.0f),  Vec2f(0.18f, 70.0f), color_white);
+		map.AddBackground("front.png", Vec2f(0.0f, -104.0f), Vec2f(0.3f, 160.0f), color_white);
 
 		// fade in
 		SetScreenFlash(255,   0,   0,   0);

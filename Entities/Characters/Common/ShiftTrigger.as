@@ -1,5 +1,5 @@
 #include "EntropistCommon.as"
-#include "SpellCommon.as"
+#include "SpellUtils.as";
 #include "MagicCommon.as"
 
 void onInit( CBlob@ this )

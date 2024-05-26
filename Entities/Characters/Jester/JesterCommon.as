@@ -36,7 +36,7 @@ namespace JesterParams
 				SpellType::other, 0, 10, 0, 64.0f, true),
 
 		Spell("flowerpad", "Flower Pad", 109, "From earth's embrace, a bloom does rise, bouncing softly, under clear skies.",
-				SpellType::other, 0, 30, 0, 128.0f, true),
+				SpellType::other, 0, 30, 0, 128.0f),
 
 		Spell("mitten", "Enchanted Mitten", 110, "A mitten alive, fingers strong and bold, casting bullet hell, its power untold.",
 				SpellType::other, 0, 30, 0, 256.0f, true),
@@ -47,14 +47,14 @@ namespace JesterParams
 		Spell("bouncybomb", "Gum Bomb", 113, "Very bouncy gum bomb which will explode on impact with foe",
 				SpellType::other, 0, 15, 0, 16.0f),
 
-		Spell("carddeck", "A deck of Cards", 114, "Six cards with different effects, overcharge will force them to orbit around caster",
+		Spell("carddeck", "Jester Deck", 114, "Six cards with different effects, overcharge will force them to orbit around caster",
 				SpellType::other, 0, 15, 0, 128.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("airhorn", "Air Horn", 115, "A huge blow of air dealing moderate damage to enemies in front.",
+				SpellType::other, 0, 15, 0, 64.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("baseballbat", "Bat", 116, "Bozo eraser.",
+				SpellType::other, 0, 15, 0, 180.0f),
 		
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

@@ -28,6 +28,7 @@ void onInit( CBlob@ this )
 	this.set_f32("gib health", -3.0f);
 	this.set_Vec2f("spell blocked pos", Vec2f(0.0f, 0.0f));
 	this.set_bool("casting", false);
+	this.set_u32("horning", 0);
 	
 	this.Tag("player");
 	this.Tag("flesh");
@@ -45,6 +46,7 @@ void onInit( CBlob@ this )
 	this.getShape().SetRotationsAllowed(false);
     this.addCommandID("freeze");
     this.addCommandID("spell");
+	this.addCommandID("airhorn");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
     AddIconToken( "$Skeleton$", "SpellIcons.png", Vec2f(16,16), 0 );
@@ -412,6 +414,37 @@ void onTick( CBlob@ this )
 
 	if (!getNet().isClient()) return;
 
+	if (this.get_u32("horning") >= getGameTime())
+	{
+		this.getSprite().PlaySound("airhorn.ogg", 0.75f, 1.85f+XORRandom(31)*0.01f);
+
+		f32 max_angle = 50.0f;
+		for (u8 i = 0; i < (v_fastrender ? 3 : 6); i++)
+		{
+			Vec2f vel = Vec2f(4.0f, 0).RotateBy(this.get_f32("horn_angle") + (XORRandom(max_angle+1)-max_angle/2));
+			CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke2.png").getFirst(), 
+									this.getPosition(), 
+									vel + this.getVelocity()/4, 
+									float(XORRandom(360)), 
+									0.8f+XORRandom(51)*0.01f, 
+									2, 
+									0.0f, 
+									false );
+									
+       		if(p is null) continue; //bail if we stop getting particles
+
+    		p.diesoncollide = true;
+			p.collides = true;
+			p.Z = 50.0f;
+			p.damping = 0.985f+XORRandom(16)*0.01f;
+			p.lighting = false;
+			p.setRenderStyle(RenderStyle::additive);
+			p.deadeffect = -1;
+		}
+	}
+	else
+		this.set_f32("horn_angle", 0);
+
 	if (this.isInInventory()) return;
 
     ManageSpell( this, jester, playerPrefsInfo, moveVars );
@@ -448,6 +481,34 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		if (b is null) return;
 
 		Freeze(b, 2.0f*power);
+	}
+	else if (cmd == this.getCommandID("airhorn"))
+	{
+		f32 angle = params.read_f32();
+		f32 power = params.read_f32();
+
+		if (power < -100.0f || power > 100.0f)
+			return;
+
+		this.getSprite().PlaySound("gasleak.ogg", 1.0f, 1.65f+XORRandom(21)*0.01f);
+
+		while(!params.isBufferEnd())
+		{
+			u16 id;
+			f32 len;
+			if (!params.saferead_u16(id)) continue;
+			if (!params.saferead_f32(len)) continue;
+			
+			CBlob@ b = getBlobByNetworkID(id);
+			if (b is null) continue;
+
+			f32 falloff = 1.0f-((len-32.0f)/128.0f);
+
+			b.AddForce(Vec2f(b.getMass() * power * falloff, 0).RotateBy(angle));
+		}
+
+		this.set_u32("horning", getGameTime()+5);
+		this.set_f32("horn_angle", angle);
 	}
 }
 

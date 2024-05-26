@@ -3,7 +3,7 @@
 
 #include "AnimalConsts.as";
 #include "FireCommon.as"
-#include "SpellCommon.as"
+#include "SpellUtils.as";
 
 const u8 DEFAULT_PERSONALITY = AGGRO_BIT;
 const s16 MAD_TIME = 600;

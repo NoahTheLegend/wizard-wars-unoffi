@@ -1,6 +1,6 @@
 #include "Hitters.as";       
 #include "LimitedAttacks.as";
-#include "SpellCommon.as";
+#include "SpellUtils.as";
 #include "TextureCreation.as";
 #include "ShieldCommon.as";
 

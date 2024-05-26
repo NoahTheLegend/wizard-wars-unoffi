@@ -4,6 +4,7 @@ void onInit(CBlob@ this)
     this.set_u8("despelled",0);
     this.set_s32("aliveTime",10);
     this.Tag("circle");
+    this.Tag("multi_despell");
 }
 
 bool canBePickedUp( CBlob@ this, CBlob@ byBlob )

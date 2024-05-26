@@ -1,5 +1,6 @@
 #include "Hitters.as";	   
 #include "LimitedAttacks.as";
+#include "SpellUtils.as";
 #include "SpellCommon.as";
 
 const int LIFETIME = 4;

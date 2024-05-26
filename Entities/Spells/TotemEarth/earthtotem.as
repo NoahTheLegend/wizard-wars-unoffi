@@ -11,6 +11,7 @@ void onInit(CBlob@ this)
     this.set_u8("despelled", 0);
     this.set_u16("fire_delay", 120);
     this.set_f32("max_dist", 64.0f);
+    this.Tag("multi_despell");
 
     this.Tag("exploding");
     this.set_string("custom_explosion_sound", "OrbExplosion.ogg");

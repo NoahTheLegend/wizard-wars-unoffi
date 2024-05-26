@@ -1,4 +1,4 @@
-#include "SpellCommon.as";
+#include "SpellUtils.as";
 
 const f32 radius = 8*10;
 

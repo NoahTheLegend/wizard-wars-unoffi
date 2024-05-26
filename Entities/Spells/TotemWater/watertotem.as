@@ -12,6 +12,7 @@ void onInit(CBlob@ this)
     this.Tag("totem");
     this.Tag("cantparry");
     this.set_u8("despelled", 0);
+    this.Tag("multi_despell");
     this.set_u8("spheres", 1);
     this.set_u32("heal_delay", getGameTime()+heal_rate);
     this.set_u16("charge_delay", 180);

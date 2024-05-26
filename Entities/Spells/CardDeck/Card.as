@@ -1,8 +1,13 @@
 #include "Hitters.as";
 #include "ArcherCommon.as";
+#include "SpellUtils.as";
+#include "KnockedCommon.as";
 
 void onInit(CBlob@ this)
 {
+	this.addCommandID("switch_owner_pos");
+	this.addCommandID("set_knocked");
+
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;
@@ -18,13 +23,14 @@ void onInit(CBlob@ this)
 	this.set_Vec2f("origin", Vec2f_zero);
 	this.set_u32("pack_time", 0);
 	this.set_u32("unpack_time", 0);
+	this.set_u32("disabled", 0);
+	this.set_u8("collided", 0);
 
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
-    this.server_SetTimeToDie(30);
 
 	this.Tag("hidden");
 	this.getSprite().ScaleBy(Vec2f(0.75f, 0.75f));
-	this.getSprite().SetRelativeZ(50.0f);
+	this.getSprite().SetRelativeZ(510.0f);
 
 	this.set_u8("state", 0);
 }
@@ -39,7 +45,12 @@ const u8 unfold_timing = cards*unfold_step;
 const f32 lean_mod = 5;
 const u8 show_time = 45;
 const u8 unpack_delay = 10;
-const f32 spin_speed = 10;
+const f32 spin_speed_base = 10;
+const u8 shoot_delay = 5;
+// effects
+const u8 knock_time = 45;
+const f32 heal_amount = 1.5f;
+const u8 max_ricochets = 3;
 
 void onTick(CBlob@ this)
 {
@@ -54,8 +65,24 @@ void onTick(CBlob@ this)
 	u32 tsc = this.getTickSinceCreated();
 	u8 side_index = index % (cards/2);
 	bool hidden = this.hasTag("hidden");
+	f32 spin_speed = spin_speed_base;
+	f32 lerp = 0.25f;
+
+	if (isClient())
+	{
+		borderParticles(this);
+	}
 
 	CPlayer@ damage_owner = this.getDamageOwnerPlayer();
+	bool follow = false;
+	if (this.hasTag("overcharge") && damage_owner !is null
+		&& damage_owner.getBlob() !is null)
+	{
+		follow = true;
+		origin = damage_owner.getBlob().getPosition();
+		//spin_speed *= 1.5f;
+		lerp = 0.33f;
+	}
 
 	if (state != 3)
 	{
@@ -65,7 +92,7 @@ void onTick(CBlob@ this)
 			if (tsc > timing)
 			{
 				f32 mtsc = f32(Maths::Min(unfold_maxtime - side_index * unfold_step, tsc-timing));
-				this.setPosition(Vec2f_lerp(pos, origin + Vec2f(left * Maths::Sin(mtsc/unfold_decel) * unfold_dist.x, Maths::Cos(mtsc/unfold_decel) * unfold_dist.y), 0.25f));
+				this.setPosition(Vec2f_lerp(pos, origin + Vec2f(left * Maths::Sin(mtsc/unfold_decel) * unfold_dist.x, Maths::Cos(mtsc/unfold_decel) * unfold_dist.y), lerp));
 
 				if (tsc-timing == unfold_timing-1)
 				{
@@ -88,7 +115,7 @@ void onTick(CBlob@ this)
 			if (diff > unfold_step * index + show_time)
 			{
 				Vec2f tpos = hidden ? origin : origin + Vec2f(0, unfold_dist.y);
-				bool in_range = (pos - tpos).Length() <= 1.0f;
+				bool in_range = (pos - tpos).Length() <= (follow ? 12.0f : 4.0f);
 				if (in_range && !this.hasTag("hidden"))
 				{
 					this.Tag("hidden");
@@ -109,6 +136,13 @@ void onTick(CBlob@ this)
 		{
 			if (damage_owner !is null)
 			{
+				CBlob@ owner = damage_owner.getBlob();
+				if (owner is null || owner.hasTag("dead"))
+				{
+					this.server_Die();
+					return;
+				}
+
 				u32 unpack_time = this.get_u32("unpack_time");
 				int diff = getGameTime() - unpack_time;
 
@@ -133,17 +167,21 @@ void onTick(CBlob@ this)
 					}
 				}
 				
-				bool ready = diff > unfold_total_time_per_card * cards + unpack_delay;
+				bool ready = diff > unfold_total_time_per_card * cards + unpack_delay || follow;
 				if (bigger_than == 0)
 				{
-					if (ready && (origin-pos).Length() <= 1.0f)
+					Vec2f offset = follow ? Vec2f(0, Maths::Abs(unfold_dist.y) + owner.getRadius()) : Vec2f_zero;
+					
+					if (ready && (((origin-offset)-pos).Length() <= 4.0f || follow))
 					{
 						if (this.hasTag("hidden"))
+						{
 							smoke(this.getPosition(), 1);
-						this.Untag("hidden");
+							this.Untag("hidden");
+							this.set_u32("disabled", getGameTime() + shoot_delay);
+						}
 
-						CBlob@ owner = damage_owner.getBlob();
-						if (owner !is null && owner.get_bool("shifting"))
+						if (owner.get_bool("shifting") && this.get_u32("disabled") < getGameTime())
 						{
 							if (isServer())
 								this.set_Vec2f("dir", owner.getAimPos() - pos);
@@ -153,7 +191,7 @@ void onTick(CBlob@ this)
 						}
 					}
 
-					this.setPosition(Vec2f_lerp(pos, origin, 0.25f));
+					this.setPosition(Vec2f_lerp(pos, origin - offset, lerp));
 				}
 				else
 				{
@@ -163,13 +201,14 @@ void onTick(CBlob@ this)
 						this.setPosition(Vec2f_lerp(pos, origin +
 							Vec2f(0, unfold_dist.y).RotateBy(
 								360/Maths::Clamp(bc.size()-1-launched, 1, cards)
-									* bigger_than + ((getGameTime()*spin_speed)%360)), 0.25f));
+									* bigger_than + ((getGameTime()*spin_speed)%360)), lerp));
 					}
 				}
 			}
 		}
 
-		this.setAngleDegrees(((this.getPosition()-this.getOldPosition()).x * lean_mod) % 360.0f);
+		f32 angle = Maths::Clamp(((this.getPosition()-this.getOldPosition()).x * lean_mod) % 360.0f, -45, 45);
+		this.setAngleDegrees(angle);
 	}
 	else
 	{
@@ -185,7 +224,6 @@ void onTick(CBlob@ this)
 			{
 				Vec2f dir = this.get_Vec2f("dir");
 				this.setVelocity(this.get_Vec2f("vel").RotateBy(-dir.Angle()));
-				this.server_SetTimeToDie(10);
 			}
 		}
 
@@ -228,25 +266,6 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 	);
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{
-	if (isServer())
-	{
-		if (solid && blob is null)
-		{
-			this.server_Die();
-		}
-	}
-
-	if (blob !is null && isEnemy(this, blob))
-	{
-		f32 dmg = this.get_f32("dmg");
-		if (isServer())
-			this.server_Hit(blob, this.getPosition(), Vec2f_zero, dmg, Hitters::arrow, false);
-		// playsoundhere
-	}
-}
-
 void onDie(CBlob@ this)
 {
 	if (!isClient()) return;
@@ -280,12 +299,192 @@ void smoke(Vec2f pos, int amount)
     }
 }
 
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
+{
+	if (this.get_u8("state") != 3) return;
+	u8 type = this.get_u8("type");
+
+	if (isServer())
+	{
+		if (solid && blob is null)
+		{
+			if (type != effects::ricochet || this.get_u8("collided") > max_ricochets)
+				this.server_Die();
+			else
+				this.add_u8("collided", 1);
+		}
+	}
+
+	if (blob !is null && isEnemy(this, blob))
+	{
+		f32 dmg = this.get_f32("dmg");
+		ApplyEffect(this, blob, type);
+
+		if (isServer())
+			this.server_Hit(blob, this.getPosition(), Vec2f_zero, dmg, type == effects::ignite ? Hitters::fire : Hitters::arrow, false);
+		this.IgnoreCollisionWhileOverlapped(blob);
+		// playsoundhere
+
+		if (type != effects::penetration)
+		{
+			this.server_Die();
+			return;
+		}
+	}
+}
+
 enum effects
 {
-	switch_pos = 0,
-	ignite,
+	heal = 0,
 	stun,
-	ricochet,
 	penetration,
-	speed
+	ignite,
+	ricochet,
+	switch_pos
+}
+
+bool ApplyEffect(CBlob@ this, CBlob@ blob, u8 effect)
+{
+	if (blob is null)
+		return false;
+	bool applied = false;
+
+	CPlayer@ owner_player = this.getDamageOwnerPlayer();
+	if (owner_player is null || owner_player.getBlob() is null)
+		return false;
+
+	CBlob@ owner = owner_player.getBlob();
+	switch (effect)
+	{
+		case effects::heal:
+		{
+			applied = true;
+			Heal(blob, heal_amount);
+		}
+		break;
+		case effects::stun:
+		{
+			applied = true;
+			if (isServer())
+			{
+				CBitStream params;
+				params.write_u16(blob.getNetworkID());
+				this.SendCommand(this.getCommandID("set_knocked"), params);
+			}
+		}
+		break;
+		case effects::switch_pos:
+		{
+			applied = true;
+			if (isServer())
+			{
+				CBitStream params;
+				params.write_u16(owner.getNetworkID());
+				params.write_u16(blob.getNetworkID());
+				this.SendCommand(this.getCommandID("switch_owner_pos"), params);
+			}
+		}
+
+		default: return false;
+	}
+
+	return applied;
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
+{
+	if (cmd == this.getCommandID("switch_owner_pos"))
+	{
+		u16 id = params.read_u16();
+		u16 other_id = params.read_u16();
+
+		CBlob@ owner = getBlobByNetworkID(id);
+		CBlob@ other = getBlobByNetworkID(other_id);
+
+		if (owner.getPlayer() is null || other.getPlayer() is null)
+			return;
+
+		if (owner !is null && other !is null)
+		{
+			Vec2f temp = owner.getPosition();
+			owner.setPosition(other.getPosition());
+			owner.IgnoreCollisionWhileOverlapped(other);
+
+			other.setPosition(temp);
+			other.IgnoreCollisionWhileOverlapped(owner);
+
+			owner.getSprite().PlaySound("Teleport.ogg", 0.9f, 1.1f);
+			other.getSprite().PlaySound("Teleport.ogg", 0.9f, 1.1f);
+		}
+	}
+	else if (cmd == this.getCommandID("set_knocked"))
+	{
+		u16 id = params.read_u16();
+		CBlob@ blob = getBlobByNetworkID(id);
+		if (blob !is null && blob.hasTag("player"))
+		{
+			setKnocked(blob, knock_time);
+		}
+	}
+}
+
+const u8 max_particles = 25;
+
+void borderParticles(CBlob@ this)
+{
+    f32 vertical_max = 12.0f;
+    f32 horizontal_max = 8.0f;
+    f32 vertical_step = vertical_max / (max_particles * 0.25f);
+    f32 horizontal_step = horizontal_max / (max_particles * 0.25f);
+
+    Vec2f thisPos = this.getOldPosition();
+    Vec2f startPos = Vec2f(-horizontal_max / 2, -vertical_max / 2);
+
+    for (u8 i = 0; i < max_particles; i++)
+    {
+        f32 position_on_perimeter = float(i) / float(max_particles);
+        f32 perimeter = 2.0f * (vertical_max + horizontal_max);
+        f32 distance = position_on_perimeter * perimeter;
+
+        Vec2f pos;
+		bool up = false;
+		bool right = false;
+		bool down = false;
+		bool left = false;
+
+        if (distance <= horizontal_max)
+        {
+            pos = Vec2f(startPos.x + distance, startPos.y);
+			up = true;
+        }
+        else if (distance <= horizontal_max + vertical_max)
+        {
+            pos = Vec2f(startPos.x + horizontal_max, startPos.y + (distance - horizontal_max));
+			right = true;
+        }
+        else if (distance <= 2 * horizontal_max + vertical_max)
+        {
+            pos = Vec2f(startPos.x + horizontal_max - (distance - horizontal_max - vertical_max), startPos.y + vertical_max);
+			down = true;
+		}
+        else
+        {
+            pos = Vec2f(startPos.x, startPos.y + vertical_max - (distance - 2 * horizontal_max - vertical_max));
+			left = true;
+        }
+
+		f32 wave = Maths::Sin(getGameTime()*0.1f);
+		int rnd = XORRandom(Maths::Abs(wave)*(2+(wave < 0 ? i%5 : (4-(i%5)))));
+		//Vec2f rnd_pos = up || down ? Vec2f(0, up ? -rnd : rnd) : Vec2f(right ? rnd : -rnd, 0);
+		Vec2f rnd_pos = !this.hasTag("hidden") && (right || left) ? Vec2f(right ? rnd : -rnd, 0) : Vec2f_zero;
+
+        CParticle@ p = ParticlePixelUnlimited(thisPos+(rnd_pos+pos).RotateBy(this.getAngleDegrees()), Vec2f_zero, this.getTeamNum() == 0 ? SColor(255,35,70,230) : SColor(255,185,10,15), true);
+        if (p is null) continue;
+
+        p.collides = false;
+        p.Z = 505.0f;
+        p.setRenderStyle(RenderStyle::additive);
+        p.gravity = Vec2f_zero;
+        p.timeout = 1;
+    }
 }
