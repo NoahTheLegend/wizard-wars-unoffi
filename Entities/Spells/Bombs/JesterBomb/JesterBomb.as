@@ -6,6 +6,7 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.Tag("projectile");
 	this.Tag("exploding"); 
+	this.Tag("die_in_divine_shield");
 	this.set_f32("damage", 0.0f);
 
 	this.set_f32("explosive_radius", 0.0f);
@@ -58,17 +59,12 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
 	(
-		target.getTeamNum() != this.getTeamNum()
-		&&
+		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") )
+		||
 		(
-			target.hasTag("standingup")
-			||
-			target.hasTag("kill other spells") 
-			||
-			(
-				target.hasTag("flesh") 
-				&& !target.hasTag("dead")
-			)
+			target.hasTag("flesh") 
+			&& !target.hasTag("dead") 
+			&& target.getTeamNum() != this.getTeamNum() 
 		)
 	);
 }
@@ -142,7 +138,7 @@ void onDie(CBlob@ this)
 		CBlob@[] aoeBlobs;
 
 		map.getBlobsInRadius(pos, this.get_f32("explode_radius"), @aoeBlobs);
-		for ( u8 i = 0; i < aoeBlobs.length(); i++ )
+		for (u16 i = 0; i < aoeBlobs.length(); i++)
 		{
 			CBlob@ b = aoeBlobs[i]; //standard null check for blobs in radius
 			if (b is null)
@@ -150,7 +146,7 @@ void onDie(CBlob@ this)
 
 			if (!isEnemy(this, b))
 			{continue;}
-
+			
 			if (!map.rayCastSolidNoBlobs(pos, b.getPosition()))
 			{
 				this.server_Hit(b, pos, Vec2f_zero, this.get_f32("damage"), Hitters::explosion, isOwnerBlob(this, b));

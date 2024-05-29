@@ -49,7 +49,7 @@ const f32 spin_speed_base = 10;
 const u8 shoot_delay = 5;
 // effects
 const u8 knock_time = 45;
-const f32 heal_amount = 1.5f;
+const f32 heal_amount = 0.5f; // 5 hp
 const u8 max_ricochets = 3;
 
 void onTick(CBlob@ this)
@@ -262,7 +262,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 					)
 			)
 		)
-		&& target.getTeamNum() != this.getTeamNum() 
+		&& (target.getTeamNum() != this.getTeamNum() || this.get_u8("type") == effects::heal)
 	);
 }
 
@@ -301,6 +301,7 @@ void smoke(Vec2f pos, int amount)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
+	if (this.hasTag("dead")) return;
 	if (this.get_u8("state") != 3) return;
 	u8 type = this.get_u8("type");
 
@@ -328,6 +329,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		if (type != effects::penetration)
 		{
 			this.server_Die();
+			this.Tag("dead");
 			return;
 		}
 	}

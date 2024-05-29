@@ -45,19 +45,19 @@ namespace JesterParams
 				SpellType::other, 0, 15, 0, 0.0f, true),
 
 		Spell("bouncybomb", "Gum Bomb", 113, "Very bouncy gum bomb which will explode on impact with foe",
-				SpellType::other, 0, 15, 0, 16.0f),
+				SpellType::other, 0, 15, 0, 32.0f),
 
 		Spell("carddeck", "Jester Deck", 114, "Six cards with different effects, overcharge will force them to orbit around caster",
-				SpellType::other, 0, 15, 0, 128.0f, true),
+				SpellType::other, 0, 15, 0, 180.0f, true),
 
 		Spell("airhorn", "Air Horn", 115, "A huge blow of air dealing moderate damage to enemies in front.",
 				SpellType::other, 0, 15, 0, 64.0f, true),
 
 		Spell("baseballbat", "Bat", 116, "Bozo eraser.",
-				SpellType::other, 0, 15, 0, 180.0f),
+				SpellType::other, 0, 15, 0, 256.0f),
 		
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("tophat", "Obsessed Tophat", 117, "Obsessed magic tophat that drops bombs and heals",
+				SpellType::other, 0, 15, 0, 416.0f),
 			 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

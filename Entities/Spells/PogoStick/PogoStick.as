@@ -172,6 +172,7 @@ void smoke(Vec2f pos, int amount)
         p.damping = 0.8f;
 		p.Z = 200.0f;
 		p.lighting = false;
+        p.deadeffect = -1;
 		p.setRenderStyle(RenderStyle::additive);
     }
 }

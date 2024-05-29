@@ -6,6 +6,7 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.Tag("projectile");
 	this.Tag("exploding"); 
+	this.Tag("die_in_divine_shield");
 	this.set_f32("damage", 0.0f);
 
 	this.set_f32("explosive_radius", 0.0f);
@@ -63,10 +64,10 @@ void onTick(CBlob@ this)
 	}
 
 	int rnd = XORRandom(56);
-	f32 count = 10;
+	f32 count = 5;
 	for (u8 i = 0; i < count; i++)
 	{
-		Vec2f offset = i == 0 ? Vec2f_zero : Vec2f(0.5f, 0).RotateBy(i*(360.0f/count));
+		Vec2f offset = i == 0 ? Vec2f_zero : Vec2f(0.5f, 0).RotateBy(i*(360.0f/(count-1)));
 		CParticle@ p = ParticlePixelUnlimited(this.getOldPosition() + offset, Vec2f_zero, SColor(255,200+rnd,200+rnd,200+rnd), true);
     	if(p is null) return;
 
@@ -74,7 +75,6 @@ void onTick(CBlob@ this)
     	p.timeout = 30;
     	p.Z = -20.0f;
     	p.gravity = Vec2f_zero;
-		p.setRenderStyle(RenderStyle::light);
 	}
 
 	CSpriteLayer@ l = sprite.getSpriteLayer("layer");
@@ -86,21 +86,16 @@ void onTick(CBlob@ this)
 	l.SetRelativeZ(-10.0f);
 }
 
-bool isEnemy( CBlob@ this, CBlob@ target )
+bool isEnemy(CBlob@ this, CBlob@ target)
 {
 	return 
 	(
-		target.getTeamNum() != this.getTeamNum()
-		&&
+		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") )
+		||
 		(
-			target.hasTag("standingup")
-			||
-			target.hasTag("kill other spells") 
-			||
-			(
-				target.hasTag("flesh") 
-				&& !target.hasTag("dead")
-			)
+			target.hasTag("flesh") 
+			&& !target.hasTag("dead") 
+			&& target.getTeamNum() != this.getTeamNum() 
 		)
 	);
 }
@@ -150,7 +145,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	{
 		if (blob is null)
 		{
-			if (isServer() && (this.hasTag("die_on_collide") || this.getVelocity().Length() > 50.0f))
+			if (isServer() && this.getVelocity().Length() > 50.0f)
 				this.server_Die();
 			else
 				this.AddForce(Vec2f(this.getMass(), 0).RotateBy(-normal.Angle()));
@@ -185,7 +180,7 @@ void onDie(CBlob@ this)
 		CBlob@[] aoeBlobs;
 
 		map.getBlobsInRadius(pos, this.get_f32("explode_radius"), @aoeBlobs);
-		for ( u8 i = 0; i < aoeBlobs.length(); i++ )
+		for (u16 i = 0; i < aoeBlobs.length(); i++)
 		{
 			CBlob@ b = aoeBlobs[i]; //standard null check for blobs in radius
 			if (b is null)

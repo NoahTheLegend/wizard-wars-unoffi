@@ -4867,7 +4867,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			int amount = 6;
 			f32 dmg = this.hasTag("extra_damage") ? 0.75f : 0.5f;
 			bool overcharge = false;
-			f32 ttd = this.hasTag("extra_damage") ? 30.0f : 25.0f;
+			f32 ttd = this.hasTag("extra_damage") ? 45.0f : 30.0f;
 
 			switch(charge_state)
 			{
@@ -4880,7 +4880,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					orbspeed += 2.5f;
 					overcharge = true;
-					ttd += 10.0f;
+					ttd += 15.0f;
 				}
 				break;
 
@@ -4944,7 +4944,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 
 			f32 dmg = this.hasTag("extra_damage") ? 1.5f : 1.0f;
-			f32 power = 6.0f;
+			f32 power = 7.0f;
 			f32 angle = 60.0f;
 			f32 dist = 64.0f;
 
@@ -5010,6 +5010,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
                 if (!isServer())
 				{return;}
+
+				f32 ttd = 15.0f;
 				
 				f32 orbDamage = 2.0f;
 				bool overcharge = false;
@@ -5017,6 +5019,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (this.hasTag("extra_damage"))
 				{
 					orbDamage += 1.0f;
+					ttd += 10.0f;
 				}
 
 				switch(charge_state)
@@ -5028,6 +5031,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					
 					case super_cast:
 					{
+						ttd += 10.0f;
 						orbDamage /= 3;
 						overcharge = true;
 					}
@@ -5054,6 +5058,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.getShape().SetGravityScale(0);
 					orb.server_setTeamNum(this.getTeamNum());
 					orb.setPosition(pos);
+					orb.server_SetTimeToDie(ttd);
 				}
 			}
             else//Can't place this under the map
@@ -5066,6 +5071,45 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
             }
+		}
+		break;
+
+		case -1714910231://tophat
+		{
+			this.getSprite().PlaySound("ObsessedSpellCreate.ogg", 1.0f, 1.0f+XORRandom(11)*0.01f);
+
+			if (!isServer()) return;
+
+			f32 ttd = 15.0f;
+			
+			CBlob@ orb = server_CreateBlob("tophat", this.getTeamNum(), aimpos);
+			if (orb !is null)
+			{
+				switch (charge_state)
+				{
+					case minimum_cast:
+					case medium_cast:
+					{
+						break;	
+					}
+					case complete_cast:
+					{
+						f32 ttd = 20.0f;
+						break;
+					}
+					case super_cast:
+					{
+						ttd = 25.0f;
+						break;
+					}
+				}
+
+				if (this.hasTag("extra_damage_")) ttd += 10.0f;
+
+
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+				orb.server_SetTimeToDie(ttd);
+			}
 		}
 		break;
 

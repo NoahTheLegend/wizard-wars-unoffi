@@ -24,17 +24,16 @@ void onInit(CBlob@ this)
 
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
-    this.server_SetTimeToDie(60);
 	this.setAngleDegrees(180);
 
 	if (!this.exists("damage")) this.set_f32("damage", 0.25f);
 }
 
-const u8 spinup_time = 240;
+const u8 spinup_time = 225;
 const f32 max_spin_speed = 30.0f;
 const f32 move_lerp = 0.33f;
-const f32 base_hit_power = 12.5f;
-const f32 swing_deatheffect_power = 2;
+const f32 base_hit_power = 15.0f;
+const f32 swing_deatheffect_power = 2.5f;
 
 void onTick(CBlob@ this)
 {
@@ -44,6 +43,14 @@ void onTick(CBlob@ this)
 		return;
     }
 
+	if (this.getTickSinceCreated() == 0)
+	{
+		CShape@ shape = this.getShape();
+		shape.SetStatic(true);
+	}
+
+	CSprite@ sprite = this.getSprite();
+
 	this.SetFacingLeft(false);
 	Vec2f pos = this.getPosition();
 	Vec2f dest = this.get_Vec2f("target_pos");
@@ -51,18 +58,15 @@ void onTick(CBlob@ this)
 	u32 gt = getGameTime();
 	f32 deg = this.getAngleDegrees();
 	f32 hit_angle = 20;
-
 	f32 old_angle = this.get_f32("old_angle");
-	this.set_f32("angle_diff", Maths::Abs(deg-old_angle) * swing_deatheffect_power);
 
-	if (this.hasTag("swing")
-		&& Maths::Abs(this.getAngleDegrees()-(fl?360-hit_angle:hit_angle)) <= 8.0f)
+	if (this.hasTag("swing"))
 	{
-		//this.Tag("disable_smashtoparticles");
-		//makeParticlesFromSpriteAccurate(this, this.getSprite(), this.get_u16("smashtoparticles_probability"));
-
-		this.server_Die();
-		return;
+		if (Maths::Abs(this.getAngleDegrees()-(fl?360-hit_angle:hit_angle)) <= 8.0f)
+		{
+			this.server_Die();
+			return;
+		}
 	}
 
 	bool ready = this.hasTag("ready");
@@ -75,6 +79,14 @@ void onTick(CBlob@ this)
 			this.set_u32("ready_time", gt);
 			this.set_Vec2f("ready_pos", pos);
 			this.Tag("ready");
+
+			if (this.hasTag("overcharge"))
+			{
+				sprite.SetEmitSound("bat_swing.ogg");
+				sprite.SetEmitSoundSpeed(0.0f);
+				sprite.SetEmitSoundVolume(0.0f);
+				sprite.SetEmitSoundPaused(false);
+			}	
 		}
 	}
 	if (this.hasTag("ready"))
@@ -85,20 +97,20 @@ void onTick(CBlob@ this)
 
 		if (this.hasTag("overcharge"))
 		{
-			CShape@ shape = this.getShape();
-			ShapeConsts@ consts = shape.getConsts();
-			shape.SetStatic(true);
-
 			f32 factor = f32(Maths::Min(diff, spinup_time))/spinup_time;
 			this.set_f32("hit_power", factor);
 
 			this.setAngleDegrees((deg + (fl ? 1 : -1) * (max_spin_speed*factor))%360);
-			this.setAngleDegrees(0);
+			sprite.SetEmitSoundVolume(0.5f * factor);
+			f32 speed = 1.0f * factor;
+			if (speed > 0.9f) speed += XORRandom(11)*0.01f;
+			sprite.SetEmitSoundSpeed(speed);
 		}
 		else
 		{
+			Vec2f offset = Vec2f(fl ? 48 : -48, 32);
 			this.Tag("swing");
-			Vec2f target = ready_pos + Vec2f(fl ? 48 : -48, 32);
+			Vec2f target = ready_pos + offset;
 			if (diff < 30)
 			{
 				this.setPosition(Vec2f_lerp(pos, target, diff*0.01f));
@@ -107,24 +119,59 @@ void onTick(CBlob@ this)
 			else
 			{
 				this.Tag("swinging");
-				this.setAngleDegrees(Lerp(deg, fl ? 360-hit_angle : hit_angle, Maths::Min(0.0f+(diff-30)*0.05f, 1))%360);
+
+				f32 rot_lerp = Maths::Min(0.1f+(diff-30)*0.05f, 1);
+				this.setAngleDegrees(Lerp(deg, fl ? 360-hit_angle : hit_angle, rot_lerp)%360);
 				deg = this.getAngleDegrees();
 				Vec2f arc = Vec2f(0, -this.getRadius()).RotateBy(deg);
 				this.setPosition(ready_pos + arc);
+				pos = this.getPosition();
+
+				f32 arc_diff = Maths::Abs(deg-old_angle);
+				f32 arc_angle = (arc_diff*2)%360;
+				f32 rot = deg + (fl ? -arc_angle/2 : arc_angle/2) - 90;
+
+				//print(arc_angle+" < arc, rot > "+rot);
+
+				HitInfo@[] infos;
+				getMap().getHitInfosFromArc(ready_pos, rot, arc_angle, this.getHeight(), this, false, @infos);
+
+				u16[] ignore_ids;
+				this.get("ignore_ids", ignore_ids);
+				for (u16 i = 0; i < infos.size(); i++)
+				{
+					HitInfo@ info = infos[i];
+					if (info is null) continue;
+
+					CBlob@[] bs;
+					getMap().getBlobsInRadius(info.hitpos, 8.0f, @bs);
+					for (u16 j = 0; j < bs.size(); j++)
+					{
+						CBlob@ b = bs[j];
+						if (b is null || b is this) continue;
+						if (ignore_ids.find(b.getNetworkID()) != -1) continue;
+
+						ignore_ids.push_back(b.getNetworkID());
+						onCollision(this, b, false);
+					}
+				}
+				this.set("ignore_ids", ignore_ids);
 			}
 		}
 	}
 
+	this.set_f32("angle_diff", Maths::Abs(deg-old_angle) * swing_deatheffect_power);
 	this.set_f32("old_angle", deg);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{	
-	this.server_SetTimeToDie(60);
+{
+	bool active = this.hasTag("overcharge") ? this.hasTag("ready") : this.hasTag("swinging");
+	if (!active) return;
 	if (blob !is null)
 	{
-		f32 hp = this.get_f32("hit_power");
-		if (!isEnemy(this, blob) && this.hasTag("ready") && (!this.hasTag("swing") || this.hasTag("swinging")))
+		f32 hp = Maths::Max(0.5f, this.get_f32("hit_power"));
+		if (isEnemy(this, blob))
 		{
 			f32 dmg = this.get_f32("damage");
 			f32 power = base_hit_power*(this.hasTag("swinging")?1.0f:hp);
@@ -144,24 +191,43 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 				this.IgnoreCollisionWhileOverlapped(blob, 30);
 			}
 			
-			f32 deg = Maths::Abs(this.getAngleDegrees());
-			f32 angle = deg;
+			f32 deg = this.getAngleDegrees();
+			f32 angle = Maths::Abs(deg);
 			angle = angle%360;
 
-			// both sides push you in one side when overcharged (lower part shoul be opposite)
-
+			Vec2f def_force = Vec2f(blob.getMass() * power, 0).RotateBy(angle + (fl?0:180));
+			Vec2f ovr_force = Vec2f(blob.getMass() * power, 0).RotateBy(deg + (fl?180:0));
+			Vec2f force = this.hasTag("overcharge") ? ovr_force : def_force;
+			
+			this.IgnoreCollisionWhileOverlapped(blob, 5);
 			if (this.hasTag("overcharge"))
 			{
-				
+				Vec2f side = Vec2f(0,48).RotateBy(deg);
+				f32 len1 = ((tp-side)-bp).Length();
+				f32 len2 = ((tp+side)-bp).Length();
+				if (len1 <= len2) force.RotateBy(180);
+
+				/*Vec2f fr = force;
+				fr.Normalize();
+				for (u8 i = 0; i < 50; i++)
+				{
+					CParticle@ p = ParticlePixelUnlimited(blob.getPosition() + fr * Maths::Pow(i, 1), Vec2f_zero, SColor(255,255,255,0), true);
+					if(p !is null)
+					{
+						p.collides = false;
+					    p.gravity = Vec2f(0,0);
+					    p.timeout = 15;
+					    p.Z = 555;
+					}
+				}*/
 			}
 
-			f32 side = this.hasTag("overcharge") ? 0 : (fl?0:180);
-			blob.AddForce(Vec2f(blob.getMass() * power, 0).RotateBy(angle + side));
+			blob.AddForce(force);
 
-			if (isServer())
-			{
-				//this.server_Hit(blob, blob.getPosition(), this.getVelocity(), dmg, Hitters::crush, true);
-			}
+			if (isClient())
+				this.getSprite().PlaySound("bat_hit.ogg", 1.0f, 1.0f);
+			if (isServer() && !blob.hasTag("projectile"))
+				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), dmg, Hitters::crush, true);
 		}
 	}
 }
@@ -178,6 +244,7 @@ bool isEnemy(CBlob@ this, CBlob@ target)
 	(
 		(
 			target.hasTag("barrier") ||
+			target.hasTag("projectile") ||
 			(
 				target.hasTag("flesh") 
 				&& !target.hasTag("dead") 
@@ -194,6 +261,9 @@ void onDie(CBlob@ this)
 {
 	if (this.hasTag("disable_smashtoparticles"))
 		return;
+	
+	if (isClient())
+		this.getSprite().PlaySound("bat_slice.ogg", 1.25f, 1.5f+XORRandom(11)*0.01f);
 
     if (!makeParticlesFromSpriteAccurate(this, this.getSprite(), this.get_u16("smashtoparticles_probability")))
     {
@@ -264,6 +334,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
 				len = h - Maths::Floor(px_pos.y);
 				distfactor = len/h;
 				spin_force = this.get_f32("angle_diff") * distfactor;
+				spin_force = Maths::Sin(Maths::Pow(spin_force*0.05f,2))*25;
 				pvel = Vec2f(rotate_left ? spin_force : -spin_force, 0).RotateBy(deg);
 			}
 			else
@@ -277,7 +348,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
 			}
 
 			pvel += vel;
-            MakeParticle(pos + offset, pvel, px_col, 500, sin, hp == 0.0f ? Vec2f(0, 1) : Vec2f_zero);
+            MakeParticle(pos + offset, pvel, px_col, 500, sin, hp == 0.0f ? Vec2f(0, 1) : Vec2f_zero, hp == 0.0f ? 5 : 30);
         }
 
         return true;
@@ -286,7 +357,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
     return false;
 }
 
-void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, f32 damp, Vec2f grav)
+void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, f32 damp, Vec2f grav, int time)
 {
     CParticle@ p = ParticlePixelUnlimited(pos, vel, col, true);
     if(p !is null)
@@ -294,10 +365,9 @@ void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, f32 damp, Vec2f g
         p.bounce = 0.15f + XORRandom(26)*0.01f;
         p.fastcollision = true;
 		p.collides = false;
-        p.gravity = Vec2f(0, 0.5f);
-        p.timeout = 10+XORRandom(20);
+        p.timeout = time+XORRandom(15);
         p.Z = layer;
 		p.gravity = grav;
-		p.damping = 0.85f+damp;
+		p.damping = 0.75f+damp;
     }
 }

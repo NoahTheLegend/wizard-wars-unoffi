@@ -86,6 +86,10 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		CPlayer@ bot = AddBot("Henry"); //when there are multiple "Henry" bots, they'll be differentiated by a number (i.e. Henry2)
 		return true;
 	}
+	else if (text_in == "!t")
+	{
+		LoadMap("Infinity.png");
+	}
 	else if (text_in == "!debug" && player.isMod())
 	{
 		// print all blobs
