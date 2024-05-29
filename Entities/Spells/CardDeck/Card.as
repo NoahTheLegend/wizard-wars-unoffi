@@ -97,7 +97,7 @@ void onTick(CBlob@ this)
 				if (tsc-timing == unfold_timing-1)
 				{
 					smoke(this.getPosition(), 2);
-					// playsoundhere
+					this.getSprite().PlaySound("CardReveal.ogg", 1.25f, 1.0f+XORRandom(11)*0.01f);
 				}
 				if (tsc-timing >= unfold_timing && hidden)
 				{
@@ -120,13 +120,11 @@ void onTick(CBlob@ this)
 				{
 					this.Tag("hidden");
 					smoke(this.getPosition(), 1);
-					// playsoundhere
 				}
 				else if (in_range && this.hasTag("hidden"))
 				{
 					this.set_u8("state", 2);
 					this.set_u32("unpack_time", getGameTime());
-					// playsoundhere ???
 				}
 
 				this.setPosition(Vec2f_lerp(pos, tpos, 0.35f));
@@ -187,7 +185,7 @@ void onTick(CBlob@ this)
 								this.set_Vec2f("dir", owner.getAimPos() - pos);
 
 							this.set_u8("state", 3);
-							// playsoundhere
+							this.getSprite().PlaySound("CardShoot.ogg", 0.65f, 1.0f+XORRandom(21)*0.01f);
 						}
 					}
 
@@ -270,7 +268,6 @@ void onDie(CBlob@ this)
 {
 	if (!isClient()) return;
 	smoke(this.getPosition(), 1);
-	// playsoundhere
 }
 
 Random _smoke_r(0x10001);
@@ -324,7 +321,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		if (isServer())
 			this.server_Hit(blob, this.getPosition(), Vec2f_zero, dmg, type == effects::ignite ? Hitters::fire : Hitters::arrow, false);
 		this.IgnoreCollisionWhileOverlapped(blob);
-		// playsoundhere
+		this.getSprite().PlaySound("CardDie.ogg", 0.75f, 1.25f+XORRandom(16)*0.01f);
 
 		if (type != effects::penetration)
 		{

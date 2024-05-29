@@ -4859,6 +4859,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -258027614://carddeck
 		{
+			this.getSprite().PlaySound("CardCreate.ogg", 1.0f, 1.0f+XORRandom(11)*0.01f);
+
 			if (!isServer()){
            		return;
 			}
