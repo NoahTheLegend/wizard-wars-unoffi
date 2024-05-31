@@ -5137,14 +5137,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						}
 						case complete_cast:
 						{
-							dist = 64.0f;
+							dist = 72.0f;
 							damage = this.hasTag("extra_damage") ? 1.25f : 0.75f;
 
 							break;
 						}
 						case super_cast:
 						{
-							dist = 80.0f;
+							dist = 88.0f;
 							damage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
 
 							break;

@@ -17,7 +17,7 @@ void onInit(CBlob@ this)
 
 const f32 amplitude_time = 0.075f;
 const Vec2f amplitude = Vec2f(50.0f, 12.5f);
-const u16 spawn_rate = 23;
+const u16 spawn_rate = 25;
 u8 min_blobs = 3;
 u8 rnd_blobs = 1;
 
