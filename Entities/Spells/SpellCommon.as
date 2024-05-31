@@ -5115,6 +5115,65 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case 49409835://kogun
+		{
+			Vec2f offset = Vec2f(0.0f, 4.0f);
+			Vec2f orbPos = thispos + offset;
+		
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("kogun", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					f32 dist = 32.0f;
+					f32 damage = this.hasTag("extra_damage") ? 0.5f : 0.33f;
+
+                    switch (charge_state)
+					{
+						case minimum_cast:
+						case medium_cast:
+						{
+							break;	
+						}
+						case complete_cast:
+						{
+							dist = 56.0f;
+							damage = this.hasTag("extra_damage") ? 1.25f : 0.75f;
+
+							break;
+						}
+						case super_cast:
+						{
+							dist = 80.0f;
+							damage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
+
+							break;
+						}
+					}
+
+					Vec2f dir = aimpos+offset-orbPos;
+					f32 diff = dir.Length() / dist;
+
+					if (diff < 1.0f)
+					{
+						aimpos += Vec2f(1.0f + (1.0f - diff) * dist, 0).RotateBy(-dir.Angle());
+					}
+
+					orb.set_Vec2f("aimpos", aimpos);
+					orb.set_f32("dist", dist);
+					orb.set_f32("damage", damage);
+
+					orb.Sync("aimpos", true);
+					orb.Sync("dist", true);
+					orb.Sync("damage", true);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+				}
+			}
+		}
+		break;
+
 		default:
 		{
 			if (spell.type == SpellType::summoning)

@@ -57,16 +57,16 @@ namespace JesterParams
 				SpellType::other, 0, 15, 0, 256.0f),
 		
 		Spell("tophat", "Obsessed Tophat", 117, "Obsessed magic tophat that drops bombs and heals",
-				SpellType::other, 0, 15, 0, 416.0f),
+				SpellType::other, 0, 15, 0, 416.0f, true),
 			 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("kogun", "K.O. GUN!", 118, "Box their face with your K.O. gun glove!",
+				SpellType::other, 0, 15, 0, 96.0f),
 			
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("blaster", "Bashster", 119, "Shoot a knocking blast, holding the trigger after cast will charge the spell",
+				SpellType::other, 0, 15, 0, 256.0f),
 			 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("bobomb", "BOB-omb", 120, "Wholesome walking bomb, and his name is Bob",
+				SpellType::other, 0, 1, 0, 64.0f, true),
 			
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

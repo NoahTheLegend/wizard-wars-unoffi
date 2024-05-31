@@ -59,12 +59,17 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
 	(
-		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") )
+		(target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") )
 		||
 		(
 			target.hasTag("flesh") 
 			&& !target.hasTag("dead") 
 			&& target.getTeamNum() != this.getTeamNum() 
+		)
+		||
+		(
+			target.getPlayer() !is null
+			&& target.getPlayer() is this.getDamageOwnerPlayer()
 		)
 	);
 }
@@ -149,7 +154,11 @@ void onDie(CBlob@ this)
 			
 			if (!map.rayCastSolidNoBlobs(pos, b.getPosition()))
 			{
-				this.server_Hit(b, pos, Vec2f_zero, this.get_f32("damage"), Hitters::explosion, isOwnerBlob(this, b));
+				f32 dmg = this.get_f32("damage");
+				if (b.getPlayer() !is null && b.getPlayer() is this.getDamageOwnerPlayer())
+					dmg *= 0.25f;
+
+				this.server_Hit(b, pos, Vec2f_zero, dmg, Hitters::explosion, isOwnerBlob(this, b));
 			}
 		}
 	}

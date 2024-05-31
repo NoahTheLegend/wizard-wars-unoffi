@@ -435,6 +435,13 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
+			else if (b.get_u16("confused") > 0 && sameTeam)
+			{
+				b.set_u16("confused", 1);
+				b.Sync("confused", true);
+					
+				countered = true;
+			}
 			else if ( b.get_u16("manaburn") > 0 && sameTeam )
 			{				
 				b.set_u16("manaburn", 1);

@@ -110,6 +110,8 @@ void onInit(CBlob@ this)
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
 {
+	if (this.isBot()) this.server_SetHealth(10.0f);
+	
 	if (player !is null)
 	{
 		player.SetScoreboardVars("ScoreboardIcons.png", 3, Vec2f(16, 16));
