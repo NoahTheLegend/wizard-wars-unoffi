@@ -5125,7 +5125,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ orb = server_CreateBlob("kogun", this.getTeamNum(), orbPos); 
 				if (orb !is null)
 				{
-					f32 dist = 32.0f;
+					f32 dist = 48.0f;
 					f32 damage = this.hasTag("extra_damage") ? 0.5f : 0.33f;
 
                     switch (charge_state)
@@ -5137,7 +5137,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						}
 						case complete_cast:
 						{
-							dist = 56.0f;
+							dist = 64.0f;
 							damage = this.hasTag("extra_damage") ? 1.25f : 0.75f;
 
 							break;
