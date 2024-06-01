@@ -87,7 +87,7 @@ void onTick(CBlob@ this)
 		if (ignore_ids.find(b.getNetworkID()) != -1) continue;
 
 		ignore_ids.push_back(b.getNetworkID());
-		if (isServer())
+		if (isServer() && !map.rayCastSolidNoBlobs(pos, b.getPosition()))
 			this.server_Hit(b, pos, glove_pos-next_pos, this.get_f32("damage"), Hitters::crush, true);
 		if (isClient())
 			this.getSprite().PlaySound("CardImpact.ogg", 1.25f, 0.85f+XORRandom(11)*0.01f);
@@ -144,7 +144,8 @@ void onTick(CBlob@ this)
 
 	this.set_f32("glovedist", next_dist);
 
-	if (((glove_pos - aimpos).Length() <= cut_length || (glove_pos - pos).Length() >= max_dist-cut_length))
+	if (((glove_pos - aimpos).Length() <= cut_length || (glove_pos - pos).Length() >= max_dist-cut_length)
+		|| map.isTileSolid(map.getTile(next_pos)))
 	{
 		this.set_u32("return_time", getGameTime());
 		this.Tag("returning");

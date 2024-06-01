@@ -1,4 +1,4 @@
-#include "/Entities/Common/Attacks/Hitters.as";	   
+#include "Hitters.as";	   
 #include "/Entities/Common/Attacks/LimitedAttacks.as";
 
 const f32 RANGE = 2000.0f;

@@ -1,36 +1,25 @@
 #include "Hitters.as"
+#include "KnockedCommon.as";
 
 void onInit(CBlob@ this)
 {
 	this.Tag("phase through spells");
     this.Tag("counterable");
 	this.Tag("projectile");
-	this.Tag("exploding"); //doesn't have the Explode script
+	this.Tag("exploding");
 	this.Tag("die_in_divine_shield");
 
-	//default values
 	this.set_f32("damage", 1.0f); 
-	this.set_f32("move_Speed", 8.0f);
+	this.set_f32("move_Speed", 12.0f);
 	this.set_Vec2f("target", Vec2f_zero);
-	//^
 
     this.getShape().SetGravityScale(0);
-	this.SetMapEdgeFlags( u8(CBlob::map_collide_none) | u8(CBlob::map_collide_nodeath) ); //dont collide with edge of the map
+	this.SetMapEdgeFlags(u8(CBlob::map_collide_none) | u8(CBlob::map_collide_nodeath));
+	this.getSprite().setRenderStyle(RenderStyle::additive);
 
     if (isServer())
     {
 		this.server_SetTimeToDie(10);
-	}
-    
-	//burning sound	    
-	if (isClient())
-	{
-		CSprite@ sprite = this.getSprite();
-
-    	sprite.SetEmitSound("MolotovBurning.ogg");
-    	sprite.SetEmitSoundVolume(5.0f);
-    	sprite.SetEmitSoundPaused(false);
-		sprite.getConsts().accurateLighting = false;
 	}
 }
 
@@ -38,30 +27,27 @@ void onTick(CSprite@ this) // note to glitch - this only runs on client, onTick 
 {
 	this.ResetTransform();
     this.RotateBy(this.getBlob().getVelocity().getAngle() * -1,Vec2f_zero);
+	this.setRenderStyle(RenderStyle::additive);
 }
 
 void onTick(CBlob@ this)
 {
-	Vec2f targetPos = this.get_Vec2f("target");
-	if(targetPos == Vec2f_zero)
+	if (isClient())
 	{
-		this.server_Die();
-		return;
+		sparks(this.getPosition(), 1, this, this.getTeamNum() == 0);
 	}
-	if(isClient())
-	makeSmokeParticle(this, targetPos);
 
 	Vec2f thisPos = this.getPosition();
 	float standardSpeed = this.get_f32("move_Speed");
 
-	Vec2f moveDir = targetPos - thisPos;
+	Vec2f moveDir = this.get_Vec2f("target_dir");
 	float dist = moveDir.Length();
 
 	Vec2f finalSpeed = moveDir;
 	finalSpeed.Normalize();
 	finalSpeed *= standardSpeed;
 
-	if( dist > standardSpeed )
+	if(dist > standardSpeed)
 	{
 		this.setVelocity(finalSpeed); //if farther away, use standard speed
 	}
@@ -69,34 +55,28 @@ void onTick(CBlob@ this)
 	{
 		this.setVelocity(moveDir); //if closer than needed, jump to that spot
 	}
-
-	if( dist < 2.0f )
-	{
-		this.server_Die();
-	}
 }
 
-/// note (vam) -> I'm not touching these
-void onCollision( CBlob@ this, CBlob@ blob, bool solid )
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-    if (solid)
+    if (solid && blob is null)
     {
         this.server_Die();
 		return;
     }
 
-	if (blob is null) { return; }
+	if (blob is null) {return;}
 
 	if(blob.getTeamNum() != this.getTeamNum())
     {
-		if (blob.hasTag("barrier") || blob.hasTag("flesh") || blob.getName() == "plasma_shot")
+		if (blob.hasTag("barrier") || blob.hasTag("flesh"))
 		{
 			this.server_Die();
 		}
     }
 }
 
-void onDie( CBlob@ this )
+void onDie(CBlob@ this)
 {
 	if(!this.hasTag("exploding"))
 	{return;}
@@ -124,6 +104,8 @@ void onDie( CBlob@ this )
 			CBlob@ caster = player.getBlob();
 			if(caster !is null && blob is caster)
 			{
+				setKnocked(blob, 30 * damage);
+				blob.set_u16("confused", 90 * damage);
 				this.server_Hit(blob, blob.getPosition(), Vec2f_zero, damage, Hitters::explosion, true);
 				continue;
 			}
@@ -157,7 +139,7 @@ void onDie( CBlob@ this )
 	}
 }
 
-bool doesCollideWithBlob( CBlob@ this, CBlob@ b )
+bool doesCollideWithBlob(CBlob@ this, CBlob@ b)
 {
 	if(b is null){return false;}
 
@@ -229,4 +211,63 @@ void blast( Vec2f pos , int amount)
 		p.lighting = false;
     }
 }
-/// end (vam note)
+
+
+Random _sprk_r(1265);
+void sparks(Vec2f Pos, int amount, CBlob@ this, bool blue)
+{
+	if (!getNet().isClient())
+		return;
+
+	CParticle@[] particleList;
+	this.get("ParticleList",particleList);
+	for(int a = 0; a < 3; a++)
+	{	
+		Vec2f rnd_pos = Vec2f(4+XORRandom(8),0).RotateBy(XORRandom(360));
+		CParticle@ p = ParticleAnimated("BashsterParticle.png", Pos + rnd_pos, Vec2f_zero, XORRandom(360), 1.0f, 1+XORRandom(2), 0.0f, true);
+
+		if(p !is null)
+		{
+			p.collides = false;
+			p.Z = 501.0f;
+			p.gravity = Vec2f(0,0);
+			p.lighting = true;
+			p.setRenderStyle(RenderStyle::additive);
+			p.scale = 0.5f;
+			p.deadeffect = -1;
+			p.diesonanimate = true;
+			p.alivetime = 10;
+
+			particleList.push_back(p);
+		}
+	}
+	for(int a = 0; a < particleList.length(); a++)
+	{
+		CParticle@ particle = particleList[a];
+		//check
+		if(particle is null || particle.alivetime == 0)
+		{
+			particleList.erase(a);
+			a--;
+			continue;
+		}
+		particle.alivetime--;
+
+		//Gravity
+		Vec2f tempGrav = Vec2f(0,0);
+		tempGrav.x = -(particle.position.x - Pos.x);
+		tempGrav.y = -(particle.position.y - Pos.y);
+
+		//Colour
+		SColor col = particle.colour;
+
+		//set stuff
+		particle.colour = col;
+		particle.forcecolor = col;
+		particle.gravity = tempGrav / 20;//tweak the 20 till your heart is content
+
+		//particleList[a] = @particle;
+	}
+
+	this.set("ParticleList", particleList);
+}

@@ -60,10 +60,10 @@ namespace JesterParams
 				SpellType::other, 0, 15, 0, 416.0f, true),
 			 
 		Spell("kogun", "K.O. GUN!", 118, "Box their face with your K.O. gun glove!",
-				SpellType::other, 0, 15, 0, 96.0f),
+				SpellType::other, 0, 15, 0, 80.0f),
 			
-		Spell("blaster", "Bashster", 119, "Shoot a knocking blast, holding the trigger after cast will charge the spell",
-				SpellType::other, 0, 15, 0, 256.0f),
+		Spell("bashster", "Bashster", 119, "Shoot a knocking blast, holding the trigger after cast will charge the spell",
+				SpellType::other, 0, 15, 1, 256.0f, true),
 			 
 		Spell("bobomb", "BOB-omb", 120, "Wholesome walking bomb, and his name is Bob",
 				SpellType::other, 0, 1, 0, 64.0f, true),

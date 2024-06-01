@@ -102,6 +102,13 @@ void ManageSpell( CBlob@ this, JesterInfo@ jester, PlayerPrefsInfo@ playerPrefsI
     bool just_pressed = this.isKeyJustPressed( key_action1 );
     bool just_released = this.isKeyJustReleased( key_action1 );
 
+	if (this.get_u32("NOLMB") > getGameTime())
+	{
+		is_pressed = false;
+		just_pressed = false;
+		just_released = false;
+	}
+
     bool is_secondary = false;
 	bool is_aux1 = false;
 	bool is_aux2 = false;
@@ -416,7 +423,7 @@ void onTick( CBlob@ this )
 
 	if (this.get_u32("horning") >= getGameTime())
 	{
-		this.getSprite().PlaySound("airhorn.ogg", 0.75f, 1.85f+XORRandom(31)*0.01f);
+		this.getSprite().PlaySound("airhorn.ogg", 0.5f, 1.85f+XORRandom(31)*0.01f);
 
 		f32 max_angle = 50.0f;
 		for (u8 i = 0; i < (v_fastrender ? 3 : 6); i++)

@@ -5005,74 +5005,60 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1661121296: //baseballbat
 		{
-			u32 landheight = getLandHeight(aimpos);
-			if(landheight != 0)
+			this.getSprite().PlaySound("celestialcrushcast.ogg", 1.0f, 1.85f+XORRandom(11)*0.01f);
+
+            if (!isServer())
+			{return;}
+
+			f32 ttd = 15.0f;
+			
+			f32 orbDamage = 2.0f;
+			bool overcharge = false;
+
+			if (this.hasTag("extra_damage"))
 			{
-				this.getSprite().PlaySound("celestialcrushcast.ogg", 1.0f, 1.85f+XORRandom(11)*0.01f);
-
-                if (!isServer())
-				{return;}
-
-				f32 ttd = 15.0f;
-				
-				f32 orbDamage = 2.0f;
-				bool overcharge = false;
-
-				if (this.hasTag("extra_damage"))
-				{
-					orbDamage += 1.0f;
-					ttd += 10.0f;
-				}
-
-				switch(charge_state)
-				{
-					case minimum_cast:
-					case medium_cast:
-					case complete_cast:
-					break;
-					
-					case super_cast:
-					{
-						ttd += 10.0f;
-						orbDamage /= 3;
-						overcharge = true;
-					}
-					break;
-					default:return;
-				}
-
-				Vec2f pos = Vec2f(aimpos.x , getMap().tilemapwidth*8+256.0f);
-
-				CBlob@ orb = server_CreateBlob("baseballbat");
-				if (orb !is null)
-				{
-					orb.set_f32("damage", orbDamage);
-					orb.set_Vec2f("target_pos", aimpos);
-					orb.Sync("target_pos", true);
-					orb.set_bool("fl", aimpos.x < thispos.x);
-					if (overcharge)
-					{
-						orb.Tag("overcharge");
-						orb.Sync("overcharge", true);
-					}
-
-					orb.SetDamageOwnerPlayer(this.getPlayer());
-					orb.getShape().SetGravityScale(0);
-					orb.server_setTeamNum(this.getTeamNum());
-					orb.setPosition(pos);
-					orb.server_SetTimeToDie(ttd);
-				}
+				orbDamage += 1.0f;
+				ttd += 10.0f;
 			}
-            else//Can't place this under the map
-            {
-				ManaInfo@ manaInfo;
-				if (!this.get( "manaInfo", @manaInfo ))
-				{return;}
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
 				
-				manaInfo.mana += spell.mana;
-				
-				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
-            }
+				case super_cast:
+				{
+					ttd += 10.0f;
+					orbDamage /= 3;
+					overcharge = true;
+				}
+				break;
+				default:return;
+			}
+
+			Vec2f pos = Vec2f(aimpos.x , getMap().tilemapwidth*8+256.0f);
+
+			CBlob@ orb = server_CreateBlob("baseballbat");
+			if (orb !is null)
+			{
+				orb.set_f32("damage", orbDamage);
+				orb.set_Vec2f("target_pos", aimpos);
+				orb.Sync("target_pos", true);
+				orb.set_bool("fl", aimpos.x < thispos.x);
+				if (overcharge)
+				{
+					orb.Tag("overcharge");
+					orb.Sync("overcharge", true);
+				}
+
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+				orb.getShape().SetGravityScale(0);
+				orb.server_setTeamNum(this.getTeamNum());
+				orb.setPosition(pos);
+				orb.server_SetTimeToDie(ttd);
+			}
 		}
 		break;
 
@@ -5152,7 +5138,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					}
 
 					Vec2f dir = aimpos+offset-orbPos;
-					f32 diff = dir.Length() / dist;
+					f32 diff = dir.Length() / 80.0f;
 
 					if (diff < 1.0f)
 					{
@@ -5170,6 +5156,50 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.IgnoreCollisionWhileOverlapped(this);
 					orb.SetDamageOwnerPlayer(this.getPlayer());
 				}
+			}
+		}
+		break;
+
+		case -137337689: //bashster
+		{
+			this.getSprite().PlaySound("MagnaCannonChargeStart.ogg", 1.25f, 2.0f);
+
+            if (!isServer())
+			{return;}
+
+			f32 orbDamage = 0.5f;
+			bool overcharge = false;
+
+			if (this.hasTag("extra_damage"))
+			{
+				orbDamage += 1.0f;
+			}
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbDamage += 0.5f;
+				}
+				break;
+				default:return;
+			}
+
+			Vec2f pos = thispos;
+			CBlob@ orb = server_CreateBlob("bashster");
+			if (orb !is null)
+			{
+				orb.set_f32("damage", orbDamage);
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+				orb.getShape().SetGravityScale(0);
+				orb.server_setTeamNum(this.getTeamNum());
+				orb.setPosition(pos);
+				orb.server_SetTimeToDie(60);
 			}
 		}
 		break;
