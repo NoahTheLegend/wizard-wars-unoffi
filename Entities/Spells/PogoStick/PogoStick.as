@@ -1,6 +1,6 @@
 #include "RunnerCommon.as";
 
-const f32 jump_mod = 3;
+const f32 jump_mod = 2.5f;
 
 void onTick(CBlob@ this)
 {

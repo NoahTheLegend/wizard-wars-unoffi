@@ -48,7 +48,7 @@ void onInit(CBlob@ this)
 
 const f32 base_accel = 0.75f;
 const f32 max_vel = 7.0f;
-const f32 max_aggro_len = 96.0f;
+const f32 max_aggro_len = 256.0f;
 
 void onTick(CBlob@ this)
 {
@@ -251,7 +251,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	);
 }
 
-const u8 idle_time = 60;
+const u8 idle_time = 30;
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if(this is null)

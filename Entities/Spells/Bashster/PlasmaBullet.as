@@ -112,7 +112,7 @@ void onDie(CBlob@ this)
 			if(caster !is null && blob is caster)
 			{
 				setKnocked(blob, 30 * damage);
-				blob.set_u16("confused", 90 * damage);
+				blob.set_u16("confused", 45 * damage);
 				this.server_Hit(blob, blob.getPosition(), Vec2f_zero, damage, Hitters::explosion, true);
 				continue;
 			}
@@ -143,7 +143,7 @@ void onDie(CBlob@ this)
 		attackNorm.Normalize();
 		blob.AddForce(attackNorm*100);
 		setKnocked(blob, 30 * damage);
-		blob.set_u16("confused", 90 * damage);
+		blob.set_u16("confused", 45 * damage);
         this.server_Hit(blob,thisPos,Vec2f_zero,finalDamage,Hitters::explosion);
 	}
 }

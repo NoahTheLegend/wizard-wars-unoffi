@@ -310,7 +310,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 
 
-	if (blob !is null && isEnemy(this, blob))
+	if (blob !is null && isEnemy(this, blob) && this.get_u8("state") != 0)
 	{
 		f32 vellen = this.getVelocity().Length()/4;
 		f32 extra = this.hasTag("extra_damage") ? 2.0f : 1.0f;
