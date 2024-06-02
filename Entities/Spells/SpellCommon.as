@@ -5067,7 +5067,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			if (!isServer()) return;
 
-			f32 ttd = 15.0f;
+			f32 ttd = 10.0f;
 			
 			CBlob@ orb = server_CreateBlob("tophat", this.getTeamNum(), aimpos);
 			if (orb !is null)
@@ -5081,12 +5081,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					}
 					case complete_cast:
 					{
-						f32 ttd = 20.0f;
+						f32 ttd = 12.5f;
 						break;
 					}
 					case super_cast:
 					{
-						ttd = 25.0f;
+						ttd = 17.5f;
 						break;
 					}
 				}

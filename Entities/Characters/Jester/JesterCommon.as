@@ -60,7 +60,7 @@ namespace JesterParams
 				SpellType::other, 35, 50, 0, 256.0f, true),
 		
 		Spell("tophat", "Obsessed Tophat", 117, "Obsessed tophat with mystic deals, dropping bombs and giving heals.",
-				SpellType::other, 45, 55, 10, 416.0f, true),
+				SpellType::other, 55, 55, 15, 416.0f, true),
 			 
 		Spell("kogun", "K.O. GUN!", 118, "A powerful glove, K.O. delight, box their face, end the fight!",
 				SpellType::other, 6, 10, 0, 80.0f),

@@ -7,6 +7,7 @@ void onInit(CBlob@ this)
 {
 	this.addCommandID("switch_owner_pos");
 	this.addCommandID("set_knocked");
+	this.addCommandID("launch");
 
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
@@ -25,6 +26,7 @@ void onInit(CBlob@ this)
 	this.set_u32("unpack_time", 0);
 	this.set_u32("disabled", 0);
 	this.set_u8("collided", 0);
+	this.Tag("cantmove");
 
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
@@ -181,11 +183,12 @@ void onTick(CBlob@ this)
 
 						if (owner.get_bool("shifting") && this.get_u32("disabled") < getGameTime())
 						{
-							if (isServer())
-								this.set_Vec2f("dir", owner.getAimPos() - pos);
-
-							this.set_u8("state", 3);
-							this.getSprite().PlaySound("CardShoot.ogg", 0.65f, 1.0f+XORRandom(21)*0.01f);
+							if (owner.isMyPlayer())
+							{
+								CBitStream params;
+								params.write_Vec2f(owner.getAimPos() - this.getPosition());
+								this.SendCommand(this.getCommandID("launch"), params);
+							}
 						}
 					}
 
@@ -426,6 +429,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		{
 			setKnocked(blob, knock_time);
 		}
+	}
+	else if (cmd == this.getCommandID("launch"))
+	{
+		Vec2f dir = params.read_Vec2f();
+		this.set_Vec2f("dir", dir);
+		this.set_u8("state", 3);
+		this.getSprite().PlaySound("CardShoot.ogg", 0.65f, 1.0f+XORRandom(21)*0.01f);
 	}
 }
 

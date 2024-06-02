@@ -70,7 +70,8 @@ void onTick(CBlob@ this)
 			Vec2f forceVec = pullNorm*MAX_FORCE;
 			Vec2f finalForce = forceVec*(1.0f-pullVec.Length()/PULL_RADIUS);
 
-			attractedblob.AddForce(finalForce);
+			if (!attractedblob.hasTag("cantmove"))
+				attractedblob.AddForce(finalForce);
 			
 			ManaInfo@ manaInfo;
 			if (attractedblob.get("manaInfo", @manaInfo) && (getGameTime() % 24 == 0))

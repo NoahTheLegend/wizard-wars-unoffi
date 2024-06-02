@@ -221,7 +221,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 				}*/
 			}
 
-			blob.AddForce(force);
+			if (!blob.hasTag("cantmove"))
+				blob.AddForce(force);
 
 			if (isClient())
 				this.getSprite().PlaySound("bat_hit.ogg", 1.0f, 1.0f);

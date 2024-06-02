@@ -69,7 +69,7 @@ void onTick(CBlob@ this)
                 if (blob !is null)
                 {
                     blob.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
-                    blob.setVelocity(Vec2f(4-XORRandom(81)*0.1f+(this.getPosition().x - this.getOldPosition().x)/3, -6 - XORRandom(3) - Maths::Abs(this.getVelocity().y)/2));
+                    blob.setVelocity(Vec2f(3-XORRandom(61)*0.1f+(this.getPosition().x - this.getOldPosition().x)/3, -6 - XORRandom(3) - Maths::Abs(this.getVelocity().y)/2));
 
                     blob.Tag("die_on_collide");
                     blob.set_f32("damage", 1.0f);

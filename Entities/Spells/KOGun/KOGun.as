@@ -137,7 +137,7 @@ void onTick(CBlob@ this)
 		
 		f32 rotary_speed = Maths::Lerp(this.get_f32("rotary_speed_delta"), Maths::Min(1.0f, (glove_pos-next_pos).Length()*0.05f), 0.5f);
 		this.set_f32("rotary_speed_delta", rotary_speed);
-		sprite.SetEmitSoundVolume(Maths::Max(0.25f, rotary_speed * 0.75f));
+		sprite.SetEmitSoundVolume(Maths::Max(0.5f, rotary_speed));
 		sprite.SetEmitSoundSpeed(0.5f + rotary_speed);
 		sprite.SetEmitSoundPaused(false);
 	}
