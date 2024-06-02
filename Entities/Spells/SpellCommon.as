@@ -4764,13 +4764,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					{
 						respawn = false;
 						mitten.set_u8("state", state);
+						mitten.Sync("state", true);
 						Vec2f normalAimdir = aimpos-this.getPosition();
 						normalAimdir.Normalize();
 						mitten.set_Vec2f("aimpos", aimpos + normalAimdir*mitten.getRadius()/2);
 						mitten.set_bool("force_fl", aimpos.x < this.getPosition().x);
 						mitten.server_SetTimeToDie(30);
-
-						mitten.getSprite().SetAnimation("transform");
 					}
 				}
 			}

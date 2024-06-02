@@ -15,7 +15,6 @@ void onInit(CBlob@ this)
 
     this.getShape().SetGravityScale(0);
 	this.SetMapEdgeFlags(u8(CBlob::map_collide_none) | u8(CBlob::map_collide_nodeath));
-	this.getSprite().setRenderStyle(RenderStyle::additive);
 	this.getSprite().ScaleBy(Vec2f(0.01f, 0.01f));
 
     if (isServer())
@@ -35,6 +34,7 @@ void onTick(CBlob@ this)
 {
 	if (isClient())
 	{
+		this.getSprite().setRenderStyle(RenderStyle::additive);
 		sparks(this.getPosition(), 1, this, this.getTeamNum() == 0);
 
 		if (this.getTickSinceCreated() == 1)

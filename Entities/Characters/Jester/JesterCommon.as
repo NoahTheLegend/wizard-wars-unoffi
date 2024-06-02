@@ -39,7 +39,7 @@ namespace JesterParams
 				SpellType::other, 10, 30, 0, 128.0f),
 
 		Spell("mitten", "Enchanted Mitten", 110, "A mitten alive, fingers strong and bold, casting bullet hell, its power untold.",
-				SpellType::other, 18, 60, 3, 256.0f, true),
+				SpellType::other, 20, 50, 3, 256.0f, true),
 
 		Spell("pogostick", "Pogo Stick", 111, "A spring, a bounce, a leap so high, on pogo stick, touch the sky.",
 				SpellType::other, 20, 45, 10, 0.0f, true),

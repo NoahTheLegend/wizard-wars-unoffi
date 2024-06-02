@@ -241,6 +241,10 @@ void onTick( CBlob@ this )
 		}
 	}
 
+	if (this.get_u8("state") != 0)
+	{
+		this.getSprite().SetAnimation("transform");
+	}
 	this.set_bool("was_fl", fl);
 }
 
