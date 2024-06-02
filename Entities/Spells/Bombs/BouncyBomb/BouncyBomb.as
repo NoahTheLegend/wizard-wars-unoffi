@@ -58,7 +58,7 @@ void onTick(CBlob@ this)
 	if (this.exists("aliveTime"))
 	{
 		int tsc = this.getTickSinceCreated();
-		f32 ttdf = f32(tsc)/(this.get_u32("aliveTime")*30);
+		f32 ttdf = f32(tsc)/(this.get_s32("aliveTime")*30);
 		Vec2f offset = Vec2f(-10 + 5*ttdf, -10 + 10 * (ttdf > 0.75f ? (ttdf-0.75f) : 0));
 		sparks(this.getPosition() + this.getVelocity() + offset.RotateBy(this.get_f32("angle")), 2);
 	}

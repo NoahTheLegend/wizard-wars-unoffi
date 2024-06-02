@@ -61,16 +61,11 @@ class WizardRain
         }
         else if (type == WizardRainTypes::meteorRain)
         {
-            objectsAmount = 5;
+            objectsAmount = 9;
             if (level == WizardParams::extra_ready)
-                objectsAmount += XORRandom(10);
-            else if (level == WizardParams::cast_3)
-                objectsAmount += XORRandom(8);
-            else if (level == WizardParams::cast_2)
-                objectsAmount += XORRandom(6);
-            else if (level == WizardParams::cast_1)
-                objectsAmount += XORRandom(3);
-            time = 1 + XORRandom(6);
+                objectsAmount += 6;
+            
+            time = 1 + XORRandom(5);
         }
         else if (type == WizardRainTypes::meteorStrike)
         {
@@ -134,9 +129,9 @@ class WizardRain
             }
             else if (type == WizardRainTypes::meteorRain)
             {
-                SummonBlob(this, "meteor", Vec2f(position.x + 100.0f - XORRandom(200.0f), 10.0f), team);
+                SummonBlob(this, "volcanoshard", Vec2f(position.x + 16.0f - XORRandom(32.0f), 10.0f), team);
 
-                time = 1 + XORRandom(6);
+                time = 1 + XORRandom(4);
             }
             else if (type == WizardRainTypes::meteorStrike)
             {

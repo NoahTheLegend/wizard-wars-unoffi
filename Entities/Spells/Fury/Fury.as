@@ -26,6 +26,7 @@ void onInit(CBlob@ this)
 f32 cap_dist = 256.0f + 64.0f;
 f32 angle_change_base = 4.0f;
 f32 damping = 0.975f;
+const f32 decel = 12;
 
 void onTick(CBlob@ this)
 {
@@ -80,7 +81,7 @@ void onTick(CBlob@ this)
 	    int dir_angle = -dir.Angle();
 
 		f32 momentum = this.get_f32("momentum");
-		f32 target_speed = Maths::Clamp(dir.Length() / 16, 2.0f, 10.0f);
+		f32 target_speed = Maths::Clamp(dir.Length() / decel, 2.0f, 10.0f);
 		f32 speed_mod = Maths::Lerp(momentum, target_speed, 1.0f - damping);
 	    int cross = vel.x * dir.y - vel.y * dir.x;
 

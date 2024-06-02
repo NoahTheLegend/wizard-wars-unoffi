@@ -80,7 +80,7 @@ namespace PaladinParams
 				SpellType::other, 60, 60, 25, 360.0f, true),
 
 		Spell("fury", "Fury", 101, "A homing disk releasing sharp flame blades to anyone nearby. Overcharge increases spell lifetime, damage and fire rate.",
-				SpellType::other, 60, 75, 16, 64.0f, true),
+				SpellType::other, 55, 80, 16, 64.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

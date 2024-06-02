@@ -16,6 +16,7 @@ void onInit(CBlob@ this)
     this.getShape().SetGravityScale(0);
 	this.SetMapEdgeFlags(u8(CBlob::map_collide_none) | u8(CBlob::map_collide_nodeath));
 	this.getSprite().setRenderStyle(RenderStyle::additive);
+	this.getSprite().ScaleBy(Vec2f(0.01f, 0.01f));
 
     if (isServer())
     {
@@ -35,6 +36,12 @@ void onTick(CBlob@ this)
 	if (isClient())
 	{
 		sparks(this.getPosition(), 1, this, this.getTeamNum() == 0);
+
+		if (this.getTickSinceCreated() == 1)
+		{
+			f32 s = this.get_f32("scale");
+			this.getSprite().ScaleBy(Vec2f(s, s));
+		}
 	}
 
 	Vec2f thisPos = this.getPosition();
@@ -135,6 +142,8 @@ void onDie(CBlob@ this)
 		Vec2f attackNorm = blob.getPosition() - thisPos;
 		attackNorm.Normalize();
 		blob.AddForce(attackNorm*100);
+		setKnocked(blob, 30 * damage);
+		blob.set_u16("confused", 90 * damage);
         this.server_Hit(blob,thisPos,Vec2f_zero,finalDamage,Hitters::explosion);
 	}
 }
@@ -219,6 +228,8 @@ void sparks(Vec2f Pos, int amount, CBlob@ this, bool blue)
 	if (!getNet().isClient())
 		return;
 
+	f32 dmg = this.get_f32("damage");
+
 	CParticle@[] particleList;
 	this.get("ParticleList",particleList);
 	for(int a = 0; a < 3; a++)
@@ -233,7 +244,7 @@ void sparks(Vec2f Pos, int amount, CBlob@ this, bool blue)
 			p.gravity = Vec2f(0,0);
 			p.lighting = true;
 			p.setRenderStyle(RenderStyle::additive);
-			p.scale = 0.5f;
+			p.scale = 0.5f * (dmg/2);
 			p.deadeffect = -1;
 			p.diesonanimate = true;
 			p.alivetime = 10;
@@ -264,7 +275,7 @@ void sparks(Vec2f Pos, int amount, CBlob@ this, bool blue)
 		//set stuff
 		particle.colour = col;
 		particle.forcecolor = col;
-		particle.gravity = tempGrav / 20;//tweak the 20 till your heart is content
+		particle.gravity = tempGrav / (20*dmg);//tweak the 20 till your heart is content
 
 		//particleList[a] = @particle;
 	}

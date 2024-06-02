@@ -10,7 +10,6 @@ void onInit(CBlob@ this)
 	shape.SetGravityScale(0.0f);
 
 	this.Tag("projectile");
-	this.Tag("counterable");
 	this.Tag("die_in_divine_shield");
 	this.Tag("cantparry");
 	this.set_u8("despelled", 0);

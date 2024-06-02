@@ -393,8 +393,8 @@ void intitializeClasses()
 
 	playerClassButtons.registerWWPlayerClassButton("Jester", 
 													"Master of mayhem, casting chaos with jests and jokes. And you are about to conceive a hatred soon." +
-													"\n\n     Health: 100" +
-													"\n     Mana: 175" +
+													"\n\n     Health: 60" +
+													"\n     Mana: 150" +
 													"\n     Mana Regen: 3 mana/sec",
 													"jester", 9, 0, 10, 0, "WizardWars");
 													

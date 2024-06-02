@@ -20,6 +20,7 @@ void onInit(CBlob@ this)
 	if (!this.exists("damage")) this.set_f32("damage", 0.5f);
 	this.set_u8("mode", 0);
 	this.set_u16("hold_time", 0);
+	this.set_f32("scale", 1.0f);
 }
 
 const u16 max_hold_time = 150;
@@ -76,16 +77,13 @@ void onTick(CBlob@ this)
 	}
 
 	if (hold_time > 150 || (!holding && this.getTickSinceCreated() > 15))
-	{
-		sprite.PlaySound("MagnaCannonShot.ogg", 2.0f, 1.0f+XORRandom(11)*0.01f);
-		sprite.SetEmitSoundPaused(true);
-		
+	{		
 		if (isServer())
 		{
 			f32 damage = this.get_f32("damage");
 			damage += hold_time*dmg_per_step;
 
-			CBlob@ orb = server_CreateBlob("plasmabullet", this.getTeamNum(), this.getPosition() - Vec2f(0,3));
+			CBlob@ orb = server_CreateBlob("plasmabullet", this.getTeamNum(), this.getPosition());
 			if (orb !is null)
 			{
 				orb.SetDamageOwnerPlayer(ownerplayer);
@@ -93,9 +91,24 @@ void onTick(CBlob@ this)
 				orb.Sync("damage", true);
 				orb.set_Vec2f("target_dir", dir);
 				orb.Sync("target_dir", true);
+				orb.set_f32("scale", this.get_f32("scale"));
+				orb.Sync("scale", true);
 			}
 
 			this.server_Die();
+		}
+	}
+
+	if (isServer())
+	{
+		if (getGameTime() <= this.get_u32("ready_time") + 5)
+		{
+			this.add_f32("scale", 2.0f);
+		}
+
+		if (holding)
+		{
+			this.add_f32("scale", 1.0f+scale);
 		}
 	}
 
@@ -147,6 +160,16 @@ void onTick(CBlob@ this)
 		this.set_u32("ready_time", getGameTime());
 		this.set_u8("mode", 1);
 	}
+}
+
+void onDie(CBlob@ this)
+{
+	if (!isClient()) return;
+	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+	
+	sprite.PlaySound("MagnaCannonShot.ogg", 2.0f, 1.0f+XORRandom(11)*0.01f);
+	sprite.SetEmitSoundPaused(true);
 }
 
 Random _sprk_r(1265);

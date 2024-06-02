@@ -44,6 +44,8 @@ void onTick(CBlob@ this)
         dir.Normalize();
         if (this.getVelocity().Length() <= max_vel)
             this.AddForce(dir * (this.getMass() * decel));
+
+        this.server_SetTimeToDie(5);
         
         shape.SetGravityScale(0.0f);
         shape.getConsts().mapCollisions = false;

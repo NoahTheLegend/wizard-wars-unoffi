@@ -74,8 +74,8 @@ namespace ShamanParams
 		Spell("frost_spirit", "Glacial Spirit", 107, "Summon a homing spirit of frost to freeze your foes.",
 			SpellType::other, 25, 60, 6, 360.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-			SpellType::other, 1, 1, 0, 0.0f),
+		Spell("meteor_rain", "Volcano", 121, "Makes a nearby volcano rain hot magma.",
+			SpellType::other, 80, 85, 10, 256.0f, true),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

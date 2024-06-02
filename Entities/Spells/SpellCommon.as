@@ -4849,7 +4849,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.server_setTeamNum(this.getTeamNum());
 				orb.set_f32("explode_radius", explode_radius);
 				orb.server_SetTimeToDie(ttd);
-				orb.set_u32("aliveTime", ttd);
+				orb.set_s32("aliveTime", ttd);
 				orb.Sync("aliveTime", true);
 				orb.setPosition(orbPos);
 				orb.setVelocity(orbVel);
@@ -5200,6 +5200,41 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.server_setTeamNum(this.getTeamNum());
 				orb.setPosition(pos);
 				orb.server_SetTimeToDie(60);
+			}
+		}
+		break;
+
+		case 331521778: //bobomb
+		{
+			int height = getLandHeight(aimpos);
+			if(height != 0)
+			{
+				if(isServer())
+				{
+					f32 dmg = charge_state == 5 ? 4.0f : 3.0f;
+					if (this.hasTag("extra_damage")) dmg += 1.0f;
+
+					CBlob@ mush = server_CreateBlob("bobomb",this.getTeamNum(),Vec2f(aimpos.x,height-12));
+					mush.SetDamageOwnerPlayer(this.getPlayer());
+					mush.set_s32("aliveTime",charge_state == 5 ? 600 : 300);
+					if (this.hasTag("extra_damage"))
+						mush.add_s32("aliveTime", 300);
+					mush.set_f32("damage", dmg);
+					mush.Sync("aliveTime", true);
+					mush.server_SetTimeToDie(mush.get_s32("aliveTime"));
+					mush.SetFacingLeft(this.isFacingLeft());
+				}
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 			}
 		}
 		break;

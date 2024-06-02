@@ -55,6 +55,7 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	array<string> trackNames = {
 		"CBoyarde.ogg",
 		"BruteBlaster.ogg",
+		"KillingMyLove.ogg",
 		"MarioKart.ogg",
 		"LogHorizon1.ogg",
 		"LogHorizon2.ogg",
