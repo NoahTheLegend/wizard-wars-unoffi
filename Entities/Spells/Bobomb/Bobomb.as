@@ -3,7 +3,6 @@
 void onInit(CBlob@ this)
 {
 	this.Tag("counterable");
-	this.Tag("projectile");
 	this.Tag("exploding"); 
 	this.set_f32("damage", 0.0f);
 
@@ -70,7 +69,7 @@ void onTick(CBlob@ this)
 	bool onground = this.isOnGround();
 	bool wasonground = this.get_bool("was_on_ground");
 	bool onwall = this.isOnWall();
-	f32 jump = onwall&&onground&&vellen<2.0f?6:0;
+	f32 jump = onwall&&onground&&vellen<1.0f?4:0;
 
 	Vec2f pos = this.getPosition();
 	CMap@ map = getMap();
@@ -172,10 +171,10 @@ void onTick(CBlob@ this)
 
 			if (target != Vec2f_zero)
 			{
-				f32 lateral_coef = Maths::Abs(Maths::Abs(target.x - Maths::Abs(pos.x))) / (1.0f+vellen);
-				if (!found_ground) lateral_coef = 0;
-				f32 vertical_coef = (target.y > pos.y ? 0 : (pos.y-target.y) * 2);
-				jump += vertical_coef / 8 + lateral_coef / (vellen * 2);
+				f32 lateral_coef = Maths::Abs(Maths::Abs(target.x - Maths::Abs(pos.x))) / ((vellen+0.1f)*4);
+				if (!found_ground || vellen < 1.0f) lateral_coef = 0;
+				f32 vertical_coef = (target.y > pos.y ? 0 : (pos.y-target.y) * (8 / vellen));
+				jump += vertical_coef / 8 + lateral_coef;
 
 				//CParticle@ p = ParticleAnimated("GenericBlast6.png", 
 				//	target, 
@@ -193,11 +192,17 @@ void onTick(CBlob@ this)
 		if ((onground || wasonground || this.isInWater())
 			&& vellen < max_vel)
 		{
-			if (jump > 0)
-				this.setVelocity(Vec2f(this.getVelocity().x + (onwall ? (fl ? -jump : jump) : 0), -jump));
 			this.AddForce(force);
+			if ((getGameTime()+this.getNetworkID())%3==0) MakeDustParticle(this.getPosition() + Vec2f(0.0f, 11.0f), "/DustSmall.png");
 		}
 	}
+
+	if (jump > 0)
+	{
+		this.setVelocity(Vec2f(this.getVelocity().x + (onwall ? (fl ? -jump : jump) : 0), -jump));
+		MakeDustParticle(this.getPosition() + Vec2f(0.0f, 6.0f), "/dust.png");
+	}
+
 	this.set_bool("was_on_ground", onground);
 	if (this.get_s32("aliveTime") < this.getTickSinceCreated()) this.server_Die();
 
@@ -205,8 +210,15 @@ void onTick(CBlob@ this)
 	
 	CSprite@ sprite = this.getSprite();
 	sprite.SetEmitSoundSpeed(1.5f + (f32(this.getTickSinceCreated()) / this.get_s32("aliveTime")));
-	sprite.SetAnimation(onground ? "default" : this.getVelocity().y < 0 ? "jump" : "fall");
-	sprite.animation.time = 4 - Maths::Min(vellen/2, 2);
+	if (onground)
+	{
+		sprite.SetAnimation("run");
+		sprite.animation.time = 4 - Maths::Min(vellen/2, 2);
+	}
+	else if (this.getVelocity().y < 0.0f)
+		sprite.SetAnimation("fly");
+	else
+		sprite.SetAnimation("fall");
 
 	if (this.exists("aliveTime"))
 	{
@@ -232,6 +244,17 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 	);
 }
 
+void MakeDustParticle(Vec2f pos, string file)
+{
+	CParticle@ temp = ParticleAnimated(file, pos - Vec2f(0, 8), Vec2f(0, 0), 0.0f, 1.0f, 3, 0.0f, false);
+
+	if (temp !is null)
+	{
+		temp.width = 8;
+		temp.height = 8;
+	}
+}
+
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	if(this is null || blob is null)
@@ -252,6 +275,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 }
 
 const u8 idle_time = 30;
+const f32 max_lateral_angle = 10;
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if(this is null)
@@ -270,9 +294,10 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 	if (isServer() && this.get_u32("turn") + 5 < getGameTime())
 	{
+		f32 angle = max_lateral_angle;
 		f32 ang = Maths::Abs(-normal.Angle());
 		if (solid
-			&& ((ang > 360-30 || ang < 30) || (ang > 180-30 && ang < 180+30)))
+			&& ((ang > 360-angle || ang < angle) || (ang > 180-angle && ang < 180+angle)))
 		{
 			this.SetFacingLeft(!this.isFacingLeft());
 			this.setVelocity(Vec2f(-this.getVelocity().x, this.getVelocity().y));
