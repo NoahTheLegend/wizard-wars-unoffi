@@ -38,21 +38,21 @@ void onInit(CBlob@ this)
 }
 
 const u8 cards = 6;
-const u8 unfold_total_time_per_card = 4;
+const u8 unfold_total_time_per_card = 3;
 const Vec2f unfold_dist = Vec2f(16, -20);
 const u8 unfold_maxtime = 12;
 const u8 unfold_step = 4;
 const f32 unfold_decel = 5;
 const u8 unfold_timing = cards*unfold_step;
 const f32 lean_mod = 5;
-const u8 show_time = 45;
-const u8 unpack_delay = 10;
+const u8 show_time = 30;
+const u8 unpack_delay = 5;
 const f32 spin_speed_base = 10;
 const u8 shoot_delay = 5;
 // effects
 const u8 knock_time = 45;
 const f32 heal_amount = 0.5f; // 5 hp
-const u8 max_ricochets = 3;
+const u8 max_ricochets = 10;
 
 void onTick(CBlob@ this)
 {
@@ -217,9 +217,6 @@ void onTick(CBlob@ this)
 		{
 			this.Tag("prep");
 			this.Untag("hidden");
-			CShape@ shape = this.getShape();
-			ShapeConsts@ consts = shape.getConsts();
-			consts.mapCollisions = true;
 
 			if (isServer())
 			{

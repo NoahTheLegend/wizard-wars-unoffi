@@ -282,7 +282,7 @@ void ManageSpell( CBlob@ this, PaladinInfo@ paladin, PlayerPrefsInfo@ playerPref
 		{
 			int frame = 0;
             if (charge_state == PaladinParams::extra_ready) {
-                frame = 15;
+                frame = 15 + (getGameTime()/(this.hasTag("extra_damage")?4:5))%12;
 				if (charge_state != PaladinParams::not_aiming)
 				{
 					if (paladin.charge_time == 0)

@@ -282,7 +282,7 @@ void ManageSpell( CBlob@ this, PriestInfo@ priest, PlayerPrefsInfo@ playerPrefsI
 		{
 			int frame = 0;
             if (charge_state == PriestParams::extra_ready) {
-                frame = 15;
+                frame = 15 + (getGameTime()/(this.hasTag("extra_damage")?4:5))%12;
 				if (charge_state != PriestParams::not_aiming)
 				{
 					if (priest.charge_time == 0)

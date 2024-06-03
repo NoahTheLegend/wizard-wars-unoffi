@@ -254,7 +254,7 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
 		{
 			int frame = 0;
             if (charge_state == DruidParams::extra_ready) {
-                frame = 15;	
+				frame = 15 + (getGameTime()/(this.hasTag("extra_damage")?4:5))%12;
             }
             else if (druid.charge_time > spell.cast_period)
             {

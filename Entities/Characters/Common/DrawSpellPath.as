@@ -15,7 +15,7 @@ void onRender(CSprite@ this)
 			Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos(blob.getAimPos());
 
 			Vec2f blockedPos2D = getDriver().getScreenPosFromWorldPos( blob.get_Vec2f("spell blocked pos") );
-			GUI::DrawArrow2D(myPos, blockedPos2D, SColor(255, 158, 58, 187));
+			GUI::DrawArrow2D(myPos, blockedPos2D, SColor(255, 189, 69, 224));
 		}
 	}
 }

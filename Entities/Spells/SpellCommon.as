@@ -4598,14 +4598,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			f32 extraDamage = this.hasTag("extra_damage") ? 0.1f : 0.0f;
 			f32 orbspeed = 2.5f + XORRandom(6)*0.1f;
 			f32 orbDamage = 0.2f + extraDamage;
-			u8 max_hits = this.hasTag("extra_damage") ? 7 : 5;
+			u8 max_hits = this.hasTag("extra_damage") ? 4 : 3;
 
 			switch(charge_state)
 			{
 				case minimum_cast:
 				case medium_cast:
 				{
-					max_hits -= 2;
+					max_hits -= 1;
 					orbspeed *= 0.8f;
 				}
 				break;
@@ -4613,7 +4613,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				break;
 				case super_cast:
 				{
-					orbDamage += 0.1f;
 					orbspeed *= 1.5f;
 					max_hits += 1;
 				}
@@ -4637,7 +4636,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.server_setTeamNum( this.getTeamNum() );
 				orb.setPosition( orbPos );
 				orb.setVelocity( orbVel );
-				orb.server_SetTimeToDie(15+XORRandom(6));
+				orb.server_SetTimeToDie(5+XORRandom(4));
 			}
 		}
 		break;
@@ -4864,7 +4863,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			f32 orbspeed = 7.5f;
+			f32 orbspeed = 9.0f;
 			int amount = 6;
 			f32 dmg = this.hasTag("extra_damage") ? 0.75f : 0.5f;
 			bool overcharge = false;
@@ -4879,7 +4878,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				break;		
 				case super_cast:
 				{
-					orbspeed += 2.5f;
+					orbspeed += 1.0f;
 					overcharge = true;
 					ttd += 15.0f;
 				}
@@ -5111,7 +5110,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (orb !is null)
 				{
 					f32 dist = 48.0f;
-					f32 damage = this.hasTag("extra_damage") ? 0.5f : 0.33f;
+					f32 damage = this.hasTag("extra_damage") ? 0.4f : 0.2f;
 
                     switch (charge_state)
 					{
@@ -5123,14 +5122,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case complete_cast:
 						{
 							dist = 72.0f;
-							damage = this.hasTag("extra_damage") ? 1.25f : 0.75f;
+							damage += 0.2f;
 
 							break;
 						}
 						case super_cast:
 						{
 							dist = 88.0f;
-							damage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
+							damage += 0.4f;
 
 							break;
 						}

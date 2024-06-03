@@ -262,7 +262,7 @@ void ManageSpell( CBlob@ this, JesterInfo@ jester, PlayerPrefsInfo@ playerPrefsI
 		{
 			int frame = 0;
             if (charge_state == JesterParams::extra_ready) {
-                frame = 15;	
+                frame = 15 + (getGameTime()/(this.hasTag("extra_damage")?4:5))%12;	
             }
             else if (jester.charge_time > spell.cast_period)
             {

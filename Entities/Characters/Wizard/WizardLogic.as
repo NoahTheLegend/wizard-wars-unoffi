@@ -251,7 +251,7 @@ void ManageSpell( CBlob@ this, WizardInfo@ wizard, PlayerPrefsInfo@ playerPrefsI
 		{
 			int frame = 0;
             if (charge_state == WizardParams::extra_ready) {
-                frame = 15;	
+                frame = 15 + (getGameTime()/(this.hasTag("extra_damage")?4:5))%12;	
             }
             else if (wizard.charge_time > spell.cast_period)
             {

@@ -6,12 +6,13 @@
 // pistol
 const Vec2f follow_offset = Vec2f(-32.0f, -32.0f);
 const Vec2f fire_offset = Vec2f(32.0f,-8.0f);
-const u32 shoot_delay = 20;
+const u32 shoot_delay = 15;
 const f32 max_bullet_angle_deviation = 5.0f;
 const f32 max_visual_recoil = 20.0f;
 const f32 recoil_falloff_accel = 2;
 const f32 recoil_time = 120; // affected by recoil_falloff_accel
 const f32 recoil_falloff_delay = 8;
+const f32 bullet_mana_cost = 1;
 // slam & swipe
 const f32 min_dmg = 0.5f;
 const f32 max_dmg = 2.0f;
@@ -123,7 +124,7 @@ void onTick( CBlob@ this )
 		if (caster.hasTag("extra_damage"))
 		{
 			this.Tag("extra_damage");
-			shoot_delay_new /= 4;
+			shoot_delay_new /= 2;
 			wave_speed *= 2;
 			max_visual_recoil_new /= 1;
 			recoil_falloff_accel_new *= 1;
@@ -208,8 +209,6 @@ void onTick( CBlob@ this )
 	}
 	else if (state == 2) // fall to slam
 	{
-		this.getShape().getConsts().mapCollisions = true;
-
 		if (isServer())
 		{
 			this.getShape().SetGravityScale(3.0f);
@@ -228,6 +227,7 @@ void onTick( CBlob@ this )
 		{
 			bool force_fl = this.get_bool("force_fl");
 			this.AddForce(Vec2f(force_fl ? -this.getMass()/damp : this.getMass()/damp, 0));
+			this.setPosition(Vec2f_lerp(this.getPosition(), Vec2f(this.getPosition().x, this.get_Vec2f("aimpos").y + Maths::Sin(gt * 0.1f) * 32.0f), 0.5f));
 			this.SetFacingLeft(force_fl);
 			this.setAngleDegrees(0);
 
@@ -294,22 +294,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 				return;
 			}
 
-			manaInfo.mana -= 2;
+			manaInfo.mana -= bullet_mana_cost;
 		}
 	}
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (isServer())
-	{
-		if (this.get_u8("state") == 2 && solid && blob is null)
-		{
-			this.server_Die();
-		}
-	}
-
-
 	if (blob !is null && isEnemy(this, blob) && this.get_u8("state") != 0)
 	{
 		f32 vellen = this.getVelocity().Length()/4;
@@ -334,6 +325,7 @@ void onDie(CBlob@ this)
 		blast(this.getPosition(), 3+XORRandom(3), 4, true);
 		this.getSprite().PlaySound("8bit_disappear", 1.5f, 1.1f + XORRandom(16)*0.01f);
 	}
+	/*
 	if (isServer() && this.get_u8("state") == 2)
 	{
 		CMap@ map = this.getMap();
@@ -356,6 +348,7 @@ void onDie(CBlob@ this)
 				this.server_Hit(b, this.getPosition(), Vec2f_zero, dmg, Hitters::crush, false); 
 		}
 	}
+	*/
 }
 
 bool isEnemy( CBlob@ this, CBlob@ target )

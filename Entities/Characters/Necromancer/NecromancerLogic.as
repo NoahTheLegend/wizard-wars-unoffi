@@ -255,7 +255,7 @@ void ManageSpell( CBlob@ this, NecromancerInfo@ necromancer, PlayerPrefsInfo@ pl
 		{
 			int frame = 0;
             if (charge_state == NecromancerParams::extra_ready) {
-                frame = 15;
+                frame = 15 + (getGameTime()/(this.hasTag("extra_damage")?4:5))%12;
 				if (charge_state != NecromancerParams::not_aiming)
 				{
 					if (necromancer.charge_time == 0)
