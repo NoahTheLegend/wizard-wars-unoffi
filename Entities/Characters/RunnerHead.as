@@ -145,7 +145,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		if (idx != -1)
 		{
     	    if (special[idx] == "rhysdavid299"
-				&& blob.getName() == "jester");
+				&& blob.getName() == "jester")
     	    {
 				texture_file = special[idx]+".png";
 				headIndex = 0;
