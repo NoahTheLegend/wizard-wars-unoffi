@@ -76,14 +76,9 @@ void onTick(CBlob@ this)
 	if (map is null) return;
 
 	Vec2f nextpos = pos + this.getVelocity();
-	if (nextpos.x < 8.0f)
-	{
-		this.setPosition(Vec2f(map.tilemapwidth*8-this.getHeight(), pos.y));
-	}
-	if (nextpos.x > map.tilemapwidth * 8 - 8.0f)
-	{
-		this.setPosition(Vec2f(this.getHeight(), pos.y));
-	}
+	if (nextpos.x < 8.0f) this.setPosition(Vec2f(map.tilemapwidth*8-this.getHeight(), pos.y));
+	if (nextpos.x > map.tilemapwidth * 8 - 8.0f) this.setPosition(Vec2f(this.getHeight(), pos.y));
+	if (nextpos.y > map.tilemapheight * 8 - 8.0f) this.setPosition(Vec2f(pos.x, 0));
 
 	if (isServer())
 	{
