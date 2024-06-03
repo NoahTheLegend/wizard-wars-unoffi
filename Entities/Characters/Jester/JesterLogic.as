@@ -494,10 +494,12 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		f32 angle = params.read_f32();
 		f32 power = params.read_f32();
 
+		this.getSprite().PlaySound("gasleak.ogg", 1.0f, 1.65f+XORRandom(21)*0.01f);
+		this.set_u32("horning", getGameTime()+5);
+		this.set_f32("horn_angle", angle);
+
 		if (power < -100.0f || power > 100.0f)
 			return;
-
-		this.getSprite().PlaySound("gasleak.ogg", 1.0f, 1.65f+XORRandom(21)*0.01f);
 
 		while(!params.isBufferEnd())
 		{
@@ -513,9 +515,6 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 			b.AddForce(Vec2f(b.getMass() * power * falloff, 0).RotateBy(angle));
 		}
-
-		this.set_u32("horning", getGameTime()+5);
-		this.set_f32("horn_angle", angle);
 	}
 }
 
