@@ -347,6 +347,39 @@ void ManageSpell( CBlob@ this, JesterInfo@ jester, PlayerPrefsInfo@ playerPrefsI
 
 void onTick( CBlob@ this )
 {
+	if (isClient())
+	{
+		if (this.get_u32("horning") >= getGameTime())
+		{
+			this.getSprite().PlaySound("airhorn.ogg", 0.5f, 1.85f+XORRandom(31)*0.01f);
+
+			f32 max_angle = 50.0f;
+			for (u8 i = 0; i < (v_fastrender ? 3 : 6); i++)
+			{
+				Vec2f vel = Vec2f(4.0f, 0).RotateBy(this.get_f32("horn_angle") + (XORRandom(max_angle+1)-max_angle/2));
+				CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke2.png").getFirst(), 
+										this.getPosition(), 
+										vel + this.getVelocity()/4, 
+										float(XORRandom(360)), 
+										0.8f+XORRandom(51)*0.01f, 
+										2, 
+										0.0f, 
+										false );
+
+    	   		if(p is null) continue; //bail if we stop getting particles
+
+    			p.diesoncollide = true;
+				p.collides = true;
+				p.Z = 50.0f;
+				p.damping = 0.985f+XORRandom(16)*0.01f;
+				p.lighting = false;
+				p.setRenderStyle(RenderStyle::additive);
+				p.deadeffect = -1;
+			}
+		}
+		else
+			this.set_f32("horn_angle", 0);
+	}
 	if(getNet().isServer())
 	{
 		if(getGameTime() % 5 == 0)
@@ -420,38 +453,6 @@ void onTick( CBlob@ this )
 	// vvvvvvvvvvvvvv CLIENT-SIDE ONLY vvvvvvvvvvvvvvvvvvv
 
 	if (!getNet().isClient()) return;
-
-	if (this.get_u32("horning") >= getGameTime())
-	{
-		this.getSprite().PlaySound("airhorn.ogg", 0.5f, 1.85f+XORRandom(31)*0.01f);
-
-		f32 max_angle = 50.0f;
-		for (u8 i = 0; i < (v_fastrender ? 3 : 6); i++)
-		{
-			Vec2f vel = Vec2f(4.0f, 0).RotateBy(this.get_f32("horn_angle") + (XORRandom(max_angle+1)-max_angle/2));
-			CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke2.png").getFirst(), 
-									this.getPosition(), 
-									vel + this.getVelocity()/4, 
-									float(XORRandom(360)), 
-									0.8f+XORRandom(51)*0.01f, 
-									2, 
-									0.0f, 
-									false );
-									
-       		if(p is null) continue; //bail if we stop getting particles
-
-    		p.diesoncollide = true;
-			p.collides = true;
-			p.Z = 50.0f;
-			p.damping = 0.985f+XORRandom(16)*0.01f;
-			p.lighting = false;
-			p.setRenderStyle(RenderStyle::additive);
-			p.deadeffect = -1;
-		}
-	}
-	else
-		this.set_f32("horn_angle", 0);
-
 	if (this.isInInventory()) return;
 
     ManageSpell( this, jester, playerPrefsInfo, moveVars );

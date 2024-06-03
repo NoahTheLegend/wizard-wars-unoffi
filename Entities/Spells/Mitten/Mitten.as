@@ -223,11 +223,12 @@ void onTick( CBlob@ this )
 		if (isClient())
 			Setup(SColor(Maths::Min(255, this.get_u32("running")), 255, 255, 255), "mitten", false, true);
 
+		this.setPosition(Vec2f_lerp(this.getPosition(), Vec2f(this.getPosition().x, this.get_Vec2f("aimpos").y + Maths::Sin(this.get_u32("running") / 2 * 0.1f) * 24.0f), 0.5f));
+
 		if (isServer())
 		{
 			bool force_fl = this.get_bool("force_fl");
 			this.AddForce(Vec2f(force_fl ? -this.getMass()/damp : this.getMass()/damp, 0));
-			this.setPosition(Vec2f_lerp(this.getPosition(), Vec2f(this.getPosition().x, this.get_Vec2f("aimpos").y + Maths::Sin(gt * 0.1f) * 32.0f), 0.5f));
 			this.SetFacingLeft(force_fl);
 			this.setAngleDegrees(0);
 

@@ -45,7 +45,7 @@ namespace JesterParams
 		//		SpellType::other, 20, 30, 6, 0.0f, true),
 
 		Spell("bobomb", "BOB-omb", 120, "Bob, the walking bomb, with a heart so warm, explodes with love.",
-				SpellType::other, 20, 45, 6, 128.0f, true),
+				SpellType::other, 25, 45, 6, 128.0f, true),
 
 		Spell("bouncybomb", "Gummy Bomb", 113, "This gum bomb bounces to and fro, explodes on impact, a foe's woe.",
 				SpellType::other, 12, 25, 0, 32.0f),

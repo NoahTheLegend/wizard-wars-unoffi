@@ -4767,6 +4767,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						Vec2f normalAimdir = aimpos-this.getPosition();
 						normalAimdir.Normalize();
 						mitten.set_Vec2f("aimpos", aimpos + normalAimdir*mitten.getRadius()/2);
+						mitten.Sync("aimpos", true);
 						mitten.set_bool("force_fl", aimpos.x < this.getPosition().x);
 						mitten.server_SetTimeToDie(30);
 					}
