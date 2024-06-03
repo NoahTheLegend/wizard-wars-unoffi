@@ -124,16 +124,10 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		{
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			CRules@ rules = getRules();
-            int idx = special.find(player.getUsername());
 
-			if (acc.hasCustomHead()
-                || idx != -1)
+			if (acc.hasCustomHead())
 			{
-                if (idx != -1 && special[idx] == "rhysdavid299")
-                {
-                    idx = blob.getName() == "jester" ? idx : -1;
-                }
-				texture_file = idx != -1 ? special[idx] : acc.customHeadTexture;
+				texture_file = acc.customHeadTexture;
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;
@@ -143,6 +137,19 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	else
 	{
 		//not default head; do not use accolades data
+	}
+
+	int idx = special.find(player.getUsername());
+	if (idx != -1)
+	{
+        if (idx != -1 && special[idx] == "rhysdavid299")
+        {
+            idx = blob.getName() == "jester" ? idx : -1;
+			texture_file = special[idx]+".png";
+			headIndex = 0;
+			headsPackIndex = 0;
+			override_frame = true;
+        }
 	}
 
 	int team = doTeamColour(headsPackIndex) ? blob.getTeamNum() : 0;
