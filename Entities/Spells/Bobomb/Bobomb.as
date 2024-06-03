@@ -258,7 +258,25 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	if (this.hasTag("no_spike_collision") && blob.hasTag("projectile")) return false;
 	if (blob.hasTag("door")) return blob.isCollidable();
-	if (blob.hasTag("platform")) return true;
+	if (blob.getShape() !is null)
+	{
+		ShapePlatformDirection@ plat = blob.getShape().getPlatformDirection(0);
+		if (plat !is null)
+		{
+			Vec2f pos = this.getPosition();
+			Vec2f bpos = blob.getPosition();
+
+			Vec2f dir = plat.direction;
+			if (dir.x > 0)
+				return pos.x > bpos.x;
+			if (dir.x < 0)
+				return pos.x < bpos.x;
+			if (dir.y > 0)
+				return pos.y > bpos.y;
+			if (dir.y < 0)
+				return pos.y < bpos.y;
+		}
+	}
 
 	return 
 	( 

@@ -107,15 +107,10 @@ void onDie(CBlob@ this)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	if (detached.getName() == "catapult") // rock n' roll baby
+	if (detached !is null && detached !is this)
 	{
-		this.getShape().getConsts().mapCollisions = false;
-		this.getShape().getConsts().collidable = false;
-		this.getCurrentScript().tickFrequency = 3;
-		this.set_f32("hit dmg modifier", hit_amount_cata);
-		this.set_u8("hurtoncollide hitter", Hitters::cata_boulder);
+		detached.setPosition(detached.getPosition()-Vec2f(0,8));
 	}
-	this.set_u8("launch team", detached.getTeamNum());
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)

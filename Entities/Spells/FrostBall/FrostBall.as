@@ -128,7 +128,7 @@ void Freeze(CBlob@ blob, f32 frozenTime)
 	Vec2f blobPos = blob.getPosition();
 	if(isServer())
 	{
-		CBlob@ icePrison = server_CreateBlob( "ice_prison", blob.getTeamNum(), blobPos );
+		CBlob@ icePrison = server_CreateBlob( "ice_prison", blob.getTeamNum(), blobPos-Vec2f(0,8) );
 		if ( icePrison !is null )
 		{
 			AttachmentPoint@ ap = icePrison.getAttachments().getAttachmentPointByName("PICKUP2");
