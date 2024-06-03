@@ -139,17 +139,20 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		//not default head; do not use accolades data
 	}
 
-	int idx = special.find(player.getUsername());
-	if (idx != -1)
+	if (player !is null)
 	{
-        if (idx != -1 && special[idx] == "rhysdavid299")
-        {
-            idx = blob.getName() == "jester" ? idx : -1;
-			texture_file = special[idx]+".png";
-			headIndex = 0;
-			headsPackIndex = 0;
-			override_frame = true;
-        }
+		int idx = special.find(player.getUsername());
+		if (idx != -1)
+		{
+    	    if (special[idx] == "rhysdavid299"
+				&& blob.getName() == "jester");
+    	    {
+				texture_file = special[idx]+".png";
+				headIndex = 0;
+				headsPackIndex = 0;
+				override_frame = true;
+    	    }
+		}
 	}
 
 	int team = doTeamColour(headsPackIndex) ? blob.getTeamNum() : 0;
