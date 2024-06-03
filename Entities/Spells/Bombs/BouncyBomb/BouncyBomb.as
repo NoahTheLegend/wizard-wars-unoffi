@@ -168,7 +168,7 @@ void onDie(CBlob@ this)
 	if (isClient())
 	{
 		makeSmokePuff(this);
-		smoke(this.getPosition(), 20);
+		smoke(this.getPosition(), 10);
 	}
 	
 	if (isServer())
