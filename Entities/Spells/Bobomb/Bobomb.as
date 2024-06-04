@@ -61,18 +61,19 @@ void onTick(CBlob@ this)
 		this.getSprite().PlaySound("ObsessedSpellCreate", 0.85f, 1.33f);
 	}
 
+	CMap@ map = getMap();
 	f32 vellen = this.getVelocity().Length();
 	bool fl = this.isFacingLeft();
 	f32 accel = base_accel / (1.0f+vellen);
 	Vec2f force = Vec2f((fl ? -accel : accel) * this.getMass(), 0);
 
-	bool onground = this.isOnGround();
+	bool onground = this.isOnGround() || hasSolidGround(this, this.getPosition()+Vec2f(0,8));
+
 	bool wasonground = this.get_bool("was_on_ground");
 	bool onwall = this.isOnWall();
-	f32 jump = onwall&&onground&&vellen<1.0f?4:0;
+	f32 jump = onwall && onground && vellen < 0.5f ? 4 : 0;
 
 	Vec2f pos = this.getPosition();
-	CMap@ map = getMap();
 	if (map is null) return;
 
 	Vec2f nextpos = pos + this.getVelocity();
@@ -96,6 +97,9 @@ void onTick(CBlob@ this)
 					if (b.getTeamNum() == this.getTeamNum()
 						|| b.getDistanceTo(this) > max_aggro_len)
 							continue;
+
+					if (map.rayCastSolidNoBlobs(pos, b.getPosition()))
+						continue;
 
 					fl = b.getPosition().x < pos.x;
 					this.SetFacingLeft(fl);
@@ -122,18 +126,9 @@ void onTick(CBlob@ this)
 					Vec2f step = origin + Vec2f((fl ? -8 : 8) * i, -h*8 + (8*j));
 					TileType t = map.getTile(step).type;
 					target = step;
-
-					CBlob@[] bs;
-					map.getBlobsAtPosition(step, @bs);
 					
-					bool has_solid = false;
-					for (u8 k = 0; k < bs.size(); k++)
-					{
-						if (bs[k] !is null
-							&& (bs[k].hasTag("door") && bs[k].isCollidable()))
-								has_solid = true;
-					}
-
+					bool has_solid = hasSolidGround(this, step);
+					
 					if (!map.isTileSolid(t) && !has_solid)
 						space++;
 
@@ -153,7 +148,7 @@ void onTick(CBlob@ this)
 						//	p.setRenderStyle(RenderStyle::additive);
 					}
 
-					if (space >= 3 && map.isTileSolid(map.getTile(step+Vec2f(0,8))))
+					if (space >= 3 && map.rayCastSolid(step, step + Vec2f(0,32)))
 					{
 						found_ground = true;
 						do_break = true;
@@ -226,6 +221,42 @@ void onTick(CBlob@ this)
 	}
 }
 
+bool hasSolidGround(CBlob@ this, Vec2f pos)
+{
+	CMap@ map = getMap();
+	CBlob@[] bs;
+	map.getBlobsAtPosition(pos, @bs);
+
+	for (u8 k = 0; k < bs.size(); k++)
+	{
+		CBlob@ b = bs[k];
+		if (b is null) continue;
+
+		if (b !is null
+			&& (b.hasTag("door") && b.isCollidable()))
+				return true;
+		
+		if (b.getShape() is null || !b.getShape().isStatic()) continue;
+		
+		ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
+		if (plat !is null)
+		{
+			Vec2f bpos = b.getPosition();
+
+			Vec2f dir = plat.direction;
+			if ((dir.x > 0 && pos.x > bpos.x)
+				|| (dir.x < 0 && pos.x < bpos.x)
+				|| (dir.y > 0 && pos.y > bpos.y)
+				|| (dir.y < 0 && pos.y < bpos.y))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
@@ -257,10 +288,13 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	if(this is null || blob is null)
 	{return false;}
 
-	if (this.hasTag("no_spike_collision") && blob.hasTag("projectile")) return false;
-	if (blob.hasTag("door")) return blob.isCollidable();
-	if (blob.getShape() !is null)
+	if (blob.getShape() !is null && blob.getShape().isStatic())
 	{
+		if (blob.hasTag("door") && blob.isCollidable())
+		{
+			return true;
+		}
+		
 		ShapePlatformDirection@ plat = blob.getShape().getPlatformDirection(0);
 		if (plat !is null)
 		{
@@ -268,16 +302,18 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 			Vec2f bpos = blob.getPosition();
 
 			Vec2f dir = plat.direction;
-			if (dir.x > 0)
-				return pos.x > bpos.x;
-			if (dir.x < 0)
-				return pos.x < bpos.x;
-			if (dir.y > 0)
-				return pos.y > bpos.y;
-			if (dir.y < 0)
-				return pos.y < bpos.y;
+			if ((dir.x > 0 && pos.x > bpos.x)
+				|| (dir.x < 0 && pos.x < bpos.x)
+				|| (dir.y > 0 && pos.y > bpos.y)
+				|| (dir.y < 0 && pos.y < bpos.y))
+			{
+				return true;
+			}
 		}
 	}
+
+	if (this.hasTag("no_spike_collision") && blob.hasTag("projectile")) return false;
+	if (blob.hasTag("door")) return blob.isCollidable();
 
 	return 
 	( 
@@ -300,8 +336,10 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 	if (isClient() && ((solid && blob is null) || (blob !is null && this.doesCollideWithBlob(blob))))
 	{
+		bool onground = this.isOnGround() || hasSolidGround(this, this.getPosition()+Vec2f(0,8));
+
 		CSprite@ sprite = this.getSprite();
-		if (sprite !is null)
+		if (sprite !is null && !onground)
 		{
 			sprite.PlaySound("GumBounce"+XORRandom(3)+".ogg", 0.75f, 2.25f + XORRandom(16)*0.01f);
 		}

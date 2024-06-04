@@ -4769,6 +4769,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						mitten.set_Vec2f("aimpos", aimpos + normalAimdir*mitten.getRadius()/2);
 						mitten.Sync("aimpos", true);
 						mitten.set_bool("force_fl", aimpos.x < this.getPosition().x);
+						mitten.Sync("force_fl", true);
 						mitten.server_SetTimeToDie(30);
 					}
 				}
@@ -4866,7 +4867,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			f32 orbspeed = 9.0f;
 			int amount = 6;
-			f32 dmg = this.hasTag("extra_damage") ? 0.75f : 0.5f;
+			f32 dmg = this.hasTag("extra_damage") ? 1.0f : 0.6f;
 			bool overcharge = false;
 			f32 ttd = this.hasTag("extra_damage") ? 45.0f : 30.0f;
 
@@ -4983,7 +4984,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ b = info.blob;
 				if (b is this) continue;
 
-				if (((b.hasTag("player") || b.hasTag("circle")
+				if (((b.hasTag("player") || b.hasTag("magic_circle")
 					|| b.hasTag("zombie") || b.hasTag("barrier"))
 						&& b.getTeamNum() != this.getTeamNum())
 							|| b.hasTag("projectile"))
@@ -5011,7 +5012,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			f32 ttd = 15.0f;
 			
-			f32 orbDamage = 2.0f;
+			f32 orbDamage = 2.5f;
 			bool overcharge = false;
 
 			if (this.hasTag("extra_damage"))
@@ -5111,7 +5112,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (orb !is null)
 				{
 					f32 dist = 48.0f;
-					f32 damage = this.hasTag("extra_damage") ? 0.4f : 0.2f;
+					f32 damage = this.hasTag("extra_damage") ? 0.6f : 0.4f;
 
                     switch (charge_state)
 					{

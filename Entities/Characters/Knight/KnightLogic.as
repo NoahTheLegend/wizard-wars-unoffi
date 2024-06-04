@@ -110,8 +110,6 @@ void onInit(CBlob@ this)
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
 {
-	if (this.isBot()) this.server_SetHealth(10.0f);
-	
 	if (player !is null)
 	{
 		player.SetScoreboardVars("ScoreboardIcons.png", 3, Vec2f(16, 16));
@@ -213,6 +211,11 @@ void onTick(CBlob@ this)
 {
 	bool knocked = isKnocked(this);
 	CHUD@ hud = getHUD();
+
+	if (this.getTickSinceCreated() == 30)
+	{
+		if (this.isBot()) this.server_SetHealth(10.0f);
+	}
 
 	/////// debug
 	//if(isClient() && isServer() && this.getPlayer() !is null)

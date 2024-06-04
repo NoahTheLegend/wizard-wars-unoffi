@@ -94,6 +94,30 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	if(this is null || blob is null)
 	{return false;}
 
+	if (blob.getShape() !is null && blob.getShape().isStatic())
+	{
+		if (blob.hasTag("door") && blob.isCollidable())
+		{
+			return true;
+		}
+		
+		ShapePlatformDirection@ plat = blob.getShape().getPlatformDirection(0);
+		if (plat !is null)
+		{
+			Vec2f pos = this.getPosition();
+			Vec2f bpos = blob.getPosition();
+
+			Vec2f dir = plat.direction;
+			if ((dir.x > 0 && pos.x > bpos.x)
+				|| (dir.x < 0 && pos.x < bpos.x)
+				|| (dir.y > 0 && pos.y > bpos.y)
+				|| (dir.y < 0 && pos.y < bpos.y))
+			{
+				return true;
+			}
+		}
+	}
+
 	return 
 	( 
 		blob.hasTag("standingup")

@@ -36,7 +36,7 @@ namespace JesterParams
 				SpellType::other, 20, 10, 0, 64.0f, true),
 
 		Spell("flowerpad", "Flower Pad", 109, "From earth's embrace, a bloom does rise, bouncing softly, under clear skies.",
-				SpellType::other, 10, 30, 0, 128.0f),
+				SpellType::other, 5, 30, 0, 128.0f),
 
 		Spell("mitten", "Enchanted Mitten", 110, "A mitten alive, fingers strong and bold, casting bullet hell, its power untold.",
 				SpellType::other, 15, 25, 1, 256.0f, true),
@@ -63,13 +63,13 @@ namespace JesterParams
 				SpellType::other, 55, 55, 15, 416.0f, true),
 			 
 		Spell("kogun", "K.O. GUN!", 118, "A powerful glove, K.O. delight, box their face, end the fight!",
-				SpellType::other, 5, 10, 0, 80.0f),
+				SpellType::other, 7, 10, 0, 80.0f),
 			
 		Spell("bashster", "Bashster", 119, "Knocking blast, a foe's overthrow, hold to charge, let it grow.",
-				SpellType::other, 25, 45, 1, 256.0f, true),
+				SpellType::other, 22, 45, 1, 256.0f, true),
 			
 		Spell("haste", "Haste", 20, "Boost your friends with added speed, or overcharge for self, if you need.",
-			SpellType::other, 18, 20, 0, 360.0f, true),
+			SpellType::other, 12, 20, 0, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),			

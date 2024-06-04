@@ -21,15 +21,48 @@ void onInit(CBlob@ this)
     this.server_SetTimeToDie(8);
 }
 
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	if(this is null || blob is null)
+	{return false;}
+
+	if (blob.getShape() !is null && blob.getShape().isStatic())
+	{
+		if (blob.hasTag("door") && blob.isCollidable())
+		{
+			return true;
+		}
+		
+		ShapePlatformDirection@ plat = blob.getShape().getPlatformDirection(0);
+		if (plat !is null)
+		{
+			Vec2f pos = this.getPosition();
+			Vec2f bpos = blob.getPosition();
+
+			Vec2f dir = plat.direction;
+			if ((dir.x > 0 && pos.x > bpos.x)
+				|| (dir.x < 0 && pos.x < bpos.x)
+				|| (dir.y > 0 && pos.y > bpos.y)
+				|| (dir.y < 0 && pos.y < bpos.y))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 void onTick(CBlob@ this)
 {
-	//prevent leaving the map
-
 	if (this.getTickSinceCreated()==0)
 	{
 		this.getSprite().PlaySound("FireBlast4.ogg", 0.8f, 1.15f + XORRandom(21)*0.01f);
 	}
 	
+	if (this.getVelocity().Length() <= 0.5f)
+		this.setVelocity(Vec2f(1.0f + XORRandom(11)*0.1f, 0).RotateBy((getGameTime()*8+this.getNetworkID())%360));
+
 	Vec2f pos = this.getPosition();
 	if ( pos.x < 0.1f ||
 	pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f)

@@ -79,6 +79,7 @@ void onTick(CBlob@ this)
 				{continue;}
 				if(b.getName() == "force_of_nature") //if beeg green orb, no kil
 				{continue;}
+				if (b.hasTag("cantmove") || b.hasTag("invincible")) continue;
 				
 				this.server_Hit(b,this.getPosition(), Vec2f_zero , damage , Hitters::fire , false);
 				b.AddForce(aimDir*800);

@@ -15,14 +15,15 @@ const f32 recoil_falloff_delay = 8;
 const f32 bullet_mana_cost = 1;
 // slam & swipe
 const f32 min_dmg = 0.5f;
-const f32 max_dmg = 2.0f;
+const f32 max_dmg = 3.0f;
 const f32 base_radius = 32.0f;
-const f32 damp = 3.0f;
+const f32 damp = 2.5f;
 
 void onInit(CBlob@ this)
 {
 	this.Tag("counterable");
 	this.Tag("cantparry");
+	this.Tag("follower");
 	this.addCommandID("shoot_fx");
 
 	CShape@ shape = this.getShape();
@@ -175,6 +176,7 @@ void onTick( CBlob@ this )
 					bullet.setAngleDegrees(angle + angle_diff);
 					bullet.setVelocity(Vec2f(XORRandom(vel_rnd*10)/10+bullet_vel,0).RotateBy(angle + angle_diff));
 					bullet.server_SetTimeToDie(2);
+					bullet.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 					this.set_u32("last_shot", gt);
 
 					CBitStream params;
@@ -304,7 +306,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob !is null && isEnemy(this, blob) && this.get_u8("state") != 0)
 	{
-		f32 vellen = this.getVelocity().Length()/4;
+		f32 vellen = this.getVelocity().Length()/5;
 		f32 extra = this.hasTag("extra_damage") ? 2.0f : 1.0f;
 		f32 dmg = Maths::Clamp(vellen, min_dmg, max_dmg+extra);
 

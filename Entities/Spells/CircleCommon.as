@@ -3,7 +3,7 @@ void onInit(CBlob@ this)
     this.getShape().SetGravityScale(0);
     this.set_u8("despelled",0);
     this.set_s32("aliveTime",10);
-    this.Tag("circle");
+    this.Tag("magic_circle");
     this.Tag("multi_despell");
 }
 
@@ -18,5 +18,3 @@ void onTick(CBlob@ this)
         this.Tag("reverse");
     
 }
-
-

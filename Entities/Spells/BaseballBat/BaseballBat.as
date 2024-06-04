@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
 	if (!this.exists("damage")) this.set_f32("damage", 0.25f);
 }
 
-const u8 spinup_time = 225;
+const u8 spinup_time = 150;
 const f32 max_spin_speed = 30.0f;
 const f32 move_lerp = 0.33f;
 const f32 base_hit_power = 15.0f;
@@ -79,7 +79,7 @@ void onTick(CBlob@ this)
 			this.set_Vec2f("ready_pos", pos);
 			this.Tag("ready");
 
-			if (this.hasTag("overcharge"))
+			if (isClient() && this.hasTag("overcharge"))
 			{
 				sprite.SetEmitSound("bat_swing.ogg");
 				sprite.SetEmitSoundSpeed(0.0f);
@@ -98,6 +98,8 @@ void onTick(CBlob@ this)
 		{
 			f32 factor = f32(Maths::Min(diff, spinup_time))/spinup_time;
 			this.set_f32("hit_power", factor);
+
+			this.Tag("magic_circle");
 
 			this.setAngleDegrees((deg + (fl ? 1 : -1) * (max_spin_speed*factor))%360);
 			sprite.SetEmitSoundVolume(0.5f * factor);
@@ -143,7 +145,7 @@ void onTick(CBlob@ this)
 					if (info is null) continue;
 
 					CBlob@[] bs;
-					getMap().getBlobsInRadius(info.hitpos, 8.0f, @bs);
+					getMap().getBlobsInRadius(info.hitpos, 16.0f, @bs);
 					for (u16 j = 0; j < bs.size(); j++)
 					{
 						CBlob@ b = bs[j];
@@ -152,9 +154,10 @@ void onTick(CBlob@ this)
 
 						ignore_ids.push_back(b.getNetworkID());
 						onCollision(this, b, false);
+
+						this.set("ignore_ids", ignore_ids);
 					}
 				}
-				this.set("ignore_ids", ignore_ids);
 			}
 		}
 	}
@@ -240,7 +243,7 @@ f32 Lerp(f32 a, f32 b, f32 t)
 bool isEnemy(CBlob@ this, CBlob@ target)
 {
 	CBlob@ friend = getBlobByNetworkID(target.get_netid("brain_friend_id"));
-	return 
+	return
 	(
 		(
 			target.hasTag("barrier") ||
@@ -253,7 +256,9 @@ bool isEnemy(CBlob@ this, CBlob@ target)
 					)
 			)
 		)
-		&& target.getTeamNum() != this.getTeamNum() 
+		&& target.getTeamNum() != this.getTeamNum()
+		&& target.getShape() !is null && !target.getShape().isStatic()
+		&& !target.hasTag("invincible")
 	);
 }
 

@@ -118,7 +118,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {	
 	if (blob !is null && this !is null)
 	{
-		if (isEnemy(this, blob))
+		if (isEnemy(this, blob) || doesCollideWithBlob(this, blob))
 		{
 			Shatter(this, normal);
 			this.setVelocity(Vec2f_zero);
@@ -228,6 +228,38 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 		)
 		&& target.getTeamNum() != this.getTeamNum() 
 	);
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	if(this is null || blob is null)
+	{return false;}
+
+	if (blob.getShape() !is null && blob.getShape().isStatic())
+	{
+		if (blob.hasTag("door") && blob.isCollidable())
+		{
+			return true;
+		}
+		
+		ShapePlatformDirection@ plat = blob.getShape().getPlatformDirection(0);
+		if (plat !is null)
+		{
+			Vec2f pos = this.getPosition();
+			Vec2f bpos = blob.getPosition();
+
+			Vec2f dir = plat.direction;
+			if ((dir.x > 0 && pos.x > bpos.x)
+				|| (dir.x < 0 && pos.x < bpos.x)
+				|| (dir.y > 0 && pos.y > bpos.y)
+				|| (dir.y < 0 && pos.y < bpos.y))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void makeSmokeParticle(CBlob@ this, const Vec2f vel, const string filename = "Smoke")

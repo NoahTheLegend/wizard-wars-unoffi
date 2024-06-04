@@ -118,6 +118,30 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
+	if (blob.getShape() !is null && blob.getShape().isStatic())
+	{
+		if (blob.hasTag("door") && blob.isCollidable())
+		{
+			return true;
+		}
+		
+		ShapePlatformDirection@ plat = blob.getShape().getPlatformDirection(0);
+		if (plat !is null)
+		{
+			Vec2f pos = this.getPosition();
+			Vec2f bpos = blob.getPosition();
+
+			Vec2f dir = plat.direction;
+			if ((dir.x > 0 && pos.x > bpos.x)
+				|| (dir.x < 0 && pos.x < bpos.x)
+				|| (dir.y > 0 && pos.y > bpos.y)
+				|| (dir.y < 0 && pos.y < bpos.y))
+			{
+				return true;
+			}
+		}
+	}
+	
 	if (blob is null || blob.getTeamNum() == this.getTeamNum()) return false;
 	return blob.hasTag("kill other spells") || blob.hasTag("flesh") || blob.hasTag("zombie") || blob.hasTag("barrier");
 }

@@ -99,6 +99,8 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 		&& !target.hasTag("dead")
 		&& target.getTeamNum() != this.getTeamNum() //as long as they're on the enemy side
 		&& !target.hasTag("black hole")  //as long as it's not a black hole, go as normal.
+		&& !target.hasTag("follower")
+		&& !target.hasTag("magic_circle")
 	);
 }	
 

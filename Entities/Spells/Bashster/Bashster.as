@@ -23,8 +23,8 @@ void onInit(CBlob@ this)
 	this.set_f32("scale", 1.0f);
 }
 
-const u16 max_hold_time = 150;
-const f32 dmg_per_step = 0.01f;
+const u16 max_hold_time = 90;
+const f32 dmg_per_step = 0.02f;
 const f32 scale = 0.01f;
 const u8 prep_time = 9;
 

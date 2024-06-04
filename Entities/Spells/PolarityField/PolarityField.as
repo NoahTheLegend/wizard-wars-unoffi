@@ -36,7 +36,8 @@ void onInit(CBlob@ this)
 	this.Sync("stages", true);
 
 	this.set_u8("despelled",0);
-	this.Tag("circle");
+	this.Tag("magic_circle");
+	this.Tag("multi_despell");
 
 	this.server_SetTimeToDie(15.0f + 15.0f*(this.get_u8("stages")-2));
 }

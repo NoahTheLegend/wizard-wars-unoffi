@@ -511,6 +511,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 			
 			CBlob@ b = getBlobByNetworkID(id);
 			if (b is null) continue;
+			if (b.hasTag("cantmove") || b.hasTag("invincible")) continue;
 
 			f32 falloff = 1.0f-((len-32.0f)/128.0f);
 

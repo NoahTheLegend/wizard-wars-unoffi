@@ -25,7 +25,7 @@ void onInit(CBlob@ this)
 	this.set_u32("pack_time", 0);
 	this.set_u32("unpack_time", 0);
 	this.set_u32("disabled", 0);
-	this.set_u8("collided", 0);
+	this.set_u8("ricochets", 0);
 	this.Tag("cantmove");
 
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
@@ -52,7 +52,8 @@ const u8 shoot_delay = 5;
 // effects
 const u8 knock_time = 45;
 const f32 heal_amount = 0.5f; // 5 hp
-const u8 max_ricochets = 10;
+const u8 max_ricochets = 3;
+const f32 max_rico_dist = 256.0f;
 
 void onTick(CBlob@ this)
 {
@@ -98,7 +99,7 @@ void onTick(CBlob@ this)
 
 				if (tsc-timing == unfold_timing-1)
 				{
-					smoke(this.getPosition(), 2);
+					//smoke(this.getPosition(), 2);
 					this.getSprite().PlaySound("CardReveal.ogg", 1.25f, 1.0f+XORRandom(11)*0.01f);
 				}
 				if (tsc-timing >= unfold_timing && hidden)
@@ -302,28 +303,60 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	if (this.get_u8("state") != 3) return;
 	u8 type = this.get_u8("type");
 
-	if (isServer())
-	{
-		if (solid && blob is null)
-		{
-			if (type != effects::ricochet || this.get_u8("collided") > max_ricochets)
-				this.server_Die();
-			else
-				this.add_u8("collided", 1);
-		}
-	}
-
 	if (blob !is null && isEnemy(this, blob))
 	{
 		f32 dmg = this.get_f32("dmg");
 		ApplyEffect(this, blob, type);
 
 		if (isServer())
+		{
 			this.server_Hit(blob, this.getPosition(), Vec2f_zero, dmg, type == effects::ignite ? Hitters::fire : Hitters::arrow, false);
+
+			if (type == effects::ricochet)
+			{
+				this.add_u8("ricochets", 1);
+
+				CBlob@[] bs;
+				getMap().getBlobsInRadius(this.getPosition(), max_rico_dist, @bs);
+
+				Vec2f target;
+				f32 dist = max_rico_dist;
+				u16 id = 0;
+
+				for (u16 i = 0; i < bs.size(); i++)
+				{
+					CBlob@ b = bs[i];
+					if (b is null || b is blob) continue;
+					f32 temp_dist = this.getDistanceTo(b);
+					
+
+					if (isEnemy(this, b) && temp_dist <= dist)
+					{
+						target = b.getPosition();
+						smoke(target, 6);
+						dist = temp_dist;
+						id = b.getNetworkID();
+					}
+				}
+
+				if (target != Vec2f_zero)
+				{
+					Vec2f new_dir = target-blob.getPosition();
+					this.setPosition(blob.getPosition());
+					f32 vel = this.getVelocity().Length();
+					this.setVelocity(Vec2f(vel, 0).RotateBy(-new_dir.Angle()));
+					
+				}
+				else this.add_u8("ricochets", max_ricochets);
+			}
+		}
+
 		this.IgnoreCollisionWhileOverlapped(blob);
 		this.getSprite().PlaySound("CardDie.ogg", 0.75f, 1.25f+XORRandom(16)*0.01f);
 
-		if (type != effects::penetration)
+		if (type != effects::penetration
+			&& (type != effects::ricochet
+				|| this.get_u8("ricochets") > max_ricochets))
 		{
 			this.server_Die();
 			this.Tag("dead");
