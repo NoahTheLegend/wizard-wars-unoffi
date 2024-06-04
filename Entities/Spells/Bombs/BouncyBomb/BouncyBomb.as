@@ -6,7 +6,7 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.Tag("projectile");
 	this.Tag("exploding"); 
-	this.Tag("die_in_divine_shield");
+	this.Tag("bomb");
 	this.set_f32("damage", 0.0f);
 
 	this.set_f32("explosive_radius", 0.0f);
