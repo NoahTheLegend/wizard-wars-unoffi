@@ -242,16 +242,8 @@ bool hasSolidGround(CBlob@ this, Vec2f pos)
 		ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
 		if (plat !is null)
 		{
-			Vec2f bpos = b.getPosition();
-
 			Vec2f dir = plat.direction;
-			if ((dir.x > 0 && pos.x > bpos.x)
-				|| (dir.x < 0 && pos.x < bpos.x)
-				|| (dir.y > 0 && pos.y > bpos.y)
-				|| (dir.y < 0 && pos.y < bpos.y))
-			{
-				return true;
-			}
+			return dir.y < 0;
 		}
 	}
 
