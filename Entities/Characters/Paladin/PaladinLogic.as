@@ -213,7 +213,7 @@ void ManageSpell( CBlob@ this, PaladinInfo@ paladin, PlayerPrefsInfo@ playerPref
 
     if (is_pressed && canCastSpell) 
     {
-        moveVars.walkFactor *= 0.75f;
+        moveVars.walkFactor *= 0.8f;
 		if(this.get_bool("burnState"))
 		{
 			charge_time += 30;
@@ -469,7 +469,7 @@ void onTick( CBlob@ this )
         return;
     }
 
-	moveVars.walkFactor *= 0.95f;
+	//moveVars.walkFactor *= 0.95f;
 	// vvvvvvvvvvvvvv CLIENT-SIDE ONLY vvvvvvvvvvvvvvvvvvv
 
 	if (!getNet().isClient()) return;

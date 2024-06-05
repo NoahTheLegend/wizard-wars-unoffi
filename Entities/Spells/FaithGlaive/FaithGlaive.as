@@ -1,5 +1,6 @@
 #include "Hitters.as"
 #include "TeamColour.as";
+#include "RunnerCommon.as"
 
 const u16 target_angle = 90;
 const f32 start_angle = -15;
@@ -20,6 +21,12 @@ f32 getAimAngle(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	RunnerMoveVars@ moveVars;
+    if (!this.get( "moveVars", @moveVars )) {
+        return;
+    }
+
+	this.set_bool("disable_dash", true);
 	this.set_u32("teleport_disable", getGameTime()+3);
 
 	bool remove = this.hasTag("dead");
@@ -128,6 +135,7 @@ void onTick(CBlob@ this)
 			}
 		}
 
+		this.set_bool("disable_dash", false);
 		sprite.RemoveSpriteLayer("faithglaive");
 		this.RemoveScript("FaithGlaive.as");
 	}

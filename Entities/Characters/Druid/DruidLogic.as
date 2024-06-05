@@ -194,7 +194,7 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
 	bool canCastSpell = wizMana >= spell.mana && playerPrefsInfo.spell_cooldowns[spellID] <= 0;
     if (is_pressed && canCastSpell) 
     {
-        moveVars.walkFactor *= 0.75f;
+        moveVars.walkFactor *= 0.8f;
         charge_time += 1;
         if (charge_time >= spell.full_cast_period)
         {

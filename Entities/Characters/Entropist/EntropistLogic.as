@@ -207,7 +207,7 @@ void ManageSpell( CBlob@ this, EntropistInfo@ entropist, PlayerPrefsInfo@ player
 
     if (is_pressed && canCastSpell) 
     {
-        moveVars.walkFactor *= 0.75f;
+        moveVars.walkFactor *= 0.8f;
 		if(this.get_bool("burnState"))
 		{
 			charge_time += 30;

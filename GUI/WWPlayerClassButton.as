@@ -386,8 +386,8 @@ void intitializeClasses()
 
 	playerClassButtons.registerWWPlayerClassButton("Paladin", 
 													"Justice guardian. Handicapped in spells range and agility. Complexity: MEDIUM" +
-													"\n\n     Health: 125" +
-													"\n     Mana: 300" +
+													"\n\n     Health: 100" +
+													"\n     Mana: 250" +
 													"\n     Mana Regen: 3 mana/sec",
 													"paladin", 8, 0, 9, 0, "WizardWars");
 

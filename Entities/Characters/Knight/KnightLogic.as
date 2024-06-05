@@ -716,7 +716,7 @@ class ShieldSlideState : KnightState
 
 					if (knight.slideTime > 30)
 					{
-						moveVars.walkFactor *= 0.75f;
+						moveVars.walkFactor *= 0.8f;
 						if (knight.slideTime > 45)
 						{
 							knight.state = KnightStates::shielding;

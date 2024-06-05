@@ -4560,6 +4560,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				this.set_f32("faithglaiverotation", 0);
 				this.set_u32("faithglaivetiming", getGameTime());
 
+				Vec2f vel = this.getVelocity();
+				this.setVelocity(Vec2f(vel.x*0.75f, vel.y));
 				this.AddScript("FaithGlaive.as");
 			}
 			else

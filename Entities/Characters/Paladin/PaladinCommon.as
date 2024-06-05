@@ -9,6 +9,8 @@ const f32 connection_dmg_reduction = 0.5f;
 const f32 connection_dmg_transfer = 0.25f;
 const f32 min_connection_health_ratio = 0.25f;
 const f32 barrier_dmg_decrease = 0.5f;
+const f32 mana_to_health_ratio = 0.0f;
+const f32 health_per_regen = 1.0f;
 
 namespace PaladinParams
 {
@@ -24,7 +26,7 @@ namespace PaladinParams
 
 	const ::f32 shoot_max_vel = 8.0f;
 	const ::f32 MAX_ATTACK_DIST = 360.0f;
-	const ::s32 MAX_MANA = 300;
+	const ::s32 MAX_MANA = 250;
 	const ::s32 MANA_REGEN = 3;
 	
 	const ::string[] zombieTypes = {"zombie", "skeleton", "greg", "wraith"};

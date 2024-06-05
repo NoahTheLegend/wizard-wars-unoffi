@@ -87,8 +87,30 @@ void onTick(CBlob@ this)
 		if (ignore_ids.find(b.getNetworkID()) != -1) continue;
 
 		ignore_ids.push_back(b.getNetworkID());
-		if (isServer() && !map.rayCastSolidNoBlobs(pos, b.getPosition()))
-			this.server_Hit(b, pos, glove_pos-next_pos, this.get_f32("damage"), Hitters::crush, true);
+		if (!map.rayCastSolidNoBlobs(pos, b.getPosition()))
+		{
+			if (b.hasTag("barrier"))
+			{
+				this.set_u32("return_time", getGameTime());
+				this.Tag("returning");
+				CPlayer@ ownerplayer = this.getDamageOwnerPlayer();
+				if (ownerplayer !is null && ownerplayer.getBlob() !is null)
+				{
+					CBlob@ owner = ownerplayer.getBlob();
+					owner.AddForce(Vec2f((1.0f - ((next_pos-owner.getPosition()).Length() / 80.0f)) * 2 * owner.getMass(), 0).RotateBy(angle));
+					if (isServer())
+					{
+						this.server_Hit(owner, pos, Vec2f_zero, this.get_f32("damage"), Hitters::crush, true);
+					}
+				}
+				if (isServer())
+				{
+					this.server_Hit(b, pos, glove_pos-next_pos, this.get_f32("damage"), Hitters::crush, true);
+				}
+			}
+			else if (isServer())
+				this.server_Hit(b, pos, glove_pos-next_pos, this.get_f32("damage"), Hitters::crush, true);
+		}
 		if (isClient())
 			this.getSprite().PlaySound("CardImpact.ogg", 1.25f, 0.85f+XORRandom(11)*0.01f);
 

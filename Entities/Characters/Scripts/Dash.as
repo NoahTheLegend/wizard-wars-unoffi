@@ -12,10 +12,10 @@ void onInit( CBlob@ this )
     this.getCurrentScript().removeIfTag = "dead";
 
     f32 new_force = BASE_DASH_FORCE;
-    if (this.getName() == "paladin")
-    {
-        new_force *= 0.85f;
-    }
+    //if (this.getName() == "paladin")
+    //{
+    //    new_force *= 0.85f;
+    //}
     this.set_f32("dash_force", new_force);
 }
  

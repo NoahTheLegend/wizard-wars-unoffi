@@ -1,8 +1,7 @@
 #include "MagicCommon.as";
+#include "PaladinCommon.as";
 
 const u8 MIN_FOCUS_TIME = 5; //in seconds
-const f32 mana_to_health_ratio = 0.0f;
-const f32 health_per_regen = 1.0f;
 
 void onInit(CBlob@ this)
 {
