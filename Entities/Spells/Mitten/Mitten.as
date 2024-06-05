@@ -47,7 +47,8 @@ void onInit(CBlob@ this)
 }	
 
 void onTick( CBlob@ this )
-{     
+{
+	this.Tag("counterable");
 	CBlob@ caster = getBlobByNetworkID(this.get_u16("caster"));
 	if (caster is null || caster.hasTag("dead"))
 	{

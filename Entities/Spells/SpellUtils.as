@@ -407,7 +407,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 
 			float angleDiff = bAngle - aimAngle;
 			angleDiff = (angleDiff + 180) % 360 - 180;
-
+			
 			if( ((angleDiff > arcLimitDegrees
 				|| angleDiff < -arcLimitDegrees)
 					&& bVec.getLength() > counterspellRangeInner) || b.hasTag("invincible"))
@@ -419,6 +419,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			
 			bool countered = false;
 			bool retribution = false;
+			
 			if ( b.hasTag("counterable") && (!sameTeam || b.hasTag("alwayscounter")) )
 			{
 				b.Untag("exploding");
