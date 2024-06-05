@@ -316,7 +316,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
 		f32 rad = h/2;
         
         Vec2f center = Vec2f(-w/2, -h/2) + sprite.getOffset(); // shift it to upper left corner for 1/2 of sprite size
-		f32 hp = this.get_f32("hit_power");
+		f32 hp = Maths::Clamp(this.get_f32("hit_power"), 0, 100.0f);
 
 		int i = 0;
         while(image.nextPixel() && w != 0 && h != 0)
@@ -338,7 +338,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
 			{
 				len = h - Maths::Floor(px_pos.y);
 				distfactor = len/h;
-				spin_force = this.get_f32("angle_diff") * distfactor;
+				spin_force = (this.get_f32("angle_diff")%360) * distfactor;
 				spin_force = Maths::Sin(Maths::Pow(spin_force*0.05f,2))*25;
 				pvel = Vec2f(rotate_left ? spin_force : -spin_force, 0).RotateBy(deg);
 			}
