@@ -109,6 +109,7 @@ void onInit(CBrain@ this)
 
 void onInit(CBlob@ this)
 {
+	this.Tag("player");
 	this.addCommandID("self ignite");
 
 	//cannot fall out of map
@@ -432,7 +433,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.Tag("activated");
 		this.set_s32("explosion_timer", getGameTime() + this.get_f32("keg_time"));
 		this.Tag("exploding");
-		this.Tag("player");
 		
 		this.Sync("activated",true);
 		this.Sync("exploding",true);
