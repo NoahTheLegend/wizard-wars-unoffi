@@ -46,9 +46,10 @@ void onInit(CBlob@ this)
 	this.set_string("anim", "slow");
 }
 
-const f32 base_accel = 0.75f;
-const f32 max_vel = 7.0f;
+const f32 base_accel = 1.0f;
+const f32 max_vel = 7.5f;
 const f32 max_aggro_len = 256.0f;
+const f32 max_jump_vel = 12.0f;
 
 void onTick(CBlob@ this)
 {
@@ -78,10 +79,24 @@ void onTick(CBlob@ this)
 	if (map is null) return;
 
 	Vec2f nextpos = pos + this.getVelocity();
-	if (nextpos.x < 8.0f) this.setPosition(Vec2f(map.tilemapwidth*8-this.getHeight(), pos.y));
-	if (nextpos.x > map.tilemapwidth * 8 - 8.0f) this.setPosition(Vec2f(this.getHeight(), pos.y));
-	if (nextpos.y > map.tilemapheight * 8 - 8.0f) this.setPosition(Vec2f(pos.x, 0));
-	if (nextpos.y < 0.0f) this.setPosition(Vec2f(pos.x, map.tilemapheight * 8 - this.getHeight()));
+	if (nextpos.x < 8.0f)
+	{
+		this.setPosition(Vec2f(map.tilemapwidth*8-this.getHeight(), pos.y));
+	}
+	if (nextpos.x > map.tilemapwidth * 8 - 8.0f)
+	{
+		this.setPosition(Vec2f(this.getHeight(), pos.y));
+	}
+	if (nextpos.y > map.tilemapheight * 8 - 8.0f)
+	{
+		this.setPosition(Vec2f(pos.x, 0));
+		this.setVelocity(Vec2f_zero);
+	}
+	if (nextpos.y < 0.0f)
+	{
+		this.setPosition(Vec2f(pos.x, map.tilemapheight * 8 - this.getHeight()));
+
+	}
 
 	if (isServer())
 	{
@@ -181,14 +196,18 @@ void onTick(CBlob@ this)
 			}
 		}
 
-		if ((onground || wasonground || this.isInWater())
-			&& vellen < max_vel)
+		if (vellen < max_vel)
 		{
+			if (!(onground || wasonground || this.isInWater()))
+				force /= 2;
+			else if ((getGameTime()+this.getNetworkID())%3==0) MakeDustParticle(this.getPosition() + Vec2f(0.0f, 11.0f), "/DustSmall.png");
+			
 			this.AddForce(force);
-			if ((getGameTime()+this.getNetworkID())%3==0) MakeDustParticle(this.getPosition() + Vec2f(0.0f, 11.0f), "/DustSmall.png");
 		}
 	}
 
+	jump = Maths::Min(jump, max_jump_vel);
+	if (onground && XORRandom(40) == 0 && jump == 0) jump = 6;
 	if (jump > 0)
 	{
 		this.setVelocity(Vec2f(this.getVelocity().x + (onwall ? (fl ? -jump : jump) : 0), -jump));
@@ -255,7 +274,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 	return 
 	(
 		(target.getTeamNum() != this.getTeamNum() && target.getShape() !is null && !target.getShape().isStatic()
-		&& (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") )
+		&& (target.hasTag("door") || target.getName() == "trap_block") )
 		||
 		(
 			target.hasTag("flesh") 
@@ -319,7 +338,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 }
 
 const u8 idle_time = 30;
-const f32 max_lateral_angle = 10;
+const f32 max_lateral_angle = 45; // idk why
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if(this is null)

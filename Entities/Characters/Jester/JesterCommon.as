@@ -39,7 +39,7 @@ namespace JesterParams
 				SpellType::other, 5, 30, 0, 128.0f),
 
 		Spell("mitten", "Enchanted Mitten", 110, "A mitten alive, fingers strong and bold, casting bullet hell, its power untold.",
-				SpellType::other, 15, 25, 1, 256.0f, true),
+				SpellType::other, 18, 20, 1, 256.0f, true),
 
 		//Spell("pogostick", "Pogo Stick", 111, "A spring, a bounce, a leap so high, on pogo stick, touch the sky.",
 		//		SpellType::other, 20, 30, 6, 0.0f, true),
@@ -48,13 +48,13 @@ namespace JesterParams
 				SpellType::other, 25, 45, 6, 128.0f, true),
 
 		Spell("bouncybomb", "Gummy Bomb", 113, "This gum bomb bounces to and fro, explodes on impact, a foe's woe.",
-				SpellType::other, 12, 25, 0, 32.0f),
+				SpellType::other, 16, 18, 0, 32.0f),
 
 		Spell("carddeck", "Jester Deck", 114, "Six cards of magic in the air, overcharge sends them spinning near.",
 				SpellType::other, 20, 30, 5, 180.0f, true),
 
 		Spell("airhorn", "Air Horn", 115, "A gusty blast, foes feel the strain, soon will none remain.",
-				SpellType::other, 10, 25, 0, 64.0f, true),
+				SpellType::other, 10, 25, 0, 64.0f, true), // jesterlogic.as
 
 		Spell("baseballbat", "Bat", 116, "Spinning bat of Jester's grace, erases foes without a trace.",
 				SpellType::other, 35, 50, 0, 256.0f, true),
@@ -66,7 +66,7 @@ namespace JesterParams
 				SpellType::other, 7, 10, 0, 80.0f),
 			
 		Spell("bashster", "Bashster", 119, "Knocking blast, a foe's overthrow, hold to charge, let it grow.",
-				SpellType::other, 22, 45, 1, 256.0f, true),
+				SpellType::other, 25, 45, 1, 256.0f, true),
 			
 		Spell("haste", "Haste", 20, "Boost your friends with added speed, or overcharge for self, if you need.",
 			SpellType::other, 12, 20, 0, 360.0f, true),

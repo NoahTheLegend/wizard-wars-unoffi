@@ -4810,7 +4810,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			f32 extraDamage = this.hasTag("extra_damage") ? 0.5f : 0.0f;
 			f32 orbDamage = 1.5f + extraDamage;
-			f32 orbspeed = 4;
+			f32 orbspeed = 6;
 			f32 explode_radius = 24.0f;
 			f32 ttd = this.hasTag("extra_damage") ? 10.0f : 7.5f;
 
@@ -4820,7 +4820,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case medium_cast:
 				{
 					ttd -= 2.5f;
-					orbDamage -= 0.5f;
+					orbspeed -= 2;
+					orbDamage -= 1.0f;
 				}
 				break;
 				case complete_cast:
@@ -4939,13 +4940,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case -461020010: //airhorn
+		case -461020010: //airhorn jesterlogic.as
 		{
 			if (!isServer()){
            		return;
 			}
 
-			f32 dmg = this.hasTag("extra_damage") ? 1.5f : 1.0f;
+			f32 dmg = this.hasTag("extra_damage") ? 1.5f : 0.75f;
 			f32 power = 7.0f;
 			f32 angle = 60.0f;
 			f32 dist = 64.0f;
@@ -5112,7 +5113,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (orb !is null)
 				{
 					f32 dist = 48.0f;
-					f32 damage = this.hasTag("extra_damage") ? 0.6f : 0.4f;
+					f32 damage = this.hasTag("extra_damage") ? 0.5f : 0.3f;
 
                     switch (charge_state)
 					{

@@ -75,7 +75,7 @@ namespace ShamanParams
 			SpellType::other, 25, 60, 6, 360.0f, true),
 
 		Spell("meteor_rain", "Volcano", 121, "Makes a nearby volcano rain hot magma.",
-			SpellType::other, 70, 85, 10, 256.0f, true),
+			SpellType::other, 65, 70, 10, 256.0f, true),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

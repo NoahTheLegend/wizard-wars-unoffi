@@ -7,6 +7,7 @@ void onInit(CBlob@ this)
 	this.set_f32("explosive_radius", 24.0f);
 	this.set_f32("explosive_damage", 0.5f);
 	this.set_f32("map_damage_radius", 0.0f);
+	this.Tag("parent_immune");
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
@@ -15,11 +16,26 @@ void onInit(CBlob@ this)
 	shape.SetGravityScale(0.0f);
 	shape.ResolveInsideMapCollision();
 	shape.checkCollisionsAgain = true;
+	shape.getConsts().mapCollisions = false;
+
+	this.getSprite().SetRelativeZ(501.0f);
 }
+
+const f32 ticks_noclip = 15;
 
 void onTick(CBlob@ this)
 {
 	this.setAngleDegrees(-this.getVelocity().Angle());
+
+	bool has_solid = this.getShape().isOverlappingTileSolid(true);
+	if (!this.hasTag("solid") && getMap() !is null && !has_solid)
+	{
+		this.getShape().getConsts().mapCollisions = true;
+		if (has_solid) this.server_Die();
+		this.Tag("solid");
+	}
+	else if (!this.hasTag("solid") && this.getTickSinceCreated() > ticks_noclip)
+		this.server_Die();
 
 	if (isClient())
 	{

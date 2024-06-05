@@ -7,7 +7,7 @@
 const Vec2f follow_offset = Vec2f(-32.0f, -32.0f);
 const Vec2f fire_offset = Vec2f(32.0f,-8.0f);
 const u32 shoot_delay = 15;
-const f32 max_bullet_angle_deviation = 5.0f;
+const f32 max_bullet_angle_deviation = 2.5f;
 const f32 max_visual_recoil = 20.0f;
 const f32 recoil_falloff_accel = 2;
 const f32 recoil_time = 120; // affected by recoil_falloff_accel

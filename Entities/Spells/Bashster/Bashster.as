@@ -24,7 +24,7 @@ void onInit(CBlob@ this)
 }
 
 const u16 max_hold_time = 90;
-const f32 dmg_per_step = 0.02f;
+const f32 dmg_per_step = 0.03f;
 const f32 scale = 0.01f;
 const u8 prep_time = 9;
 
@@ -76,7 +76,7 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if (hold_time > 150 || (!holding && this.getTickSinceCreated() > 15))
+	if (hold_time > max_hold_time || (!holding && this.getTickSinceCreated() > 15))
 	{		
 		if (isServer())
 		{

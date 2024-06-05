@@ -23,6 +23,7 @@
 
 bool isOwnerBlob(CBlob@ this, CBlob@ that)
 {
+	if (this.hasTag("parent_immune")) return false;
 	//easy check
 	if (this.getDamageOwnerPlayer() is that.getPlayer())
 		return true;
