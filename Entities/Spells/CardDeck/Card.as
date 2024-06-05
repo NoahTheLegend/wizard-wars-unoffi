@@ -16,7 +16,6 @@ void onInit(CBlob@ this)
 	consts.net_threshold_multiplier = 0.5f;
 
 	this.Tag("projectile");
-	this.Tag("counterable");
 	shape.SetGravityScale(0.0f);
 
 	this.set_f32("damage", 0.5f);
@@ -48,7 +47,7 @@ const f32 lean_mod = 5;
 const u8 show_time = 30;
 const u8 unpack_delay = 5;
 const f32 spin_speed_base = 10;
-const u8 shoot_delay = 5;
+const u8 shoot_delay = 3;
 // effects
 const u8 knock_time = 45;
 const f32 heal_amount = 0.5f; // 5 hp
@@ -135,6 +134,7 @@ void onTick(CBlob@ this)
 		}
 		else if (state == 2) // ready
 		{
+			this.Tag("counterable");
 			if (damage_owner !is null)
 			{
 				CBlob@ owner = damage_owner.getBlob();
@@ -308,7 +308,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		f32 dmg = this.get_f32("dmg");
 		ApplyEffect(this, blob, type);
 
-		if (isServer())
+		if (isServer() && type != effects::heal)
 		{
 			this.server_Hit(blob, this.getPosition(), Vec2f_zero, dmg, type == effects::ignite ? Hitters::fire : Hitters::arrow, false);
 
