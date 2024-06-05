@@ -4825,6 +4825,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 				break;
 				case complete_cast:
+				{
+					orbDamage -= 0.5f;
+				}
 				break;
 				case super_cast:
 				{
