@@ -188,10 +188,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 				dmg *= dist_factor;
 				power *= dist_factor;
 			}
-			else
-			{
-				this.IgnoreCollisionWhileOverlapped(blob, 30);
-			}
 			
 			f32 deg = this.getAngleDegrees();
 			f32 angle = Maths::Abs(deg);
@@ -201,7 +197,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			Vec2f ovr_force = Vec2f(blob.getMass() * power, 0).RotateBy(deg + (fl?180:0));
 			Vec2f force = this.hasTag("overcharge") ? ovr_force : def_force;
 			
-			this.IgnoreCollisionWhileOverlapped(blob, 5);
+			this.IgnoreCollisionWhileOverlapped(blob, 3);
 			if (this.hasTag("overcharge"))
 			{
 				Vec2f side = Vec2f(0,48).RotateBy(deg);
@@ -225,12 +221,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			}
 
 			if (!blob.hasTag("cantmove"))
+			{
 				blob.AddForce(force);
+				if (blob.getShape() !is null)
+					blob.getShape().checkCollisionsAgain = false; // test measure against crashes
+			}
 
 			if (isClient())
 				this.getSprite().PlaySound("bat_hit.ogg", 1.0f, 1.0f);
 			if (isServer() && !blob.hasTag("projectile"))
-				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), dmg, Hitters::crush, true);
+				this.server_Hit(blob, blob.getPosition(), Vec2f_zero, dmg, Hitters::crush, true);
 		}
 	}
 }
