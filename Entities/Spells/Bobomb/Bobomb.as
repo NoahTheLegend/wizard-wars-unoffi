@@ -215,7 +215,7 @@ void onTick(CBlob@ this)
 	}
 
 	this.set_bool("was_on_ground", onground);
-	if (this.get_s32("aliveTime") < this.getTickSinceCreated()) this.server_Die();
+	if (isServer() && this.get_s32("aliveTime") < this.getTickSinceCreated()) this.server_Die();
 
 	if (!isClient()) return;
 	
@@ -375,7 +375,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		blobDeath = true;
 	}
 
-	if(blobDeath)
+	if(blobDeath && isServer())
 	{this.server_Die();}
 }
 
