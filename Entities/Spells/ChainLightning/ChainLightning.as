@@ -253,7 +253,7 @@ void onTick( CBlob@ this)
 						}
 
 						f32 dmg = this.get_f32("damage") * extraDamage;
-						if (target.get_u16("waterbarrier") > 0) dmg *= 1.35f;
+						if (target.get_bool("waterbarrier")) dmg *= 2.0f;
 						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
 
 						if (isServer() && this.get_u8("targets") != 0)

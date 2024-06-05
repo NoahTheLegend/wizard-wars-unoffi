@@ -951,53 +951,54 @@ void onTick(CBlob@ this)
 	}
 
 	//WATER BARRIER
-	u16 water = this.get_u16("waterbarrier");
-	if (water > 0)
 	{
-		water--;
-		if(!this.hasScript("Wards.as"))
-		{
-			this.AddScript("Wards.as");
-		}
+		bool waterbarrier = this.get_bool("waterbarrier");
+		u32 originwaterbarriertiming = this.get_u32("originwaterbarriertiming");
+		u32 waterbarriertiming = this.get_u32("waterbarrieriming");
+		u32 disablewaterbarriertiming = this.get_u32("disablewaterbarriertiming");
 
-		if(!this.exists("waterSetupDone") || !this.get_bool("waterSetupDone")) //Ward sprite setup
-		{
-			CSpriteLayer@ layer = thisSprite.addSpriteLayer("water_ward","WaterBarrier.png",64,64);
-			if (layer !is null)
-			{
-				layer.SetRelativeZ(565.75f);
-				layer.ScaleBy(Vec2f(1.33f,1.33f));
-				layer.setRenderStyle(RenderStyle::light);
-			}
-			this.set_bool("waterSetupDone",true);
-		}
+		u8 ticks_for_disable = 1; // for how long to run disable code
 
-		if (thisSprite.getSpriteLayer("water_ward") !is null)
+		if (waterbarrier)
 		{
-			CSpriteLayer@ layer = thisSprite.getSpriteLayer("water_ward");
-			if (layer !is null)
+			if(!this.hasScript("WaterBarrierWard.as"))
 			{
-				layer.SetFacingLeft(false);
-				layer.RotateBy(2, Vec2f_zero);
-				layer.setRenderStyle(RenderStyle::light);
+				this.AddScript("WaterBarrierWard.as");
+			}
+
+			if(!this.exists("waterSetupDone") || !this.get_bool("waterSetupDone")) //Ward sprite setup
+			{
+				CSpriteLayer@ layer = thisSprite.addSpriteLayer("water_ward","WaterBarrier.png",64,64);
+				if (layer !is null)
+				{
+					layer.SetRelativeZ(565.75f);
+					layer.ScaleBy(Vec2f(1.33f,1.33f));
+					layer.setRenderStyle(RenderStyle::light);
+				}
+				this.set_bool("waterSetupDone",true);
+			}
+
+			if (thisSprite.getSpriteLayer("water_ward") !is null)
+			{
+				CSpriteLayer@ layer = thisSprite.getSpriteLayer("water_ward");
+				if (layer !is null)
+				{
+					layer.SetFacingLeft(false);
+					layer.RotateBy(2, Vec2f_zero);
+					layer.setRenderStyle(RenderStyle::light);
+				}
 			}
 		}
-
-		if(water == 0)
+		//disable
+	    else if (this.hasScript("WaterBarrierWard.as"))
 		{
-			water = 0;
-			if(this.hasScript("Wards.as"))
-			{
-				this.RemoveScript("Wards.as");
-			}
+			this.RemoveScript("WaterBarrierWard.as");
 			thisSprite.PlaySound("SplashFast.ogg", 1.25f, 0.9f);
 			thisSprite.PlaySound("SplashSlow.ogg", 1.25f, 0.9f);
 			Splash(this, 4, 4, 0, false);
 			thisSprite.RemoveSpriteLayer("water_ward"); //Ward sprite removal
 			this.set_bool("waterSetupDone",false);
 		}
-
-		this.set_u16("waterbarrier", water);
 	}
 
 	//DAMAGE CONNECTION

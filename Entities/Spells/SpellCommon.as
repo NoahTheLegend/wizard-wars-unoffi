@@ -3565,7 +3565,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			if (this.get_u16("waterbarrier") > 0)
+			if (this.get_bool("waterbarrier"))
 			{
 				ManaInfo@ manaInfo;
 				if (!this.get( "manaInfo", @manaInfo )) {
@@ -3882,7 +3882,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			if (this.get_u16("waterbarrier") > 0)
+			if (this.get_bool("waterbarrier"))
 			{
 				ManaInfo@ manaInfo;
 				if (!this.get( "manaInfo", @manaInfo )) {
@@ -3952,7 +3952,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					this.getSprite().PlaySound("WaterBubble1.ogg", 1.5f, 0.75f);
 					this.getSprite().PlaySound("WaterBubble2.ogg", 1.25f, 0.75f);
 
-					WaterBarrier(this, charge_state == complete_cast ? 900 : 1350);
+					WaterBarrier(this, !this.get_bool("waterbarrier"));
 					return; //Fireward self, doesn't send projectile
 				}
 				break;

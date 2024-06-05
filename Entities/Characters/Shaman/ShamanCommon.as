@@ -51,7 +51,7 @@ namespace ShamanParams
 			SpellType::other, 30, 60, 4, 156.0f, true),
 
 		Spell("watertotem", "Totem of Water", 77, "Heals most damaged nearby ally. Only one totem can heal a target. Generates heal charges passively. Overchage increases durability and generation rate. Pushes everything away upon death.",
-			SpellType::other, 50, 90, 8, 128.0f, true),
+			SpellType::other, 40, 90, 8, 128.0f, true),
 		
 		Spell("earthtotem", "Totem of Earth", 78, "Slows down enemies nearby. Overcharge increases effect distance and time. Releases different effects when removed.",
 			SpellType::other, 50, 75, 10, 224.0f, true),
@@ -69,7 +69,7 @@ namespace ShamanParams
 			SpellType::other, 25, 30, 6, 512.0f),
 
 		Spell("waterbarrier", "Water Barrier", 83, "Covers yourself in a bubble of water, which slows down enemies and some of their spells. While under this effect, you are unable to use fire spells and receive more damage from electricity and ice.",
-			SpellType::other, 20, 40, 0, 0.0f),
+			SpellType::other, 10, 35, 0, 0.0f),
 
 		Spell("frost_spirit", "Glacial Spirit", 107, "Summon a homing spirit of frost to freeze your foes.",
 			SpellType::other, 25, 60, 6, 360.0f, true),

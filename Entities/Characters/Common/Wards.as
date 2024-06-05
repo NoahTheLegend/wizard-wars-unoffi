@@ -1,28 +1,5 @@
 #include "Hitters.as"
 
-void onTick(CBlob@ this)
-{
-    if (getMap() is null) return;
-    if (this.get_u16("waterbarrier") != 0)
-    {
-        CBlob@[] list;
-        getMap().getBlobsInRadius(this.getPosition(), 40.0f, @list);
-
-        for (u16 i = 0; i < list.length; i++)
-        {
-            CBlob@ b = list[i];
-            if (b is null) continue;
-            if (b.getTeamNum() == this.getTeamNum()) continue;
-
-            if (b.hasTag("flesh"))
-            {
-                b.set_u32("in_water", getGameTime()+2);
-            }
-            else if (b.getVelocity().Length() > 1.5f ) b.setVelocity(b.getVelocity()*0.8f);
-        }
-    }
-}
-
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
     if (this.hasTag("dead") || customData == Hitters::burn || customData == Hitters::fall)

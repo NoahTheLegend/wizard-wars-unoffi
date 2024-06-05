@@ -463,7 +463,8 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			 || b.get_u16("fireProt") > 0 
 			 || b.get_u16("airblastShield") > 0 
 			 || b.get_u16("stoneSkin") > 0
-			 || b.get_u16("waterbarrier") > 0
+			 || b.get_bool("waterbarrier")
+			 || b.get_bool("damageaura")
 			 || b.get_u16("dmgconnection") > 0
 			 || b.get_u16("cdreduction") > 0
 			 || b.get_u16("antidebuff") > 0
@@ -500,10 +501,16 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					b.Sync("stoneSkin", true);
 				}
 
-				if (b.get_u16("waterbarrier") > 0)
+				if (b.get_bool("waterbarrier"))
 				{
-					b.set_u16("waterbarrier", 1);
+					b.set_bool("waterbarrier", false);
 					b.Sync("waterbarrier", true);
+				}
+
+				if (b.get_bool("damageaura"))
+				{
+					b.set_bool("damageaura", false);
+					b.Sync("damageaura", true);
 				}
 
 				if (b.get_u16("dmgconnection") > 0)
@@ -785,9 +792,11 @@ void Connect(CBlob@ blob, u16 time, u16 link_id)
 	}
 }
 
-void WaterBarrier( CBlob@ blob, u16 wardTime )
+void WaterBarrier( CBlob@ blob, bool enable )
 {
-	blob.set_u16("waterbarrier", wardTime);
+	blob.set_u32("waterbarriertiming", getGameTime());
+	blob.set_u32("originwaterbarrier", getGameTime());
+	blob.set_bool("waterbarrier", enable);
 	blob.Sync("waterbarrier", true);
 }
 
