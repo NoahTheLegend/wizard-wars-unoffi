@@ -83,7 +83,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	if (blob !is null)
 	{
-		if (doesCollideWithBlob(this, blob))
+		if (!this.isOverlapping(blob) && doesCollideWithBlob(this, blob))
 			swordDeath = true;
 			
 		if (isEnemy(this, blob))
