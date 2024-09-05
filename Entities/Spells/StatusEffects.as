@@ -794,7 +794,6 @@ void onTick(CBlob@ this)
 		cdreduction--;
 		this.set_u16("cdreduction", cdreduction);
 		
-		#ifndef STAGING // p.initpos is not existing in staging
 		if (isClient())
 		{
 			CParticle@[] ps;
@@ -808,8 +807,7 @@ void onTick(CBlob@ this)
 				CParticle@ p = ParticleAnimated("MissileFire7.png", random, Vec2f(0,0), -random.Angle()+90, 1.0f, 1+XORRandom(2), 0.2f, true);
 				if (p !is null)
 				{
-					p.initpos = random;
-					p.gravity = Vec2f_zero;
+					p.gravity = random;
 					p.bounce = 0;
     				p.fastcollision = true;
 					p.collides = false;
@@ -831,12 +829,11 @@ void onTick(CBlob@ this)
 					continue;
 				}
 
-				p.position = this.getPosition() + this.getVelocity() + p.initpos;
+				p.position = this.getPosition() + this.getVelocity() + p.gravity;
 			}
 			
 			this.set("cdreduction_particles", ps);
 		}
-		#endif
 		
 		if (cdreduction == 0)
 		{

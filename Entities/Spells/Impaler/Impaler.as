@@ -151,7 +151,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 						}
 						//if (blob.getShape().getConsts().mapCollisions)
 						{
-							this.getSprite().PlaySound("ImpStuck.ogg", 100.0f);
+							this.getSprite().PlaySound("ImpStuck.ogg", 2.0f);
 							this.setVelocity(Vec2f(0,0));
 							this.server_SetTimeToDie(15);
 							u16 netid = blob.getNetworkID();

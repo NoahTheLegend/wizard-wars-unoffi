@@ -1931,7 +1931,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -1661937901://impaler
 		{
-			this.getSprite().PlaySound("ImpCast.ogg", 100.0f);
+			this.getSprite().PlaySound("ImpCast.ogg", 2.0f);
 
 			if (!isServer()){
            		return;
@@ -2221,7 +2221,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -1418908460://bunker_buster
 		{
-			this.getSprite().PlaySound("bunkercast.ogg", 100.0f);
+			this.getSprite().PlaySound("bunkercast.ogg", 2.0f);
 
 			if (!isServer()){
            		return;
@@ -2292,7 +2292,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				return;
 			}
 
-			this.getSprite().PlaySound("bunkercast.ogg", 100.0f);
+			this.getSprite().PlaySound("bunkercast.ogg", 2.0f);
 			f32 orbspeed = 1.0f;
 
             if (charge_state == NecromancerParams::cast_3) {
