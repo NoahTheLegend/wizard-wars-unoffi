@@ -15,15 +15,13 @@ enum GameMusicTags
 
 void onInit(CBlob@ this)
 {
-	CMixer@ mixer = getMixer();
-	if (mixer is null)
-		return;
-
 	this.set_bool("initialized game", false);
 }
 
 void onTick(CBlob@ this)
 {
+	if (this.getTickSinceCreated() < 5) return;
+
 	CMixer@ mixer = getMixer();
 	if (mixer is null)
 		return;
