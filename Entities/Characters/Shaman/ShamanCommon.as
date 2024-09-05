@@ -27,7 +27,7 @@ namespace ShamanParams
 		//	SpellType::other, 4, 35, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("flameorb", "Flame Orb", 75, "Ignites enemies on impact.",
-			SpellType::other, 8, 30, 0, 256.0f, true),
+			SpellType::other, 6, 20, 0, 256.0f, true),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 25, 6, 0, 270.0f, true), 
