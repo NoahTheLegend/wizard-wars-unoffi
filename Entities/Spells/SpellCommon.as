@@ -3913,7 +3913,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 				else if (charge_state == super_cast) {
 					orb.set_u8("lavadrop_time", 20);
-					orb.set_u8("lavadrop_amount", 12);
+					orb.set_u8("lavadrop_amount", 10);
 					orbDamage *= 1.33f;
 					orbspeed *= 1.33f;
 				}
@@ -3952,7 +3952,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					this.getSprite().PlaySound("WaterBubble1.ogg", 1.5f, 0.75f);
 					this.getSprite().PlaySound("WaterBubble2.ogg", 1.25f, 0.75f);
 
-					WaterBarrier(this, !this.get_bool("waterbarrier"));
+					if (isServer()) WaterBarrier(this, !this.get_bool("waterbarrier"));
 					return; //Fireward self, doesn't send projectile
 				}
 				break;

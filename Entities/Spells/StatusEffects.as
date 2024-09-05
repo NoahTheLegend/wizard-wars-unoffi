@@ -262,7 +262,6 @@ void onTick(CBlob@ this)
 		this.set_u16("healblock", healblock);
 		Vec2f thisVel = this.getVelocity();
 
-		#ifndef STAGING // p.initpos is not existing in staging
 		if (isClient())
 		{
 			CParticle@[] ps;
@@ -276,8 +275,7 @@ void onTick(CBlob@ this)
 				CParticle@ p = ParticleAnimated("MissileFire6.png", random, Vec2f(0,0), 0, 1.0f, 1+XORRandom(2), 0.2f, true );
 				if (p !is null)
 				{
-					p.initpos = random;
-					p.gravity = Vec2f_zero;
+					p.gravity = random;
 					p.bounce = 0;
 					p.collides = false;
     				p.fastcollision = true;
@@ -303,12 +301,11 @@ void onTick(CBlob@ this)
 					continue;
 				}
 
-				p.position = this.getPosition() + this.getVelocity() + p.initpos;
+				p.position = this.getPosition() + this.getVelocity() + p.gravity;
 			}
 			
 			this.set("healblock_particles", ps);
 		}
-		#endif
 		
 		if (healblock == 0)
 		{
@@ -958,43 +955,39 @@ void onTick(CBlob@ this)
 
 		if (waterbarrier)
 		{
-			if(!this.hasScript("WaterBarrierWard.as"))
+			if (!this.hasScript("WaterBarrierWard.as"))
 			{
 				this.AddScript("WaterBarrierWard.as");
 			}
-
-			if(!this.exists("waterSetupDone") || !this.get_bool("waterSetupDone")) //Ward sprite setup
+			
+			CSpriteLayer@ layer = thisSprite.getSpriteLayer("water_ward");
+			if (layer is null)
 			{
-				CSpriteLayer@ layer = thisSprite.addSpriteLayer("water_ward","WaterBarrier.png",64,64);
+				@layer = thisSprite.addSpriteLayer("water_ward","WaterBarrier.png",64,64);
 				if (layer !is null)
 				{
 					layer.SetRelativeZ(565.75f);
 					layer.ScaleBy(Vec2f(1.33f,1.33f));
 					layer.setRenderStyle(RenderStyle::light);
 				}
-				this.set_bool("waterSetupDone",true);
 			}
-
-			if (thisSprite.getSpriteLayer("water_ward") !is null)
+			if (layer !is null)
 			{
-				CSpriteLayer@ layer = thisSprite.getSpriteLayer("water_ward");
-				if (layer !is null)
-				{
-					layer.SetFacingLeft(false);
-					layer.RotateBy(2, Vec2f_zero);
-					layer.setRenderStyle(RenderStyle::light);
-				}
+				layer.SetVisible(true);
+				layer.SetFacingLeft(false);
+				layer.RotateBy(2, Vec2f_zero);
+				//layer.setRenderStyle(RenderStyle::light);
 			}
 		}
 		//disable
 	    else if (this.hasScript("WaterBarrierWard.as"))
 		{
-			this.RemoveScript("WaterBarrierWard.as");
 			thisSprite.PlaySound("SplashFast.ogg", 1.25f, 0.9f);
 			thisSprite.PlaySound("SplashSlow.ogg", 1.25f, 0.9f);
 			Splash(this, 4, 4, 0, false);
+
 			thisSprite.RemoveSpriteLayer("water_ward"); //Ward sprite removal
-			this.set_bool("waterSetupDone",false);
+			this.RemoveScript("WaterBarrierWard.as");
 		}
 	}
 

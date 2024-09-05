@@ -792,7 +792,7 @@ void Connect(CBlob@ blob, u16 time, u16 link_id)
 	}
 }
 
-void WaterBarrier( CBlob@ blob, bool enable )
+void WaterBarrier(CBlob@ blob, bool enable)
 {
 	blob.set_u32("waterbarriertiming", getGameTime());
 	blob.set_u32("originwaterbarrier", getGameTime());

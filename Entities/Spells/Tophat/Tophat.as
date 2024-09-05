@@ -81,9 +81,14 @@ void onTick(CBlob@ this)
         }
     }
 
+    string source = "TophatParticle.png";
+    #ifdef STAGING
+    source = "TophatParticle_staging.png";
+    #endif
+
     if (isClient())
     {
-        CParticle@ p = ParticleAnimated("TophatParticle.png", this.getPosition() - Vec2f(0,8), Vec2f_zero, 180, 0.75f, 2, 0.0f, true);
+        CParticle@ p = ParticleAnimated(source, this.getPosition() - Vec2f(0,8), Vec2f_zero, 180, 0.75f, 2, 0.0f, true);
 	    if (p !is null)
 	    {
 	    	p.bounce = 0;
@@ -99,13 +104,18 @@ void onTick(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
+    string source = "TophatParticle.png";
+    #ifdef STAGING
+    source = "TophatParticle_staging.png";
+    #endif
+    
     this.getSprite().PlaySound("ObsessedSpellDie.ogg", 1.0f, 1.0f+XORRandom(11)*0.01f);
 
     for (u8 i = 0; i < 10+XORRandom(5); i++)
     {
         if (isClient())
         {
-            CParticle@ p = ParticleAnimated("TophatParticle.png", this.getPosition() - Vec2f(0,8), Vec2f(0, -6-XORRandom(5)).RotateBy(XORRandom(360)), 180 + (45 - XORRandom(91)), 1.0f, 2+XORRandom(3), 0.0f, true);
+            CParticle@ p = ParticleAnimated(source, this.getPosition() - Vec2f(0,8), Vec2f(0, -6-XORRandom(5)).RotateBy(XORRandom(360)), 180 + (45 - XORRandom(91)), 1.0f, 2+XORRandom(3), 0.0f, true);
 	        if (p !is null)
 	        {
 	        	p.bounce = 0;

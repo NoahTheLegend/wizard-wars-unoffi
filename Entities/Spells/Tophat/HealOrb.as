@@ -70,9 +70,14 @@ void onTick(CBlob@ this)
         }
     }
 
+    string source = "heal_orb_trail.png";
+    #ifdef STAGING
+    source = "heal_orb_trail_staging.png";
+    #endif
+    
     if (!isClient()) return;
     {
-        CParticle@ p = ParticleAnimated("heal_orb_trail.png", this.getPosition(), Vec2f_zero, XORRandom(360), 1.0f, 2, 0.0f, true);
+        CParticle@ p = ParticleAnimated(source, this.getPosition(), Vec2f_zero, XORRandom(360), 1.0f, 2, 0.0f, true);
 	    if (p !is null)
 	    {
 	    	p.bounce = 0;
