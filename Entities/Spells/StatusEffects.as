@@ -807,7 +807,7 @@ void onTick(CBlob@ this)
 				CParticle@ p = ParticleAnimated("MissileFire7.png", random, Vec2f(0,0), -random.Angle()+90, 1.0f, 1+XORRandom(2), 0.2f, true);
 				if (p !is null)
 				{
-					p.gravity = random;
+					p.gravity = random; // i really enjoy it works
 					p.bounce = 0;
     				p.fastcollision = true;
 					p.collides = false;
