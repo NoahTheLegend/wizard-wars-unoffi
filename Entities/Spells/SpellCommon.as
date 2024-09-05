@@ -3897,7 +3897,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			f32 orbspeed = necro_shoot_speed * 0.75f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
-			f32 orbDamage = 0.5f * extraDamage;
+			f32 orbDamage = 1.0f * extraDamage;
 
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 			Vec2f orbVel = (aimpos - orbPos);
@@ -3907,13 +3907,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				if (charge_state == complete_cast) {
 					orb.set_u8("lavadrop_time", 30);
-					orb.set_u8("lavadrop_amount", 12);
+					orb.set_u8("lavadrop_amount", 8);
 					orbDamage *= 1.15f;
 					orbspeed *= 1.15f;
 				}
 				else if (charge_state == super_cast) {
 					orb.set_u8("lavadrop_time", 20);
-					orb.set_u8("lavadrop_amount", 16);
+					orb.set_u8("lavadrop_amount", 12);
 					orbDamage *= 1.33f;
 					orbspeed *= 1.33f;
 				}

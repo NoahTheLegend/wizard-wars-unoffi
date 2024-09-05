@@ -76,7 +76,7 @@ void onTick( CBlob@ this )
 
 								if (!was_sound)
 								{
-									touchBlob.getSprite().PlaySound("ManaGain.ogg", 1.0f, 1.0f + XORRandom(2)/10.0f);
+									touchBlob.getSprite().PlaySound("ManaGain.ogg", 0.75f, 1.0f + XORRandom(2)/10.0f);
 									was_sound = true;
 								}
 								
