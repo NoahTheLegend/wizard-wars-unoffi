@@ -246,8 +246,6 @@ void ExplodeWithFire(CBlob@ this)
 			}
 		}
 	}
-	
-    this.getSprite().PlaySound("MolotovExplosion.ogg", 1.6f, 1.0f);
 }
 
 Random _blast_r(0x10002);
@@ -313,9 +311,8 @@ void smoke(Vec2f pos, int amount)
 void Boom( CBlob@ this )
 {
 	this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 2.0f + XORRandom(20)/10.0f);
-	#ifndef STAGING
+	this.getSprite().PlaySound("FireBlast4.ogg", 0.8f, 1.0f + XORRandom(20)/10.0f);
 	ExplodeWithFire(this);
-	#endif;
 	smoke(this.getPosition(), 5);	
 	blast(this.getPosition(), 10);	
 	

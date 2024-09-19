@@ -201,9 +201,7 @@ void onDie(CBlob@ this)
 void Boom( CBlob@ this )
 {
 	this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 2.0f + XORRandom(20)/10.0f);
-	#ifndef STAGING
 	ExplodeWithFire(this);
-	#endif;
 	smoke(this.getPosition()-Vec2f(0,8), 5);	
 	blast(this.getPosition()-Vec2f(0,8), 10);	
 	
@@ -239,8 +237,6 @@ void ExplodeWithFire(CBlob@ this)
 			}
 		}
 	}
-	
-    this.getSprite().PlaySound("MolotovExplosion.ogg", 1.2f, 1.2f);
 }
 
 

@@ -128,6 +128,8 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
 void ExplodeWithFire(CBlob@ this)
 {
+	if (!isServer()) return;
+	
     CMap@ map = getMap();
 	Vec2f thisPos = this.getPosition();
     if (map is null)   return;
@@ -166,8 +168,6 @@ void ExplodeWithFire(CBlob@ this)
 			}
 		}
 	}
-	
-    this.getSprite().PlaySound("MolotovExplosion.ogg", 1.6f, 1.0f);
 }
 
 bool isOwnerBlob(CBlob@ this, CBlob@ target)
@@ -284,9 +284,7 @@ void smoke(Vec2f pos, int amount)
 
 void Boom( CBlob@ this )
 {
-	#ifndef STAGING
 	ExplodeWithFire(this);
-	#endif
 	smoke(this.getPosition(), 5);	
 	blast(this.getPosition(), 10);	
 	

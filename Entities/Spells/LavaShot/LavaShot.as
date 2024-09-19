@@ -165,14 +165,13 @@ void blast(Vec2f pos, int amount)
 
 void onDie( CBlob@ this )
 {
-	#ifndef STAGING
 	if (isClient())
 	{
-		this.getSprite().PlaySound("MolotovExplosion.ogg", 1.0f, 0.65f+XORRandom(26)*0.01f);
+		this.getSprite().PlaySound("FireBlast9.ogg", 0.75f, 1.5f + XORRandom(50)/100.0f);
+		this.getSprite().PlaySound("FireBlast8.ogg", 0.75f, 1.5f + XORRandom(50)/100.0f);
 		blast(this.getPosition()-this.getVelocity()-Vec2f(0,8), 10);
 		smoke(this.getPosition()-this.getVelocity(), 5);	
 	}
-	#endif
 	if(!this.hasTag("exploding"))
 	{
 		return;
