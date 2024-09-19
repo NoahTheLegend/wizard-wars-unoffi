@@ -448,7 +448,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			owner.getSprite().PlaySound("Teleport.ogg", 0.9f, 1.1f);
 			other.getSprite().PlaySound("Teleport.ogg", 0.9f, 1.1f);
 
-			other.set_u16("confused", (7+XORRandom(4))*30);
+			owner.set_u16("confused", (2+XORRandom(2))*30);
+			other.set_u16("confused", (3+XORRandom(3))*30);
 		}
 	}
 	else if (cmd == this.getCommandID("set_knocked"))
