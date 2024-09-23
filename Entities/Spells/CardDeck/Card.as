@@ -81,7 +81,7 @@ void onTick(CBlob@ this)
 	u8 side_index = index % (cards/2);
 	bool hidden = this.hasTag("hidden");
 	f32 spin_speed = spin_speed_base;
-	f32 lerp = 0.25f;
+	f32 lerp = 0.5f;
 
 	if (isClient())
 	{
@@ -142,7 +142,7 @@ void onTick(CBlob@ this)
 					this.set_u32("unpack_time", getGameTime());
 				}
 
-				this.setPosition(Vec2f_lerp(pos, tpos, 0.35f));
+				this.setPosition(Vec2f_lerp(pos, tpos, 0.5f));
 			}
 		}
 		else if (state == 2) // ready
