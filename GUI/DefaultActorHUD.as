@@ -75,6 +75,7 @@ void onRender( CSprite@ this )
 	if (g_videorecording)
 		return;
 
+    GUI::SetFont("default");
     CBlob@ blob = this.getBlob();
 
     f32 height = 10;
