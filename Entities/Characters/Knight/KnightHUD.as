@@ -64,10 +64,13 @@ void onRender(CSprite@ this)
 	const int coins = player !is null ? player.getCoins() : 0;
 	DrawCoinsOnHUD(blob, coins, tl, slotsSize - 2);
 
+	f32 height = 48;
 	// draw class icon
-
+	#ifdef STAGING
+	height += 20;
+	#endif
 	GUI::DrawIcon(iconsFilename, frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 32, -16), 1.0f);
-	GUI::DrawIcon("GUI/jslot.png", 1, Vec2f(32,32), Vec2f(2,48));
-	DrawChargeMeter(blob, Vec2f(52,56)); //For the Charge meter script
+	GUI::DrawIcon("GUI/jslot.png", 1, Vec2f(32,32), Vec2f(2,height));
+	DrawChargeMeter(blob, Vec2f(52,height+8)); //For the Charge meter script
 }
 

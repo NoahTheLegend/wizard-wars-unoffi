@@ -24,8 +24,8 @@ void onRender(CSprite@ this)
 			const f32 y = blob.getHeight() * 0.8f;
 			
 			//VV right here VV
-			const f32 initialHealth = blob.getInitialHealth();
 			const f32 health = blob.getHealth();
+			const f32 initialHealth = Maths::Max(health, blob.getInitialHealth());
 			if (initialHealth > 0.0f)
 			{
 				const f32 perc = health / initialHealth;
