@@ -12,8 +12,8 @@ void onInit(CBlob@ this)
 
 	//default values
 	this.set_u16("lifetime", 15);
-	//^
 	this.set_u16("trapped_id", 0);
+	this.getShape().SetStatic(true);
 }
 
 void onInit(CSprite@ this)

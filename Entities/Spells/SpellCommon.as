@@ -46,25 +46,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 	switch(spellName.getHash())
 	{
-		case 1476886618:
-		{
-			if(isServer())
-			{
-			Vec2f aim = aimpos;
-			Vec2f vel = aim - thispos;
-			Vec2f norm = vel;
-			norm.Normalize();
-			CBlob@ b = server_CreateBlob('boulder',this.getTeamNum(),thispos + norm*2);
-			b.server_SetHealth(999);
-			b.server_SetTimeToDie(3);
-			b.setVelocity(vel/32);
-			b.getShape().SetGravityScale(0.75);
-			b.server_setTeamNum(b.getTeamNum());
-			b.SetDamageOwnerPlayer(this.getPlayer());
-			}
-		}
-		break;
-		
 		case -825046729: //mushroom
 		{
 
@@ -259,7 +240,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			f32 orbspeed = necro_shoot_speed;
+			f32 orbspeed = 1.0f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
 			f32 orbDamage = 1.0f * extraDamage;
             
@@ -289,6 +270,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					orbspeed *= 1.2f;
 					orbDamage *= 1.5f;
+					orbspeed *= 1.25f;
 				}
 				break;
 				default:return;
@@ -303,7 +285,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.server_setTeamNum( this.getTeamNum() );
 				orb.setPosition( orbPos );
-				Vec2f vec = aimNorm.RotateBy(this.isFacingLeft()?5.0f:-5.0f)*1000.0f;
+				Vec2f vec = aimNorm.RotateBy(this.isFacingLeft()?5.0f:-5.0f)*1000.0f*orbspeed;
 				orb.AddForce(Vec2f(vec.x + (this.getVelocity().x*50), vec.y + (this.getVelocity().y*50)));
 				orb.server_SetTimeToDie(10.0f);
 			}

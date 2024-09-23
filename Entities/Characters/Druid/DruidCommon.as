@@ -54,10 +54,10 @@ namespace DruidParams
 			SpellType::other, 25, 30, 5, 128.0f, true),
 
 		Spell("mushroom", "Dancing Shroom", 34, "A happy mushroom that will create it's own cloud of spores for you.",
-			SpellType::other, 12, 15, 0, 60.0f),
+			SpellType::other, 15, 30, 0, 60.0f, true),
 
 		Spell("boulder_throw", "Rock Throw", 35, "Throws a heavy rock that is highly affected by gravity.",
-			SpellType::other, 20, 30, 1, 16.0f),
+			SpellType::other, 20, 45, 2, 16.0f, true),
 				
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
 			SpellType::other, 20, 20, 0, 360.0f, true), 
