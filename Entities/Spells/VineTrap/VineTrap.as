@@ -65,6 +65,7 @@ void onTick(CBlob@ this)
 		return;
 	}
 
+	if (!isServer()) return;
 	CBlob@[] chb;
 	map.getBlobsAtPosition(this.getPosition()-Vec2f(12.0f, -8.0f), @chb);
 	map.getBlobsAtPosition(this.getPosition()+Vec2f(0,     -8.0f), @chb);
