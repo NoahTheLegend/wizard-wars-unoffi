@@ -31,6 +31,7 @@ class NecromancerRain
     u8 level;
     Vec2f position;
     int team;
+    bool extra;
 
     uint time;
     uint objectsAmount;
@@ -40,7 +41,7 @@ class NecromancerRain
         type = i_type;
         level = i_level;
         position = pos;
-        bool extra = extra_damage;
+        extra = extra_damage;
         team = blob.getTeamNum();
 
         if (type == NecromancerRainTypes::zombieRain)
@@ -229,7 +230,6 @@ void addRain(CBlob@ this, string type, u8 level, Vec2f pos, bool extra_damage)
 
 void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 {
-    if (params is null || params.isBufferEnd()) return;
     if (cmd == this.getCommandID("rain"))
     {
         string type = params.read_string();

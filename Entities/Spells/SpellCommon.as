@@ -2695,6 +2695,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			params.write_string(spellName);
 			params.write_u8(charge_state);
 			params.write_Vec2f(aimpos);
+			params.write_bool(this.hasTag("extra_damage"));
 
 			this.SendCommand(this.getCommandID("rain"), params);
 		}
