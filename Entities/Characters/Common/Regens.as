@@ -11,6 +11,37 @@ void onInit(CBlob@ this)
     {
         this.set_u16("focus", 0);
     }
+    
+    if (isServer())
+    {
+        int tn = this.getTeamNum();
+        // give 200% of max health in 2v1
+        uint team0 = 0;
+        uint team1 = 0;
+        f32 team0kdr = 0;
+        f32 team1kdr = 0;
+        uint teamUnspecified = 0;
+        u8 pc = getPlayersCount();
+        for (u32 i = 0; i < pc; i++)//Get amount of players on each team
+        {
+            CPlayer@ p = getPlayer(i);
+            if (p is null) continue;
+
+            int pn = p.getTeamNum();
+            if (pn == 0) {team0++; team0kdr += getKDR(p);}
+            else if (pn == 1) {team1++; team1kdr += getKDR(p);}
+            else teamUnspecified++;
+        }
+
+        f32 avg_kdr_team0 = team0kdr / team0;
+        f32 avg_kdr_team1 = team1kdr / team1;
+
+        if ((tn == 0 && team0 == 1 && team1 >= 2 && avg_kdr_team0 < avg_kdr_team1)
+            || (tn == 1 && team1 == 1 && team0 >= 2 && avg_kdr_team1 < avg_kdr_team0))
+        {
+            this.server_SetHealth(this.getInitialHealth() * 2);
+        }
+    }
 
     this.set_s32("mana regen rate", 3);
     
@@ -20,6 +51,11 @@ void onInit(CBlob@ this)
     this.set_u32("overload mana regen", 0);
 
     this.addCommandID("request_heal");
+}
+
+f32 getKDR(CPlayer@ p)
+{
+    return p.getKills() / Maths::Max(f32(p.getDeaths()), 1.0f);
 }
 
 void onTick(CBlob@ this)
