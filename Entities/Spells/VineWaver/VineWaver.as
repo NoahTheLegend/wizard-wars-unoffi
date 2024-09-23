@@ -22,22 +22,53 @@ void onInit(CBlob@ this)
 	this.getSprite().PlayRandomSound("VineReveal", 1.5f, 1.65f+XORRandom(16)*0.1f);
 }
 
-f32 pi = 3.14f;
-const f32 angle_change = 35.0f;
-f32 dev = 0.15f; // deviation speed
-
 void onTick(CBlob@ this)
 {
 	if (isServer())
 	{
 		bool back = this.get_bool("back");
-		
-		Vec2f vel = this.get_Vec2f("initvel");
-		f32 t = this.getTickSinceCreated()-angle_change*dev;
-		f32 sin = Maths::Sin(t*dev)*angle_change;
+		Vec2f pos = this.getPosition();
 
-		vel.RotateBy(back ? -sin : sin);
-		this.setVelocity(vel);
+		f32 angle_change_base = 3.0f;
+		f32 damping = 0.975f;
+				
+		Vec2f initvel = this.get_Vec2f("initvel");
+		Vec2f aimpos = pos + this.getOldVelocity();
+
+		CPlayer@ owner = this.getDamageOwnerPlayer();
+		if (owner !is null)
+		{
+		    CBlob@ ob = owner.getBlob();
+		    if (ob !is null)
+		    {
+		        aimpos = ob.getAimPos();
+		    }
+		}
+
+		Vec2f vel = this.getVelocity();
+		vel.Normalize();
+		int vel_angle = -vel.Angle();
+
+		Vec2f dir = aimpos - pos;
+		int dir_angle = -dir.Angle();
+
+		f32 momentum = this.get_f32("momentum");
+		f32 target_speed = Maths::Clamp(initvel.Length(), 2.0f, 10.0f); 
+		f32 speed_mod = Maths::Lerp(momentum, target_speed, 1.0f - damping);
+
+		int cross = vel.x * dir.y - vel.y * dir.x;
+		this.set_f32("momentum", Maths::Max(speed_mod, target_speed));
+
+		f32 r = angle_change_base * Maths::Max(1.0f, speed_mod); 
+		f32 angle_shift = (cross > 0) ? r : -r;
+
+		if (vel == Vec2f_zero)
+		{
+		    vel.x += 1.0f - XORRandom(3);
+		    vel.y += 1.0f - XORRandom(3);
+		}
+
+		this.setVelocity(vel.RotateBy(angle_shift) * speed_mod);
 		this.setAngleDegrees(-this.getVelocity().Angle());
 
 		CMap@ map = getMap();

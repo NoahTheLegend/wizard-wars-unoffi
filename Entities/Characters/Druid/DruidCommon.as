@@ -45,7 +45,7 @@ namespace DruidParams
 			SpellType::other, 2, 9, 0, 360.0f, true),			
 				
 		Spell("vinewaver", "Vine Waver", 105, "Sends a waving phasing projectile.",
-			SpellType::other, 15, 40, 0, 128.0f, true),
+			SpellType::other, 28, 55, 0, 128.0f, true),
 				
 		Spell("rock_wall", "Rock Wall", 36, "Create a wall of ordinary rock in front of you that blocks most things both ways. Its not exactly durable though.",
 			SpellType::other, 10, 15, 0, 30.0f),
