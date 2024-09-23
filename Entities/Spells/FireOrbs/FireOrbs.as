@@ -236,11 +236,11 @@ void ExplodeWithFire(CBlob@ this)
 				{
 					if(b.get_u16("fireProt") > 0)
 					{
-						this.server_Hit(b, bPos, bPos-thisPos, 0.0f, Hitters::explosion, false);
+						this.server_Hit(b, bPos, bPos-thisPos, 0.0f, Hitters::fire, false);
 					}
 					else
 					{
-						this.server_Hit(b, bPos, bPos-thisPos, 0.75f+(XORRandom(25)*0.01f), XORRandom(3) == 0 ? Hitters::fire : Hitters::explosion, false);
+						this.server_Hit(b, bPos, bPos-thisPos, 0.75f+(XORRandom(25)*0.01f), XORRandom(3) == 0 ? Hitters::fire : Hitters::fire, false);
 					}
 				}
 			}
