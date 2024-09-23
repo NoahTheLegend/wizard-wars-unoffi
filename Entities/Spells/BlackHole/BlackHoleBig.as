@@ -10,15 +10,15 @@ void onInit(CBlob@ this)
 {
 	this.server_SetTimeToDie(LIFETIME);
 	this.getShape().SetGravityScale(0.0);
-	this.Tag("counterable");
 	this.Tag("black hole");
+	this.Tag("multi_despell");
+	this.set_u8("despelled", 0);
 	
 	this.server_setTeamNum(-1);
 }
 
 void onInit(CSprite@ this)
 {
-	this.setRenderStyle(RenderStyle::subtractive);
 	this.ScaleBy(Vec2f(2.0f, 2.0f));
 	this.SetZ(-10.0f);
 	this.SetEmitSound( "EnergyLoop1.ogg" );
@@ -33,6 +33,10 @@ void onTick(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
+	if(this.get_u8("despelled") >= 2)
+    {
+        this.server_Die();
+    }
 	Vec2f thisPos = this.getPosition();
 
 	CMap@ map = getMap();
