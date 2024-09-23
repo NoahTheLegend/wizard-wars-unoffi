@@ -31,7 +31,7 @@ void onTick(CBlob@ this)
         this.set_f32("dist", 99999);
         this.set_u16("follow_id", 0);
 
-        shape.SetGravityScale(0.5f);
+        shape.SetGravityScale(0.25f);
         shape.getConsts().mapCollisions = true;
         this.getSprite().SetRelativeZ(5.0f);
 
@@ -96,6 +96,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
     if (cmd == this.getCommandID("heal_player"))
     {
         if (this.hasTag("dead")) return;
+        this.Tag("dead");
+
+        if (!isClient()) return;
         u16 id = params.read_u16();
 
         CBlob@ blob = getBlobByNetworkID(id);
@@ -107,15 +110,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-    if (this.hasTag("dead")) return;
-
     if (blob !is null && blob.getNetworkID() == this.get_u16("follow_id"))
     {
         CBitStream params;
         params.write_u16(blob.getNetworkID());
         this.SendCommand(this.getCommandID("heal_player"), params);
-        this.Tag("dead");
-        this.server_Die();
+        
+        if (isServer())
+        {
+            Heal(blob, 0.25f);
+            this.Tag("dead");
+            this.server_Die();
+        }
     }
 
     if (!isServer()) return;
