@@ -59,6 +59,12 @@ void onTick(CBlob@ this)
 			|| (this.hasTag("collided_blob")
 				&& this.getDistanceTo(owner) <= 24.0f) && !this.getShape().isStatic())
 					this.server_Die();
+				
+			if (owner.isKeyJustPressed(key_use))
+			{
+				this.server_Die();
+				return;
+			}
 
 			if (!this.hasTag("collided")) // return mode
 			{
@@ -96,12 +102,7 @@ void onTick(CBlob@ this)
 
 				if (this.getDistanceTo(owner) < max_dist/1.25f)
 				{
-					if (owner.isKeyJustPressed(key_use))
-					{
-						this.server_Die();
-						return;
-					}
-					else if (owner.isKeyPressed(key_down) && !owner.isKeyPressed(key_up))
+					if (owner.isKeyPressed(key_down) && !owner.isKeyPressed(key_up))
 					{
 						force.y *= 0.5f;
 					}

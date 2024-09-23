@@ -47,7 +47,7 @@ namespace JesterParams
 		Spell("bobomb", "BOB-omb", 120, "Bob, the walking bomb, with a heart so warm, explodes with love.",
 				SpellType::other, 25, 45, 6, 128.0f, true),
 
-		Spell("bouncybomb", "Gummy Bomb", 113, "This gum bomb bounces to and fro, explodes on impact, a foe's woe.",
+		Spell("bouncybomb", "Gummy Bomb", 113, "This gum bomb bounces to and from, explodes on impact, a foe's woe.",
 				SpellType::other, 16, 18, 0, 32.0f),
 
 		Spell("carddeck", "Jester Deck", 114, "Six cards of magic in the air, overcharge sends them spinning near.",

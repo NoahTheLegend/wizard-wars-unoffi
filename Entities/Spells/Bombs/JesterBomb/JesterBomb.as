@@ -30,6 +30,7 @@ void onInit(CBlob@ this)
 
 	this.server_SetTimeToDie(4);
 	this.set_s32("aliveTime", this.getTimeToDie());
+	sprite.PlaySound("BombCreate.ogg", 1.0f, 1.0f);
 }
 
 void onTick(CBlob@ this)
@@ -41,7 +42,6 @@ void onTick(CBlob@ this)
 		this.SetLight(true);
 		this.SetLightRadius(24.0f);
 		this.SetLightColor(SColor(255, 230, 195, 24));
-		this.getSprite().PlaySound("BombCreate.ogg", 1.0f, 1.0f);
 	}
 
 	if (!isClient()) return;

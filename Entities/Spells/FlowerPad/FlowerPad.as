@@ -35,7 +35,7 @@ void onTick(CBlob@ this)
 
         for (u8 i = 0; i < 50 + XORRandom(100); i++)
         {
-            CParticle@ p = makeGibParticle("GenericGibs", this.getPosition()+Vec2f(XORRandom(48)-24, XORRandom(32)-16), getRandomVelocity(100, 1 , 270), 
+            CParticle@ p = makeGibParticle("GenericGibsVanilla", this.getPosition()+Vec2f(XORRandom(48)-24, XORRandom(32)-16), getRandomVelocity(100, 1 , 270), 
 		    	7, 3 + XORRandom(4), Vec2f(8, 8), 1.0f, 0, "", 0);
             if (p !is null)
 		    {
@@ -116,7 +116,7 @@ void onTick(CBlob@ this)
 
                 for (u8 i = 0; i < bvel.Length(); i++)
                 {
-                    CParticle@ p = makeGibParticle("GenericGibs", this.getPosition()+Vec2f(XORRandom(32)-16, XORRandom(8)), getRandomVelocity(100, 1 , 270), 
+                    CParticle@ p = makeGibParticle("GenericGibsVanilla", this.getPosition()+Vec2f(XORRandom(32)-16, XORRandom(8)), getRandomVelocity(100, 1 , 270), 
 	                	7, 3 + XORRandom(4), Vec2f(8, 8), 1.0f, 0, "", 0);
                     if (p !is null)
 	                {

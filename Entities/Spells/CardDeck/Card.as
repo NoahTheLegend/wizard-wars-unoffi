@@ -61,6 +61,19 @@ void onTick(CBlob@ this)
     u8 index = this.get_u8("index");
 	Vec2f origin = this.get_Vec2f("origin");
 	Vec2f pos = this.getPosition();
+
+	//prevent leaving the map
+	if (isServer())
+	{
+		if (
+			pos.x < 0.1f ||
+			pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f
+		) {
+			this.server_Die();
+			return;
+		}
+	}
+
 	s8 left = index < cards/2 ? -1 : 1;
 
 	u8 state = this.get_u8("state");

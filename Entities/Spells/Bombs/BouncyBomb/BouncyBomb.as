@@ -36,6 +36,7 @@ void onInit(CBlob@ this)
 	sprite.SetEmitSoundPaused(false);
 
 	this.Tag("rotate_spritelayers");
+	sprite.PlaySound("BombCreate.ogg", 1.0f, 1.35f+XORRandom(21)*0.01f);
 }
 
 void onTick(CBlob@ this)
@@ -49,7 +50,6 @@ void onTick(CBlob@ this)
 		this.SetLight(true);
 		this.SetLightRadius(24.0f);
 		this.SetLightColor(SColor(255, 230, 195, 24));
-		this.getSprite().PlaySound("BombCreate.ogg", 1.0f, 1.35f+XORRandom(21)*0.01f);
 	}
 
 	if (!isClient()) return;
