@@ -19,6 +19,7 @@ void onInit(CBlob@ this)
 
 void onInit(CSprite@ this)
 {
+	this.setRenderStyle(RenderStyle::subtractive);
 	this.ScaleBy(Vec2f(2.0f, 2.0f));
 	this.SetZ(-10.0f);
 	this.SetEmitSound( "EnergyLoop1.ogg" );
