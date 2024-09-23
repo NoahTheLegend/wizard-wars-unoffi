@@ -29,7 +29,7 @@ void onTick(CBlob@ this)
 		bool back = this.get_bool("back");
 		Vec2f pos = this.getPosition();
 
-		f32 angle_change_base = 3.0f;
+		f32 angle_change_base = 4.0f;
 		f32 damping = 0.975f;
 				
 		Vec2f initvel = this.get_Vec2f("initvel");

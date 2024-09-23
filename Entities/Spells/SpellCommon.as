@@ -166,8 +166,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			bool extraDamage = this.hasTag("extra_damage");
 
-			f32 orbspeed = 3.5f;
-			f32 orbDamage = 0.25f + (extraDamage ? 0.15f : 0);
+			f32 orbspeed = 4.0f;
+			f32 orbDamage = 0.2f + (extraDamage ? 0.1f : 0);
 
 			Vec2f orbPos = thispos;
 			Vec2f orbVel = (aimpos - this.getPosition());
@@ -200,7 +200,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.SetDamageOwnerPlayer(this.getPlayer());
 					orb.server_setTeamNum(this.getTeamNum());
 					orb.setPosition(orbPos-offset);
-					orb.setVelocity(-offset);
+					orb.setVelocity(spawn_second ? -offset : orbVel);
 					orb.server_SetTimeToDie(ttd);
 
 					orb.setAngleDegrees(-orbVel.Angle());
