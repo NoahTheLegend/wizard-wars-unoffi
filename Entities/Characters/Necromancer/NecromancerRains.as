@@ -229,12 +229,18 @@ void addRain(CBlob@ this, string type, u8 level, Vec2f pos, bool extra_damage)
 
 void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 {
+    if (params is null || params.isBufferEnd()) return;
     if (cmd == this.getCommandID("rain"))
     {
         string type = params.read_string();
         u8 charge_state = params.read_u8();
-        Vec2f aimpos = params.read_Vec2f();
-        bool extra_damage = params.read_bool();
+        
+        Vec2f aimpos;
+        if (!params.saferead_Vec2f(aimpos)) return;
+
+        bool extra_damage;
+        if (!params.saferead_bool(extra_damage)) return;
+
         addRain(this, type, charge_state, aimpos, extra_damage);
     }
 }
