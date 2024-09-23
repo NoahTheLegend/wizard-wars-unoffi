@@ -66,7 +66,7 @@ void onTick(CBlob@ this){
                     damage = 0;
                 }
             }
-            target.server_Hit(target,this.getPosition(), Vec2f_zero,damage,41);
+            this.server_Hit(target,this.getPosition(), Vec2f_zero,damage,41);
             this.server_Die();
         }
     }
