@@ -20,8 +20,8 @@ void DrawInventoryOnHUD( CBlob@ this, Vec2f tl, Vec2f hudPos = Vec2f(0,0) )
 		const int quantity = item.getQuantity();
 		
 		//vertical belt
-		Vec2f itempos = Vec2f(10,54 + i * 46) + hudPos;
-		GUI::DrawIcon("GUI/jslot.png", 0, Vec2f(32,32), Vec2f(2,46 + i * 46)+hudPos);
+		Vec2f itempos = Vec2f(10,72 + i * 46) + hudPos;
+		GUI::DrawIcon("GUI/jslot.png", 0, Vec2f(32,32), Vec2f(2,64 + i * 46)+hudPos);
 
 		if (itemname == "Gold") { GUI::DrawIcon(jitem, 0, jdim, itempos-adjust, 1.0f ); }
 		else if (itemname == "Stone") { GUI::DrawIcon(jitem, 1, jdim, itempos-adjust, 1.0f ); }

@@ -2,6 +2,7 @@
 
 void onInit(CBlob@ this)
 {
+    this.addCommandID("heal_player");
     this.getSprite().SetRelativeZ(5.0f);
     this.Tag("projectile");
 
@@ -90,13 +91,29 @@ void onTick(CBlob@ this)
     }
 }
 
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
+{
+    if (cmd == this.getCommandID("heal_player"))
+    {
+        if (this.hasTag("dead")) return;
+        u16 id = params.read_u16();
+
+        CBlob@ blob = getBlobByNetworkID(id);
+        if (blob is null) return;
+
+        Heal(blob, 0.25f);
+    }
+}
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
     if (this.hasTag("dead")) return;
 
     if (blob !is null && blob.getNetworkID() == this.get_u16("follow_id"))
     {
-        Heal(blob, 0.25f);
+        CBitStream params;
+        params.write_u16(blob.getNetworkID());
+        this.SendCommand(this.getCommandID("heal_player"), params);
         this.Tag("dead");
         this.server_Die();
     }

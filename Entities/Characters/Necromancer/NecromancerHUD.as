@@ -349,7 +349,11 @@ void onRender( CSprite@ this )
 	const int coins = player !is null ? player.getCoins() : 0;
 	DrawCoinsOnHUD( blob, coins, tl, slotsSize-2 );
 	
-	GUI::DrawIcon("GUI/jslot.png", 1, Vec2f(32,32), Vec2f(2,48));
-	DrawManaBar(blob, Vec2f(52,56));
+	f32 height = 48;
+	#ifdef STAGING
+		height += 20;
+	#endif
+	GUI::DrawIcon("GUI/jslot.png", 1, Vec2f(32,32), Vec2f(2,height));
+	DrawManaBar(blob, Vec2f(52,height+8));
 	DrawSpellBar(blob);
 }

@@ -76,16 +76,12 @@ void onRender( CSprite@ this )
 		return;
 
     CBlob@ blob = this.getBlob();
-    // Vec2f dim = Vec2f(320,64);
-    // Vec2f ul( getScreenWidth()/2.0f - dim.x/2.0f, getScreenHeight() - dim.y + 12 );
-    // Vec2f lr( ul.x + dim.x, ul.y + dim.y );
-	// GUI::DrawPane(ul, lr);
-    // renderBackBar(ul, dim.x, 1.0f);
-    // u8 bar_width_in_slots = blob.get_u8("gui_HUD_slots_width");
-    // f32 width = bar_width_in_slots * 32.0f;
-    // renderFrontStone( ul+Vec2f(dim.x,0), width, 1.0f);
-	Vec2f topleft(52,10);
-	GUI::DrawIcon("GUI/jslot.png", 1, Vec2f(32,32), Vec2f(2,2));
-	renderHPBar( blob, topleft); // ( blob, ul);
-    // GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 0, Vec2f(128,32), topLeft);
+
+    f32 height = 10;
+    #ifdef STAGING
+        height += 20;
+    #endif
+    Vec2f topleft(52,height);
+	GUI::DrawIcon("GUI/jslot.png", 1, Vec2f(32,32), Vec2f(2,height-8));
+	renderHPBar(blob, topleft); // ( blob, ul);
 }
