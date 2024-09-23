@@ -37,8 +37,8 @@ void onInit(CBlob@ this)
 	this.set_Vec2f("glovepos", this.getPosition());
 }
 
-const f32 lerp = 0.25f;
-const f32 lerp_back = 0.25f;
+const f32 lerp = 0.15f;
+const f32 lerp_back = 0.15f;
 const f32 cut_length = 4.0f;
 
 void onTick(CBlob@ this)
@@ -79,7 +79,7 @@ void onTick(CBlob@ this)
 	u16[] ignore_ids;
 	this.get("ignore_ids", ignore_ids);
 	CBlob@[] bs;
-	map.getBlobsInRadius(next_pos, 8.0f, @bs);
+	map.getBlobsInRadius(next_pos, 16.0f, @bs);
 	for (u16 i = 0; i < bs.size(); i++)
 	{
 		CBlob@ b = bs[i];
@@ -99,17 +99,18 @@ void onTick(CBlob@ this)
 					CBlob@ owner = ownerplayer.getBlob();
 					owner.AddForce(Vec2f((1.0f - ((next_pos-owner.getPosition()).Length() / 80.0f)) * 2 * owner.getMass(), 0).RotateBy(angle));
 					if (isServer())
-					{
 						this.server_Hit(owner, pos, Vec2f_zero, this.get_f32("damage"), Hitters::crush, true);
-					}
 				}
 				if (isServer())
-				{
 					this.server_Hit(b, pos, glove_pos-next_pos, this.get_f32("damage"), Hitters::crush, true);
-				}
 			}
-			else if (isServer())
-				this.server_Hit(b, pos, glove_pos-next_pos, this.get_f32("damage"), Hitters::crush, true);
+			else
+			{
+				if (isClient())
+					ParticleBlood(pos,Vec2f_zero,SColor(255,XORRandom(191) + 64,XORRandom(50),XORRandom(50)));
+				if (isServer())
+					this.server_Hit(b, pos, glove_pos-next_pos, this.get_f32("damage"), Hitters::crush, true);
+			}
 		}
 		if (isClient())
 			this.getSprite().PlaySound("CardImpact.ogg", 1.25f, 0.85f+XORRandom(11)*0.01f);

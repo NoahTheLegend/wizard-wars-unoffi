@@ -63,7 +63,7 @@ namespace JesterParams
 				SpellType::other, 55, 55, 15, 416.0f, true),
 			 
 		Spell("kogun", "K.O. GUN!", 118, "A powerful glove, K.O. delight, box their face, end the fight!",
-				SpellType::other, 7, 10, 0, 80.0f),
+				SpellType::other, 6, 10, 0, 80.0f),
 			
 		Spell("bashster", "Bashster", 119, "Knocking blast, a foe's overthrow, hold to charge, let it grow.",
 				SpellType::other, 25, 45, 1, 256.0f, true),
