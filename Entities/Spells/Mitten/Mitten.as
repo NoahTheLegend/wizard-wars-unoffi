@@ -42,6 +42,7 @@ void onInit(CBlob@ this)
 	
 	if (isClient())
 	{
+		this.getSprite().PlaySound("8bit_spray", 1.0f, 0.9f + XORRandom(11)*0.01f);
 		int cb_id = Render::addBlobScript(Render::layer_prehud, this, "Mitten.as", "laserEffects");
 	}
 }	
@@ -81,7 +82,6 @@ void onTick( CBlob@ this )
 
 	if (!this.hasTag("prep"))
 	{
-		this.getSprite().PlaySound("8bit_spray", 1.0f, 0.9f + XORRandom(11)*0.01f);
 		this.Tag("prep");
 		this.set_Vec2f("target_pos", cpos);
 	}
