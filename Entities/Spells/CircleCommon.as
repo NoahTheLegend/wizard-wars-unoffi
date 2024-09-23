@@ -5,6 +5,8 @@ void onInit(CBlob@ this)
     this.set_s32("aliveTime",10);
     this.Tag("magic_circle");
     this.Tag("multi_despell");
+
+    this.getShape().SetStatic(true);
 }
 
 bool canBePickedUp( CBlob@ this, CBlob@ byBlob )
@@ -16,5 +18,4 @@ void onTick(CBlob@ this)
 {
     if(this.getTickSinceCreated() > this.get_s32("aliveTime") || this.get_u8("despelled") >= 2)
         this.Tag("reverse");
-    
 }
