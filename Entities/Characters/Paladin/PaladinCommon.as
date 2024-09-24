@@ -43,7 +43,7 @@ namespace PaladinParams
 			SpellType::other, 25, 10, 0, 64.0f, true),
 			 
 		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards.",
-				SpellType::other, 10, 40, 3, 198.0f, true),
+				SpellType::other, 10, 40, 3, 256.0f, true),
 
 		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target receives 50% less damage but transfers 25% back to you when nearby and if your health is more than 25%.",
 				SpellType::other, 20, 45, 8, 256.0f, true),
@@ -67,16 +67,16 @@ namespace PaladinParams
 				SpellType::other, 20, 40, 6, 256.0f, true),
 
 		Spell("noblelance", "Noble Lance", 100, "Casts a piercing lance to move at chosen position. Goes back to caster position when stopped. Ignores tiles.",
-				SpellType::other, 20, 45, 0, 298.0f, false),
+				SpellType::other, 25, 45, 0, 298.0f, false),
 							
 		Spell("smite", "Smite", 104, "Summons hammers from the sky.",
 				SpellType::other, 35, 45, 6, 198.0f, true),
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to slash in front of you. The spell disables teleport and awaits some time before attack.",
-				SpellType::other, 15, 30, 0, 0.0f),
+				SpellType::other, 16, 30, 0, 0.0f),
 
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for anyone being inside. Enemies also claim the effect. Doesnt stack. Can be despelled by anyone.",
-				SpellType::other, 10, 90, 18, 198.0f, true),
+				SpellType::other, 10, 75, 18, 198.0f, true),
 							
 		Spell("knight_revive", "Revive", 106, "Summon a noble warrior back from the dead by aiming a reviving missile at their gravestone.",
 				SpellType::other, 60, 60, 25, 360.0f, true),

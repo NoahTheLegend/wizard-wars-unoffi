@@ -230,7 +230,7 @@ void onTick( CBlob@ this)
 					{
                         f32 extraDamage = 1.0f;
                         if(this.hasTag("extra_damage"))
-                    	{extraDamage += 0.2f;}
+                    	{extraDamage += 0.5f;}
 						Vec2f attackVector = Vec2f(1,0).RotateBy(attackAngle);
 						if (target.hasTag("shielded") && blockAttack(target, attackVector, 0.0f)) //knight blocks with shield
 						{

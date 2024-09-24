@@ -556,7 +556,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				}
 				manaInfo.mana += 10;*/
 				if(caster !is null)
-				{Heal(caster, 1.0f);}
+				{Heal(caster, 0.5f);}
 			}
 
 			if ( countered == true )

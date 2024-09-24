@@ -375,7 +375,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 			f32 extraDamage = this.hasTag("extra_damage") ? 0.2f : 0.0f;
 			f32 orbDamage = 0.2f + extraDamage;
-			f32 orbspeed = necro_shoot_speed / 2;
+			f32 orbspeed = necro_shoot_speed / 1.5f;
 
 			switch(charge_state)
 			{
@@ -620,8 +620,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			orbVel *= orbspeed;
 
 			//power of spell determined by caster's health
-			f32 initialHealth = this.getInitialHealth();
 			f32 health = this.getHealth();
+			f32 initialHealth = Maths::Max(health, this.getInitialHealth());
 			f32 freezePower = 1.0f - (health/initialHealth);
 
 			CBlob@ orb = server_CreateBlob( "frost_ball" );
@@ -721,7 +721,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				default:return;
 			}
 
-			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbPos = thispos + Vec2f(0.0f,-1.5f);
 			Vec2f orbVel = (aimpos - orbPos);
 			orbVel.Normalize();
 			orbVel *= orbspeed;

@@ -28,7 +28,7 @@ CBlob@ createSporeshot(CBlob@ this)
 {
     if(!isServer()) return null;
     CBlob@ spore = server_CreateBlob("sporeshot",this.getTeamNum(),this.getPosition() + Vec2f(0,-8));
-    spore.setVelocity(getRandomVelocity(180,1,180));
+    spore.setVelocity(getRandomVelocity(180,2.0f,180));
     spore.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 
     return spore;

@@ -42,7 +42,7 @@ void onTick( CBlob@ this )
 	CBlob@[] blobs;
 	map.getBlobsInRadius(this.getPosition(),effectRadius,@blobs);
 
-	if(getGameTime() % 30 == 0)
+	if (getGameTime() % 30 == 0)
 	{
 		for(int i = 0; i < blobs.length; i++)
 		{

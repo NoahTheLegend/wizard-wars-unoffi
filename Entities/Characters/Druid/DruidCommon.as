@@ -27,7 +27,7 @@ namespace DruidParams
 		//	SpellType::other, 1, 50, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("sporeshot", "Spore Shot", 31, "A foul fungus that is painful to the touch, lighter than air",
-			SpellType::other, 3, 11, 0, 360.0f, true),	
+			SpellType::other, 3, 10, 0, 360.0f, true),	
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 20, 6, 0, 270.0f, true), 
@@ -42,10 +42,10 @@ namespace DruidParams
 			SpellType::other, 35, 80, 12, 360.0f, true),	
 										
 		Spell("spikeorb", "SpikeBall", 30, "The spikeball is natures punishment to those that tread her woods unwelcomed",
-			SpellType::other, 2, 9, 0, 360.0f, true),			
+			SpellType::other, 2, 8, 0, 360.0f, true),			
 				
 		Spell("vinewaver", "Vine Waver", 105, "Sends a waving phasing projectile.",
-			SpellType::other, 40, 60, 8, 128.0f, true),
+			SpellType::other, 40, 45, 6, 128.0f, true),
 				
 		Spell("rock_wall", "Rock Wall", 36, "Create a wall of ordinary rock in front of you that blocks most things both ways. Its not exactly durable though.",
 			SpellType::other, 10, 15, 0, 30.0f),
@@ -57,13 +57,13 @@ namespace DruidParams
 			SpellType::other, 15, 30, 0, 60.0f, true),
 
 		Spell("boulder_throw", "Rock Throw", 35, "Throws a heavy rock that is highly affected by gravity.",
-			SpellType::other, 20, 45, 2, 16.0f, true),
+			SpellType::other, 20, 40, 2, 16.0f, true),
 				
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
 			SpellType::other, 20, 20, 0, 360.0f, true), 
 			 
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
-			SpellType::other, 20, 20, 0, 360.0f, true),
+			SpellType::other, 15, 20, 0, 360.0f, true),
 
 		Spell("stone_spikes", "Stone Spikes", 38, "Creates a line of dangerous sharp rocks.",
 			SpellType::other, 30, 30, 8, 180.0f),
@@ -75,7 +75,7 @@ namespace DruidParams
 			SpellType::other, 20, 25, 0, 360.0f, true),
 
 		Spell("vinetrap", "Vine Embrace", 89, "Plants sharp vines that will stop enemies passing through it.",
-			SpellType::other, 35, 60, 6, 128.0f),
+			SpellType::other, 35, 45, 7, 128.0f),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

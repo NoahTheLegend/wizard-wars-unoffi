@@ -39,10 +39,10 @@ void onTick(CBlob@ this){
 
         Vec2f newVelocity = this.getVelocity() + norm;
         newVelocity.Normalize(); 
-        this.setVelocity(newVelocity * 3);
+        this.setVelocity(newVelocity * 4);
     }
 
-    if(this.getDistanceTo(target) <= 4) //hit detection
+    if(this.getDistanceTo(target) <= 8.0f) //hit detection
     {
         if(target.getTeamNum() == this.getTeamNum())
         {
