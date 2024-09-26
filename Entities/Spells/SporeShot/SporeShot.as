@@ -13,6 +13,8 @@ void onInit(CBlob@ this)
 	//this.set_f32("explosive_damage", 10.0f);
 	//this.set_f32("map_damage_radius", 4.0f);
 	//this.set_f32("map_damage_ratio", -1.0f); //heck no!
+	this.set_bool("explosive_teamkill", false);
+	this.set_bool("dont_damage_owner", true);
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
@@ -182,7 +184,7 @@ void onDie( CBlob@ this )
 
 			if ( !map.rayCastSolidNoBlobs( pos, b.getPosition() ) )
 			{
-				this.server_Hit( b, pos, Vec2f_zero, this.get_f32("damage") , Hitters::explosion, isOwnerBlob(this, b) );
+				this.server_Hit( b, pos, Vec2f_zero, this.get_f32("damage") , Hitters::explosion, false );
 			}
 		}
 	}

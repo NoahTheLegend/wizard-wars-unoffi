@@ -506,12 +506,13 @@ bool HitBlob(CBlob@ this, CBlob@ hit_blob, f32 radius, f32 damage, const u8 hitt
 
 	//explosion particle
 	makeSmallExplosionParticle(hit_blob_pos);
+	bool damage_owner = !this.exists("dont_damage_owner") || !this.get_bool("dont_damage_owner");
 
 	//hit the object
 	this.server_Hit(hit_blob, hit_blob_pos,
 	                bombforce, dam,
 	                hitter, hitter == Hitters::water || //hit with water
-	                isOwnerBlob(this, hit_blob) ||	//allow selfkill with bombs
+	                (isOwnerBlob(this, hit_blob) && damage_owner) ||	//allow selfkill with bombs
 	                should_teamkill || hit_blob.hasTag("dead") || //hit all corpses ("dead" tag)
 					hit_blob.hasTag("explosion always teamkill") // check for override with tag
 	               );
