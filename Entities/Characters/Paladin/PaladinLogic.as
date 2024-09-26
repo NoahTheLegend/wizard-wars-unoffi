@@ -323,7 +323,7 @@ void ManageSpell( CBlob@ this, PaladinInfo@ paladin, PlayerPrefsInfo@ playerPref
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (PaladinParams::spells.length == 0) 
 		{

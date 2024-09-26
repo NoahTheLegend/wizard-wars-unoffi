@@ -292,7 +292,7 @@ void ManageSpell( CBlob@ this, NecromancerInfo@ necromancer, PlayerPrefsInfo@ pl
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (NecromancerParams::spells.length == 0) 
 		{

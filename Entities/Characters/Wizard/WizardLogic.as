@@ -269,7 +269,7 @@ void ManageSpell( CBlob@ this, WizardInfo@ wizard, PlayerPrefsInfo@ playerPrefsI
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (WizardParams::spells.length == 0) 
 		{

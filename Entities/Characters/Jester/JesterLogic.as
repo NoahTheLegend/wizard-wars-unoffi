@@ -280,7 +280,7 @@ void ManageSpell( CBlob@ this, JesterInfo@ jester, PlayerPrefsInfo@ playerPrefsI
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (JesterParams::spells.length == 0) 
 		{

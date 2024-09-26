@@ -79,6 +79,7 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
     Button@ toggleHotkeyEmotesBtn;
 	Rectangle@ optionsFrame;
 	Icon@ helpIcon;
+	Icon@ spellHelpIcon;
 	ScrollBar@ particleCount;
     ScrollBar@ itemDistance;
     ScrollBar@ hoverDistance;
@@ -105,6 +106,7 @@ bool isGUINull()
 		|| achievementBtn is null
 		|| optionsFrame is null
 		|| helpIcon is null
+		|| spellHelpIcon is null
 		|| particleCount is null
         || itemDistance is null
         || hoverDistance is null )
@@ -140,6 +142,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		infoText.isEnabled = true;
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
+		spellHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
@@ -149,6 +152,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		infoText.isEnabled = false;
 		introText.isEnabled = true;
 		helpIcon.isEnabled = true;
+		spellHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
@@ -158,6 +162,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		infoText.isEnabled = false;
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
+		spellHelpIcon.isEnabled = true;
 		optionsFrame.isEnabled = true;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
@@ -167,6 +172,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		infoText.isEnabled = false;
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
+		spellHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = true;
 		playerClassButtons.isEnabled = false;
@@ -176,6 +182,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		infoText.isEnabled = false;
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
+		spellHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = true;
@@ -186,7 +193,9 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 
 	if (sender is barNumBtn){
 		barNumBtn.toggled = !barNumBtn.toggled;
-		barNumBtn.desc = (barNumBtn.toggled) ? "Bar Numbers Enabled" : "Bar Numbers Disabled";
+		getRules().set_bool("spell_number_selection", barNumBtn.toggled);
+
+		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - Enabled" : "Spell Bar - Disabled";
 		barNumBtn.saveBool("Bar Numbers",barNumBtn.toggled,"WizardWars");
 	}
 	if (sender is startCloseBtn){
@@ -197,7 +206,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
     if (sender is toggleSpellWheelBtn)
     {
         toggleSpellWheelBtn.toggled = !toggleSpellWheelBtn.toggled;
-		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel Active" : "Emoji Wheel Active";
+		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - Enabled" : "Spell Wheel - Disabled";
 		toggleSpellWheelBtn.saveBool("Spell Wheel Active", toggleSpellWheelBtn.toggled,"WizardWars");
         
         WheelMenu@ menu = get_wheel_menu("spells");
@@ -211,7 +220,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
     if (sender is toggleHotkeyEmotesBtn)
     {
         toggleHotkeyEmotesBtn.toggled = !toggleHotkeyEmotesBtn.toggled;
-		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Hotkey Emotes Enabled" : "Hotkey Emotes Disabled";
+		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - Enabled" : "Emotes - Disabled";
 		toggleHotkeyEmotesBtn.saveBool("Hotkey Emotes", toggleHotkeyEmotesBtn.toggled,"WizardWars");
         
         getRules().set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
@@ -254,27 +263,29 @@ void onTick( CRules@ this )
 	
 		//---KGUI setup---\\
 		@helpIcon = @Icon("GameHelp.png",Vec2f(40,40),imageSize,0,1.0f);
+		@spellHelpIcon = @Icon("SpellHelp.png",Vec2f(300,40),Vec2f(450,420),0,0.5f);
+		spellHelpIcon.isEnabled = false;
 
 		@helpWindow = @Window(Vec2f(200,-530),Vec2f(800,530));
 		helpWindow.name = "Help Window";
 
 		@infoText  = @Label(Vec2f(20,40),Vec2f(780,34),"",SColor(255,0,0,0),false);
 		infoText.setText(infoText.textWrap(textInfo));
-		@infoBtn = @Button(Vec2f(110,495),Vec2f(100,30),"How to Play",SColor(255,255,255,255));
+		@infoBtn = @Button(Vec2f(0,495),Vec2f(100,30),"How to Play",SColor(255,255,255,255));
 		infoBtn.addClickListener(ButtonClickHandler);
 
 		@changeText  = @Label(Vec2f(20,40),Vec2f(780,34),"",SColor(255,0,0,0),false);
 		changeText.setText(changeText.textWrap(lastChangesInfo));
 
-		@introText  = @Label(Vec2f(20,10),Vec2f(780,15),"",SColor(255,0,0,0),false);
-		introText.setText(introText.textWrap("Welcome to Wizard Wars, a mod created by Chrispin with help from The Sopranos and \nother community members! (Press F1 to close this window)"));
-		@introBtn = @Button(Vec2f(5,495),Vec2f(100,30),"Home Page",SColor(255,255,255,255));
+		@introText  = @Label(Vec2f(280,10),Vec2f(780,15),"",SColor(255,0,0,0),false);
+		introText.setText(introText.textWrap("    Welcome to Wizard Wars!\n(Press F1 to close this window)"));
+		@introBtn = @Button(Vec2f(160,495),Vec2f(100,30),"Home Page",SColor(255,255,255,255));
 		introBtn.addClickListener(ButtonClickHandler);
 
 		@helpText  = @Label(Vec2f(6,10),Vec2f(100,34),"",SColor(255,0,0,0),false);
 		helpText.setText(helpText.textWrap(lastChangesInfo));
 
-		@optionsBtn = @Button(Vec2f(215,495),Vec2f(100,30),"Options",SColor(255,255,255,255));
+		@optionsBtn = @Button(Vec2f(265,495),Vec2f(100,30),"Options",SColor(255,255,255,255));
 		optionsBtn.addClickListener(ButtonClickHandler);
 		
 		@barNumBtn = @Button(Vec2f(10,10),Vec2f(200,30),"",SColor(255,255,255,255));
@@ -283,21 +294,19 @@ void onTick( CRules@ this )
 		@startCloseBtn = @Button(Vec2f(10,50),Vec2f(200,30),"",SColor(255,255,255,255));
 		startCloseBtn.addClickListener(ButtonClickHandler);
 
-        @toggleSpellWheelBtn = @Button(Vec2f(10,300),Vec2f(200,30),"",SColor(255,255,255,255));
+        @toggleSpellWheelBtn = @Button(Vec2f(10,90),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleSpellWheelBtn.addClickListener(ButtonClickHandler);
 
-        @toggleHotkeyEmotesBtn = @Button(Vec2f(10,250),Vec2f(200,30),"",SColor(255,255,255,255));
+        @toggleHotkeyEmotesBtn = @Button(Vec2f(10,50),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleHotkeyEmotesBtn.addClickListener(ButtonClickHandler);
 
-        
-
-		@achievementBtn = @Button(Vec2f(320,495),Vec2f(120,30),"Achievements",SColor(255,255,255,255));
+		@achievementBtn = @Button(Vec2f(370,495),Vec2f(120,30),"Achievements",SColor(255,255,255,255));
 		achievementBtn.addClickListener(ButtonClickHandler);
 		
-		@classesBtn = @Button(Vec2f(445,495),Vec2f(120,30),"Classes Menu",SColor(255,255,255,255));
+		@classesBtn = @Button(Vec2f(495,495),Vec2f(120,30),"Classes Menu",SColor(255,255,255,255));
 		classesBtn.addClickListener(ButtonClickHandler);
 
-        @togglemenuBtn = @Button(Vec2f(702,06),Vec2f(90,30),"Exit Menu",SColor(255,255,255,255));//How do close menu? durp. The pain i have gone through has warrented this.
+        @togglemenuBtn = @Button(Vec2f(702,6),Vec2f(90,30),"Exit Menu",SColor(255,255,255,255));//How do close menu? durp. The pain i have gone through has warrented this.
 		togglemenuBtn.addClickListener(ButtonClickHandler);
 
 		@optionsFrame = @Rectangle(Vec2f(20,10),Vec2f(760,490), SColor(0,0,0,0));
@@ -306,12 +315,12 @@ void onTick( CRules@ this )
 		@particleText = @Label(Vec2f(10,90),Vec2f(100,10),"Particle counts:",SColor(255,0,0,0),false);
 		particleCount.addSlideEventListener(SliderClickHandler);
 
-		@itemDistance = @ScrollBar(Vec2f(10,350),160,10,true, itemDistance_value);
-		@itemDistanceText = @Label(Vec2f(10,330),Vec2f(100,10),"Item distance:",SColor(255,0,0,0),false);
+		@itemDistance = @ScrollBar(Vec2f(10,150),160,10,true, itemDistance_value);
+		@itemDistanceText = @Label(Vec2f(10,130),Vec2f(100,10),"Wheel radius:",SColor(255,0,0,0),false);
 		itemDistance.addSlideEventListener(SliderClickHandler);
 
-        @hoverDistance = @ScrollBar(Vec2f(10,400),160,10,true, hoverDistance_value);
-		@hoverDistanceText = @Label(Vec2f(10,380),Vec2f(100,10),"Hover distance:",SColor(255,0,0,0),false);
+        @hoverDistance = @ScrollBar(Vec2f(10,200),160,10,true, hoverDistance_value);
+		@hoverDistanceText = @Label(Vec2f(10,180),Vec2f(100,10),"Wheel deselect radius:",SColor(255,0,0,0),false);
 		hoverDistance.addSlideEventListener(SliderClickHandler);
 
 		//---KGUI Parenting---\\
@@ -320,18 +329,16 @@ void onTick( CRules@ this )
 		helpWindow.addChild(infoText);
 		helpWindow.addChild(changeText);
 		helpWindow.addChild(introBtn);
-		helpWindow.addChild(infoBtn);
+		//helpWindow.addChild(infoBtn);
 		helpWindow.addChild(optionsBtn);
 		helpWindow.addChild(optionsFrame);
 		helpWindow.addChild(achievementBtn);
 		helpWindow.addChild(classesBtn);
         helpWindow.addChild(togglemenuBtn);
 		optionsFrame.addChild(barNumBtn);
-		optionsFrame.addChild(startCloseBtn);
         optionsFrame.addChild(toggleSpellWheelBtn);
         optionsFrame.addChild(toggleHotkeyEmotesBtn);
-		optionsFrame.addChild(particleCount);
-		optionsFrame.addChild(particleText);
+		helpWindow.addChild(spellHelpIcon);
         
         optionsFrame.addChild(itemDistance);
 		optionsFrame.addChild(itemDistanceText);
@@ -342,19 +349,21 @@ void onTick( CRules@ this )
 		startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
         
 		toggleSpellWheelBtn.toggled = toggleSpellWheelBtn.getBool("Spell Wheel Active","WizardWars");
-		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel Active" : "Emoji Wheel Active";
+		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - Enabled" : "Spell Wheel - Disabled";
         WheelMenu@ menu = get_wheel_menu("spells");
         if (menu != null){
             this.set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
         }
 
         toggleHotkeyEmotesBtn.toggled = toggleHotkeyEmotesBtn.getBool("Hotkey Emotes","WizardWars");
-		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Hotkey Emotes Enabled" : "Hotkey Emotes Disabled";
+		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - Enabled" : "Emotes - Disabled";
         this.set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
 
 
 		barNumBtn.toggled = barNumBtn.getBool("Bar Numbers","WizardWars");
-		barNumBtn.desc = (barNumBtn.toggled) ? "Bar Numbers Enabled" : "Bar Numbers Disabled";
+		this.set_bool("spell_number_selection", barNumBtn.toggled);
+		
+		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - Enabled" : "Spell Bar - Disabled";
 		optionsFrame.isEnabled = false;
 		changeText.isEnabled = false;
 		infoText.isEnabled = false;

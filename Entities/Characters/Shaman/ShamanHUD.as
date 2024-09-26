@@ -221,7 +221,7 @@ void DrawSpellBar(CBlob@ this)
 	GUI::DrawPane(primaryPos + Vec2f(0,96), primaryPos + Vec2f(32,116), color_white);
 	GUI::DrawText("-" + ShamanParams::spells[primarySpell].mana, primaryPos + Vec2f(2,98), SColor(255, 158, 58, 187) );
 	
-	GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-48), color_white );
+	
 	
 	//SECONDARY SPELL HUD
     Vec2f secondaryPos = Vec2f( 192.0f, getScreenHeight()-128.0f );

@@ -272,7 +272,7 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (DruidParams::spells.length == 0) 
 		{

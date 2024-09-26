@@ -274,7 +274,7 @@ void ManageSpell( CBlob@ this, ShamanInfo@ shaman, PlayerPrefsInfo@ playerPrefsI
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (ShamanParams::spells.length == 0) 
 		{

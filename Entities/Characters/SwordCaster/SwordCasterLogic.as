@@ -271,7 +271,7 @@ void ManageSpell( CBlob@ this, SwordCasterInfo@ swordcaster, PlayerPrefsInfo@ pl
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (SwordCasterParams::spells.length == 0) 
 		{

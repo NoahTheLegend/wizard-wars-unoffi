@@ -195,7 +195,7 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
         IconWheelMenuEntry entry(spell.typeName);
         entry.object_id = i;
         
-        entry.visible_name = spell.name + "\n\n" + "Mana: " + spell.mana + "\n\n" + "Cooldown: " + spell.cooldownTime + "\n\n" + "Cast Length: " + spell.cast_period;//Add description and ( mana | cooldownTime | cast_period | needs_full | range)
+        entry.visible_name = spell.name + "\n\n" + "Mana: " + spell.mana + "\n\n" + "Cooldown: " + spell.cooldownTime+"s" + "\n\n" + "Cast Time: " + (Maths::Round(spell.cast_period/30.0f * 10.0f) / 10.0f)+"s";//Add description and ( mana | cooldownTime | cast_period | needs_full | range)
         entry.texture_name = "SpellIcons.png";
         entry.frame = spell.iconFrame;
         entry.frame_size = Vec2f(16.0f, 16.0f);

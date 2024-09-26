@@ -323,7 +323,7 @@ void ManageSpell( CBlob@ this, PriestInfo@ priest, PlayerPrefsInfo@ playerPrefsI
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (PriestParams::spells.length == 0) 
 		{

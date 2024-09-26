@@ -316,7 +316,7 @@ void ManageSpell( CBlob@ this, EntropistInfo@ entropist, PlayerPrefsInfo@ player
         }
     }
 	
-	if ( !is_pressed )
+	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
 	{
 		if (EntropistParams::spells.length == 0) 
 		{
