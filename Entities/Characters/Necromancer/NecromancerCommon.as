@@ -69,7 +69,7 @@ namespace NecromancerParams
 			SpellType::other,45,60,5,360, true),
 							
 		Spell("bunker_buster", "Bunker Buster", 39, "Anti-Barrier spell.",
-				SpellType::other, 15, 45, 0, 360.0f, true),	
+				SpellType::other, 15, 40, 0, 360.0f, true),	
 				
 		Spell("no_teleport_barrier", "Teleport Block", 49, "Prevents enemies from teleporting past this barrier.",
 				SpellType::other, 10, 10, 0, 100.0f, true),	
