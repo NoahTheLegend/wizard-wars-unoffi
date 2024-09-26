@@ -49,7 +49,11 @@ void onTick( CBlob@ this )
 	if (shooter.getPlayer() is null) return;
 	this.Tag(""+shooter.getPlayer().getUsername());
 
-	if (getMap() !is null && this.getPosition().y/8 >= getMap().tilemapheight-2) this.AddForce(Vec2f(0, -100));
+	if (getMap() !is null && this.getPosition().y/8 >= getMap().tilemapheight-2)
+	{
+		this.setVelocity(Vec2f(this.getVelocity().x, 0));
+		this.AddForce(Vec2f(0, -100));
+	}
 
 	bool has_target = false;
 

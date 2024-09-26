@@ -81,6 +81,12 @@ void onTick( CBlob@ this )
 		dir.RotateBy(15 + XORRandom(6));
 		dir.Normalize();
 		this.set_Vec2f("dir", dir);
+
+		if (getMap() !is null && this.getPosition().y/8 >= getMap().tilemapheight-2)
+		{
+			this.setVelocity(Vec2f(this.getVelocity().x, 0));
+			this.AddForce(Vec2f(0, -200));
+		}
 	}
 
 	Vec2f vel = this.getVelocity();
