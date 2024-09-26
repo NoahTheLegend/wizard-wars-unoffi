@@ -135,7 +135,15 @@ class WizardRain
             }
             else if (type == WizardRainTypes::meteorStrike)
             {
-                SummonBlob(this, "meteor", Vec2f(position.x, 10.0f), team);
+                CBlob@ blob = server_CreateBlob("meteor", team, Vec2f(position.x, 10.0f));
+                if (blob !is null)
+                {
+                    blob.SetDamageOwnerPlayer(this.getPlayer());
+                    if (level == 5)
+                    {
+                        blob.getShape().SetGravityScale(1.0f);
+                    }
+                }
 
                 time = 1;
             }
