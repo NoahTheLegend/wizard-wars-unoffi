@@ -13,6 +13,7 @@ void onInit( CRules@ this )
 	onRestart( this );
 }
 
+
 void onTick( CRules@ this )
 {
 	if ( getGameTime() % SHOW_FREQUENCY == 0 && tips.length > 0 )
