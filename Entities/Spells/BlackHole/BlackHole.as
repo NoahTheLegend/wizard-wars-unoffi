@@ -20,6 +20,8 @@ void onInit(CBlob@ this)
 		SetupCustomEmitEffect( "blackHoleEmit", "BlackHole.as", "updateBlackHoleParticle", 10, 0, 120 );
 		//SetupCustomEmitEffect( STRING name, STRING scriptfile, STRING scriptfunction, u8 hard_freq, u8 chance_freq, u16 timeout )
 	}
+
+	this.Tag("no trampoline collision");
 }
 
 void onInit(CSprite@ this)

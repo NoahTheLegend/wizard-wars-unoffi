@@ -18,6 +18,7 @@ void onInit( CBlob@ this )
 
     this.SetLight( true );
 	this.SetLightRadius( 32.0f );
+	this.Tag("no trampoline collision");
 }	
 
 void onTick( CBlob@ this )

@@ -5,6 +5,7 @@ void onInit(CBlob@ this)
     this.set_s32("aliveTime",10);
     this.Tag("magic_circle");
     this.Tag("multi_despell");
+    this.Tag("no trampoline collision");
 
     this.getShape().SetStatic(true);
 }

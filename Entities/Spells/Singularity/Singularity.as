@@ -12,6 +12,7 @@ void onInit( CBlob @ this )
 	this.Tag("projectile");
 	this.Tag("invincible");
 	this.Tag("magic_circle");
+	this.Tag("no trampoline collision");
 
     this.set_u8("launch team",255);
     //this.server_setTeamNum(1);
