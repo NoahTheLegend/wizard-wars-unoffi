@@ -143,7 +143,6 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
     {
         return;
     }
-
     
     WheelMenu@ menu = get_wheel_menu("spells");
     menu.option_notice = getTranslatedString("Select a spell");
@@ -216,8 +215,58 @@ void onTick(CRules@ rules)
 		return;
 	}
 
-    bool usespellwheel = rules.get_bool("usespellwheel");
+    CPlayer@ local = getLocalPlayer();
+    if (local is null) return;
 
+    PlayerPrefsInfo@ playerPrefsInfo;
+    if (!rules.get_bool("spellwheel_loaded") && local.get("playerPrefsInfo", @playerPrefsInfo)) 
+    {
+        WheelMenu@ menu = get_wheel_menu("spells");
+        
+        if (menu !is null)
+        {
+            Spell[] spells;
+            u8[] keybinds;
+            string blob_name = blob.getName();
+
+            if(blob_name == "wizard") {keybinds = playerPrefsInfo.hotbarAssignments_Wizard; spells = WizardParams::spells;}
+            else if(blob_name == "necromancer") {keybinds = playerPrefsInfo.hotbarAssignments_Necromancer; spells = NecromancerParams::spells;}
+            else if(blob_name == "druid") {keybinds = playerPrefsInfo.hotbarAssignments_Druid; spells = DruidParams::spells;}
+            else if(blob_name == "swordcaster") {keybinds = playerPrefsInfo.hotbarAssignments_SwordCaster; spells = SwordCasterParams::spells;}
+            else if(blob_name == "entropist") {keybinds = playerPrefsInfo.hotbarAssignments_Entropist; spells = EntropistParams::spells;}
+            else if(blob_name == "priest") {keybinds = playerPrefsInfo.hotbarAssignments_Priest; spells = PriestParams::spells;}
+            else if(blob_name == "shaman") {keybinds = playerPrefsInfo.hotbarAssignments_Shaman; spells = ShamanParams::spells;}
+            else if(blob_name == "paladin") {keybinds = playerPrefsInfo.hotbarAssignments_Paladin; spells = PaladinParams::spells;}
+            else if(blob_name == "jester") {keybinds = playerPrefsInfo.hotbarAssignments_Jester; spells = JesterParams::spells;}
+            else return;
+
+            if (keybinds.size() > 0)
+            {
+                rules.set_bool("spellwheel_loaded", true);
+
+                int entry_len = keybinds.size();
+                menu.entries.resize(0);
+                for (int i = 0; i < entry_len; i++)
+                {
+                    Spell spell = spells[keybinds[i]];
+
+                    IconWheelMenuEntry entry(spell.typeName);
+                    entry.object_id = i;
+
+                    entry.visible_name = spell.name + "\n\n" + "Mana: " + spell.mana + "\n\n" + "Cooldown: " + spell.cooldownTime+"s" + "\n\n" + "Cast Time: " + (Maths::Round(spell.cast_period/30.0f * 10.0f) / 10.0f)+"s";//Add description and ( mana | cooldownTime | cast_period | needs_full | range)
+                    entry.texture_name = "SpellIcons.png";
+                    entry.frame = spell.iconFrame;
+                    entry.frame_size = Vec2f(16.0f, 16.0f);
+                    entry.scale = 2.0f;
+                    entry.offset = Vec2f(0.0f, -3.0f);
+
+                    menu.entries.push_back(@entry);
+                }
+            }
+        }
+    }
+
+    bool usespellwheel = rules.get_bool("usespellwheel");
     WheelMenu@ menu;
 
     if(usespellwheel == true)
@@ -245,7 +294,7 @@ void onTick(CRules@ rules)
         if(usespellwheel == true)
         {
             PlayerPrefsInfo@ playerPrefsInfo;
-            if (!getLocalPlayer().get( "playerPrefsInfo", @playerPrefsInfo )) 
+            if (!local.get( "playerPrefsInfo", @playerPrefsInfo )) 
             {
                 set_active_wheel_menu(null);
                 return;
@@ -257,8 +306,24 @@ void onTick(CRules@ rules)
                 return;
             }
             if(selected != null){
+                u8[] keybinds;
+                string blob_name = blob.getName();
+
+                if(blob_name == "wizard") {keybinds = playerPrefsInfo.hotbarAssignments_Wizard;}
+                else if(blob_name == "necromancer") {keybinds = playerPrefsInfo.hotbarAssignments_Necromancer;}
+                else if(blob_name == "druid") {keybinds = playerPrefsInfo.hotbarAssignments_Druid;}
+                else if(blob_name == "swordcaster") {keybinds = playerPrefsInfo.hotbarAssignments_SwordCaster;}
+                else if(blob_name == "entropist") {keybinds = playerPrefsInfo.hotbarAssignments_Entropist;}
+                else if(blob_name == "priest") {keybinds = playerPrefsInfo.hotbarAssignments_Priest;}
+                else if(blob_name == "shaman") {keybinds = playerPrefsInfo.hotbarAssignments_Shaman;}
+                else if(blob_name == "paladin") {keybinds = playerPrefsInfo.hotbarAssignments_Paladin;}
+                else if(blob_name == "jester") {keybinds = playerPrefsInfo.hotbarAssignments_Jester;}
+                else return;
+
                 //playerPrefsInfo.primaryHotkeyID = ???;//currently selected spell in spell selector bottom left
-                playerPrefsInfo.primarySpellID = selected.object_id;//currently selected spell
+                playerPrefsInfo.primarySpellID = keybinds[selected.object_id];//currently selected spell
+                playerPrefsInfo.primaryHotkeyID = keybinds[selected.object_id];
+			    blob.set_bool("spell selected", false);
             }
         }
         else

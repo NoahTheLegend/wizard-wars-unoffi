@@ -343,7 +343,6 @@ void onTick( CBlob@ this )
 			u8 spellcount = this.get_u8("spell_count");
 			if(spellcount > 1)
 			{
-			
 				CPlayer@ ptarget = this.getPlayer();
 				
 				if(this.getTeamNum() == 0)
@@ -361,7 +360,6 @@ void onTick( CBlob@ this )
 					newBlob.server_SetPlayer(ptarget);
 				}
 				print("hax");
-			
 			}
 			else if(spellcount != 0)
 			{
