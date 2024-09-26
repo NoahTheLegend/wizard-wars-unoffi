@@ -23,7 +23,6 @@ class WWPlayerClassButton
 	Label@ desc, conLbl, spellDescText;
 	u32 classCost;
 
-	
 	bool gained,hasCon = false;
 	
 	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, int _size)
@@ -570,6 +569,8 @@ void RenderClassMenus()		//very light use of KGUI
 		Button@ iButton = playerClassButtons.list[i].classButton;
 		if ( iButton.toggled == true )
 		{
+			spellAssignHelpIcon.isEnabled = false;
+			
 			if ( iButton.name == "wizard" )
 			{
 				CControls@ controls = localPlayer.getControls();

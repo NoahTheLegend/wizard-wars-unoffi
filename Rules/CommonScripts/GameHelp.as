@@ -384,8 +384,6 @@ void onTick( CRules@ this )
 		intitializeClasses();
 		helpWindow.addChild(playerClassButtons);
 
-
-
         updateOptionSliderValues();//Takes slider values and sets other settings
 		
 		this.set_bool("GUI initialized", true);
