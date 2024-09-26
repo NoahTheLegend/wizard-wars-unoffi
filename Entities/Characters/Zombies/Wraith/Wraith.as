@@ -8,6 +8,8 @@
 const u8 DEFAULT_PERSONALITY = AGGRO_BIT;
 const s16 MAD_TIME = 600;
 const string chomp_tag = "chomping";
+const string damageboost_layer = "damage boost";
+const string damageboost_layer2 = "damage boost 2";
 
 //sprite
 
@@ -17,6 +19,27 @@ void onInit(CSprite@ this)
     this.ReloadSprites(blob.getTeamNum(),0); 
 	
 	this.PlaySound( "WraithSpawn.ogg" );
+
+	this.RemoveSpriteLayer(damageboost_layer);
+	CSpriteLayer@ damageboost = this.addSpriteLayer( damageboost_layer, "DamageBoost.png", 32, 32 );
+
+	if (damageboost !is null)
+	{
+		damageboost.SetVisible(false);
+		damageboost.SetRelativeZ(-5.0f);
+	}
+
+    this.RemoveSpriteLayer(damageboost_layer2);
+	CSpriteLayer@ damageboost2 = this.addSpriteLayer( damageboost_layer2, "DamageBoost.png", 32, 32 );
+
+	if (damageboost2 !is null)
+	{
+        Animation@ anim = damageboost2.addAnimation( "default", 0, false );
+		int[] frames = {1};
+		anim.AddFrames(frames);
+		damageboost2.SetVisible(false);
+        damageboost2.SetRelativeZ(-5.0f);
+	}
 }
 
 void onTick(CSprite@ this)
@@ -26,6 +49,29 @@ void onTick(CSprite@ this)
     this.SetEmitSoundPaused(false);
 
 	CBlob@ blob = this.getBlob();
+	bool needs_damageboost = blob.hasTag("extra_damage");
+
+	//Damage boost sprite
+    CSpriteLayer@ damageboost = this.getSpriteLayer( damageboost_layer );
+    if(damageboost !is null)
+    {
+		damageboost.SetVisible(needs_damageboost);
+		if(needs_damageboost)
+		{
+			damageboost.RotateBy(-5, Vec2f());
+			damageboost.SetOffset(Vec2f(2.0f,-1.0f));
+		}
+	}
+    CSpriteLayer@ damageboost2 = this.getSpriteLayer( damageboost_layer2 );
+    if(damageboost2 !is null)
+    {
+		damageboost2.SetVisible(needs_damageboost);
+		if(needs_damageboost)
+		{
+			damageboost2.RotateBy(4, Vec2f());
+			damageboost2.SetOffset(Vec2f(2.0f,-1.0f));
+		}
+	}
 	
     if (this.isAnimation("revive") && !this.isAnimationEnded()) return;
 	if (this.isAnimation("bite") && !this.isAnimationEnded()) return;
@@ -187,7 +233,13 @@ void onTick(CBlob@ this)
 		this.SetLightColor( SColor(255, 211, 121, 224 ) );
 		
 		s32 timer = this.get_s32("explosion_timer") - getGameTime();
-		
+		if (this.hasTag("extra_damage"))
+		{
+			this.set_f32("explosive_radius", 256.0f);
+    		this.set_f32("map_damage_radius", 128.0f);
+			this.set_bool("explosive_teamkill", true);
+		}
+
 		if (timer <= 0)
 		{
 			if (getNet().isServer()) {
