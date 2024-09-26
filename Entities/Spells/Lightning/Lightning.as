@@ -97,7 +97,7 @@ void updateLaserPositions(CBlob@ this)
 				{
 					f32 damage = DAMAGE;
 					if (hitBlob.get_bool("waterbarrier")) damage *= 1.5f;
-					if (hitBlob.hasTag("barrier")) damage *= 0.25f;
+					if (hitBlob.hasTag("barrier")) damage *= 0.5f;
 					this.server_Hit(hitBlob, hi.hitpos, Vec2f(0,1), damage, Hitters::explosion, true);
 					
 					damageDealt = true;
