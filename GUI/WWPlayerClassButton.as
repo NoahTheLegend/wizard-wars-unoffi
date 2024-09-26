@@ -338,62 +338,62 @@ void intitializeClasses()
 	
 	playerClassButtons.registerWWPlayerClassButton("Wizard", 
 													"     A versatile magic-weilding class with a wide variety of spells at their disposal. Control the natural elements to defeat foes and assist allies. Complexity: HARD" +
-													"\n\n     Health: 75" +
+													"\n     Health: 75" +
 													"\n     Mana: 150" +
 													"\n     Mana Regen: 3 mana/sec", 
 													"wizard", 0, 0, 2, 5, "WizardWars");
 	
 	playerClassButtons.registerWWPlayerClassButton("Necromancer", 
 													"     A spell-caster who is able to summon the undead and specializes in dark magic. Takes on the role of AOE damage support, but can hold his own in combat. Complexity: EASY" +
-													"\n\n     Health: 100" +
+													"\n     Health: 100" +
 													"\n     Mana: 100" +
 													"\n     Mana Regen: 4 mana/sec", 
 													"necromancer", 1, 0, 3, 5, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Druid", 
 													"     A healing bastard. Druids claim to be in tune with nature, but they fail to mention how annoying bees can be. Complexity: EASY" +
-													"\n\n     Health: 75" +
+													"\n     Health: 75" +
 													"\n     Mana: 150" +
 													"\n     Mana Regen: 4 mana/sec",
 													"druid", 3, 20, 4, 0, "WizardWars");
 													
 	playerClassButtons.registerWWPlayerClassButton("Swordcaster", 
 													"     \"This is a good day for Swordcasters all around the world.\" Complexity: HARD\" " +
-													"\n\n     Health: 90" +
+													"\n     Health: 90" +
 													"\n     Mana: 100" +
 													"\n     Mana Regen: 3 mana/sec",
 													"swordcaster", 4, 0, 5, 0, "WizardWars");
 	playerClassButtons.registerWWPlayerClassButton("Entropist", 
 													"     There is no better feeling than giving the enemy a taste of their own medicine. Good enemy rusher with impactful damage. Complexity: HARD" +
-													"\n\n     Health: 75" +
+													"\n     Health: 75" +
 													"\n     Mana: 200" +
 													"\n     Mana is obtained by absorbing enemy spells.",
 													"entropist", 5, 0, 6, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Priest", 
 													"Has a breathe of smite and holy water. Owns expensive, but impactful AOE spells. Complexity: MEDIUM" +
-													"\n\n     Health: 80" +
+													"\n     Health: 80" +
 													"\n     Mana: 150" +
 													"\n     Mana Regen: 4 mana/sec",
 													"priest", 6, 0, 7, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Shaman", 
 													"A powerful elementalist, so known totemist. Has a variety of counterattack spells which deal more damage near or from inside enemy groups. Complexity: MEDIUM" +
-													"\n\n     Health: 80" +
+													"\n     Health: 80" +
 													"\n     Mana: 125" +
 													"\n     Mana Regen: 4 mana/sec",
 													"shaman", 7, 0, 8, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Paladin", 
 													"Justice guardian. Handicapped in spells range and agility. Complexity: MEDIUM" +
-													"\n\n     Health: 100" +
+													"\n     Health: 100" +
 													"\n     Mana: 250" +
 													"\n     Mana Regen: 3 mana/sec",
 													"paladin", 8, 0, 9, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Jester", 
 													"Master of mayhem, casting chaos with jests and jokes. And you are about to conceive a hatred soon." +
-													"\n\n     Health: 70" +
+													"\n     Health: 70" +
 													"\n     Mana: 150" +
 													"\n     Mana Regen: 3 mana/sec",
 													"jester", 9, 0, 10, 0, "WizardWars");

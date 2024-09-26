@@ -80,6 +80,7 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
 	Rectangle@ optionsFrame;
 	Icon@ helpIcon;
 	Icon@ spellHelpIcon;
+	Icon@ spellAssignHelpIcon;
 	ScrollBar@ particleCount;
     ScrollBar@ itemDistance;
     ScrollBar@ hoverDistance;
@@ -107,6 +108,7 @@ bool isGUINull()
 		|| optionsFrame is null
 		|| helpIcon is null
 		|| spellHelpIcon is null
+		|| spellAssignHelpIcon is null
 		|| particleCount is null
         || itemDistance is null
         || hoverDistance is null )
@@ -143,6 +145,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = false;
+		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
@@ -153,6 +156,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		introText.isEnabled = true;
 		helpIcon.isEnabled = true;
 		spellHelpIcon.isEnabled = false;
+		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
@@ -163,6 +167,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = true;
+		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = true;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
@@ -173,6 +178,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = false;
+		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = true;
 		playerClassButtons.isEnabled = false;
@@ -183,6 +189,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = false;
+		spellAssignHelpIcon.isEnabled = true;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = true;
@@ -265,6 +272,8 @@ void onTick( CRules@ this )
 		@helpIcon = @Icon("GameHelp.png",Vec2f(40,40),imageSize,0,1.0f);
 		@spellHelpIcon = @Icon("SpellHelp.png",Vec2f(300,40),Vec2f(450,420),0,0.5f);
 		spellHelpIcon.isEnabled = false;
+		@spellAssignHelpIcon = @Icon("SpellAssignHelp.png",Vec2f(270,40),Vec2f(500,430),0,0.5f);
+		spellAssignHelpIcon.isEnabled = false;
 
 		@helpWindow = @Window(Vec2f(200,-530),Vec2f(800,530));
 		helpWindow.name = "Help Window";
@@ -339,6 +348,7 @@ void onTick( CRules@ this )
         optionsFrame.addChild(toggleSpellWheelBtn);
         optionsFrame.addChild(toggleHotkeyEmotesBtn);
 		helpWindow.addChild(spellHelpIcon);
+		helpWindow.addChild(spellAssignHelpIcon);
         
         optionsFrame.addChild(itemDistance);
 		optionsFrame.addChild(itemDistanceText);
