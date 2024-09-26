@@ -16,7 +16,7 @@ void onInit( CRules@ this )
 void onTick( CRules@ this )
 {
 	if ( getGameTime() % SHOW_FREQUENCY == 0 && tips.length > 0 )
-		client_AddToChat( ">TIP: " + tips[XORRandom(tips.length)] );
+		client_AddToChat("TIP: "+tips[XORRandom(tips.length)]);
 }
 
 void LoadTips()
