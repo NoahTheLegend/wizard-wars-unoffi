@@ -3,6 +3,7 @@
 const f32 radius = 8*10;
 
 void onInit(CBlob@ this){
+    this.addCommandID("heal_player");
     this.Tag('counterable');
     this.Tag("projectile");
     this.getShape().SetGravityScale(0);
@@ -49,9 +50,18 @@ void onTick(CBlob@ this){
             f32 amo = this.get_f32("heal_amount");
             if (target.getPlayer() is this.getDamageOwnerPlayer())
                 amo /= 2;
-                
-            Heal(target,amo);
-            this.server_Die();
+            
+            CBitStream params;
+            params.write_u16(target.getNetworkID());
+            params.write_f32(amo);
+            this.SendCommand(this.getCommandID("heal_player"), params);
+
+            if (isServer())
+            {
+                Heal(target,amo);
+                this.Tag("dead");
+                this.server_Die();
+            }
         }
         else
         {
@@ -96,6 +106,24 @@ int closestBlobIndex(CBlob@ this, CBlob@[] blobs, CPlayer@ caster)
         }
     }
     return bestIndex;
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
+{
+    if (cmd == this.getCommandID("heal_player"))
+    {
+        if (this.hasTag("dead")) return;
+        this.Tag("dead");
+
+        if (!isClient()) return;
+        u16 id = params.read_u16();
+        f32 amo = params.read_f32();
+
+        CBlob@ blob = getBlobByNetworkID(id);
+        if (blob is null) return;
+
+        Heal(blob, amo);
+    }
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
