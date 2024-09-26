@@ -59,11 +59,6 @@ void onRender(CSprite@ this)
 		frame = 1 + type;
 	}
 
-	// draw coins
-
-	const int coins = player !is null ? player.getCoins() : 0;
-	DrawCoinsOnHUD(blob, coins, tl, slotsSize - 2);
-
 	f32 height = 48;
 	// draw class icon
 	#ifdef STAGING

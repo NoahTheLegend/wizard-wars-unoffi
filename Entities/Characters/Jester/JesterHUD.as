@@ -345,10 +345,6 @@ void onRender( CSprite@ this )
 	// draw inventory
 	Vec2f tl = getActorHUDStartPosition(blob, slotsSize);
 	DrawInventoryOnHUD( blob, tl, Vec2f(0,58));
-
-	// draw coins
-	const int coins = player !is null ? player.getCoins() : 0;
-	DrawCoinsOnHUD( blob, coins, tl, slotsSize-2 );
 	
 	f32 height = 48;
 	#ifdef STAGING
