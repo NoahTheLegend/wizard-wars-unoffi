@@ -24,6 +24,7 @@ void onInit( CBlob @ this )
 	shape.SetGravityScale( 0.25f );
 	shape.getConsts().bullet = true;
 	shape.SetRotationsAllowed(false);
+	this.getSprite().setRenderStyle(RenderStyle::additive);
 	
 	this.set_f32("explosive_radius",16.0f);
 	this.set_f32("explosive_damage",2.0f);
