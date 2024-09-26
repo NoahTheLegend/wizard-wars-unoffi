@@ -1625,6 +1625,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
                         orb.Tag("extra_damage");//Remember to change this in Leech.as
 
 					orb.set_Vec2f("aim pos", aimpos);
+					if (charge_state == super_cast)
+						orb.Tag("super_cast");
 
 					orb.IgnoreCollisionWhileOverlapped( this );
 					orb.SetDamageOwnerPlayer( this.getPlayer() );

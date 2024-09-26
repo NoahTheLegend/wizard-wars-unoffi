@@ -20,7 +20,7 @@ void onInit(CBlob@ this)
 	this.set_bool("has_target", false);
 	this.set_u32("lock_time", 0);
 
-	this.getSprite().SetRelativeZ(531.0f);
+	this.getSprite().SetRelativeZ(1531.0f);
 }
 
 f32 cap_dist = 256.0f + 64.0f;

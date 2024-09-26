@@ -229,8 +229,6 @@ void onTick( CBlob@ this)
 					else if ( damageDealt == false )
 					{
                         f32 extraDamage = 1.0f;
-                        if(this.hasTag("extra_damage"))
-                    	{extraDamage += 0.5f;}
 						Vec2f attackVector = Vec2f(1,0).RotateBy(attackAngle);
 						if (target.hasTag("shielded") && blockAttack(target, attackVector, 0.0f)) //knight blocks with shield
 						{
@@ -239,15 +237,21 @@ void onTick( CBlob@ this)
                     		{target.getSprite().PlaySound("ShieldHit.ogg");}
 						}
 
+						if (this.hasTag("super_cast")) extraDamage *= 1.5f;
 						this.server_Hit(target, hi.hitpos, Vec2f(0,0), DAMAGE * extraDamage, Hitters::explosion, true);
-						
 
 						CPlayer@ ownerPlayer = this.getDamageOwnerPlayer();
 						if ( ownerPlayer !is null && target.getPlayer() !is null )
 						{
 							CBlob@ ownerBlob = ownerPlayer.getBlob();
 							if ( ownerBlob !is null )
-								ownerBlob.server_Heal(DAMAGE * 0.5f);
+							{
+								f32 amo = 1.0f;
+								if (this.hasTag("extra_damage"))
+									amo = 2.0f;
+
+								ownerBlob.server_Heal(amo);
+							}
 						}
 						
 						damageDealt = true;
