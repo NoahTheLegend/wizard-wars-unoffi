@@ -2365,7 +2365,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					orbspeed *= 1.3f;
-					amount = 4;
+					amount = 5;
 				}
 				break;
 				

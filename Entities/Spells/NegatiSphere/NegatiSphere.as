@@ -77,14 +77,14 @@ void onTick( CBlob@ this )
 	if(!this.get_bool("launch"))
 	{
 		Vec2f dir = this.get_Vec2f("target")-this.getPosition();
-		dir.RotateBy(25);
+		dir.RotateBy(15 + XORRandom(6));
 		dir.Normalize();
 		this.set_Vec2f("dir", dir);
 	}
 
 	Vec2f vel = this.getVelocity();
 	Vec2f finaldir = this.get_Vec2f("dir");
-	float dirmult = this.hasTag("cruiseMode") ? 1.0f : 0.35;
+	float dirmult = this.hasTag("cruiseMode") ? 1.5f : 0.75f;
 	vel += finaldir * dirmult;
 	this.setVelocity(vel);
 
