@@ -6,7 +6,7 @@
 // pistol
 const Vec2f follow_offset = Vec2f(-32.0f, -32.0f);
 const Vec2f fire_offset = Vec2f(32.0f,-8.0f);
-const u32 shoot_delay = 15;
+const u32 shoot_delay = 12;
 const f32 max_bullet_angle_deviation = 2.5f;
 const f32 max_visual_recoil = 20.0f;
 const f32 recoil_falloff_accel = 2;
@@ -15,9 +15,9 @@ const f32 recoil_falloff_delay = 8;
 const f32 bullet_mana_cost = 1;
 // slam & swipe
 const f32 min_dmg = 0.5f;
-const f32 max_dmg = 3.0f;
+const f32 max_dmg = 4.0f;
 const f32 base_radius = 32.0f;
-const f32 damp = 2.5f;
+const f32 damp = 2.0f;
 
 void onInit(CBlob@ this)
 {
@@ -39,6 +39,7 @@ void onInit(CBlob@ this)
 	this.set_bool("was_fl", this.isFacingLeft());
 	this.set_u8("state", 0);
 	this.set_u32("running", 0);
+	this.Tag("no trampoline collision");
 	
 	if (isClient())
 	{
@@ -226,7 +227,7 @@ void onTick( CBlob@ this )
 		if (isClient())
 			Setup(SColor(Maths::Min(255, this.get_u32("running")), 255, 255, 255), "mitten", false, true);
 
-		this.setPosition(Vec2f_lerp(this.getPosition(), Vec2f(this.getPosition().x, this.get_Vec2f("aimpos").y + Maths::Sin(this.get_u32("running") / 2 * 0.1f) * 24.0f), 0.5f));
+		this.setPosition(Vec2f_lerp(this.getPosition(), Vec2f(this.getPosition().x, this.get_Vec2f("aimpos").y + Maths::Sin(this.get_u32("running") / 2 * 0.1f) * 16.0f), 0.5f));
 
 		if (isServer())
 		{

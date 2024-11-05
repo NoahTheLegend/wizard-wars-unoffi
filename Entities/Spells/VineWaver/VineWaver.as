@@ -20,31 +20,43 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetRelativeZ(501.0f);
 	this.getSprite().PlayRandomSound("VineReveal", 1.5f, 1.65f+XORRandom(16)*0.1f);
+
+	Vec2f aimpos = this.getPosition();
+	this.set_Vec2f("aimpos", aimpos);
+
+	this.addCommandID("aimpos sync");
 }
 
 void onTick(CBlob@ this)
 {
+	bool back = this.get_bool("back");
+	Vec2f pos = this.getPosition();
+
+	f32 angle_change_base = 4.0f;
+	f32 damping = 0.975f;
+			
+	Vec2f initvel = this.get_Vec2f("initvel");
+	Vec2f aimpos = this.get_Vec2f("aimpos");
+
+	CPlayer@ p = this.getDamageOwnerPlayer();
+	if(p !is null)
+	{
+		CBlob@ b = p.getBlob();
+		if (b !is null)
+		{
+			if(p.isMyPlayer())
+			{
+				aimpos = b.getAimPos();
+
+				CBitStream params;
+				params.write_Vec2f(aimpos);
+				this.SendCommand(this.getCommandID("aimpos sync"), params);
+			}
+		}
+	}
+
 	if (isServer())
 	{
-		bool back = this.get_bool("back");
-		Vec2f pos = this.getPosition();
-
-		f32 angle_change_base = 4.0f;
-		f32 damping = 0.975f;
-				
-		Vec2f initvel = this.get_Vec2f("initvel");
-		Vec2f aimpos = pos + this.getOldVelocity();
-
-		CPlayer@ owner = this.getDamageOwnerPlayer();
-		if (owner !is null)
-		{
-		    CBlob@ ob = owner.getBlob();
-		    if (ob !is null)
-		    {
-		        aimpos = ob.getAimPos();
-		    }
-		}
-
 		Vec2f vel = this.getVelocity();
 		vel.Normalize();
 		int vel_angle = -vel.Angle();
@@ -153,5 +165,13 @@ void sparks(CBlob@ this, Vec2f pos, int amount)
         p.scale = 0.5f + _sprk_r.NextFloat();
         p.damping = 0.95f;
 		p.Z = 501.5f;
+    }
+}
+
+void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
+{
+    if (cmd == this.getCommandID("aimpos sync"))
+    {
+        this.set_Vec2f("aimpos", params.read_Vec2f());
     }
 }

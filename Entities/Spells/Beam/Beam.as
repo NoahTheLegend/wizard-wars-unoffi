@@ -8,7 +8,7 @@ const f32 RANGE = 128.0f;
 const f32 DAMAGE = 0.2f;
 
 const f32 LIFETIME = 3.0f;
-const u8 MANA_TAKE_PERIOD = 7;
+const u8 MANA_TAKE_PERIOD = 5;
 const u8 CONTINUOUS_MANA_TAKE = 1;
 
 const int MAX_LASER_POSITIONS = 10;
@@ -199,7 +199,7 @@ void onTick( CBlob@ this)
 						}
 						else if (getGameTime()%10==0 && target.getTeamNum() == this.getTeamNum() && target.getHealth()+heal < target.getInitialHealth())
 						{
-							if (isServer()) target.server_Heal(heal);
+							Heal(this, target, heal);
 							if (target.getSprite() !is null) target.getSprite().PlaySound("Heal.Ogg", 0.5f, 1.25f);
 						}
 					}

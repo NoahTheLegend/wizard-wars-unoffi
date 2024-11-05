@@ -111,8 +111,12 @@ void continueSpikes(CBlob@ this, Vec2f pos, CMap@ map)
 	if(map.getBlobAtPosition(pos) !is null && map.getBlobAtPosition(pos).getName() == "stone_spike")
 		return;
 	CBlob@ new = server_CreateBlob("stone_spike", this.getTeamNum(), pos);
-	new.set_u8("spikesleft", this.get_u8("spikesleft") - 1);
-	new.set_bool("leftdir", this.get_bool("leftdir"));
+	if (new !is null)
+	{
+		new.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+		new.set_u8("spikesleft", this.get_u8("spikesleft") - 1);
+		new.set_bool("leftdir", this.get_bool("leftdir"));
+	}
 }
 
 bool isEnemy( CBlob@ this, CBlob@ target )

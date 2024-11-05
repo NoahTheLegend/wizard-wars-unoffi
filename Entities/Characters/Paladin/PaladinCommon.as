@@ -43,7 +43,7 @@ namespace PaladinParams
 			SpellType::other, 25, 10, 0, 64.0f, true),
 			 
 		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards.",
-				SpellType::other, 10, 40, 3, 256.0f, true),
+				SpellType::other, 10, 40, 3, 256.0f, true, true),
 
 		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target receives 50% less damage but transfers 25% back to you when nearby and if your health is more than 25%.",
 				SpellType::other, 20, 45, 8, 256.0f, true),

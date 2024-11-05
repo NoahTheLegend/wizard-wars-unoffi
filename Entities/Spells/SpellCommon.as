@@ -48,7 +48,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 	{
 		case -825046729: //mushroom
 		{
-
 			CBlob@[] mushrooms;
 			getBlobsByName("mushroom",@mushrooms);
 
@@ -668,7 +667,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 				case super_cast:
 				{
-					Heal(this, healAmount);
+					Heal(this, this, healAmount);
 					return;
 				}
 				break;
@@ -2085,7 +2084,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					break;
 					case 2: //players
 					{
-						other.setVelocity( othVel + (castDir / 3)); //slight push using cast direction for convenience
+						other.setVelocity( othVel + (castDir / (charge_state == super_cast ? 4 : 5))); //slight push using cast direction for convenience
 					}
 					break;
 					case 3: //undead
@@ -2734,8 +2733,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if(map.getBlobAtPosition(spawnpos) is null || !(map.getBlobAtPosition(spawnpos).getName() == "stone_spike"))
 				{
 					CBlob@ newblob = server_CreateBlob("stone_spike", this.getTeamNum(), spawnpos);
-					newblob.set_u8("spikesleft", 8 + charge_state * 1.5 + (charge_state == 5 ? 7 : 0));
-					newblob.set_bool("leftdir", isleft);
+					if (newblob !is null)
+					{
+						newblob.SetDamageOwnerPlayer(this.getPlayer());
+						newblob.set_u8("spikesleft", 8 + charge_state * 1.5 + (charge_state == 5 ? 7 : 0));
+						newblob.set_bool("leftdir", isleft);
+					}
 				}
 			}
 		}
@@ -3115,15 +3118,18 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				f32 temp_hp = 0;
 				u16 id = 0;
 				
+				bool everyone_is_full = false;
 				for (u8 i = 0; i < getPlayersCount(); i++)
 				{
 					CPlayer@ p = getPlayer(i);
 					if (p !is null && p.getBlob() !is null)
 					{
 						CBlob@ b = p.getBlob();
-						if (b is this || b.getHealth() == b.getInitialHealth() || b.getTeamNum() != this.getTeamNum()) continue;
+						if (b is this || b is null || b.getTeamNum() != this.getTeamNum()) continue;
+						if (b.getHealth() == b.getInitialHealth()) continue;
 						if (temp_hp == 0 || b.getHealth()/b.getInitialHealth() < temp_hp)
 						{
+							everyone_is_full = false;
 							temp_hp = b.getHealth()/b.getInitialHealth();
 							id = b.getNetworkID();
 						}
@@ -3144,6 +3150,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 
 				CBlob@ target = getBlobByNetworkID(id);
+				if (target is null && !everyone_is_full)
+					@target = @this;
+
 				if (target !is null)
 				{
 					endpos = target.getPosition();
@@ -3151,39 +3160,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					this.setPosition( endpos );
 					if (isServer())
 					{
-						f32 mod = target.getHealth()/target.getInitialHealth();
-						f32 base_heal = 1.5f;
-						base_heal = Maths::Min(5.0f, base_heal);
+						f32 hp_factor = Maths::Clamp(target.getHealth()/target.getInitialHealth() - 0.25f, 0.0f, 1.0f);
+						f32 mod = 1.0f - hp_factor;
+						f32 base_heal = charge_state == super_cast ? 3.0f : 2.0f;
+						if (this.hasTag("damage_buff")) base_heal += 1.0f;
+						base_heal = Maths::Min(5.0f, base_heal * mod);
 						
-						if (this.getHealth()+(base_heal * 0.75f) >= this.getInitialHealth())
-							this.server_SetHealth(this.getInitialHealth());
-						else
-							this.server_Heal(base_heal * 0.75f);
+						if (target !is this)
+						{
+							Heal(this, this, base_heal * 0.5f);
+						}
 
-						// heal target more
-						if (target.getHealth()+(base_heal * 1.25f) >= target.getInitialHealth())
-							target.server_SetHealth(target.getInitialHealth());
-						else
-							target.server_Heal(base_heal * 1.25f);
+						Heal(this, target, target is this ? base_heal * 0.5f : base_heal);
 					}
 					this.getSprite().PlaySound("Teleport.ogg", 0.8f, 1.0f);
-					this.getSprite().PlaySound("Heal.ogg", 0.8f, 0.95f);
-				}
-				else // heal self
-				{
-					if (isServer())
-					{
-						f32 mod = this.getHealth()/this.getInitialHealth();
-						f32 base_heal = 1.5f;
-						base_heal *= 3.0f-(3.0f*mod);
-						base_heal = Maths::Min(2.5f, base_heal);
-						
-						if (this.getHealth()+base_heal >= this.getInitialHealth())
-							this.server_SetHealth(this.getInitialHealth());
-						else
-							this.server_Heal(base_heal);
-					}
-					this.getSprite().PlaySound("Heal.ogg", 0.8f, 0.95f);
 				}
 			}
 		}
@@ -4936,8 +4926,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			f32 dmg = this.hasTag("extra_damage") ? 1.5f : 0.75f;
-			f32 power = 7.0f;
+			f32 dmg = 0;
+			f32 power = 8.0f;
 			f32 angle = 60.0f;
 			f32 dist = 64.0f;
 
@@ -4950,7 +4940,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				break;		
 				case super_cast:
 				{
-					power += 1.5f;
+					power += 1.0f;
 					angle = 75.0f;
 					dist += 24.0f;
 				}
@@ -5103,7 +5093,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (orb !is null)
 				{
 					f32 dist = 48.0f;
-					f32 damage = this.hasTag("extra_damage") ? 0.5f : 0.3f;
+					f32 damage = this.hasTag("extra_damage") ? 0.75f : 0.5f;
 
                     switch (charge_state)
 					{
@@ -5115,14 +5105,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case complete_cast:
 						{
 							dist = 72.0f;
-							damage += 0.2f;
 
 							break;
 						}
 						case super_cast:
 						{
 							dist = 88.0f;
-							damage += 0.4f;
+							damage += 0.25f;
 
 							break;
 						}

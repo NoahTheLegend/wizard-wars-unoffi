@@ -298,6 +298,8 @@ s8 parryTargetIdentifier( CBlob@ b )
 {
 	if(b is null){return -1;}
 
+	if (b.hasTag("player")) return 2;
+
 	string blobname = b.getName();
 	switch(blobname.getHash())
 	{
@@ -306,20 +308,6 @@ s8 parryTargetIdentifier( CBlob@ b )
 		case _fire_sprite:
 		{
 			return 1; //need reset
-		}
-		break;
-
-		case _wizard:
-		case _necromancer:
-		case _druid:
-		case _swordcaster:
-		case _entropist:
-		case _priest:
-		case _knight:
-		case _archer:
-		case _builder:
-		{
-			return 2; //players slight push
 		}
 		break;
 

@@ -195,6 +195,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {	
+	if (isServer() && this.get_u8("stage") == 0 && this.getTickSinceCreated() < 30) return;
 	if (solid) this.getShape().SetStatic(true);
 	if (blob !is null)
 	{

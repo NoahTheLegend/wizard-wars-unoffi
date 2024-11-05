@@ -7,6 +7,7 @@
 #include "shipAchieves.as";
 #include "WWPlayerClassButton.as";
 #include "WheelMenuCommon.as";
+#include "Tutorial.as";
 
 bool showHelp = true;
 bool previous_showHelp = true;
@@ -73,6 +74,7 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
 	Button@ barNumBtn;
 	Button@ startCloseBtn;
     Button@ toggleSpellWheelBtn;
+	Button@ toggleHoverMessagesBtn;
 	Button@ achievementBtn;
 	Button@ classesBtn;
     Button@ togglemenuBtn;
@@ -104,6 +106,7 @@ bool isGUINull()
 		|| barNumBtn is null
 		|| startCloseBtn is null
         || toggleSpellWheelBtn is null
+		|| toggleHoverMessagesBtn is null
 		|| achievementBtn is null
 		|| optionsFrame is null
 		|| helpIcon is null
@@ -221,6 +224,14 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
             getRules().set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
         }
     }
+	if (sender is toggleHoverMessagesBtn)
+    {
+        toggleHoverMessagesBtn.toggled = !toggleHoverMessagesBtn.toggled;
+		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - Enabled" : "Hover Messages - Disabled";
+		toggleHoverMessagesBtn.saveBool("Hover Messages Active", toggleHoverMessagesBtn.toggled,"WizardWars");
+        
+        getRules().set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
+    }
 
     //getRules().set_bool("no_hotkey_emotes", true); // toggleHotkeyEmotesBtn
 
@@ -306,6 +317,9 @@ void onTick( CRules@ this )
         @toggleSpellWheelBtn = @Button(Vec2f(10,90),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleSpellWheelBtn.addClickListener(ButtonClickHandler);
 
+		@toggleHoverMessagesBtn = @Button(Vec2f(10,240),Vec2f(200,30),"",SColor(255,255,255,255));
+		toggleHoverMessagesBtn.addClickListener(ButtonClickHandler);
+
         @toggleHotkeyEmotesBtn = @Button(Vec2f(10,50),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleHotkeyEmotesBtn.addClickListener(ButtonClickHandler);
 
@@ -346,6 +360,7 @@ void onTick( CRules@ this )
         helpWindow.addChild(togglemenuBtn);
 		optionsFrame.addChild(barNumBtn);
         optionsFrame.addChild(toggleSpellWheelBtn);
+		optionsFrame.addChild(toggleHoverMessagesBtn);
         optionsFrame.addChild(toggleHotkeyEmotesBtn);
 		helpWindow.addChild(spellHelpIcon);
 		helpWindow.addChild(spellAssignHelpIcon);
@@ -364,11 +379,14 @@ void onTick( CRules@ this )
         if (menu != null){
             this.set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
         }
+		
+		toggleHoverMessagesBtn.toggled = toggleHoverMessagesBtn.getBool("Hover Messages Active","WizardWars");
+		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - Enabled" : "Hover Messages - Disabled";
+        this.set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
 
         toggleHotkeyEmotesBtn.toggled = toggleHotkeyEmotesBtn.getBool("Hotkey Emotes","WizardWars");
 		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - Enabled" : "Emotes - Disabled";
         this.set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
-
 
 		barNumBtn.toggled = barNumBtn.getBool("Bar Numbers","WizardWars");
 		this.set_bool("spell_number_selection", barNumBtn.toggled);
@@ -568,6 +586,9 @@ void onRender( CRules@ this )
 	CPlayer@ player = getLocalPlayer();
 	if ( player is null )
 		return;
+
+	//renderTutorial(this);
+	
 	if(shipAchievements.displaying)
 	{
 		shipAchievements.display();

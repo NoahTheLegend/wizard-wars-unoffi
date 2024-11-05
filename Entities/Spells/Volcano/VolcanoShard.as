@@ -31,12 +31,12 @@ void onInit(CBlob@ this)
 	this.getSprite().PlaySound("PlasmaBlast.ogg", 2.5f, 1.25f + + XORRandom(16)*0.01f);
 
 	this.getShape().SetRotationsAllowed(true);
-	this.getShape().SetGravityScale( 0.925f );
+	this.getShape().SetGravityScale( 1.15f );
 	this.getShape().getVars().waterDragScale = 8.0f;
 	this.getShape().getConsts().collideWhenAttached = true;
 	
-	this.set_f32("explosive_radius",40.0f);
-	this.set_f32("explosive_damage",3.0f);
+	this.set_f32("explosive_radius",64.0f);
+	this.set_f32("explosive_damage",2.0f);
 	this.set_string("custom_explosion_sound", "FireBlast"+(XORRandom(2)+1)+".ogg");
 	this.set_f32("map_damage_radius", 24.0f);
 	this.set_f32("map_damage_ratio", 0.1f);
@@ -44,7 +44,7 @@ void onInit(CBlob@ this)
 	this.set_bool("explosive_teamkill", false);
     this.Tag("exploding");
 
-    this.set_Vec2f("fall_vector", Vec2f((XORRandom(8) - 4), 0));
+    this.set_Vec2f("fall_vector", Vec2f((XORRandom(12) - 6), 0));
 	this.setVelocity(this.get_Vec2f("fall_vector"));
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }

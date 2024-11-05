@@ -2,6 +2,7 @@
 #include "Hitters.as";
 #include "PlayerPrefsCommon.as";
 #include "SpellHashDecoder.as";
+#include "HoverMessage.as";
 
 Random _spell_common_r(26784);
 
@@ -208,23 +209,37 @@ void SummonZombie(CBlob@ this, string name, Vec2f pos, int team)
 	}
 }
 
-void Heal( CBlob@ blob, f32 healAmount )
+void Heal( CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool sound = true, f32 particles_factor = 1.0f)
 {
 	f32 health = blob.getHealth();
 	f32 initHealth = blob.getInitialHealth();
+
+	if (health >= initHealth) return;
+	healAmount = Maths::Min(initHealth - health, healAmount);
 	
-	if ( (health + healAmount) > initHealth )
-		blob.server_SetHealth(initHealth);
-	else
-		blob.server_SetHealth(health + healAmount);
+	if (isServer())
+	{
+		if ( (health + healAmount) > initHealth )
+			blob.server_SetHealth(initHealth);
+		else
+			blob.server_SetHealth(health + healAmount);
+	}
 		
-    if (blob.isMyPlayer())
+    if (flash && blob.isMyPlayer())
     {
-        SetScreenFlash( 80, 0, 225, 0 );
-    }
-		
-	blob.getSprite().PlaySound("Heal.ogg", 0.8f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );
-	makeHealParticles(blob);
+        SetScreenFlash( 75, 0, 225, 0 );
+	}
+
+	if (this.getDamageOwnerPlayer() is getLocalPlayer() && blob !is getLocalPlayerBlob())
+	{
+		add_message(HealDealtMessage(healAmount));
+	}
+	
+	if (isClient())
+	{
+		if (sound) blob.getSprite().PlaySound("Heal.ogg", 0.8f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );
+		makeHealParticles(blob, 1.0f, 12 * particles_factor, sound);
+	}
 }
 
 void makeHealParticles(CBlob@ this, const f32 velocity = 1.0f, const int smallparticles = 12, const bool sound = true)
@@ -423,6 +438,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			if ( b.hasTag("counterable") && (!sameTeam || b.hasTag("alwayscounter")) )
 			{
 				b.Untag("exploding");
+				b.Tag("just_countered");
 				b.server_Die();
 				if (b.getName() == "plant_aura")
 				{retribution = true;}
@@ -556,7 +572,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				}
 				manaInfo.mana += 10;*/
 				if(caster !is null)
-				{Heal(caster, 0.5f);}
+				{Heal(caster, caster, 0.5f);}
 			}
 
 			if ( countered == true )

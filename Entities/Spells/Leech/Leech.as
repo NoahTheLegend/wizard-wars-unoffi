@@ -2,6 +2,7 @@
 #include "LimitedAttacks.as";
 #include "TextureCreation.as";
 #include "ShieldCommon.as";
+#include "SpellUtils.as";
 
 const f32 RANGE = 180.0f;
 const f32 DAMAGE = 2.0f;
@@ -250,7 +251,7 @@ void onTick( CBlob@ this)
 								if (this.hasTag("extra_damage"))
 									amo = 2.0f;
 
-								ownerBlob.server_Heal(amo);
+								Heal(this, ownerBlob, amo);
 							}
 						}
 						

@@ -31,6 +31,7 @@ void onInit( CBlob@ this )
 	this.set_f32("gib health", -3.0f);
 	this.set_Vec2f("spell blocked pos", Vec2f(0.0f, 0.0f));
 	this.set_bool("casting", false);
+	this.set_bool("was_casting", false);
 	this.set_bool("shifted", false);
 	this.set_u8("shard_amount", 0);
 	
@@ -101,6 +102,7 @@ void ManageSpell( CBlob@ this, EntropistInfo@ entropist, PlayerPrefsInfo@ player
 	}	
     s32 entropistMana = manaInfo.mana;
 
+    string casting_key = "a1";
     bool is_pressed = this.isKeyPressed( key_action1 );
     bool just_pressed = this.isKeyJustPressed( key_action1 );
     bool just_released = this.isKeyJustReleased( key_action1 );
@@ -114,6 +116,7 @@ void ManageSpell( CBlob@ this, EntropistInfo@ entropist, PlayerPrefsInfo@ player
         spellID = playerPrefsInfo.hotbarAssignments_Entropist[Maths::Min(15,hotbarLength-1)];
 
         is_pressed = this.isKeyPressed( key_action2 );
+		casting_key = "a2";
         just_pressed = this.isKeyJustPressed( key_action2 );
         just_released = this.isKeyJustReleased( key_action2 );
 
@@ -125,6 +128,7 @@ void ManageSpell( CBlob@ this, EntropistInfo@ entropist, PlayerPrefsInfo@ player
 		
 		CControls@ controls = this.getControls();
         is_pressed = this.isKeyPressed( key_action3 );
+		casting_key = "a3";
         just_pressed = this.isKeyJustPressed( key_action3 );
         just_released = this.isKeyJustReleased( key_action3 ); 
 
@@ -136,11 +140,13 @@ void ManageSpell( CBlob@ this, EntropistInfo@ entropist, PlayerPrefsInfo@ player
 		
 		CControls@ controls = this.getControls();
         is_pressed = this.isKeyPressed( key_taunts );
+		casting_key = "a4";
         just_pressed = this.isKeyJustPressed( key_taunts );
         just_released = this.isKeyJustReleased( key_taunts ); 
 
         is_aux2 = true;
     }
+	this.set_string("casting_key", casting_key);
 	
 	Spell spell = EntropistParams::spells[spellID];
 	
@@ -155,9 +161,13 @@ void ManageSpell( CBlob@ this, EntropistInfo@ entropist, PlayerPrefsInfo@ player
 	Vec2f tilepos = pos + normal * Maths::Min(aimVec.Length(), spell.range);
 	Vec2f surfacepos;
 	CMap@ map = getMap();
-	bool aimPosBlocked = map.rayCastSolid(pos, tilepos , surfacepos);
-	Vec2f spellPos = surfacepos; 
+	bool aimPosBlocked = map.rayCastSolid(pos, tilepos, surfacepos);
+	Vec2f spellPos = surfacepos;
+	if (!map.isTileSolid(map.getTile(surfacepos).type)) spellPos += normal*4; 
 	
+	//Were we casting?
+	this.set_bool("was_casting", this.get_bool("casting"));
+
 	//Are we casting? 
 	if ( is_pressed )
 	{

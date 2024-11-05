@@ -1,6 +1,7 @@
 void onInit(CBlob@ this)
 {
-    this.Tag("counterable");
+    this.set_u8("despelled",0);
+    this.Tag("multi_despell");
     this.Tag("projectile");
 
     this.getShape().getConsts().mapCollisions = false;
@@ -16,13 +17,16 @@ void onInit(CBlob@ this)
 }
 
 const f32 amplitude_time = 0.075f;
-const Vec2f amplitude = Vec2f(50.0f, 12.5f);
-const u16 spawn_rate = 25;
+const Vec2f amplitude = Vec2f(80.0f, 12.5f);
+const u16 spawn_rate = 15;
 u8 min_blobs = 3;
 u8 rnd_blobs = 1;
 
 void onTick(CBlob@ this)
 {
+    if (this.get_u8("despelled") >= 2)
+        this.server_Die();
+
     Vec2f origin = this.get_Vec2f("origin");
     u32 t = (getGameTime() + this.getNetworkID());
     f32 gt = t * amplitude_time;
@@ -65,7 +69,8 @@ void onTick(CBlob@ this)
             for (u8 i = 0; i < min_blobs + XORRandom(rnd_blobs+1); i++)
             {
                 u8 rnd = XORRandom(100);
-                CBlob@ blob = server_CreateBlob(rnd < 15 ? "bouncybomb" : rnd < 85 ? "jesterbomb" : "healorb", this.getTeamNum(), this.getPosition());
+                string bname = rnd < 20 ? "bouncybomb" : rnd < 90 ? "jesterbomb" : "healorb";
+                CBlob@ blob = server_CreateBlob(bname, this.getTeamNum(), this.getPosition());
                 if (blob !is null)
                 {
                     blob.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
@@ -75,7 +80,8 @@ void onTick(CBlob@ this)
                     blob.set_f32("damage", 1.0f);
                     blob.set_f32("explode_radius", 32.0f);
 
-                    blob.server_SetTimeToDie(3 + XORRandom(5));
+                    if (bname != "healorb")
+                        blob.server_SetTimeToDie(2.0f+XORRandom(6)*0.1f);
                 }
             }
         }

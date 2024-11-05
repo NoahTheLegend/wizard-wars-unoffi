@@ -20,6 +20,7 @@ void onInit(CBlob@ this)
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	
 	this.getShape().getConsts().bullet = true;
+	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 	CSprite@ sprite = this.getSprite();
 	sprite.SetRelativeZ(-15.0f);
 	CSpriteLayer@ l = sprite.addSpriteLayer("layer", "BouncyBomb.png", 32, 32);
@@ -65,14 +66,17 @@ void onTick(CBlob@ this)
 
 	int rnd = XORRandom(56);
 	f32 count = 5;
+
+	SColor col = SColor(255,125,125,255);
+	if (this.getTeamNum() == 1) col = SColor(255,255,125,125);
 	for (u8 i = 0; i < count; i++)
 	{
 		Vec2f offset = i == 0 ? Vec2f_zero : Vec2f(0.5f, 0).RotateBy(i*(360.0f/(count-1)));
-		CParticle@ p = ParticlePixelUnlimited(this.getOldPosition() + offset, Vec2f_zero, SColor(255,200+rnd,200+rnd,200+rnd), true);
+		CParticle@ p = ParticlePixelUnlimited(this.getOldPosition() + offset, Vec2f_zero, col, true);
     	if(p is null) return;
 
     	p.collides = false;
-    	p.timeout = 30;
+    	p.timeout = 15;
     	p.Z = -20.0f;
     	p.gravity = Vec2f_zero;
 	}
@@ -215,7 +219,7 @@ void onDie(CBlob@ this)
 
 			if (!map.rayCastSolidNoBlobs(pos, b.getPosition()))
 			{
-				this.server_Hit(b, pos, Vec2f_zero, this.get_f32("damage"), Hitters::explosion, isOwnerBlob(this, b));
+				this.server_Hit(b, pos, Vec2f_zero, this.get_f32("damage"), Hitters::explosion, false);
 			}
 		}
 	}

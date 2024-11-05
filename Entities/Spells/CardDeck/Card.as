@@ -96,7 +96,7 @@ void onTick(CBlob@ this)
 		follow = true;
 		origin = damage_owner.getBlob().getPosition();
 		//spin_speed *= 1.5f;
-		lerp = 0.33f;
+		lerp = 0.5f;
 	}
 
 	if (state != 3)
@@ -130,7 +130,7 @@ void onTick(CBlob@ this)
 			if (diff > unfold_step * index + show_time)
 			{
 				Vec2f tpos = hidden ? origin : origin + Vec2f(0, unfold_dist.y);
-				bool in_range = (pos - tpos).Length() <= (follow ? 12.0f : 4.0f);
+				bool in_range = (pos - tpos).Length() <= (follow ? 24.0f : 8.0f);
 				if (in_range && !this.hasTag("hidden"))
 				{
 					this.Tag("hidden");
@@ -310,6 +310,11 @@ void smoke(Vec2f pos, int amount)
     }
 }
 
+void onChangeTeam(CBlob@ this, u8 oldTeam)
+{
+	this.set_u8("state", 2);
+}
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (this.hasTag("dead")) return;
@@ -404,7 +409,7 @@ bool ApplyEffect(CBlob@ this, CBlob@ blob, u8 effect)
 		case effects::heal:
 		{
 			applied = true;
-			Heal(blob, heal_amount);
+			Heal(this, blob, heal_amount, true, false, 0.5f);
 		}
 		break;
 		case effects::stun:

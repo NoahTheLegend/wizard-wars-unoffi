@@ -70,6 +70,7 @@ void onTick(CBlob@ this)
 	{
 		return;
 	}
+    if (manaInfo.mana < 0) manaInfo.mana = 0;
 
     u8 ticksPerSecond = getTicksASecond();
     bool mana_burning = this.get_u16("manaburn") > 0;

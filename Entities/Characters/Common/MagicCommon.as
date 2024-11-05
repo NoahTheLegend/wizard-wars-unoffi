@@ -33,8 +33,11 @@ shared class Spell
 	s32 full_cast_period;
 
 	bool needs_full;
+	bool grounded;
 
-	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_type, s32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range, bool fully_loaded = false)
+	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_type,
+		s32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range,
+		bool fully_loaded = false, bool is_grounded = false)
 	{
 		typeName = i_typeName;
 		name = i_name;
@@ -51,6 +54,7 @@ shared class Spell
 		full_cast_period = cast_period*3;
 
 		needs_full = fully_loaded;
+		grounded = is_grounded;
 	}
 };
 

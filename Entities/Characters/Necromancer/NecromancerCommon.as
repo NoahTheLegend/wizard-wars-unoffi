@@ -66,7 +66,7 @@ namespace NecromancerParams
 				SpellType::other, 40, 10, 3, 360.0f, true),
 				
 		Spell("arcane_circle","Arcane Circle",32,"Summon an unholy circle that will drain the life force of your foes",
-			SpellType::other,45,60,5,360, true),
+			SpellType::other,50,60,8,360, true),
 							
 		Spell("bunker_buster", "Bunker Buster", 39, "Anti-Barrier spell.",
 				SpellType::other, 15, 40, 0, 360.0f, true),	

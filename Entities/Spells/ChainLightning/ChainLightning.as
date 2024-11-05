@@ -5,7 +5,10 @@
 
 const f32 RANGE = 172.0f;
 const f32 DAMAGE = 2.0f; // 1.0f is 5 hp
-const f32 chain_radius = 128.0f;
+const f32 base_chain_radius = 128.0f;
+const f32 chain_radius_falloff = 0.2f;
+const f32 chain_radius_falloff_barrier = 0.4f;
+const f32 min_chain_radius = 0.33f;
 
 const f32 LIFETIME = 0.33f;
 
@@ -17,7 +20,7 @@ const f32 LASER_WIDTH = 0.66f;
 
 Random@ _laser_r = Random(0x10001);
 
-void onInit(CBlob @ this)
+void onInit(CBlob@ this)
 {
 	this.Tag("phase through spells");
 	this.Tag("counterable");
@@ -32,6 +35,8 @@ void onInit(CBlob @ this)
 	
 	this.set_bool("initialized", false);
 	this.server_SetTimeToDie(LIFETIME);
+
+	if (!this.exists("chain_radius")) this.set_f32("chain_radius", base_chain_radius);
 
 	if (!isClient()) return;
 	if (this is null) return;
@@ -49,6 +54,8 @@ void onInit(CBlob @ this)
 
 void setPositionToOwner(CBlob@ this)
 {
+	if (this.hasTag("secondary")) return;
+	
 	CPlayer@ ownerPlayer = this.getDamageOwnerPlayer();
 	if ( ownerPlayer !is null )
 	{
@@ -159,9 +166,7 @@ void laserEffects(CBlob@ this, int id)
 			followNorm.Normalize();
 			
 			f32 followDist = followVec.Length();
-			
 			f32 laserLength = (followDist+3.6f) / 16.0f;		
-			
 			
 			/*Vec2f netTranslation = Vec2f(0,0);
 			for (int t = i+1; t < lastVecArrayElement; t++)
@@ -192,7 +197,7 @@ void onTick( CBlob@ this)
 	CSprite@ thisSprite = this.getSprite();
 	Vec2f thisPos = this.getPosition();
 
-	if (isServer() && this.exists("follow_id"))
+	if (isServer() && this.exists("follow_id") && !this.hasTag("secondary"))
 	{
 		CBlob@ b = getBlobByNetworkID(this.get_u16("follow_id"));
 		if (b !is null)
@@ -254,24 +259,30 @@ void onTick( CBlob@ this)
 
 						f32 dmg = this.get_f32("damage") * extraDamage;
 						if (target.get_bool("waterbarrier")) dmg *= 2.0f;
+
 						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
+						// reduce length greatly when hit barrier
+						if (target.hasTag("barrier"))
+							this.set_f32("chain_radius", Maths::Max(min_chain_radius, this.get_f32("chain_radius") * (1.0f - chain_radius_falloff_barrier)));
 
 						if (isServer() && this.get_u8("targets") != 0)
 						{
 							u16 id;
 							f32 closest = 999.0f;
 							CBlob@[] list;
-							getMap().getBlobsInRadius(target.getPosition(), chain_radius, @list);
+
+							f32 chain_radius = this.get_f32("chain_radius");
+							getMap().getBlobsInRadius(hi.hitpos, chain_radius, @list);
 
 							for (u16 i = 0; i < list.length; i++)
 							{
 								CBlob@ l = list[i];
 								if (l is null || !l.hasTag("flesh") || l.hasTag("dead") || l.getTeamNum() == this.getTeamNum()
 								|| l is target || l.get_u32("strike_by_lightning") > getGameTime()
-								|| getMap().rayCastSolidNoBlobs(target.getPosition(), l.getPosition()))
+								|| getMap().rayCastSolidNoBlobs(hi.hitpos, l.getPosition()))
 									continue;
 
-								f32 dist = l.getDistanceTo(this);
+								f32 dist = (l.getPosition() - hi.hitpos).Length();
 								if (dist < closest)
 								{
 									id = l.getNetworkID();
@@ -281,18 +292,23 @@ void onTick( CBlob@ this)
 							CBlob@ t = getBlobByNetworkID(id);
 							if (t !is null)
 							{
-								CBlob@ orb = server_CreateBlob("chainlightning", this.getTeamNum(), target.getPosition()+Vec2f(0,-2)); 
+								CBlob@ orb = server_CreateBlob("chainlightning", this.getTeamNum(), hi.hitpos); 
 								if (orb !is null)
 								{
             				        if(this.hasTag("extra_damage"))
             				            orb.Tag("extra_damage");
 
+									f32 new_chain_radius = Maths::Max(min_chain_radius,
+										this.get_f32("chain_radius") * (1.0f - chain_radius_falloff));
+
+									orb.set_f32("chain_radius", new_chain_radius);
 									orb.set_f32("damage", this.get_f32("damage"));
 
 									if (this.get_u8("targets") > 0) orb.set_u8("targets", this.get_u8("targets")-1);
 									orb.set_Vec2f("aim pos", t.getPosition());
 
 									orb.set_u16("follow_id", target.getNetworkID());
+									orb.Tag("secondary");
 
 									orb.IgnoreCollisionWhileOverlapped(this);
 									orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());

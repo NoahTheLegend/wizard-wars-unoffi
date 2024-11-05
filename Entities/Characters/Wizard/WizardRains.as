@@ -129,8 +129,10 @@ class WizardRain
             }
             else if (type == WizardRainTypes::meteorRain)
             {
-                SummonBlob(this, "volcanoshard", Vec2f(position.x + 16.0f - XORRandom(32.0f), 10.0f), team);
-
+                for (u8 i = 0; i < 1 + XORRandom(3); i++)
+                {
+                    SummonBlob(this, "volcanoshard", Vec2f(position.x + XORRandom(128.0f) - 64.0f, 10.0f), team);
+                }
                 time = 1 + XORRandom(4);
             }
             else if (type == WizardRainTypes::meteorStrike)

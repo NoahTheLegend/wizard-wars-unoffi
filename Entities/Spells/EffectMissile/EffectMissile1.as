@@ -197,7 +197,7 @@ void onTick( CBlob@ this)
 				if ( !isEnemy(this, blob) && !isOwnerBlob(this, blob) )	//buff status effects
 				{
 					if ( effectType == "heal" )
-						Heal(blob, this.get_f32("heal_amount"));
+						Heal(this, blob, this.get_f32("heal_amount"));
 					else if ( effectType == "haste" )
 						Haste(blob, this.get_u16("haste_time"));
 						

@@ -53,10 +53,10 @@ namespace PriestParams
 				SpellType::other, 35, 60, 6, 270.0f, true),
 							
 		Spell("divineshield", "Divine Shield", 66, "Covers a moderate area with reflecting and powerful barrier. Some spells can phase through it. Lifetime scales with charge.",
-				SpellType::other, 70, 150, 30, 92.0f, true),
+				SpellType::other, 65, 120, 30, 92.0f, true),
 				
 		Spell("beam", "Divine Beam", 67, "Continuously damages enemies or heals teammates in beam area. Pushes enemies when overcharged fully. Also continuously takes mana and keeps firing after activation if held left click.",
-				SpellType::other, 15, 20, 1, 96.0f, true),
+				SpellType::other, 5, 25, 2, 96.0f, true),
 							
 		Spell("fireorbs", "Sacrilege Fire", 68, "A ball of light and smite, will target an enemy when nearby. Has a moderate chance to ignite.",
 				SpellType::other, 25, 30, 1, 32.0f, true),	

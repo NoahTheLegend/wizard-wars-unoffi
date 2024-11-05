@@ -39,7 +39,7 @@ namespace SwordCasterParams
 				SpellType::other, 30, 45, 3, 360.0f, true),
 			
 		Spell("crusader", "Crusader", 42, "This spell materializes three big swords to block the enemy advancement.",
-				SpellType::other, 25, 40, 0, 360.0f, true),
+				SpellType::other, 25, 40, 0, 360.0f, true, true),
 			
 		Spell("sword_cast", "Expunger", 41, "Conjure your vast arsenal of magical daggers to attack the enemy.",
 				SpellType::other, 15, 30, 0, 360.0f, true),

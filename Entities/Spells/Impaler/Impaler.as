@@ -34,8 +34,8 @@ void onTick(CBlob@ this)
 		{
 			Vec2f pos = this.getPosition();
 			if (
-				pos.x < 0.1f ||
-				pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f
+				pos.x < -128.0f ||
+				pos.x > (getMap().tilemapwidth * getMap().tilesize) + 128.0f
 			) {
 				this.server_Die();
 				return;
@@ -57,6 +57,11 @@ void onTick(CBlob@ this)
 			{
 				this.setVelocity(Vec2f_zero);
 				this.setPosition(target.getPosition());
+				if (target.getPosition().y > (getMap().tilemapheight * getMap().tilesize) - 16.0f)
+				{
+					this.Tag("dead");
+					this.server_Die();
+				}
 			}
 			else
 			{
@@ -117,6 +122,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {	
+	if (this.hasTag("dead")) return;
 	float expundamage = this.get_f32("damage");
 
 	if (blob !is null)

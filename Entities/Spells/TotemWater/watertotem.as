@@ -1,4 +1,5 @@
 #include "SplashWater.as";
+#include "SpellUtils.as";
 
 const f32 heal_radius = 128.0f;
 const f32 heal_amount = 0.5f; // 1.0f is 5 HP
@@ -97,10 +98,7 @@ void onTick(CBlob@ this)
             CBlob@ blob = getBlobByNetworkID(id);
             if (blob !is null)
             {
-                if (blob.getHealth() + heal_amount >= blob.getInitialHealth())
-                    blob.server_SetHealth(blob.getInitialHealth());
-                else
-                    blob.server_Heal(heal_amount);
+                Heal(this, blob, heal_amount);
 
                 blob.set_u32("watertotem_effect", getGameTime()+heal_rate+5);
                 blob.set_u16("watertotem_id", this.getNetworkID());

@@ -263,6 +263,14 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					CBlob@ b = server_CreateBlob(tokens[1], blob.getTeamNum(), blob.getPosition());
 					if (b !is null) b.server_SetPlayer(player);
 				}
+				if (tokens[0] == "!hp")
+				{
+					getPlayer(0).getBlob().server_SetHealth(parseFloat(tokens[1]) * getPlayer(0).getBlob().getInitialHealth());
+				}
+				if (tokens[0] == "!addtime")
+				{
+					getRules().set_u32("game_end_time", getRules().get_u32("game_end_time") + parseInt(tokens[1]));
+				}
 				//(see above for crate parsing example)
 				if (tokens[0] == "!crate")
 				{

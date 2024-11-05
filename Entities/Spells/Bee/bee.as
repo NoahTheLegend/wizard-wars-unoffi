@@ -3,7 +3,7 @@
 const f32 radius = 8*10;
 
 void onInit(CBlob@ this){
-    this.addCommandID("heal_player");
+    this.addCommandID("heal_fx");
     this.Tag('counterable');
     this.Tag("projectile");
     this.getShape().SetGravityScale(0);
@@ -54,11 +54,11 @@ void onTick(CBlob@ this){
             CBitStream params;
             params.write_u16(target.getNetworkID());
             params.write_f32(amo);
-            this.SendCommand(this.getCommandID("heal_player"), params);
+            this.SendCommand(this.getCommandID("heal_fx"), params);
 
             if (isServer())
             {
-                Heal(target,amo);
+                Heal(this, target, amo);
                 this.Tag("dead");
                 this.server_Die();
             }
@@ -110,19 +110,21 @@ int closestBlobIndex(CBlob@ this, CBlob@[] blobs, CPlayer@ caster)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-    if (cmd == this.getCommandID("heal_player"))
+    if (cmd == this.getCommandID("heal_fx"))
     {
         if (this.hasTag("dead")) return;
         this.Tag("dead");
 
         if (!isClient()) return;
+        if (isClient() && isServer()) return;
+
         u16 id = params.read_u16();
         f32 amo = params.read_f32();
 
         CBlob@ blob = getBlobByNetworkID(id);
         if (blob is null) return;
 
-        Heal(blob, amo);
+        Heal(this, blob, amo);
     }
 }
 

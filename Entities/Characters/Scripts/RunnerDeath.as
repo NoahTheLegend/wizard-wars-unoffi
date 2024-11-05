@@ -1,4 +1,5 @@
 #include "Hitters.as"
+#include "HoverMessage.as";
 
 const u32 VANISH_BODY_SECS = 45;
 

@@ -250,7 +250,7 @@ void onTick( CBlob@ this)
 
 					case heal_effect_missile:
 					{
-						Heal(blob, this.get_f32("heal_amount"));
+						Heal(this, blob, this.get_f32("heal_amount"));
 					}
 					break;
 

@@ -2,7 +2,7 @@
 
 void onInit(CBlob@ this)
 {
-    this.addCommandID("heal_player");
+    this.addCommandID("heal_fx");
     this.getSprite().SetRelativeZ(5.0f);
     this.Tag("projectile");
 
@@ -12,9 +12,11 @@ void onInit(CBlob@ this)
     this.getSprite().setRenderStyle(RenderStyle::additive);
 }
 
-const f32 max_vel = 8.0f;
-const f32 max_dist = 64.0f;
+const f32 max_vel = 10.0f;
+const f32 max_dist = 80.0f;
 const f32 decel = 0.25f;
+const f32 ttd = 5;
+const f32 ttdrandom = 2;
 
 void onTick(CBlob@ this)
 {
@@ -31,7 +33,7 @@ void onTick(CBlob@ this)
         this.set_f32("dist", 99999);
         this.set_u16("follow_id", 0);
 
-        shape.SetGravityScale(0.25f);
+        shape.SetGravityScale(0.33f);
         shape.getConsts().mapCollisions = true;
         this.getSprite().SetRelativeZ(5.0f);
 
@@ -46,7 +48,7 @@ void onTick(CBlob@ this)
         if (this.getVelocity().Length() <= max_vel)
             this.AddForce(dir * (this.getMass() * decel));
 
-        this.server_SetTimeToDie(5);
+        this.server_SetTimeToDie(ttd+XORRandom(ttdrandom+1));
         
         shape.SetGravityScale(0.0f);
         shape.getConsts().mapCollisions = false;
@@ -93,7 +95,7 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-    if (cmd == this.getCommandID("heal_player"))
+    if (cmd == this.getCommandID("heal_fx"))
     {
         if (this.hasTag("dead")) return;
         this.Tag("dead");
@@ -104,21 +106,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         CBlob@ blob = getBlobByNetworkID(id);
         if (blob is null) return;
 
-        Heal(blob, 0.25f);
+        Heal(this, blob, 0.125f);
     }
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-    if (blob !is null && blob.getNetworkID() == this.get_u16("follow_id"))
+    if (blob !is null && blob.getPlayer() !is null && blob.getNetworkID() == this.get_u16("follow_id"))
     {
         CBitStream params;
         params.write_u16(blob.getNetworkID());
-        this.SendCommand(this.getCommandID("heal_player"), params);
+        this.SendCommand(this.getCommandID("heal_fx"), params);
         
         if (isServer())
         {
-            Heal(blob, 0.25f);
+            Heal(this, blob, 0.125f);
             this.Tag("dead");
             this.server_Die();
         }

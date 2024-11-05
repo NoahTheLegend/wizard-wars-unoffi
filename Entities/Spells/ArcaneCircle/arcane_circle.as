@@ -16,7 +16,7 @@ void onTick(CBlob@ this)
     bool fullCharge = this.hasTag("fullCharge");
     bool reverse = this.hasTag("reverse");
 
-    if((!this.hasTag("finished") || reverse)  && getGameTime() % 2 == 0)
+    if((!this.hasTag("finished") || reverse) && getGameTime() % 1 == 0)
     {
         this.add_u8("frame", reverse ? -1 : 1);
         if(this.get_u8("frame") == 29)
@@ -34,7 +34,7 @@ void onTick(CBlob@ this)
     CBlob@[] blobs;
     map.getBlobsInRadius(pos,effectRadius,@blobs);
 
-    if(getGameTime() % (fullCharge ? 5 : 10) == 0 && !this.hasTag("reverse"))
+    if(getGameTime() % (fullCharge ? 5 : 7) == 0 && !this.hasTag("reverse"))
     {
 
         for(float i = 0; i < blobs.length; i++)

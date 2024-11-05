@@ -1,4 +1,5 @@
 #include "TeamColour.as";
+#include "SpellUtils.as";
 
 void onInit(CBlob@ this)
 {
@@ -51,21 +52,39 @@ void onTick( CBlob@ this )
 			{
 				f32 initHealth = b.getInitialHealth();
 				f32 health = b.getHealth();
+				f32 heal_amount = 0.1f;
 
-				if(health + 0.1 < initHealth)
+				if(health + heal_amount < initHealth)
 				{
-					b.server_SetHealth(health + 0.1);
-					if(b.getPlayer() !is null && b.getPlayer() is getLocalPlayer())
-					{
-						SetScreenFlash(50,0,255,0,0.75f);
-					}
+					Heal(this, b, heal_amount, false, false, 0);
 				}
-				else b.server_SetHealth(initHealth);
 			}
 		}
 	}
-	
+}
 
+void onDie(CBlob@ this)
+{
+	if (!this.hasTag("just_countered")) return;
+	CMap@ map = getMap();
+	CBlob@[] blobs;
+	map.getBlobsInRadius(this.getPosition(),effectRadius,@blobs);
+
+	for(int i = 0; i < blobs.length; i++)
+	{
+		CBlob@ b = blobs[i];
+		if(b.getPlayer() !is null && b.getTeamNum() == this.getTeamNum())
+		{
+			f32 initHealth = b.getInitialHealth();
+			f32 health = b.getHealth();
+			f32 heal_amount = 0.5f;
+
+			if(health + heal_amount < initHealth)
+			{
+				Heal(this, b, heal_amount, false, true, 0.33f);
+			}
+		}
+	}
 }
 
 void onInit(CSprite@ this)

@@ -1,5 +1,5 @@
 
-const string heal_id = "heal command";
+const string heal_id = "heal command client";
 
 void onInit(CBlob@ this)
 {

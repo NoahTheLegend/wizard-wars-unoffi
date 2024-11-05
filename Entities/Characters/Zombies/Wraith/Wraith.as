@@ -476,6 +476,13 @@ void onHitBlob( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob
 void onDie( CBlob@ this )
 {
 	this.getSprite().Gib();
+	if (this.getPlayer() is null)
+	{
+		this.Untag("activated");
+		this.set_s32("explosion_timer", 0);
+		this.Untag("exploding");
+		this.set_f32("explosive_damage", 0.0f);
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

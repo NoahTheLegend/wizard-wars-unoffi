@@ -4,6 +4,7 @@
 #include "SplashWater.as";
 #include "TeamColour.as";
 #include "PaladinCommon.as";
+#include "SpellUtils.as";
 
 Random _r(94712);
 
@@ -367,9 +368,7 @@ void onTick(CBlob@ this)
 		f32 heal_amount = 0.15f;
 		if (regen%30==0 && isServer())
 		{
-			if (this.getHealth() + heal_amount < this.getInitialHealth())
-				this.server_Heal(heal_amount);
-			else (this.server_SetHealth(this.getInitialHealth()));
+			Heal(this, this, heal_amount, false, false, 0.1f);
 		}
 
 		//makeSmokeParticle(this, Vec2f(), "Smoke");
@@ -427,9 +426,15 @@ void onTick(CBlob@ this)
 
 				Vec2f pos = this.getPosition() + Vec2f(3,-2);
 				string afterimageFile = "afterimages.png";
+				#ifdef STAGING
+					afterimageFile = "afterimages_staging";
+				#endif
 				if (lookingLeft)
 				{
 					afterimageFile = "afterimagesleft.png";
+					#ifdef STAGING
+						afterimageFile = "afterimagesleft_staging";
+					#endif
 					pos -= Vec2f(6,0);
 				}
 				CParticle@ p = ParticleAnimated(afterimageFile, pos, Vec2f_zero, 0, 1.0f, 5, 0.0f, false);
