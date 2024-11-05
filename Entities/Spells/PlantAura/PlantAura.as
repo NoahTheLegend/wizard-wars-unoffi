@@ -56,7 +56,7 @@ void onTick( CBlob@ this )
 
 				if(health + heal_amount < initHealth)
 				{
-					Heal(this, b, heal_amount, false, false, 0);
+					Heal(this, b, heal_amount, true, false, 0.1f);
 				}
 			}
 		}
@@ -81,7 +81,7 @@ void onDie(CBlob@ this)
 
 			if(health + heal_amount < initHealth)
 			{
-				Heal(this, b, heal_amount, false, true, 0.33f);
+				Heal(this, b, heal_amount, true, true, 0.33f);
 			}
 		}
 	}

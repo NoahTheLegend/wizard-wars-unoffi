@@ -187,7 +187,7 @@ void onRender(CSprite@ this)
 				Vec2f fall_vec = ground_pos2d - blockedPos2D;
 				u32 max_steps = fall_vec.Length()/fall_step/2;
 
-				SColor col = fail ? SColor(155, 255, 55, 55) : SColor(155, 255, 255, 255);
+				SColor col = fail ? SColor(175, 255, 55, 55) : SColor(175, 255, 255, 255);
 				int gt = getGameTime();
 				for (u32 i = 0; i < max_steps; i++)
 				{
