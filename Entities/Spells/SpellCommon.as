@@ -3166,12 +3166,15 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						if (this.hasTag("damage_buff")) base_heal += 1.0f;
 						base_heal = Maths::Min(5.0f, base_heal * mod);
 						
-						if (target !is this)
+						if (target is this)
 						{
 							Heal(this, this, base_heal * 0.5f);
 						}
-
-						Heal(this, target, target is this ? base_heal * 0.5f : base_heal);
+						else
+						{
+							Heal(this, target, base_heal);
+							Heal(this, this, base_heal * 0.5f);
+						}
 					}
 					this.getSprite().PlaySound("Teleport.ogg", 0.8f, 1.0f);
 				}

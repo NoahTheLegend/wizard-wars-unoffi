@@ -41,7 +41,7 @@ namespace PriestParams
 				SpellType::other, 70, 60, 30, 360.0f, true),
 
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
-				SpellType::other, 20, 25, 0, 360.0f, true), 
+				SpellType::other, 20, 20, 0, 360.0f, true), 
 
 		Spell("mana_transfer", "Mana Transfer", 48, "Transfers mana equivalent to the target's regen. Generates 1 extra mana if overcharged.",
 				SpellType::other, 8, 15, 0, 360.0f, true),
@@ -53,22 +53,22 @@ namespace PriestParams
 				SpellType::other, 35, 60, 6, 270.0f, true),
 							
 		Spell("divineshield", "Divine Shield", 66, "Covers a moderate area with reflecting and powerful barrier. Some spells can phase through it. Lifetime scales with charge.",
-				SpellType::other, 80, 120, 30, 92.0f, true),
+				SpellType::other, 75, 120, 30, 92.0f, true),
 				
 		Spell("beam", "Divine Beam", 67, "Continuously damages enemies or heals teammates in beam area. Pushes enemies when overcharged fully. Also continuously takes mana and keeps firing after activation if held left click.",
 				SpellType::other, 8, 25, 2, 96.0f, true),
 							
 		Spell("fireorbs", "Sacrilege Fire", 68, "A ball of light and smite, will target an enemy when nearby. Has a moderate chance to ignite.",
-				SpellType::other, 30, 30, 1, 32.0f, true),	
+				SpellType::other, 28, 30, 1, 32.0f, true),	
 
 		Spell("singularity", "Singularity", 69, "Summons an essence of stars, which explodes with colossal power after some time. Takes less time to explode if overchaged. Can not be denied. Does not pierce blocks.",
-				SpellType::other, 100, 60, 15, 360.0f, true),	
+				SpellType::other, 75, 45, 15, 360.0f, true),	
 
 		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
 				SpellType::other, 35, 45, 1, 360.0f, true),
 							
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
-				SpellType::other, 45, 60, 30, 16.0f, true),
+				SpellType::other, 45, 60, 20, 16.0f, true),
 
 		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, however takes your dash ability and slows down.\nCast again to disable.",
 				SpellType::other, 15, 40, 5, 16.0f, true),
@@ -103,3 +103,4 @@ class PriestInfo
 	}
 }; 
 
+25
