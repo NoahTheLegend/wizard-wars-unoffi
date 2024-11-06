@@ -351,8 +351,8 @@ void intitializeClasses()
 
 	playerClassButtons.registerWWPlayerClassButton("Druid", 
 													"     A healing bastard. Druids claim to be in tune with nature, but they fail to mention how annoying bees can be. Complexity: EASY" +
-													"\n     Health: 75" +
-													"\n     Mana: 150" +
+													"\n     Health: 70" +
+													"\n     Mana: 120" +
 													"\n     Mana Regen: 4 mana/sec",
 													"druid", 3, 20, 4, 0, "WizardWars");
 													

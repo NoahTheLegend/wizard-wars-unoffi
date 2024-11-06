@@ -5191,7 +5191,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				if(isServer())
 				{
-					f32 dmg = charge_state == 5 ? 4.0f : 3.0f;
+					f32 dmg = charge_state == 5 ? 5.0f : 4.0f;
 					if (this.hasTag("extra_damage")) dmg += 1.0f;
 
 					CBlob@ mush = server_CreateBlob("bobomb",this.getTeamNum(),Vec2f(aimpos.x,height-12));

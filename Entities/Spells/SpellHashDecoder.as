@@ -341,6 +341,10 @@ s8 parryTargetIdentifier( CBlob@ b )
 			{
 				return 0;
 			}
+			else if (b.hasTag("projectile"))
+			{
+				return 0;
+			}
 			else
 			{
 				return -1;

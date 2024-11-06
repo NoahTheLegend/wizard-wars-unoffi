@@ -564,7 +564,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				b.add_u8("despelled",1);
 				countered = true;
 			}
-			if ( retribution == true )
+			if ( retribution)
 			{
 				/*ManaInfo@ manaInfo;
 				if (!caster.get( "manaInfo", @manaInfo )) {
@@ -572,10 +572,10 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				}
 				manaInfo.mana += 10;*/
 				if(caster !is null)
-				{Heal(caster, caster, 0.5f);}
+				{Heal(caster, caster, 1.0f);}
 			}
 
-			if ( countered == true )
+			if ( countered )
 			{
 				if ( isClient() )
 				{
@@ -592,7 +592,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					{
 						p.bounce = 0;
     					p.fastcollision = true;
-						p.Z = 600.0f;
+						p.Z = 2000.0f;
 					}
 				}
 			}

@@ -50,14 +50,14 @@ namespace DruidParams
 		Spell("rock_wall", "Rock Wall", 36, "Create a wall of ordinary rock in front of you that blocks most things both ways. Its not exactly durable though.",
 			SpellType::other, 10, 15, 0, 30.0f),
 				
-		Spell("healing_plant", "Nature's Remedy", 37, "This blessing from nature will seal your wounds. Despelling this may heal everyone insde, along with the enemy.",
-			SpellType::other, 25, 30, 5, 128.0f, true, true),
+		Spell("healing_plant", "Nature's Remedy", 37, "This blessing from nature will seal your wounds. Despelling this may heal everyone inside, along with the enemy.",
+			SpellType::other, 35, 30, 5, 128.0f, true, true),
 
 		Spell("mushroom", "Dancing Shroom", 34, "A happy mushroom that will create it's own cloud of spores for you.",
 			SpellType::other, 15, 30, 0, 60.0f, true, true),
 
 		Spell("boulder_throw", "Rock Throw", 35, "Throws a heavy rock that is highly affected by gravity.",
-			SpellType::other, 20, 40, 2, 16.0f, true),
+			SpellType::other, 24, 40, 2, 16.0f, true),
 				
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
 			SpellType::other, 20, 20, 0, 360.0f, true), 
@@ -66,7 +66,7 @@ namespace DruidParams
 			SpellType::other, 15, 20, 0, 360.0f, true),
 
 		Spell("stone_spikes", "Stone Spikes", 38, "Creates a line of dangerous sharp rocks.",
-			SpellType::other, 30, 30, 8, 180.0f, true, true),
+			SpellType::other, 35, 30, 8, 180.0f, true, true),
 
 		Spell("airblast_shield", "Airblast Shield", 56, "Cover your team or yourself in a volatile wind barrier that blasts away nearby enemies whenever you take damage.",
 			SpellType::other, 20, 25, 0, 360.0f, true),

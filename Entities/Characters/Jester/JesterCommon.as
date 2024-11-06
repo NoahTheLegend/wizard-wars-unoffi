@@ -39,16 +39,16 @@ namespace JesterParams
 				SpellType::other, 5, 30, 0, 128.0f, false, true),
 
 		Spell("mitten", "Enchanted Mitten", 110, "A mitten alive, fingers strong and bold, casting bullet hell, its power untold.",
-				SpellType::other, 24, 20, 1, 256.0f, true),
+				SpellType::other, 25, 20, 1, 256.0f, true),
 
 		//Spell("pogostick", "Pogo Stick", 111, "A spring, a bounce, a leap so high, on pogo stick, touch the sky.",
 		//		SpellType::other, 20, 30, 6, 0.0f, true),
 
 		Spell("bobomb", "BOB-omb", 120, "Bob, the walking bomb, with a heart so warm, explodes with love.",
-				SpellType::other, 25, 45, 6, 128.0f, true, true),
+				SpellType::other, 35, 45, 6, 128.0f, true, true),
 
 		Spell("bouncybomb", "Gummy Bomb", 113, "This gum bomb bounces to and from, explodes on impact, a foe's woe.",
-				SpellType::other, 14, 22, 0, 32.0f),
+				SpellType::other, 16, 22, 0, 32.0f),
 
 		Spell("carddeck", "Jester Deck", 114, "Six cards of magic in the air, overcharge sends them spinning near.",
 				SpellType::other, 20, 30, 5, 180.0f, true),
