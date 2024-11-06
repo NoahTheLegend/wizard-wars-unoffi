@@ -365,7 +365,7 @@ void onTick(CBlob@ this)
 		regen--;
 		this.set_u16("regen", regen);
 		
-		f32 heal_amount = 0.15f;
+		f32 heal_amount = 0.1f;
 		if (regen%30==0 && isServer())
 		{
 			Heal(this, this, heal_amount, false, false, 0.1f);

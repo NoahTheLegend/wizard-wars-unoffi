@@ -47,16 +47,16 @@ namespace PriestParams
 				SpellType::other, 8, 15, 0, 360.0f, true),
 
 		Spell("regen", "Regenerate", 70, "Applies a slight healing, that lasts some time.",
-				SpellType::other, 18, 40, 0, 360.0f), 	
+				SpellType::other, 20, 45, 0, 360.0f), 	
 
 		Spell("holystrike", "Holy Strike", 65, "Summons a piercing shard, which shatters into smaller shards after time.",
 				SpellType::other, 35, 60, 6, 270.0f, true),
 							
 		Spell("divineshield", "Divine Shield", 66, "Covers a moderate area with reflecting and powerful barrier. Some spells can phase through it. Lifetime scales with charge.",
-				SpellType::other, 65, 120, 30, 92.0f, true),
+				SpellType::other, 70, 120, 30, 92.0f, true),
 				
 		Spell("beam", "Divine Beam", 67, "Continuously damages enemies or heals teammates in beam area. Pushes enemies when overcharged fully. Also continuously takes mana and keeps firing after activation if held left click.",
-				SpellType::other, 5, 25, 2, 96.0f, true),
+				SpellType::other, 8, 25, 2, 96.0f, true),
 							
 		Spell("fireorbs", "Sacrilege Fire", 68, "A ball of light and smite, will target an enemy when nearby. Has a moderate chance to ignite.",
 				SpellType::other, 25, 30, 1, 32.0f, true),	
@@ -65,13 +65,13 @@ namespace PriestParams
 				SpellType::other, 100, 60, 15, 360.0f, true),	
 
 		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
-				SpellType::other, 30, 45, 1, 360.0f, true),
+				SpellType::other, 35, 45, 1, 360.0f, true),
 							
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
-				SpellType::other, 30, 60, 20, 16.0f, true),
+				SpellType::other, 45, 60, 20, 16.0f, true),
 
 		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, however takes your dash ability and slows down.\nCast again to disable.",
-				SpellType::other, 20, 45, 5, 16.0f, true),
+				SpellType::other, 15, 40, 5, 16.0f, true),
 
 		Spell("manaburn", "Mana Burn", 73, "Slightly burns enemy mana, if effect was applied. Disables mana regen.",
 				SpellType::other, 30, 65, 10, 360.0f, true),
