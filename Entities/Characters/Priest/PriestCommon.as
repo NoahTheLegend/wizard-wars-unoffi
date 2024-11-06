@@ -102,5 +102,3 @@ class PriestInfo
 		pulse_amount = 3;
 	}
 }; 
-
-25
