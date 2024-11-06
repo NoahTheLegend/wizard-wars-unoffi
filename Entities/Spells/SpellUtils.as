@@ -435,6 +435,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			bool countered = false;
 			bool retribution = false;
 			
+			// spells
 			if ( b.hasTag("counterable") && (!sameTeam || b.hasTag("alwayscounter")) )
 			{
 				b.Untag("exploding");
@@ -445,35 +446,39 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
-			else if ( b.get_u16("slowed") > 0 && sameTeam )
+
+			// debuffs
+			if ( b.get_u16("slowed") > 0 && sameTeam )
 			{				
 				b.set_u16("slowed", 1);
 				b.Sync("slowed", true);
 					
 				countered = true;
 			}
-			else if (b.get_u16("confused") > 0 && sameTeam)
+			if (b.get_u16("confused") > 0 && sameTeam)
 			{
 				b.set_u16("confused", 1);
 				b.Sync("confused", true);
 					
 				countered = true;
 			}
-			else if ( b.get_u16("manaburn") > 0 && sameTeam )
+			if ( b.get_u16("manaburn") > 0 && sameTeam )
 			{				
 				b.set_u16("manaburn", 1);
 				b.Sync("manaburn", true);
 					
 				countered = true;
 			}
-			else if ( b.get_u16("healblock") > 0 && sameTeam )
+			if ( b.get_u16("healblock") > 0 && sameTeam )
 			{				
 				b.set_u16("healblock", 1);
 				b.Sync("healblock", true);
 					
 				countered = true;
 			}
-			else if (
+			
+			// enemy buffs
+			if (
 			(b.get_u16("hastened") > 0
 			 || b.get_u16("regen") > 0
 			 || b.get_u16("fireProt") > 0 
