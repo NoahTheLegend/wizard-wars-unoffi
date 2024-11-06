@@ -51,14 +51,14 @@ void onTick(CBlob@ this){
             if (target.getPlayer() is this.getDamageOwnerPlayer())
                 amo /= 2;
             
-            CBitStream params;
-            params.write_u16(target.getNetworkID());
-            params.write_f32(amo);
-            this.SendCommand(this.getCommandID("heal_fx"), params);
+            //CBitStream params;
+            //params.write_u16(target.getNetworkID());
+            //params.write_f32(amo);
+            //this.SendCommand(this.getCommandID("heal_fx"), params);
 
             if (isServer())
             {
-                Heal(this, target, amo);
+                Heal(this, target, amo, true, true, 0.2f);
                 this.Tag("dead");
                 this.server_Die();
             }
