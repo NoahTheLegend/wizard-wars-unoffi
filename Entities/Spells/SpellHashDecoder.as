@@ -345,6 +345,10 @@ s8 parryTargetIdentifier( CBlob@ b )
 			{
 				return 0;
 			}
+			else if (b.hasTag("controller"))
+			{
+				return 1;
+			}
 			else
 			{
 				return -1;

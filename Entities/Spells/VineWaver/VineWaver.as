@@ -5,6 +5,7 @@ void onInit(CBlob@ this)
 {
 	this.Tag("projectile");
 	this.Tag("counterable");
+	this.Tag("controller");
 	this.Tag("die_in_divine_shield");
 	
 	//dont collide with edge of the map

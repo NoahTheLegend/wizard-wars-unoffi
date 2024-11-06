@@ -56,9 +56,9 @@ void onTick(CBlob@ this){
             //params.write_f32(amo);
             //this.SendCommand(this.getCommandID("heal_fx"), params);
 
+            Heal(this, target, amo, true, true, 0.2f);
             if (isServer())
             {
-                Heal(this, target, amo, true, true, 0.2f);
                 this.Tag("dead");
                 this.server_Die();
             }

@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("switch_owner_pos");
 	this.addCommandID("set_knocked");
 	this.addCommandID("launch");
+	this.Tag("controller");
 
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
