@@ -12,6 +12,7 @@ void onInit(CBlob@ this)
 	shape.SetGravityScale( 0.0f );
 	
 	this.set_f32("lifetime",0);
+	this.Tag("no trampoline collision");
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
@@ -78,7 +79,10 @@ void onTick(CBlob@ this)
 				Vec2f aimDir = aimPos2 - this.getPosition();
 				angle = aimDir.Angle();
 				this.setAngleDegrees(-angle);
-				if (caster.get_bool("shifting") && this.getTickSinceCreated() > (lifetime + 30) )  //shift system for roboteching
+
+				if (!this.hasTag("no_player_control")
+					&& caster.get_bool("shifting")
+						&& this.getTickSinceCreated() > (lifetime + 30) )  //shift system for roboteching
 				{
 					aimDir.Normalize();
 					Vec2f swordSpeed = aimDir * 15;
@@ -110,7 +114,6 @@ void Pierce(CBlob@ this, CBlob@ blob = null)
 
 void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 customData)
 {
-
 	this.getSprite().PlaySound("exehit.ogg");
 
 	f32 angle = velocity.Angle();

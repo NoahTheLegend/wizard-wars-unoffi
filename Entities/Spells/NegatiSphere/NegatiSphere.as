@@ -88,6 +88,13 @@ void onTick( CBlob@ this )
 			this.AddForce(Vec2f(0, -200));
 		}
 	}
+	else
+	{
+		if (this.getPosition().x <= 12 || this.getPosition().x >= getMap().tilemapwidth*8-12)
+		{
+			this.server_Die();
+		}
+	}
 
 	Vec2f vel = this.getVelocity();
 	Vec2f finaldir = this.get_Vec2f("dir");

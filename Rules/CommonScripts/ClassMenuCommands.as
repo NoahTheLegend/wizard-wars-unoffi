@@ -3,9 +3,10 @@
 void onInit( CRules@ this )
 {
 	this.addCommandID("swap classes");
+	this.addCommandID("select class");
 }
 
-void onCommand( CRules@ this, u8 cmd, CBitStream @params )
+void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
 	if (this.getCommandID("swap classes") == cmd)
 	{
@@ -13,15 +14,40 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 		string classConfig = params.read_string();
 		
 		CPlayer@ player = getPlayerByNetworkId(playerID);
+		if (isServer() && this.isWarmup())
+		{
+			if (player !is null)
+			{
+				CBlob@ caster_blob = player.getBlob();
+				if (caster_blob !is null) caster_blob.server_Die();
+			}
+		}
 
 		changeWizDefaultClass(player, classConfig);
-			
-		PlayerPrefsInfo@ playerPrefsInfo;
-		if (!player.get( "playerPrefsInfo", @playerPrefsInfo ))
-		{
-			return;
-		}
+		if (player !is null) saveClass_server(this, player.getUsername(), classConfig);
 	}
+	else if (cmd == this.getCommandID("select class"))
+	{
+		if (!isServer()) return;
+
+		string username;
+		if (!params.saferead_string(username)) return;
+
+		string new_class;
+		if (!params.saferead_string(new_class)) return;
+
+		saveClass_server(this, username, new_class);
+	}
+}
+
+void saveClass_server(CRules@ this, string username, string new_class)
+{
+	ConfigFile cfg;
+	cfg.loadFile("../Cache/WW_ClassSelections.cfg");
+
+	string[] arr = {new_class};
+	cfg.addArray_string(username, arr);
+	cfg.saveFile("WW_ClassSelections.cfg");
 }
 
 void changeWizDefaultClass( CPlayer@ thisPlayer, string classConfig = "" )
@@ -34,6 +60,7 @@ void changeWizDefaultClass( CPlayer@ thisPlayer, string classConfig = "" )
 	PlayerPrefsInfo@ playerPrefsInfo;
 	if (!thisPlayer.get( "playerPrefsInfo", @playerPrefsInfo ))
 	{ return; }
+	
 
 	playerPrefsInfo.classConfig = classConfig;
 	ConfigFile cfg;

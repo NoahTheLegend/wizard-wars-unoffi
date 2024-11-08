@@ -47,7 +47,7 @@ void onInit( CBlob @ this )
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
 
-void onTick( CBlob@ this)
+void onTick(CBlob@ this)
 {
 	CSprite@ thisSprite = this.getSprite();
 	if (this.getTickSinceCreated() < 1)
@@ -59,6 +59,8 @@ void onTick( CBlob@ this)
 		thisSprite.PlaySound("FireBlast4.ogg", 0.8f, 1.0f + XORRandom(20)/10.0f);
 		thisSprite.SetZ(1000.0f);
 	}
+
+	if (this.isInWater()) this.server_Die();
 	
 	//face towards target like a ballista bolt
 	Vec2f velocity = this.getVelocity();

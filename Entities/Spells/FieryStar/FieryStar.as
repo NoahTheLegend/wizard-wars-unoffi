@@ -59,6 +59,8 @@ void onTick(CBlob@ this)
 	{
 		this.getSprite().PlaySound("FireBlast4.ogg", 0.8f, 1.15f + XORRandom(21)*0.01f);
 	}
+
+	if (this.isInWater()) this.server_Die();
 	
 	if (this.getVelocity().Length() <= 0.5f)
 		this.setVelocity(Vec2f(1.0f + XORRandom(11)*0.1f, 0).RotateBy((getGameTime()*8+this.getNetworkID())%360));

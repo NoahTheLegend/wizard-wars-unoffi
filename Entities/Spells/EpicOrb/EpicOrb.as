@@ -78,7 +78,7 @@ void onTick(CBlob@ this)
 				u8 count = this.get_u8("count");
 				u8 orbs = this.get_u8("orbs");
 
-				f32 spinAmount = 20-(orbs*(orbs>5?2:3));
+				f32 spinAmount = 10;
 				f32 spinMult = (main.getVelocity().x < 0.0f) ? -spinAmount : spinAmount;
 				f32 spin = (getGameTime()*spinMult) % 360.0f;
 

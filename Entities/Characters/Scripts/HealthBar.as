@@ -44,7 +44,7 @@ void onRender(CSprite@ this)
 		if(blob.get("manaInfo",@info))
 		{
 			//show mana
-			if( (mouseOnBlob || getLocalPlayerBlob() is null) && ((blob.getTeamNum() == getLocalPlayer().getTeamNum()) || getLocalPlayer().getTeamNum() == getRules().getSpectatorTeamNum()))
+			if( (mouseOnBlob || getLocalPlayerBlob() is null) && ((getLocalPlayer() !is null && blob.getTeamNum() == getLocalPlayer().getTeamNum()) || getLocalPlayer().getTeamNum() == getRules().getSpectatorTeamNum()))
 			{
 				Vec2f pos2d = blob.getScreenPos() + Vec2f(0, 40);
 				Vec2f dim = Vec2f(24, 8);

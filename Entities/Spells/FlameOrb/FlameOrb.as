@@ -34,6 +34,7 @@ void onTick(CBlob@ this)
     	this.getSprite().PlaySound("MagicMissile.ogg", 0.33f, 1.0f + XORRandom(6)*0.01f);
 	}
 	sparks(this.getPosition(), 5, Vec2f_zero);
+	if (this.isInWater()) this.server_Die();
 }
 
 bool isEnemy( CBlob@ this, CBlob@ target )

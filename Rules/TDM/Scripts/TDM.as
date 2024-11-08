@@ -115,9 +115,6 @@ shared class TDMSpawns : RespawnSystem
 
 	void DoSpawnPlayer(PlayerInfo@ p_info)
 	{
-		//CPlayer@ p = getPlayerByUsername(p_info.username);
-		//if (p is null || (!p.hasTag("synced_class") && !p.isBot())) return;
-
 		if (force || canSpawnPlayer(p_info))
 		{
 			CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
@@ -145,14 +142,30 @@ shared class TDMSpawns : RespawnSystem
 			if ( player.get( "playerPrefsInfo", @playerPrefsInfo ) && playerPrefsInfo !is null )
 			{
 				p_info.blob_name = playerPrefsInfo.classConfig;
+
+				if (p_info.blob_name == "wizard")
+				{
+					ConfigFile cfg;
+					if (cfg.loadFile("../Cache/WW_ClassSelections.cfg"))
+					{
+						string[] arr;
+						if (cfg.readIntoArray_string(arr, player.getUsername()) && arr.size() > 0
+							&& arr[0] != "")
+						{
+							p_info.blob_name = arr[0];
+						}
+					}
+				}
 			}
-			
-			//print("class config: " + classConfig);
 				
 			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 
 			if (playerBlob !is null)
 			{
+				if (!player.hasTag("first_join") && getRules().isWarmup())
+				{
+					player.Tag("first_join");
+				}
 				// spawn resources
 				p_info.spawnsCount++;
 				RemovePlayerFromSpawn(player);
@@ -165,9 +178,13 @@ shared class TDMSpawns : RespawnSystem
 		TDMPlayerInfo@ info = cast < TDMPlayerInfo@ > (p_info);
 
 		if (info is null) { warn("TDM LOGIC: Couldn't get player info ( in bool canSpawnPlayer(PlayerInfo@ p_info) ) "); return false; }
+		
+		CPlayer@ p = getPlayerByUsername(p_info.username);
+		if (p is null) return false;
+		if (!p.isBot() && !p.hasTag("synced_class")) return false;
 
 		if (force) { return true; }
-		return info.can_spawn_time == 0;
+		return info.can_spawn_time <= 0;
 	}
 
 	Vec2f getSpawnLocation(PlayerInfo@ p_info)
@@ -475,7 +492,7 @@ shared class TDMCore : RulesCore
 
 	void AddPlayer(CPlayer@ player, u8 team = 0, string default_config = "")
 	{
-		TDMPlayerInfo p(player.getUsername(), player.getTeamNum(), player.isBot() && sv_test ? "knight" : "wizard" );
+		TDMPlayerInfo p(player.getUsername(), player.getTeamNum(), player.isBot() && sv_test ? "knight" : "wizard");
 		players.push_back(p);
 		ChangeTeamPlayerCount(p.team, 1);
 	}

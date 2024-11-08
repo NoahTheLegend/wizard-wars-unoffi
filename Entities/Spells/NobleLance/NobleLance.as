@@ -7,12 +7,13 @@ void onInit(CBlob@ this)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;
 	consts.bullet = false;
-	consts.net_threshold_multiplier = 0.1f;
+	consts.net_threshold_multiplier = 1.0f;
 	this.Tag("projectile");
 	this.Tag("counterable");
 	shape.SetGravityScale(0.0f);
 	
 	this.set_f32("lifetime",0);
+	this.Tag("no trampoline collision");
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
@@ -59,8 +60,6 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
-	if (!isServer()) return;
 	
 	this.setVelocity(dir * speed * factor);
 

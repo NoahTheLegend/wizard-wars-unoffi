@@ -28,9 +28,20 @@ void onInit(CBlob@ this)
 	thisSprite.setRenderStyle(RenderStyle::light);
 }
 
-void onTick( CBlob@ this)
+void onTick(CSprite@ this)
 {
-	if (isClient())
+	if (this.animation !is null)
+	{
+		if (this.animation.name == "default" && this.animation.ended())
+		{
+			this.SetAnimation("fly");
+		}
+	}
+}
+
+void onTick(CBlob@ this)
+{
+	if (isClient() && this.getTickSinceCreated() > 1)
 	{
 		CSprite@ thisSprite = this.getSprite();
 		if (this.getTickSinceCreated() < 1)
@@ -39,7 +50,7 @@ void onTick( CBlob@ this)
 			this.SetLightRadius(24.0f);
 			this.SetLightColor(SColor(255, 255, 255, 0));
 			this.set_string("custom_explosion_sound", "FireBlast2.ogg");
-			thisSprite.PlaySound("IceShoot.ogg", 0.5f, 2.2f + XORRandom(5)/10.0f);
+			thisSprite.PlaySound("IceShoot.ogg", 0.5f, 1.25f + XORRandom(11)*0.01f);
 			thisSprite.SetZ(50.0f);
 		}
 
@@ -49,7 +60,7 @@ void onTick( CBlob@ this)
 		thisSprite.setRenderStyle(RenderStyle::light);
 
 		CParticle@ p = ParticleAnimated( "IceBlast" + (XORRandom(3)+1) + ".png", 
-		this.getOldPosition(), 
+		this.getOldPosition() - Vec2f(0, -16).RotateBy(this.getAngleDegrees()), 
 		Vec2f(0,0), 
 		0.0f, 
 		1.0f, 

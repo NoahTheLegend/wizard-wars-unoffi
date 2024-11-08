@@ -64,7 +64,7 @@ namespace WizardParams
 				SpellType::other, 35, 30, 0, 180.0f, true),
 
 		Spell("mana_drain_circle", "Circle of Disenchant", 33, "Those who stand inside this circle lose their mana and are slowed to a crawl",
-				SpellType::other,45,60,15,360, true),			
+				SpellType::other, 45,60,15,312, true),			
 
 		Spell("mana_transfer", "Mana Transfer", 48, "Transfers mana equivalent to the target's regen. Generates 1 extra mana if overcharged.",
 				SpellType::other, 10, 10, 0, 360.0f, true),
@@ -78,8 +78,8 @@ namespace WizardParams
 		Spell("chainlightning", "Chain Lightning", 84, "Sends a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
 			SpellType::other, 20, 30, 1, 164.0f),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("flamecircle", "Circle of Flames", 124, "A compact hell in circular area. Incinerates any enemies inside.",
+				SpellType::other, 55, 60, 20, 312.0f, true),	
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f)						

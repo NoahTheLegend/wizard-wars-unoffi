@@ -58,7 +58,7 @@ void onTick(CBlob@ this)
             }
 
 
-            this.getSprite().PlaySound("zap.ogg",10);
+            this.getSprite().PlaySound("zap.ogg", 8.0f);
             if(getNet().isServer())
             {
                 uint8 t = 11;

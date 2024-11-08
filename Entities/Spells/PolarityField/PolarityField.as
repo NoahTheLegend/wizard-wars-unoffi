@@ -10,19 +10,19 @@ void onInit(CBlob@ this)
 	bool t = this.hasTag("clone");
 
 	CSprite@ sprite = this.getSprite();
-	sprite.ScaleBy(Vec2f(0.33f, 0.33f));
-	sprite.SetZ(100.0f);
+	//sprite.ScaleBy(Vec2f(0.33f, 0.33f));
+	sprite.SetZ(-10.0f);
 
 	if (t) return;
 
-	if (isServer())
-	{
-		CBlob@ cloned = server_CreateBlobNoInit("polarityfield");
-		cloned.set_u16("follow_id", this.getNetworkID());
-		cloned.server_setTeamNum(this.getTeamNum());
-		cloned.Tag("clone");
-		cloned.Init();
-	}
+	//if (isServer())
+	//{
+	//	CBlob@ cloned = server_CreateBlobNoInit("polarityfield");
+	//	cloned.set_u16("follow_id", this.getNetworkID());
+	//	cloned.server_setTeamNum(this.getTeamNum());
+	//	cloned.Tag("clone");
+	//	cloned.Init();
+	//}
 
 	if (isClient())
 	{
@@ -53,26 +53,26 @@ void onTick(CBlob@ this)
 		this.getShape().SetGravityScale(0.0f);
 		
 		CSprite@ sprite = this.getSprite();
-		sprite.setRenderStyle(RenderStyle::outline);
+		//sprite.setRenderStyle(RenderStyle::outline);
 		sprite.PlaySound("WizardShoot.ogg", 2.5f, 0.8f);
 	}
 
-	if (t)
-	{
-		if (isServer())
-		{
-			CBlob@ follow = getBlobByNetworkID(this.get_u16("follow_id"));
-			if (follow !is null)
-			{
-				Vec2f center = follow.get_Vec2f("init_pos");
-				f32 rot = getGameTime()*(this.getNetworkID()%10+10)%360.0f;
-				this.setPosition(center+Vec2f(2.0f, 0.0f).RotateBy(rot));
-				follow.setPosition(center-Vec2f(2.0f, -2.0f).RotateBy(rot));
-			}
-			else this.server_Die();
-		}
-		return;
-	}
+	//if (t)
+	//{
+	//	if (isServer())
+	//	{
+	//		CBlob@ follow = getBlobByNetworkID(this.get_u16("follow_id"));
+	//		if (follow !is null)
+	//		{
+	//			Vec2f center = follow.get_Vec2f("init_pos");
+	//			f32 rot = getGameTime()*(this.getNetworkID()%10+10)%360.0f;
+	//			this.setPosition(center+Vec2f(2.0f, 0.0f).RotateBy(rot));
+	//			follow.setPosition(center-Vec2f(2.0f, -2.0f).RotateBy(rot));
+	//		}
+	//		else this.server_Die();
+	//	}
+	//	return;
+	//}
 
 	u8 stages = this.get_u8("stages");
 	int stage_frequency = const_stage_frequency/(stages-2);
@@ -171,6 +171,38 @@ void onDie(CBlob@ this)
 			}
 		}
 	}
+
+	blast(this.getPosition()+Vec2f(1,1), 1, 1.0f);
+}
+
+Random _blast_r(0x10002);
+void blast(Vec2f pos, int amount, f32 scale = 1.0f)
+{
+	if ( !getNet().isClient() )
+		return;
+
+	for (int i = 0; i < amount; i++)
+    {
+        Vec2f vel = Vec2f_zero;
+
+        CParticle@ p = ParticleAnimated(CFileMatcher("Implosion2.png").getFirst(), 
+									pos, 
+									vel, 
+									0, 
+									scale, 
+									2, 
+									0.0f, 
+									false);
+									
+        if(p is null) return; //bail if we stop getting particles
+		
+		p.colour = SColor(255,155,55,155);
+    	p.fastcollision = true;
+        p.damping = 0.85f;
+		p.Z = 50.0f;
+		p.lighting = true;
+        p.setRenderStyle(RenderStyle::additive);
+    }
 }
 
 Random _sprk_r(21342);

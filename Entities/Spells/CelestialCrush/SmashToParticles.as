@@ -44,6 +44,8 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
         int h = image.getHeight();
         
         Vec2f center = Vec2f(-w/2, -h/2) + sprite.getOffset(); // shift it to upper left corner for 1/2 of sprite size
+        Vec2f grav = this.exists("smashtoparticles_grav") ? this.get_Vec2f("smashtoparticles_grav") : Vec2f_zero;
+        Vec2f grav_rnd = this.exists("smashtoparticles_grav_rnd") ? this.get_Vec2f("smashtoparticles_grav_rnd") : Vec2f_zero;
 
         while(image.nextPixel() && w != 0 && h != 0)
 		{
@@ -57,7 +59,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
 
             Vec2f offset = center + px_pos;
             offset.RotateBy(deg);
-            MakeParticle(pos + offset, vel * (0.5f + XORRandom(51)*0.01f), px_col, layer);
+            MakeParticle(pos + offset, vel * (0.5f + XORRandom(51)*0.01f), px_col, layer, grav, grav_rnd);
         }
 
         return true;
@@ -66,14 +68,25 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
     return false;
 }
 
-void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer)
+void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, Vec2f grav = Vec2f(69,0), Vec2f grav_rnd = Vec2f(69,0))
 {
     CParticle@ p = ParticlePixelUnlimited(pos, vel, col, true);
     if(p !is null)
     {
+        if (grav.x == 69) grav = Vec2f(0, 0.5f);
+
         p.bounce = 0.15f + XORRandom(26)*0.01f;
         p.fastcollision = true;
-        p.gravity = Vec2f(0, 0.5f);
+
+        f32 grx = 0; 
+        f32 gry = 0; 
+        if (grav_rnd.x != 69)
+        {
+            grx = (XORRandom(Maths::Abs(grav_rnd.x) * 100) * 0.01f - grx * 2);
+            gry = (XORRandom(Maths::Abs(grav_rnd.y) * 100) * 0.01f - gry * 2);
+        }
+
+        p.gravity = grav + Vec2f(grx, gry);
         p.timeout = 15+XORRandom(30);
         p.Z = layer;
     }

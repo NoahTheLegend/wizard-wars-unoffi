@@ -192,7 +192,7 @@ void onTick( CBlob@ this)
 	{
 		this.SetLight(true);
 		this.SetLightRadius(24.0f);
-		SColor lightColor = SColor( 255, 255, 150, 0);
+		SColor lightColor = SColor( 255, 155, 155, 255);
 		this.SetLightColor( lightColor );
 		thisSprite.SetZ(500.0f);
 		

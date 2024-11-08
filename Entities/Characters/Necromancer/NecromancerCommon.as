@@ -23,8 +23,8 @@ namespace NecromancerParams
 
 	const ::Spell[] spells = 
 	{
-		Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
-			SpellType::other, 3, 40, 0, 360.0f),
+		Spell("bloodarrow_rain", "Necronomicon", 122, "Embodies many drops of blood into sharp daggers to launch.",
+			SpellType::other, 5, 20, 0, 312.0f, true),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 25, 8, 0, 270.0f, true),
@@ -39,7 +39,7 @@ namespace NecromancerParams
 			SpellType::summoning, 18, 15, 0, 64.0f, true),
 			 
 		Spell("black_hole", "Black Hole", 18, "Open a portal into outer space, pulling your enemies into the airless void. Also drains the mana of enemies in the area and gives it to the caster.",
-			SpellType::other, 50, 120, 8, 180.0f, true),
+			SpellType::other, 55, 120, 4, 180.0f, true),
 			 
 		//Spell("greg", "Greg", 4, "Testing",
 			//SpellType::summoning, 20, 50, 15, 64.0f, true),
@@ -63,7 +63,7 @@ namespace NecromancerParams
 				SpellType::other, 22, 40, 3, 180.0f, true),
 				
 		Spell("force_of_nature", "Force of Nature", 27, "By invoking this spell, you call into being an orb of ghastly green light which destroys anything foolish enough to cross its path, including you!",
-				SpellType::other, 40, 10, 3, 360.0f, true),
+				SpellType::other, 40, 30, 3, 360.0f, true),
 				
 		Spell("arcane_circle","Arcane Circle",32,"Summon an unholy circle that will drain the life force of your foes",
 			SpellType::other,50,60,10,360, true),

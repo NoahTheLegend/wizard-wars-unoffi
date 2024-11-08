@@ -29,7 +29,7 @@ namespace PriestParams
 				SpellType::other, 8, 45, 0, 360.0f, true),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-				SpellType::other, 25, 6, 0, 270.0f, true),
+				SpellType::other, 20, 6, 0, 270.0f, true),
 			
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
 				SpellType::other, 15, 15, 0, 360.0f, true),
@@ -50,7 +50,7 @@ namespace PriestParams
 				SpellType::other, 25, 45, 0, 360.0f), 	
 
 		Spell("holystrike", "Holy Strike", 65, "Summons a piercing shard, which shatters into smaller shards after time.",
-				SpellType::other, 35, 60, 6, 270.0f, true),
+				SpellType::other, 30, 60, 6, 270.0f, true),
 							
 		Spell("divineshield", "Divine Shield", 66, "Covers a moderate area with reflecting and powerful barrier. Some spells can phase through it. Lifetime scales with charge.",
 				SpellType::other, 75, 120, 30, 92.0f, true),
@@ -59,16 +59,16 @@ namespace PriestParams
 				SpellType::other, 8, 25, 2, 96.0f, true),
 							
 		Spell("fireorbs", "Sacrilege Fire", 68, "A ball of light and smite, will target an enemy when nearby. Has a moderate chance to ignite.",
-				SpellType::other, 28, 30, 1, 32.0f, true),	
+				SpellType::other, 35, 40, 0, 32.0f, true),	
 
 		Spell("singularity", "Singularity", 69, "Summons an essence of stars, which explodes with colossal power after some time. Takes less time to explode if overchaged. Can not be denied. Does not pierce blocks.",
 				SpellType::other, 75, 45, 15, 360.0f, true),	
 
 		Spell("fiery_star", "Fiery Star", 58, "Launch a concetrated fire element particle at your enemies. Huge blast radius, dangerous to caster.",
-				SpellType::other, 35, 45, 1, 360.0f, true),
+				SpellType::other, 30, 45, 1, 360.0f, true),
 							
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
-				SpellType::other, 45, 60, 20, 16.0f, true),
+				SpellType::other, 40, 60, 18, 16.0f, true),
 
 		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, however takes your dash ability and slows down.\nCast again to disable.",
 				SpellType::other, 15, 40, 5, 16.0f, true),

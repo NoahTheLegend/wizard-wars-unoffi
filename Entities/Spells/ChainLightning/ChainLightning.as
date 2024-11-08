@@ -45,10 +45,10 @@ void onInit(CBlob@ this)
 	thisSprite.getConsts().accurateLighting = false;
 	thisSprite.PlaySound("lightning_impact.ogg", 1.5f, 1.35f + XORRandom(26)*0.01f);
 	
-	Setup(SColor(255, 50, 100, 255), "rend4", false);
-	Setup(SColor(255, 100, 100, 245), "rend5", false);
-	Setup(SColor(255, 100, 150, 235), "rend6", false);
-	Setup(SColor(255, 195, 195, 225), "rend7", false);
+	Setup(SColor(255, 155, 155, 255), "rend4", false);
+	Setup(SColor(255, 190, 220, 245), "rend5", false);
+	Setup(SColor(255, 255, 245, 255), "rend6", false);
+	Setup(SColor(255, 195, 195, 255), "rend7", false);
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "ChainLightning.as", "laserEffects");
 }
 

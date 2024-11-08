@@ -229,6 +229,44 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
+
+		case 1159967310://ball lightning
+		{
+			if (!isServer()){
+           		return;
+			}
+
+			f32 orbspeed = necro_shoot_speed * 0.175f;
+			f32 orbDamage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
+			u8 cooldown = 45;
+			u8 max_lightnings_per_attack = this.hasTag("extra_damage") ? 2 : 1;
+            
+			if (charge_state == super_cast) {
+				cooldown -= 15;
+				max_lightnings_per_attack += 1;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob("balllightning");
+			if (orb !is null)
+			{
+				orb.set_f32("damage", orbDamage);
+				orb.set_u8("cooldown", cooldown);
+				orb.set_u32("next_shot", getGameTime()+cooldown);
+				orb.set_u8("max_lightnings", max_lightnings_per_attack);
+
+				orb.IgnoreCollisionWhileOverlapped(this);
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+				orb.server_setTeamNum(this.getTeamNum());
+				orb.setPosition(orbPos);
+				orb.setVelocity(orbVel);
+			}
+		}
+		break;
 		
 		case 1299162377://boulder_throw
 		{
@@ -853,6 +891,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.server_setTeamNum( this.getTeamNum() );
 				orb.setPosition( orbPos );
 				orb.setVelocity( orbVel );
+
+				if (this.hasTag("extra_damage"))
+				{
+					orb.Tag("extra_damage");
+					orb.Sync("extra_damage", true);
+				}
 			} 
 		}
 		break;
@@ -1611,6 +1655,55 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case 2085531767://blood arrows
+		{
+			if(this.hasScript("BloodArrowRain.as"))
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo ))
+				{return;}
+				
+				manaInfo.mana += spell.mana;
+				return;
+			}
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+				case complete_cast:
+				{
+					this.set_u8("bloodarrows", 3);
+					this.set_u8("bloodarrow_delay", 2);
+				}
+				break;
+				case super_cast:
+				{
+					this.set_u8("bloodarrows", 5);
+
+					this.set_u8("bloodarrow_delay", 1);
+					this.set_bool("static", false);
+				}
+				break;
+			
+				default:return;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				this.add_u8("bloodarrows", 2);
+			}
+			this.set_u32("bloodarrow_start", getGameTime());
+			this.set_Vec2f("bloodarrow_aimpos", aimpos);
+			this.set_f32("bloodarrow_damage", 0.2f);
+
+			if(!this.hasScript("BloodArrowRain.as"))
+			{
+				this.AddScript("BloodArrowRain.as");
+			}
+		}
+		break;
+
 		case 770505718://leech
 		{
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
@@ -1657,6 +1750,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -1612772378://force_of_nature
 		{
 			int castTime = getGameTime();
+
+			if (charge_state == super_cast) castTime -= 30;
 		
 			this.set_Vec2f("spell aim vec", aimpos - thispos);
 			
@@ -2869,7 +2964,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
             if (!isServer())
 			{return;}
 
-			f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
 			f32 orbDamage = 1.5f * extraDamage;
 			u8 lt = 25;
 
@@ -2942,7 +3037,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.set_u16("shooter", this.getNetworkID());
 					if (charge_state == 5)
 					{
-						orb.set_bool("force", true);
+						orb.set_bool("pull", true);
 					}
 
 					orb.IgnoreCollisionWhileOverlapped( this );
@@ -2957,7 +3052,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (!isServer()){
            		return;
 			}
+
 			f32 orbspeed = necro_shoot_speed*0.5f;
+			bool extraDamage = this.hasTag("extra_damage");
 
 			switch(charge_state)
 			{
@@ -2991,8 +3088,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.IgnoreCollisionWhileOverlapped( this );
 				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.set_u16("shooter", this.getNetworkID());
-				bool extraDamage = this.hasTag("extra_damage");
-				orb.set_f32("explosive_damage", extraDamage ? 24.0f : 1.0f);
+				orb.set_f32("damage", extraDamage ? 1.25f : 0.75f);
 
 				orb.setVelocity( orbVel );
 			}
@@ -3005,7 +3101,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			CBlob@ orb = server_CreateBlob( "singularity" , this.getTeamNum() , aimpos);
 			if (orb !is null)
 			{
-				orb.set_f32("lifetime",15.0f-(charge_state));
+				f32 time = 15.0f;
+				if (charge_state == super_cast) time = 10.0f;
+
+				orb.set_f32("lifetime", time * (this.hasTag("extra_damage") ? 0.5f : 1));
 				orb.SetDamageOwnerPlayer(this.getPlayer());
 			}
 		}
@@ -3015,7 +3114,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			f32 orbspeed = 6.0f;
 			u16 effectTime = 300+(XORRandom(4)*10);
-			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
 
 			switch(charge_state)
 			{
@@ -3162,8 +3261,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					{
 						f32 hp_factor = Maths::Clamp(target.getHealth()/target.getInitialHealth() - 0.25f, 0.0f, 1.0f);
 						f32 mod = 1.0f - hp_factor;
-						f32 base_heal = charge_state == super_cast ? 3.0f : 2.0f;
-						if (this.hasTag("damage_buff")) base_heal += 1.0f;
+						f32 base_heal = charge_state == super_cast ? 2.0f : 1.5f;
+						if (this.hasTag("extra_damage")) base_heal += 0.5f;
 						base_heal = Maths::Min(5.0f, base_heal * mod);
 						
 						if (target is this)
@@ -3258,22 +3357,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 				case super_cast:
 				{
-					orbs = 5;
+					orbs = extraDamage ? 8 : 5;
 					orbspeed *= 1.33f;
-					if (extraDamage)
-					{
-						orbs = 7;
-						orbspeed *= 1.5f;
-					}
 				}
 				break;
 				default:return;
+			}
+			if (extraDamage)
+			{
+				orbs += 2;
 			}
 
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 			Vec2f orbVel = (aimpos - orbPos);
 			orbVel.Normalize();
-			orbVel *= orbspeed*(1.5f-orbs*0.175f);
+			orbVel *= orbspeed*(1.5f-Maths::Min(1, orbs*0.175f));
 
 			CBlob@ orb = server_CreateBlobNoInit( "epicorbmain" );
 			if (orb !is null)
@@ -3360,7 +3458,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						}
 						if (this.hasTag("extra_damage"))
 						{
-							tot.set_u16("fire_delay", 105);
+							tot.set_u16("fire_delay", 90);
 						}
 					}
 				}
@@ -3439,7 +3537,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						if (this.hasTag("extra_damage"))
 						{
 							tot.set_s32("aliveTime", 2700); //1m30s
-							tot.set_u16("charge_delay", 105);
+							tot.set_u16("charge_delay", 90);
 						}
 					}
 				}
@@ -3991,6 +4089,31 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case 1631791652: //arcane_circle
+			if(isServer())
+			{
+				bool failedCast = false;
+				if (getMap() !is null && (getMap().isInWater(aimpos) || getMap().isInWater(aimpos + Vec2f(0,8))))
+				{ failedCast = true; }
+
+				if (failedCast)
+				{
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
+					}
+					manaInfo.mana += spell.mana;
+
+					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+					return;
+				}
+			
+				CBlob@ circle = server_CreateBlob('flamecircle',this.getTeamNum(),aimpos);
+				circle.SetDamageOwnerPlayer(this.getPlayer());
+				circle.set_s32("aliveTime",charge_state == 5 ? 1200 : 900);
+			}
+		break;
+
 		// PALADIN
 
 		case 1909995520: // spiritual connection
@@ -4485,6 +4608,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.set_f32("damage", orbDamage);
 				orb.set_Vec2f("target_pos", aimpos);
 				orb.set_f32("speed", velo);
+
+				orb.Sync("target_pos", true);
+				orb.Sync("speed", true);
 				
 				Vec2f dir = aimpos - this.getPosition();
 				f32 deg = -dir.Angle();

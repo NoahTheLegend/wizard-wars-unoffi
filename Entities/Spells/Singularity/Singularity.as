@@ -134,8 +134,23 @@ void onTick(CBlob@ this)
 		if (this.get_f32("lifetime") <= 0.133f && this.getTickSinceCreated() > 90)
 		{
 			Boom(this);
-			smoke(this.getPosition(), 90);	
-			blast(this.getPosition(), 120);
+
+			Vec2f pos = this.getPosition();
+			smoke(pos, 80);	
+			blast(pos, 120);
+			
+			f32 power = 2.0f;
+			f32 rnd_power = 16;
+			int amount_blast = 100;
+			int amount_smoke = 50;
+			#ifdef STAGING
+				power = 2.5f;
+				rnd_power = 31;
+				amount_smoke = 500;
+				amount_blast = 1500;
+			#endif
+			smoke(pos, amount_smoke, power + XORRandom(rnd_power)*0.1f);	
+			blast(pos, amount_blast, power + XORRandom(rnd_power)*0.1f);
 		}
 
 		CSpriteLayer@ spin1 = sprite.getSpriteLayer("spin1");
@@ -194,14 +209,14 @@ void onTick(CBlob@ this)
 }
 
 Random _blast_r(0x10002);
-void blast(Vec2f pos, int amount)
+void blast(Vec2f pos, int amount, f32 power = 1.0f)
 {
 	if ( !getNet().isClient() )
 		return;
 
 	for (int i = 0; i < amount; i++)
     {
-        Vec2f vel(_blast_r.NextFloat() * 18.0f, 0);
+        Vec2f vel(_blast_r.NextFloat() * 18.0f * power, 0);
         vel.RotateBy(_blast_r.NextFloat() * 360.0f);
 
         CParticle@ p = ParticleAnimated( CFileMatcher("GenericBlast5.png").getFirst(), 
@@ -224,14 +239,14 @@ void blast(Vec2f pos, int amount)
 }
 
 Random _smoke_r(0x10001);
-void smoke(Vec2f pos, int amount)
+void smoke(Vec2f pos, int amount, f32 power = 1.0f)
 {
 	if ( !getNet().isClient() )
 		return;
 
 	for (int i = 0; i < amount; i++)
     {
-        Vec2f vel(12.0f + _smoke_r.NextFloat() * 12.0f, 0);
+        Vec2f vel(12.0f + _smoke_r.NextFloat() * 12.0f * power, 0);
         vel.RotateBy(_smoke_r.NextFloat() * 360.0f);
 
         CParticle@ p = ParticleAnimated( CFileMatcher("GenericSmoke2.png").getFirst(), 

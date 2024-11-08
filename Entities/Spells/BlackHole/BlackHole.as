@@ -4,9 +4,10 @@
 
 const f32 PULL_RADIUS = 192.0f;
 const f32 MAX_FORCE = 100.0f;
-const int LIFETIME = 14;
+const int LIFETIME = 16;
 
 const int PARTICLE_TICKS = 6;
+const f32 max_mod = 2.0f;
 
 void onInit(CBlob@ this)
 {
@@ -22,6 +23,9 @@ void onInit(CBlob@ this)
 	}
 
 	this.Tag("no trampoline collision");
+	this.set_f32("mod", 1.0f);
+	this.set_f32("old_mod", 1.0f);
+	this.set_f32("base_mass", 500.0f);
 }
 
 void onInit(CSprite@ this)
@@ -40,6 +44,11 @@ void onTick(CSprite@ this)
 void onTick(CBlob@ this)
 {
 	Vec2f thisPos = this.getPosition();
+	if (isServer() && this.hasTag("extra_damage") && this.getTickSinceCreated() < 1)
+	{
+		this.Sync("extra_damage", true);
+		this.set_f32("base_mass", this.getMass());
+	}
 
 	CMap@ map = getMap();
 	if (map is null)
@@ -50,17 +59,41 @@ void onTick(CBlob@ this)
 		this.getSprite().PlaySound("BlackHoleMake.ogg", 1.0f, 1.0f);	
 	}
 
+	f32 mod = this.get_f32("mod");
+	if (this.exists("mod")) mod = this.get_f32("mod");
+
+	f32 old_mod = this.get_f32("old_mod");
+	this.SetMass(this.get_f32("base_mass"));
+	if (isClient()) this.getSprite().ScaleBy(Vec2f(1.0f / old_mod, 1.0f / old_mod));
+
+	if (this.hasTag("extra_damage"))
+	{
+		mod = mod + (this.getTickSinceCreated() * 0.0025f);
+		this.SetMass(this.getMass() * mod);
+	}
+	
+	this.set_f32("old_mod", mod);
+
+	if (this.get_u32("blackhole_force") + 5 > getGameTime())
+		this.getShape().setDrag(0.33f);
+	else
+		this.getShape().setDrag(1.0f);
+
+	if (isClient()) this.getSprite().ScaleBy(Vec2f(mod, mod));
+	
+	f32 rad = mod * PULL_RADIUS;
 	CBlob@[] attracted;
-	map.getBlobsInRadius( thisPos, PULL_RADIUS, @attracted );
+	map.getBlobsInRadius( thisPos, rad, @attracted );
+	
 	for (uint i = 0; i < attracted.size(); i++)
 	{
 		CBlob@ attractedblob = attracted[i];
-		if (attractedblob is null)
-		continue;
+		if (attractedblob is null || attractedblob is this)
+			continue;
 
 		Vec2f blobPos = attractedblob.getPosition();
 		if ( map.rayCastSolidNoBlobs(thisPos, blobPos) )
-		continue;
+			continue;
 		
 		if ( ((attractedblob.getTeamNum() != this.getTeamNum() || attractedblob.hasTag("magic_circle")) && !attractedblob.hasTag("dead"))
 		|| (attractedblob.hasTag("black hole")) )
@@ -69,11 +102,19 @@ void onTick(CBlob@ this)
 			Vec2f pullNorm = pullVec;
 			pullNorm.Normalize();
 			
-			Vec2f forceVec = pullNorm*MAX_FORCE;
-			Vec2f finalForce = forceVec*(1.0f-pullVec.Length()/PULL_RADIUS);
+			Vec2f forceVec = pullNorm*MAX_FORCE*mod;
+			Vec2f finalForce = forceVec*(1.0f-pullVec.Length()/rad);
 
 			if (!attractedblob.hasTag("cantmove"))
 				attractedblob.AddForce(finalForce);
+
+			if (attractedblob.getName() == "black_hole")
+			{
+				if (attractedblob.getDistanceTo(this) > 24.0f)
+					attractedblob.set_u32("blackhole_force", getGameTime());
+				else onCollision(this, attractedblob, false);
+				attractedblob.server_SetTimeToDie(Maths::Max(1.0f, attractedblob.getTimeToDie()));
+			}
 			
 			ManaInfo@ manaInfo;
 			if (attractedblob.get("manaInfo", @manaInfo) && (getGameTime() % 24 == 0))
@@ -123,7 +164,19 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 		this.server_Die();
 		blob.server_Die();
 
-		server_CreateBlob( "black_hole_big", -1, thisPos ); // moved down here so we dont accidently make a blob before killing the last 2
+		CBlob@ b = server_CreateBlob( "black_hole_big", -1, thisPos ); // moved down here so we dont accidently make a blob before killing the last 2
+		if (b !is null)
+		{
+			b.SetMass(this.getMass() + blob.getMass());
+			b.set_f32("mod", this.get_f32("old_mod") + blob.get_f32("old_mod"));
+			b.Sync("mod", true);
+
+			if (this.hasTag("extra_damage") || blob.hasTag("extra_damage"))
+			{
+				b.Tag("extra_damage");
+				b.Sync("extra_damage", true);
+			}
+		}
 	}
 }
 

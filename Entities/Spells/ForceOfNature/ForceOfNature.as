@@ -15,12 +15,10 @@ void onInit(CBlob@ this)
 	this.Tag("die_in_divine_shield");
 	
 	CSprite@ thisSprite = this.getSprite();
-	thisSprite.SetZ(500.0f);
+	thisSprite.SetZ(900.0f);
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
-	
-	this.getShape().getConsts().bullet = true;
 }
 
 void onTick(CBlob@ this)
@@ -63,7 +61,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 void onDie(CBlob@ this)
 {
-	sparks(this.getPosition(), 30,this);
+	sparks(this.getPosition(),30,this);
 }
 
 Random _sprk_r(1265);

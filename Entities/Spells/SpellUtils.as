@@ -232,7 +232,13 @@ void Heal( CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool sou
 
 	if (this.getDamageOwnerPlayer() is getLocalPlayer() && blob !is getLocalPlayerBlob())
 	{
-		add_message(HealDealtMessage(healAmount));
+		CRules@ rules = getRules();
+		if (rules !is null && rules.get_bool("hovermessages_enabled"))
+			add_message(HealDealtMessage(healAmount));
+
+		// crashes the game!
+		//if (getRules().get_bool("hovermessages_enabled"))
+		//	add_message(HealDealtMessage(healAmount));
 	}
 	
 	if (isClient())

@@ -176,7 +176,7 @@ void onTick( CBlob@ this)
 					{
 						continue;
 					}
-					else if ( damageDealt == false )
+					else if ( !damageDealt )
 					{
                         f32 extraDamage = 1.0f;
                         if(this.hasTag("extra_damage"))
@@ -185,22 +185,12 @@ void onTick( CBlob@ this)
 						f32 heal = 0.075f+(XORRandom(50)*0.001f);
 						if (getGameTime()%5==0 && target.getTeamNum() != this.getTeamNum())
 						{
-							if (isServer()) this.server_Hit(target, hi.hitpos, Vec2f(0,1), DAMAGE * extraDamage, Hitters::explosion, true);
-							if (this.get_bool("force"))
-							{
-								Vec2f dir = target.getPosition()-this.getPosition();
-								Vec2f pushNorm = dir;
-								pushNorm.Normalize();
-
-								Vec2f forceVec = pushNorm*32.0f;
-								Vec2f finalForce = forceVec*(1.0f+RANGE/(dir.Length()+16.0f));
-								target.AddForce(finalForce);
-							}
+							if (isServer())
+								this.server_Hit(target, hi.hitpos, this.hasTag("pull") ? -attackVector : attackVector, DAMAGE * extraDamage, Hitters::flying, true);
 						}
 						else if (getGameTime()%10==0 && target.getTeamNum() == this.getTeamNum() && target.getHealth()+heal < target.getInitialHealth())
 						{
 							Heal(this, target, heal);
-							if (target.getSprite() !is null) target.getSprite().PlaySound("Heal.Ogg", 0.5f, 1.25f);
 						}
 					}
 				}
@@ -252,7 +242,7 @@ void onTick( CBlob@ this)
 			beamSparks(destination - aimNorm*4.0f, 20);
 
 	}
-	else this.Sync("force", true);
+	else this.Sync("pull", true);
 }
 
 Random@ _sprk_r = Random(23453);

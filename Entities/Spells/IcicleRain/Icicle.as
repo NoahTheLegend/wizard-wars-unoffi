@@ -13,17 +13,26 @@ void onInit(CBlob@ this)
 	this.getSprite().PlaySound("WizardShoot.ogg", 0.76f, 1.7f+XORRandom(16)*0.01f);
 
 	CSprite@ sprite = this.getSprite();
-	sprite.SetZ(6.0f);
+	sprite.SetZ(550.0f);
 
 	this.getShape().SetGravityScale(0.0f);
 	this.setAngleDegrees(-Vec2f(0,-8).Angle()-90);
+	this.getShape().getConsts().mapCollisions = false;
 }
+
+const f32 ticks_noclip = 30;
 
 void onTick(CBlob@ this)
 {
 	CSprite@ sprite = this.getSprite();
 	CShape@ shape = this.getShape();
 
+	bool has_solid = this.getShape().isOverlappingTileSolid(true);
+	if (!this.hasTag("solid") && getMap() !is null && !has_solid)
+	{
+		this.getShape().getConsts().mapCollisions = true;
+		this.Tag("solid");
+	}
 
 	if (!this.exists("moveTo") || !this.exists("aimPos"))
 	{
@@ -45,9 +54,6 @@ void onTick(CBlob@ this)
 		this.set_u32("launch_delay", getGameTime()+this.get_u8("wait_time"));
 
 		if (this.getTickSinceCreated() > 1) this.setAngleDegrees(Maths::Clamp(0, 360, -this.getVelocity().Angle()-90));
-
-		ShapeConsts@ consts = shape.getConsts();
-		consts.mapCollisions = true;
 	}
 	else if (!this.hasTag("arrived"))
 	{
@@ -67,8 +73,6 @@ void onTick(CBlob@ this)
 
 		if (this.getTickSinceCreated() > 1) this.setAngleDegrees(Maths::Clamp(0, 360, -this.getVelocity().Angle()-90));
 		
-		ShapeConsts@ consts = shape.getConsts();
-		consts.mapCollisions = false;
 	}
 	else
 	{

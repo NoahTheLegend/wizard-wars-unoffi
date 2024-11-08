@@ -104,7 +104,7 @@ void onTick(CRules@ this)
 	}
 	
 	PlayerPrefsInfo@ playerPrefsInfo;
-	if ( !localPlayer.get("playerPrefsInfo", @playerPrefsInfo) )
+	if (!localPlayer.get("playerPrefsInfo", @playerPrefsInfo))
 	{
 		u16 callerID = localPlayer.getNetworkID();
 
@@ -113,7 +113,7 @@ void onTick(CRules@ this)
 		
 		this.SendCommand(this.getCommandID("load playerPrefs"), params);
 	}
-	else if ( playerPrefsInfo.infoLoaded == false )
+	else if (!playerPrefsInfo.infoLoaded)
 	{
 		PlayerPrefsInfo@ playerPrefsInfo;
 		if (localPlayer.get("playerPrefsInfo", @playerPrefsInfo) && playerPrefsInfo !is null)
@@ -193,6 +193,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 			{
 				string class_config;
 				if (!params.saferead_string(class_config)) return;
+
 				playerPrefsInfo.classConfig = class_config;
 				player.Tag("synced_class");
 				

@@ -36,6 +36,8 @@ void onTick(CBlob@ this)
 		this.getSprite().PlaySound("flame_slash_sound", 0.85f, 0.85f);
 	}
 
+	if (this.isInWater()) this.server_Die();
+
 	this.setAngleDegrees(Maths::Clamp(0, 360, -this.getVelocity().Angle()));
 	//prevent leaving the map
 	

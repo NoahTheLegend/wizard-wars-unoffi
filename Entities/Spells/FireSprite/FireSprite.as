@@ -35,6 +35,7 @@ void onTick( CBlob@ this )
 		this.getSprite().PlaySound("SpriteFire1.ogg", 0.2f, 1.5f + XORRandom(10)/10.0f);
 		this.getSprite().SetZ(1000.0f);
 		this.Tag("fire bolt");
+		this.getSprite().setRenderStyle(RenderStyle::additive);
 		
 		//makes a stupid annoying sound
 		//ParticleZombieLightning( this.getPosition() );
@@ -100,6 +101,32 @@ void onTick( CBlob@ this )
 		else
 		{
 			this.getShape().setDrag(0.001f);
+		}
+	}
+
+	if (isClient() && this.getTickSinceCreated() >= 1)
+	{
+		SColor col = SColor(155+XORRandom(55), 125+XORRandom(55), 10+XORRandom(25), 0);
+		if (this.getTeamNum() == 0) col = SColor(155+XORRandom(55), 10+XORRandom(25), 0, 125+XORRandom(55));
+		
+		u8 t = this.getTeamNum();
+		for (u8 i = 0; i < 25; i++)
+		{
+			Vec2f dir = Vec2f(0, 4 * (i % 2 == 0 ? 1 : -1)).RotateBy(this.getAngleDegrees()).RotateBy((getGameTime()*10)%360);
+			Vec2f ppos = this.getOldPosition()+dir;
+			Vec2f pvel = dir + this.getVelocity();
+			
+			CParticle@ p = ParticlePixelUnlimited(ppos, pvel, col, true);
+    		if(p !is null)
+			{
+    			p.fastcollision = true;
+    			p.timeout = 8 + XORRandom(8);
+    			p.damping = 0.8f+XORRandom(101)*0.001f;
+				p.gravity = Vec2f(0,0);
+				p.collides = false;
+				p.Z = 510.0f;
+				p.setRenderStyle(RenderStyle::additive);
+			}
 		}
 	}
 }

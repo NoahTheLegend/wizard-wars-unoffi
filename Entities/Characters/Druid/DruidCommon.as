@@ -75,10 +75,10 @@ namespace DruidParams
 			SpellType::other, 20, 25, 0, 360.0f, true),
 
 		Spell("vinetrap", "Vine Embrace", 89, "Plants sharp vines that will stop enemies passing through it.",
-			SpellType::other, 35, 45, 7, 128.0f, false, true),
+			SpellType::other, 30, 45, 5, 128.0f, false, true),
 
-		Spell("", "", 0, "Empty spell.",
-			SpellType::other, 1, 1, 0, 0.0f),
+		Spell("balllightning", "Lightning Ball", 123, "Creates an electrified and moving ball of pure lightning.",
+			SpellType::other, 40, 50, 7, 128.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

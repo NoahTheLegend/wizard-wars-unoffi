@@ -52,6 +52,11 @@ void onTick(CBlob@ this)
 		CBlob@ orb = server_CreateBlob( "force_of_nature" );
 		if (orb !is null)
 		{
+			if (this.hasTag("extra_damage"))
+			{
+				orb.SetMass(orb.getMass() * 0.5f); // black hole goes brrrrrrr
+				orb.getShape().getConsts().mapCollisions = false;
+			}
 			orb.IgnoreCollisionWhileOverlapped( this );
 			orb.SetDamageOwnerPlayer( this.getPlayer() );
 			//orb.server_setTeamNum( this.getTeamNum() );
