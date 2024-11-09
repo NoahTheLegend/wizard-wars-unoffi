@@ -90,7 +90,7 @@ void onTick(CBlob@ this)
             {
                 switch(p.getTeamNum())
                 {
-                    case 0:
+                    case 3:
                     {
                         team0++;
                     }
@@ -101,11 +101,6 @@ void onTick(CBlob@ this)
                         team1++;
                     }
                     break;
-
-                    case 3:
-                    {
-                        manaRegenRate *= 3;
-                    }
 
                     default:
                     {
@@ -125,14 +120,14 @@ void onTick(CBlob@ this)
                 
                 if ( team0 < team1 && thisPlayerTeamNum == 3 )//if we are team 0 and there are more team members on the enemy team
                 {
-                    manaRegenRate *= (team1/team0);
+                    manaRegenRate *= 2;
                 }
                 else if ( team1 < team0 && thisPlayerTeamNum == 1 )//if we are team 1 and there are more team members on the enemy team
                 {
-                    manaRegenRate *= (team0/team1);
+                    manaRegenRate *= 2;
                 }
             }
-        }
+        }  
         
         this.set_s32("mana regen rate", manaRegenRate);//Set the mana regen rate
         this.set_s32("OG_manaRegen", manaRegenRate); //Reminder for the original value
