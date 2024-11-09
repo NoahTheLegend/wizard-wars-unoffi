@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
             if (p is null) continue;
 
             int pn = p.getTeamNum();
-            if (pn == 0) {team0++; team0kdr += getKDR(p);}
+            if (pn == 3) {team0++; team0kdr += getKDR(p);}
             else if (pn == 1) {team1++; team1kdr += getKDR(p);}
             else teamUnspecified++;
         }

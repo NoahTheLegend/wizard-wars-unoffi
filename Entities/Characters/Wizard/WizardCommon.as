@@ -79,7 +79,7 @@ namespace WizardParams
 			SpellType::other, 20, 30, 1, 164.0f),
 
 		Spell("flamecircle", "Circle of Flames", 124, "A compact hell in circular area. Incinerates any enemies inside.",
-				SpellType::other, 55, 60, 20, 312.0f, true),	
+				SpellType::other, 50, 60, 15, 312.0f, true),	
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f)						

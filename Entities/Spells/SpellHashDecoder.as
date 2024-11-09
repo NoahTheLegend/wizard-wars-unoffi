@@ -337,17 +337,13 @@ s8 parryTargetIdentifier( CBlob@ b )
 
 		default: //any other blob
 		{
-			if(b.hasTag("counterable"))
-			{
-				return 0;
-			}
-			else if (b.hasTag("projectile"))
-			{
-				return 0;
-			}
-			else if (b.hasTag("controller"))
+			if (b.hasTag("controller"))
 			{
 				return 1;
+			}
+			else if(b.hasTag("counterable"))
+			{
+				return 0;
 			}
 			else
 			{

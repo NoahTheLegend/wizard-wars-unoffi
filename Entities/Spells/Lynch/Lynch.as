@@ -65,16 +65,23 @@ void onTick(CBlob@ this)
 		CBlob@ trapped = getBlobByNetworkID(this.get_u16("trapped_id"));
 		if (trapped !is null)
 		{
-            if (isServer() && trapped.getDistanceTo(this) > rad * 2)
+            if (trapped.getDistanceTo(this) > rad * 2)
             {
-                this.set_u16("trapped_id", 0);
-                this.set_u8("state", 0);
-                
-                SyncId(this, 0);
-                ClearSwords(this);
+                if (trapped.isMyPlayer())
+                {
+                    this.set_u16("trapped_id", 0);
+                    this.set_u8("state", 0);
 
-                this.server_Hit(trapped, trapped.getPosition(), Vec2f_zero, dmg, Hitters::fall, true);
-                return;
+                    SyncId(this, 0);
+                }
+
+                if (isServer())
+                {
+                    ClearSwords(this);
+
+                    this.server_Hit(trapped, trapped.getPosition(), Vec2f_zero, dmg, Hitters::fall, true);
+                    return;
+                }
             }
 
             Vec2f dir = this.getPosition() - trapped.getPosition();
