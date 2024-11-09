@@ -81,7 +81,7 @@ void onInit( CBlob@ this )
 void onSetPlayer( CBlob@ this, CPlayer@ player )
 {
 	if (player !is null){
-		player.SetScoreboardVars("ScoreboardIcons.png", 2, Vec2f(16,16));
+		player.SetScoreboardVars("ScoreboardIcons.png", 10, Vec2f(16,16));
 	}
 }
 
@@ -401,23 +401,7 @@ void onTick( CBlob@ this )
 			if(spellcount > 1)
 			{
 			
-				CPlayer@ ptarget = this.getPlayer();
 				
-				if(this.getTeamNum() == 0)
-				{
-					CBlob@ newBlob = server_CreateBlob("chickenblue", this.getTeamNum(), ptarget.getBlob().getPosition());
-					ptarget.getBlob().server_Die();
-
-					newBlob.server_SetPlayer(ptarget);
-				}
-				else
-				{
-					CBlob@ newBlob = server_CreateBlob("chickenred", this.getTeamNum(), ptarget.getBlob().getPosition());
-					ptarget.getBlob().server_Die();
-
-					newBlob.server_SetPlayer(ptarget);
-				}
-				print("hax");
 			
 			}
 			else if(spellcount != 0)

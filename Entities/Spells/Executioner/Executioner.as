@@ -19,6 +19,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("aimpos sync");
 	
     this.server_SetTimeToDie(25);
+	this.getSprite().PlaySound("execast.ogg");
 }
 
 void onTick(CBlob@ this)
@@ -67,7 +68,7 @@ void onTick(CBlob@ this)
 		CPlayer@ p = this.getDamageOwnerPlayer();
 		if( p !is null) {
 			CBlob@ caster = p.getBlob();
-			if( caster !is null) {
+			if(caster !is null && !this.hasTag("no_player_control")) {
 				if( p.isMyPlayer() )
 				{
 					Vec2f aimPos1 = caster.getAimPos() + Vec2f(0.0f,-2.0f);
@@ -80,8 +81,7 @@ void onTick(CBlob@ this)
 				angle = aimDir.Angle();
 				this.setAngleDegrees(-angle);
 
-				if (!this.hasTag("no_player_control")
-					&& caster.get_bool("shifting")
+				if (caster.get_bool("shifting")
 						&& this.getTickSinceCreated() > (lifetime + 30) )  //shift system for roboteching
 				{
 					aimDir.Normalize();
@@ -98,6 +98,8 @@ void onTick(CBlob@ this)
 
 void Pierce(CBlob@ this, CBlob@ blob = null)
 {
+	if (this.hasTag("no_map_collision")) return;
+
 	Vec2f end;
 	CMap@ map = this.getMap();
 	Vec2f position = blob is null ? this.getPosition() : blob.getPosition();

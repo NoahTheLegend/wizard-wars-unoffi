@@ -10,6 +10,7 @@ void onInit(CBlob@ this)
     this.set_u16("smashtoparticles_probability", 1);
     this.SetFacingLeft(false);
     this.getSprite().setRenderStyle(RenderStyle::additive);
+    this.addCommandID("spawn_gas");
 }
 
 void onTick(CBlob@ this)
@@ -43,28 +44,6 @@ void onTick(CBlob@ this)
                 p.timeout = 45+XORRandom(30);
 		    }
         }
-    }
-
-    if (isServer() && this.hasTag("spawn_gas"))
-    {
-        for (u8 i = 0; i < 1 + XORRandom(3); i++)
-        {
-            CBlob@ orb = server_CreateBlob("jestergas");
-		    if (orb !is null)
-		    {
-		    	orb.set_s8("hits", 1);
-                orb.set_f32("dmg", 0.2f);
-                orb.set_u8("ignore_time", 20+XORRandom(11));
-		    	orb.IgnoreCollisionWhileOverlapped(this);
-		    	orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
-		    	orb.server_setTeamNum(this.getTeamNum());
-		    	orb.setPosition(this.getPosition()-Vec2f(0,10));
-		    	orb.setVelocity(Vec2f(0, -1-XORRandom(11)*0.1f).RotateBy(-20+XORRandom(41)));
-		    	orb.server_SetTimeToDie(5+XORRandom(3));
-		    }
-        }
-
-        this.Untag("spawn_gas");
     }
 
     CMap@ map = getMap();
@@ -133,9 +112,10 @@ void onTick(CBlob@ this)
             if (b.getTeamNum() != this.getTeamNum())
             {
                 this.getSprite().PlayRandomSound("gasleak", 0.75f, 1.15f+XORRandom(26)*0.01f);
-                if (isServer())
+                if (isClient() && getLocalPlayerBlob().isMyPlayer())
                 {
-                    this.Tag("spawn_gas");
+                    CBitStream params;
+                    this.SendCommand(this.getCommandID("spawn_gas"), params);
                 }
             }
         }
@@ -177,4 +157,30 @@ void onDie(CBlob@ this)
 {
 	if (!isClient()) return;
 	ParticlesFromSprite(this.getSprite());
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+    if(this.getCommandID("spawn_gas") == cmd)
+    {    
+        if (isServer())
+        {
+            for (u8 i = 0; i < 1 + XORRandom(3); i++)
+            {
+                CBlob@ orb = server_CreateBlob("jestergas");
+	    	    if (orb !is null)
+	    	    {
+	    	    	orb.set_s8("hits", 1);
+                    orb.set_f32("dmg", 0.2f);
+                    orb.set_u8("ignore_time", 20+XORRandom(11));
+	    	    	orb.IgnoreCollisionWhileOverlapped(this);
+	    	    	orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+	    	    	orb.server_setTeamNum(this.getTeamNum());
+	    	    	orb.setPosition(this.getPosition()-Vec2f(0,10));
+	    	    	orb.setVelocity(Vec2f(0, -1-XORRandom(11)*0.1f).RotateBy(-20+XORRandom(41)));
+	    	    	orb.server_SetTimeToDie(5+XORRandom(3));
+	    	    }
+            }
+        }
+    }
 }

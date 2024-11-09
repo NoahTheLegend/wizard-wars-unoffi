@@ -74,6 +74,7 @@ shared class TDMSpawns : RespawnSystem
 			for (uint i = 0; i < team.spawns.length; i++)
 			{
 				TDMPlayerInfo@ info = cast < TDMPlayerInfo@ > (team.spawns[i]);
+				if (info.team == 0) info.team = 3;
 
 				UpdateSpawnTime(info, i);
 				DoSpawnPlayer(info);
@@ -255,10 +256,10 @@ shared class TDMSpawns : RespawnSystem
 		TDMPlayerInfo@ info = cast < TDMPlayerInfo@ > (core.getInfoFromPlayer(player));
 
 		if (info is null) { warn("TDM LOGIC: Couldn't get player info  ( in void AddPlayerToSpawn(CPlayer@ player) )"); return; }
-
-		if (info.team < TDM_core.teams.length)
+		
+		if (info.team < TDM_core.teams.length || info.team == 3)
 		{
-			TDMTeamInfo@ team = cast < TDMTeamInfo@ > (TDM_core.teams[info.team]);
+			TDMTeamInfo@ team = cast < TDMTeamInfo@ > (TDM_core.teams[info.team == 3 ? 0 : info.team]);
 
 			info.can_spawn_time = tickspawndelay;
 			team.spawns.push_back(info);
@@ -490,7 +491,7 @@ shared class TDMCore : RulesCore
 		teams.push_back(t);
 	}
 
-	void AddPlayer(CPlayer@ player, u8 team = 0, string default_config = "")
+	void AddPlayer(CPlayer@ player, u8 team = 3, string default_config = "")
 	{
 		TDMPlayerInfo p(player.getUsername(), player.getTeamNum(), player.isBot() && sv_test ? "knight" : "wizard");
 		players.push_back(p);
@@ -572,7 +573,7 @@ shared class TDMCore : RulesCore
 				warn("TDM: Blue spawn marker not found on map");
 				respawnPos = Vec2f(150.0f, map.getLandYAtX(150.0f / map.tilesize) * map.tilesize - 32.0f);
 				respawnPos.y -= 16.0f;
-				SetupBase(server_CreateBlob(base_name, 0, respawnPos));
+				SetupBase(server_CreateBlob(base_name, 3, respawnPos));
 			}
 			else
 			{
@@ -580,7 +581,7 @@ shared class TDMCore : RulesCore
 				{
 					respawnPos = respawnPositions[i];
 					respawnPos.y -= 16.0f;
-					SetupBase(server_CreateBlob(base_name, 0, respawnPos));
+					SetupBase(server_CreateBlob(base_name, 3, respawnPos));
 				}
 			}
 
@@ -660,9 +661,12 @@ shared class TDMCore : RulesCore
 			{
 				CPlayer@ p = getPlayer(i);
 				CBlob@ b = p.getBlob();
+				
 				s32 team = p.getTeamNum();
+				if (team == 3) team = 0;
+
 				if (b !is null && !b.hasTag("dead") && //blob alive
-				        team >= 0 && team < teams.length) //team sensible
+				        (team <= 6)) //team sensible
 				{
 					if (!teams_alive[team])
 					{
@@ -853,7 +857,7 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
         CPlayer@ p = getPlayer(i);
         if (p !is null)
         {
-            if (p.getTeamNum() == 0)
+            if (p.getTeamNum() == 3)
                 team0++;
             else if (p.getTeamNum() == 1)
                 team1++;
@@ -863,7 +867,7 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
     }
     bool lastteamplayer = false;
     
-    if(player.getTeamNum() == 0 || player.getTeamNum() == 1)//If the player that just left was not a spectator
+    if(player.getTeamNum() == 3 || player.getTeamNum() == 1)//If the player that just left was not a spectator
     {
         lastteamplayer = true;
     }

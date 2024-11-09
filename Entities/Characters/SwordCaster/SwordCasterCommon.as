@@ -27,16 +27,16 @@ namespace SwordCasterParams
 		//	SpellType::other, 3, 40, 0, 360.0f),
 		//					// 2 is the cost // 40 is the charge time //360.0f is the range //the 0 is the cooldown //6 is the icon it uses
 		Spell("impaler", "Impaler", 45, "Sharpen your enemies and use them as a weapon against themselves.",
-				SpellType::other, 6, 15, 0, 360.0f, true),
+				SpellType::other, 7, 15, 0, 360.0f, true),
 				
 		Spell("teleport", "Teleport", 40, "Point to any visible position and teleport there.",
 				SpellType::other, 20, 6, 0, 250.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-				SpellType::other, 30, 10, 0, 64.0f, true),
+				SpellType::other, 25, 10, 0, 64.0f, true),
 			
 		Spell("executioner", "Executioner", 43, "The Executioner was a sword used, as the name implies, in execution by decapitation. Today, it serves another purpose. Press SHIFT to launch them in the direction of your mouse.",
-				SpellType::other, 30, 45, 3, 360.0f, true),
+				SpellType::other, 35, 45, 3, 360.0f, true),
 			
 		Spell("crusader", "Crusader", 42, "This spell materializes three big swords to block the enemy advancement.",
 				SpellType::other, 25, 40, 0, 360.0f, true, true),
@@ -63,7 +63,7 @@ namespace SwordCasterParams
 				SpellType::other, 30, 30, 3, 384.0f),
 			 
 		Spell("lynch", "Lynch", 125, "Pulls the enemy inside and casts a several execution swords with a delay. Teleporting outside will harm the trapped.",
-				SpellType::other, 1, 15, 0, 128.0f, true),
+				SpellType::other, 35, 45, 12, 156.0f, true),
 			
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

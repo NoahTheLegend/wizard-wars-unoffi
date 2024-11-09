@@ -106,8 +106,8 @@ void onTick( CBlob@ this )
 
 	if (isClient() && this.getTickSinceCreated() >= 1)
 	{
-		SColor col = SColor(155+XORRandom(55), 125+XORRandom(55), 10+XORRandom(25), 0);
-		if (this.getTeamNum() == 0) col = SColor(155+XORRandom(55), 10+XORRandom(25), 0, 125+XORRandom(55));
+		SColor col = SColor(255, 125+XORRandom(55), 10+XORRandom(25), 0);
+		if (this.getTeamNum() == 3) col = SColor(155+XORRandom(55), 125+XORRandom(55), 0, 125+XORRandom(55));
 		
 		u8 t = this.getTeamNum();
 		for (u8 i = 0; i < 25; i++)

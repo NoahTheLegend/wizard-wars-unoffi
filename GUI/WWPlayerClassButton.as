@@ -366,7 +366,7 @@ void intitializeClasses()
 													"     There is no better feeling than giving the enemy a taste of their own medicine. Good enemy rusher with impactful damage. Complexity: HARD" +
 													"\n     Health: 75" +
 													"\n     Mana: 200" +
-													"\n     Mana is obtained by absorbing enemy spells.",
+													"\n     Mana Regen: 2 mana/sec",
 													"entropist", 5, 0, 6, 0, "WizardWars");
 
 	playerClassButtons.registerWWPlayerClassButton("Priest", 

@@ -143,7 +143,7 @@ void onTick(CBlob@ this)
 			muzzle.RotateBy(getGameTime()%360 * (1.0f + f32(hold_time)/max_hold_time * 10), Vec2f_zero);
 
 			Vec2f pistol_offset = pos - ownerpos;
-			sparks(pos + Vec2f(16,fl?3:-3).RotateBy(aimangle), 1, this, this.getTeamNum() == 0, 1.0f + hold_time*0.025f);
+			sparks(pos + Vec2f(16,fl?3:-3).RotateBy(aimangle), 1, this, this.getTeamNum() == 3, 1.0f + hold_time*0.025f);
 		}
 	}
 

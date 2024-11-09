@@ -40,7 +40,7 @@ void onTick(CBlob@ this)
             orb.SetDamageOwnerPlayer(this.getPlayer());
             orb.server_SetTimeToDie(5.0f);
 
-            orb.set_f32("speed", this.hasTag("extra_damage") ? 11.0f : 9.0f);
+            orb.set_f32("speed", this.hasTag("extra_damage") ? 10.0f : 8.0f);
             orb.set_f32("damage", this.get_f32("bloodarrow_damage"));
 
             orb.Sync("target_pos", true);

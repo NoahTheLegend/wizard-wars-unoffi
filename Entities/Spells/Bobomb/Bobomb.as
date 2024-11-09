@@ -6,6 +6,7 @@ void onInit(CBlob@ this)
 	this.Tag("exploding"); 
 	this.set_f32("damage", 0.0f);
 	this.Tag("bomb");
+	this.Tag("cantparry");
 
 	this.set_f32("explosive_radius", 0.0f);
 	this.set_f32("explosive_damage", 0.0f);

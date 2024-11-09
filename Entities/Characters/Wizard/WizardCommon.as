@@ -42,7 +42,7 @@ namespace WizardParams
 		Spell("firebomb", "Fireball", 11, "Throw a high velocity condensed ball of flames that explodes on contact with enemies, igniting them. Has a minimum engagement distance of about 4 blocks.",
 			SpellType::other, 40, 40, 0, 360.0f, true),
 			 
-		Spell("fire_sprite", "Fire Sprites", 12, "Create long-ranged explosive balls of energy which follow your aim for an extended period of time.",
+		Spell("fire_sprite", "Nebula Shard", 12, "Creates a nebula shard to follow your cursor.",
 			SpellType::other, 25, 35, 0, 360.0f, true),	
 			 
 		Spell("meteor_strike", "Meteor Strike", 9, "Bring flaming meteors crashing down wherever you desire.",

@@ -6,7 +6,7 @@ void onInit(CBlob@ this)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;
 	consts.bullet = false;
-
+	this.set_f32("lerpfactor", 0);
 	this.Tag("projectile");
     this.Tag("counterable");
 	shape.SetGravityScale( 0.0f );
@@ -73,6 +73,8 @@ void onTick(CBlob@ this)
 	    if (this.get_u32("lock_time") == 0)
 			this.set_u32("lock_time", getGameTime());
 
+		
+
 	    Vec2f vel = this.getVelocity();
 	    vel.Normalize();
 	    int vel_angle = -vel.Angle();
@@ -95,8 +97,15 @@ void onTick(CBlob@ this)
 			vel.x += 1.0f - XORRandom(3);
 			vel.y += 1.0f - XORRandom(3);
 		}
-
-	    this.setVelocity(vel.RotateBy(angle_shift) * speed_mod);
+		if (getGameTime() - this.get_u32("lock_time") < 15)
+		{
+			f32 lerpfactor = this.get_f32("lerpfactor");
+			lerpfactor = Maths::Min(lerpfactor, 1.0f);
+			this.setPosition(Vec2f_lerp(this.getPosition(), closest.getPosition(), lerpfactor));
+			lerpfactor += 0.005f;
+			this.set_f32("lerpfactor", lerpfactor);
+		}
+		else this.setVelocity(vel.RotateBy(angle_shift) * speed_mod);
 
 		if (isServer() && getGameTime() % this.get_f32("spawnrate") == 0)
 		{
@@ -116,6 +125,7 @@ void onTick(CBlob@ this)
 	{
 		this.set_bool("has_target", false);
 	    this.set_u32("lock_time", 0);
+		this.set_f32("lerpfactor", 0);
 	}
 	//this.setVelocity(Vec2f_zero);
 }

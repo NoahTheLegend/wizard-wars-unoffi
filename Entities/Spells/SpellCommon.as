@@ -1893,8 +1893,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 603057094://executioner
 		{
-			this.getSprite().PlaySound("execast.ogg");
-
 			if (!isServer()) return;
 
 			f32 orbspeed = necro_shoot_speed * 1.0f;
@@ -2136,6 +2134,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						float othVelAngle = othVel.getAngleDegrees();
 						float parryAngle = castDir.getAngleDegrees();
 						float redirectAngle = (othVelAngle-parryAngle) % 360;
+						if (other.exists("target_dir"))
+							other.set_Vec2f("target_dir", -other.get_Vec2f("target_dir"));
 						othVel.RotateBy(redirectAngle);
 						other.setVelocity(othVel);
 					}
@@ -2176,7 +2176,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					break;
 					case 2: //players
 					{
-						other.setVelocity( othVel + (castDir / (charge_state == super_cast ? 4 : 5))); //slight push using cast direction for convenience
+						other.setVelocity( othVel + (castDir / (charge_state == super_cast ? 3 : 4))); //slight push using cast direction for convenience
 					}
 					break;
 					case 3: //undead
@@ -2296,6 +2296,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1519706651: //lynch
 		{
+			this.getSprite().PlaySound("Homerun.ogg", 0.75f, 1.4f+XORRandom(11)*0.01f);
+			this.getSprite().PlaySound("circle_create.ogg", 1.0f, 0.85f+XORRandom(11)*0.01f);
 			if(isServer())
 			{
 				CBlob@ sentry = server_CreateBlob("lynch", this.getTeamNum(), aimpos);
@@ -2304,8 +2306,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					sentry.SetDamageOwnerPlayer(this.getPlayer());
 
-					u8 ttd = 15 * 30;
-					u8 launch_after_time = 105; // 3.5s
+					int ttd = 20 * 30;
+					u8 launch_after_time = 90;
 					f32 damage = 2.0f;
 
 					switch (charge_state)
@@ -2320,22 +2322,23 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						}
 						case 5:
 						{
-							damage += 1.0f;
 							launch_after_time -= 15;
-							ttd += 5 * 30;
+							ttd += 10 * 30;
 							break;
 						}
 					}
 
 					if (this.hasTag("extra_damage"))
 					{
-						ttd += 5 * 30;
-						launch_after_time -= 30;
+						ttd += 15 * 30;
+						damage += 1.0f;
+						launch_after_time -= 15;
 					}
-
+					
+					sentry.set_f32("damage", damage);
 					sentry.set_u8("launch_delay", launch_after_time);
 					sentry.set_s32("aliveTime", ttd);
-					sentry.server_SetTimeToDie(ttd);
+					sentry.server_SetTimeToDie(ttd / 30.0f);
 				}
 			}
 		}
@@ -5100,9 +5103,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 
 			f32 dmg = 0;
-			f32 power = 8.0f;
-			f32 angle = 60.0f;
-			f32 dist = 64.0f;
+			f32 power = 9.0f;
+			f32 angle = 90.0f;
+			f32 dist = 80.0f;
 
 			switch(charge_state)
 			{
@@ -5166,7 +5169,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			f32 ttd = 15.0f;
 			
-			f32 orbDamage = 2.5f;
+			f32 orbDamage = 3.0f;
 			bool overcharge = false;
 
 			if (this.hasTag("extra_damage"))
@@ -5185,7 +5188,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					ttd += 10.0f;
-					orbDamage /= 3;
+					orbDamage /= 5;
 					overcharge = true;
 				}
 				break;
@@ -5364,12 +5367,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				if(isServer())
 				{
-					f32 dmg = charge_state == 5 ? 5.0f : 4.0f;
+					f32 dmg = charge_state == 5 ? 6.5f : 5.0f;
 					if (this.hasTag("extra_damage")) dmg += 1.0f;
 
 					CBlob@ sentry = server_CreateBlob("bobomb",this.getTeamNum(),Vec2f(aimpos.x,height-12));
 					sentry.SetDamageOwnerPlayer(this.getPlayer());
-					sentry.set_s32("aliveTime",charge_state == 5 ? 600 : 300);
+					sentry.set_s32("aliveTime",charge_state == 5 ? 600 : 450);
 					
 					if (this.hasTag("extra_damage"))
 						sentry.add_s32("aliveTime", 300);

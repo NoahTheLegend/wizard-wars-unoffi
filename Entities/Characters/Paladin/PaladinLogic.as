@@ -408,23 +408,7 @@ void onTick( CBlob@ this )
 			if(spellcount > 1)
 			{
 			
-				CPlayer@ ptarget = this.getPlayer();
 				
-				if(this.getTeamNum() == 0)
-				{
-					CBlob@ newBlob = server_CreateBlob("chickenblue", this.getTeamNum(), ptarget.getBlob().getPosition());
-					ptarget.getBlob().server_Die();
-
-					newBlob.server_SetPlayer(ptarget);
-				}
-				else
-				{
-					CBlob@ newBlob = server_CreateBlob("chickenred", this.getTeamNum(), ptarget.getBlob().getPosition());
-					ptarget.getBlob().server_Die();
-
-					newBlob.server_SetPlayer(ptarget);
-				}
-				print("hax");
 			
 			}
 			else if(spellcount != 0)
@@ -532,24 +516,33 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			Vec2f thisPos = this.getPosition();
 			u8 teamNum = this.getTeamNum();
 			CMap@ map = getMap();
-			CBlob@[] enemiesInRadius;
-			map.getBlobsInRadius(thisPos, aura_omega_radius, @enemiesInRadius);
-			for (uint i = 0; i < enemiesInRadius.length; i++)
+			CBlob@[] playersInRadius;
+			uint16[] enemiesInRadius;
+			map.getBlobsInRadius(thisPos, aura_omega_radius, @playersInRadius);
+			for (uint i = 0; i < playersInRadius.length; i++)
 			{
-				CBlob@ b = enemiesInRadius[i];
-				if (b is null)
-				{ continue; }
+				CBlob@ b = playersInRadius[i];
+				if (b is null) continue; 
 
-				if (b.getTeamNum() == teamNum)
-				{ continue; }
+				if (b.getTeamNum() == teamNum) continue; 
 
-				if (!b.hasTag("hull") && !b.hasTag("flesh") && !b.hasTag("counterable"))
-				{ continue; }
+				if (!b.hasTag("hull") && !b.hasTag("flesh") && !b.hasTag("counterable")) continue; 
 
 				if (b.hasTag("dead")) continue;
 			
-				this.server_Hit(b, b.getPosition(), Vec2f_zero, damage * aura_omega_damage_mod, Hitters::burn, true);
+				enemiesInRadius.push_back(b.getNetworkID());
+				
 			}
+			if (!enemiesInRadius.isEmpty())
+			{
+				for (uint i = 0; i < enemiesInRadius.size(); i++)
+				{
+					CBlob@ b = getBlobByNetworkID(enemiesInRadius[i]);
+					this.server_Hit(b, b.getPosition(), Vec2f_zero, (damage * aura_omega_damage_mod / enemiesInRadius.size()), Hitters::burn, true);
+				}
+			}
+
+			damage *= aura_omega_damage_mod_self;
 		}
 		if (isClient())
 		{

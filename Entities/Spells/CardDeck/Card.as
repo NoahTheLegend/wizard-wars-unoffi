@@ -539,7 +539,7 @@ void borderParticles(CBlob@ this)
 		//Vec2f rnd_pos = up || down ? Vec2f(0, up ? -rnd : rnd) : Vec2f(right ? rnd : -rnd, 0);
 		Vec2f rnd_pos = !this.hasTag("hidden") && (right || left) ? Vec2f(right ? rnd : -rnd, 0) : Vec2f_zero;
 
-        CParticle@ p = ParticlePixelUnlimited(thisPos+(rnd_pos+pos).RotateBy(this.getAngleDegrees()), Vec2f_zero, this.getTeamNum() == 0 ? SColor(255,35,70,230) : SColor(255,185,10,15), true);
+        CParticle@ p = ParticlePixelUnlimited(thisPos+(rnd_pos+pos).RotateBy(this.getAngleDegrees()), Vec2f_zero, this.getTeamNum() == 3 ? SColor(255,230,70,230) : SColor(255,185,10,15), true);
         if (p is null) continue;
 
         p.collides = false;

@@ -78,7 +78,7 @@ namespace ShamanParams
 			SpellType::other, 60, 75, 8, 256.0f, true),
 		
 		Spell("balllightning", "Lightning Ball", 123, "Creates an electrified and moving ball of pure lightning.",
-			SpellType::other, 40, 50, 7, 128.0f, true),
+			SpellType::other, 50, 50, 7, 128.0f, true),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

@@ -17,7 +17,7 @@ void onTick(CMovement@ this)
 		if (blob.hasTag(burning_tag)) //double check
 		{
 			MovementVars@ vars = this.getVars();
-
+			/*
 			if (blob.isFacingLeft())
 			{
 				blob.setKeyPressed(key_left, true);
@@ -26,6 +26,7 @@ void onTick(CMovement@ this)
 			{
 				blob.setKeyPressed(key_right, true);
 			}
+			*/
 
 			if (XORRandom(100) == 0)
 			{

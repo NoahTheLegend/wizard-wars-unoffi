@@ -13,6 +13,13 @@ const string damageboost_layer2 = "damage boost 2";
 
 //sprite
 
+void onSetPlayer( CBlob@ this, CPlayer@ player )
+{
+	if (player !is null){
+		player.SetScoreboardVars("ScoreboardIcons.png", 5, Vec2f(16,16));
+	}
+}
+
 void onInit(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();

@@ -40,19 +40,25 @@ void onTick(CRules@ this)
 
 		players++;
 	}
+	
+	u8 spawnbuff = this.get_u8("spawnbuff");
+	u32 gameEndTime = this.get_u32("game_end_time");
+	if (spawnbuff != 0 && getGameTime() > gameEndTime - 2700 * spawnbuff)// 900 is 30 seconds
+    {
+        server_CreateBlob("damage_buff", 0, Vec2f(128 + XORRandom(getMap().getMapDimensions().x - 256), 0));//create damage buff at top of map 128 pixels away from the sides randomly
+        this.set_u8("spawnbuff", spawnbuff - 1);
+    }
+
 	if (players <= 2)
 	{
 		this.add_u32("game_end_time", 1);
 		return;
 	}
-	
-	u32 gameEndTime = this.get_u32("game_end_time");
 
 	if (gameEndTime == 0) return; //-------------------- early out if no time.
 
 	this.set_u32("end_in", (u32(gameEndTime) - u32(getGameTime())) / 30);
 	this.Sync("end_in", true);
-    u8 spawnbuff = this.get_u8("spawnbuff");
 
 	if (getGameTime() > gameEndTime)
 	{
@@ -87,11 +93,6 @@ void onTick(CRules@ this)
 		//GAME OVER
 		this.SetCurrentState(3);
 	}
-    else if(spawnbuff != 0 && getGameTime() > gameEndTime - 2700 * spawnbuff)// 900 is 30 seconds
-    {
-        server_CreateBlob("damage_buff", 0, Vec2f(128 + XORRandom(getMap().getMapDimensions().x - 256), 0));//create damage buff at top of map 128 pixels away from the sides randomly
-        this.set_u8("spawnbuff", spawnbuff - 1);
-    }
 }
 
 void onRender(CRules@ this)

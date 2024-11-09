@@ -8,16 +8,20 @@ void onDie(CBlob@ this) //so its synced
 
 //doing this shitcode bc i am tired of trying to connect it to palette swap, i will hang myself
 //if i get back to it again
-//doesnt support framing and particle props yet
 
-const int[] cols = {0xff2cafde,0xff1d85ab,0xff1a4e83,0xff222760,0xffd5543f,0xffb73333,0xff941b1b,0xff3b1406};
+const int[] cols = {0xff2cafde,0xff1d85ab,0xff1a4e83,0xff222760,0xffd5543f,0xffb73333,0xff941b1b,0xff3b1406,0xffd379e0,0xff9e3abb,0xff621a83,0xff2a0b47};
 
-SColor blueRedSwap(SColor oldcol, u8 t)
+SColor colorSwap(SColor oldcol, u8 t)
 {
-    int newcol = oldcol.color;
-    if (t > 1) return SColor(newcol);
+    SColor newcol = oldcol.color;
 
-    if (t == 1 && oldcol.getRed() < 125)
+    if (t == 3 && newcol.getRed() < 125)
+    {
+        int idx = cols.find(oldcol.color);
+        if (idx+4 < cols.size()-1) newcol = cols[idx+8];
+    }
+
+    if (t == 1 && newcol.getRed() < 125)
     {
         int idx = cols.find(oldcol.color);
         if (idx+4 < cols.size()-1) newcol = cols[idx+4];
@@ -43,21 +47,64 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
         int w = image.getWidth(); 
         int h = image.getHeight();
         
-        Vec2f center = Vec2f(-w/2, -h/2) + sprite.getOffset(); // shift it to upper left corner for 1/2 of sprite size
-        Vec2f grav = this.exists("smashtoparticles_grav") ? this.get_Vec2f("smashtoparticles_grav") : Vec2f_zero;
+        int frame = 0;
+        Vec2f framesize = Vec2f_zero;
+        if (sprite.animation !is null)
+        {
+            framesize.x = sprite.getFrameWidth();
+            framesize.y = sprite.getFrameHeight();
+            frame = sprite.animation.frame;
+
+            int max_frames_in_row = Maths::Floor(w / framesize.x);
+            image.setPixelPosition(Vec2f((frame * framesize.x % max_frames_in_row), Maths::Floor((frame * framesize.y) / max_frames_in_row)));
+        }
+        else framesize = Vec2f(w,h);
+        //printf("frsize: "+framesize+" fr: "+frame);
+
+        Vec2f center = Vec2f(-framesize.x/2, -framesize.y/2) + sprite.getOffset(); // shift it to upper left corner for 1/2 of sprite size
+        Vec2f grav = this.exists("smashtoparticles_grav") ? this.get_Vec2f("smashtoparticles_grav") : Vec2f(0, 0.33f);
         Vec2f grav_rnd = this.exists("smashtoparticles_grav_rnd") ? this.get_Vec2f("smashtoparticles_grav_rnd") : Vec2f_zero;
 
+        int temp_x = 0;
+        int temp_y = 0;
+
+        u32 max = 100000;
+        u32 temp_max = 0;
         while(image.nextPixel() && w != 0 && h != 0)
 		{
+            if (temp_max >= max)
+            {
+                warn("Smash particles limit was reached");
+                break;
+            }
+            temp_max++;
+
+            Vec2f px_pos = image.getPixelPosition();
+            temp_x++;
+
+            if (temp_x == framesize.x)
+            {
+                temp_x = 0;
+                temp_y++;
+                if (temp_y > framesize.y)
+                {
+                    break;
+                }
+                
+                int new_y = px_pos.y + 1;
+                image.setPixelPosition(Vec2f(px_pos.x - framesize.x, new_y));
+            }
+
 			SColor px_col = image.readPixel();
             if (XORRandom(probability) != 0) continue;
             if (px_col.getAlpha() != 255) continue;
-            px_col = blueRedSwap(px_col, this.getTeamNum());
+            px_col = colorSwap(px_col, this.getTeamNum());
 
-            Vec2f px_pos = image.getPixelPosition();
             if (fl) px_pos.x = w-px_pos.x;
 
-            Vec2f offset = center + px_pos;
+            Vec2f offset = center + Vec2f(px_pos.x % framesize.x, px_pos.y % framesize.y);
+            //printf(pos+"<pos center>"+center+" & "+offset+"<offset px_pos>"+px_pos+" pos+offset>"+(pos+offset));
+            
             offset.RotateBy(deg);
             MakeParticle(pos + offset, vel * (0.5f + XORRandom(51)*0.01f), px_col, layer, grav, grav_rnd);
         }
@@ -75,15 +122,15 @@ void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, Vec2f grav = Vec2
     {
         if (grav.x == 69) grav = Vec2f(0, 0.5f);
 
-        p.bounce = 0.15f + XORRandom(26)*0.01f;
+        p.bounce = 0.25f + XORRandom(26)*0.01f;
         p.fastcollision = true;
 
         f32 grx = 0; 
         f32 gry = 0; 
         if (grav_rnd.x != 69)
         {
-            grx = (XORRandom(Maths::Abs(grav_rnd.x) * 100) * 0.01f - grx * 2);
-            gry = (XORRandom(Maths::Abs(grav_rnd.y) * 100) * 0.01f - gry * 2);
+            grx = (XORRandom(Maths::Abs(grav_rnd.x) * 100) * 0.01f - grav_rnd.x / 2);
+            gry = (XORRandom(Maths::Abs(grav_rnd.y) * 100) * 0.01f - grav_rnd.y / 2);
         }
 
         p.gravity = grav + Vec2f(grx, gry);

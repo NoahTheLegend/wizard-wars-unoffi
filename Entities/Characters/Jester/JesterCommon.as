@@ -39,16 +39,16 @@ namespace JesterParams
 				SpellType::other, 5, 30, 0, 128.0f, false, true),
 
 		Spell("mitten", "Enchanted Mitten", 110, "A mitten alive, fingers strong and bold, casting bullet hell, its power untold.",
-				SpellType::other, 25, 20, 1, 256.0f, true),
+				SpellType::other, 20, 20, 1, 256.0f, true),
 
 		//Spell("pogostick", "Pogo Stick", 111, "A spring, a bounce, a leap so high, on pogo stick, touch the sky.",
 		//		SpellType::other, 20, 30, 6, 0.0f, true),
 
 		Spell("bobomb", "BOB-omb", 120, "Bob, the walking bomb, with a heart so warm, explodes with love.",
-				SpellType::other, 32, 45, 6, 128.0f, true, true),
+				SpellType::other, 35, 45, 8, 128.0f, true, true),
 
 		Spell("bouncybomb", "Gummy Bomb", 113, "This gum bomb bounces to and from, explodes on impact, a foe's woe.",
-				SpellType::other, 16, 22, 0, 32.0f),
+				SpellType::other, 15, 20, 0, 32.0f),
 
 		Spell("carddeck", "Jester Deck", 114, "Six cards of magic in the air, overcharge sends them spinning near.",
 				SpellType::other, 20, 30, 5, 180.0f, true),
@@ -57,7 +57,7 @@ namespace JesterParams
 				SpellType::other, 10, 25, 0, 64.0f, true), // jesterlogic.as
 
 		Spell("baseballbat", "Bat", 116, "Spinning bat of Jester's grace, erases foes without a trace.",
-				SpellType::other, 40, 50, 8, 256.0f, true),
+				SpellType::other, 40, 45, 8, 256.0f, true),
 		
 		Spell("tophat", "Obsessed Tophat", 117, "Obsessed tophat with mystic deals, dropping bombs and giving heals.",
 				SpellType::other, 65, 60, 20, 312.0f, true),
