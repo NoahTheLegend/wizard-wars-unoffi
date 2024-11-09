@@ -57,7 +57,7 @@ void onTick(CSprite@ this)
 	}
 }
 
-const f32 radius = 112.0f;
+const f32 radius = 128.0f;
 
 void onTick(CBlob@ this)
 {

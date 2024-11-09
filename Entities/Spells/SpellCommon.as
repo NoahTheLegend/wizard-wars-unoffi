@@ -81,9 +81,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				if(isServer())
 				{
-					CBlob@ mush = server_CreateBlob("mushroom",this.getTeamNum(),Vec2f(aimpos.x,height) );
-					mush.SetDamageOwnerPlayer(this.getPlayer());
-					mush.set_s32("aliveTime",charge_state == 5 ? 1200 : 900); //if full charge last longer
+					CBlob@ sentry = server_CreateBlob("mushroom",this.getTeamNum(),Vec2f(aimpos.x,height) );
+					sentry.SetDamageOwnerPlayer(this.getPlayer());
+					sentry.set_s32("aliveTime",charge_state == 5 ? 1200 : 900); //if full charge last longer
 				}
 			}
 			else
@@ -107,8 +107,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				if(isServer())
 				{
-					CBlob@ mush = server_CreateBlob("vinetrap",this.getTeamNum(),Vec2f(aimpos.x,height) );
-					mush.SetDamageOwnerPlayer(this.getPlayer());
+					CBlob@ sentry = server_CreateBlob("vinetrap",this.getTeamNum(),Vec2f(aimpos.x,height) );
+					sentry.SetDamageOwnerPlayer(this.getPlayer());
 					u8 ttd;
 
 					switch (charge_state)
@@ -117,30 +117,30 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case 2:
 						{
 							ttd = 10;
-							mush.set_s32("aliveTime", 180);
+							sentry.set_s32("aliveTime", 180);
 							break;
 						}
 						case 3:
 						{
 							ttd = 15;
-							mush.set_s32("aliveTime", 180);
+							sentry.set_s32("aliveTime", 180);
 							break;
 						}
 						case 4:
 						{
 							ttd = 20;
-							mush.set_s32("aliveTime", 240);
+							sentry.set_s32("aliveTime", 240);
 							break;
 						}
 						case 5:
 						{
-							mush.set_s32("aliveTime", 300);
+							sentry.set_s32("aliveTime", 300);
 							ttd = 30;
 							break;
 						}
 					}
 
-					mush.server_SetTimeToDie(ttd);
+					sentry.server_SetTimeToDie(ttd);
 				}
 			}
 			else
@@ -236,8 +236,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			f32 orbspeed = necro_shoot_speed * 0.175f;
-			f32 orbDamage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
+			f32 orbspeed = necro_shoot_speed * 0.2f;
+			f32 orbDamage = this.hasTag("extra_damage") ? 2.0f : 1.5f;
 			u8 cooldown = 45;
 			u8 max_lightnings_per_attack = this.hasTag("extra_damage") ? 2 : 1;
             
@@ -1895,9 +1895,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			this.getSprite().PlaySound("execast.ogg");
 
-			if (!isServer()){
-           		return;
-			}
+			if (!isServer()) return;
 
 			f32 orbspeed = necro_shoot_speed * 1.0f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
@@ -1908,7 +1906,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case minimum_cast:
 				case medium_cast:
 				case complete_cast:
-				break;
+					break;
 				
 				case super_cast:
 				{
@@ -1917,7 +1915,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 				break;
 				
-				default:return;
+				default: return;
 			}
 
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
@@ -1938,9 +1936,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.getShape().SetGravityScale(0);
-				orb.setVelocity( orbVel );
+				orb.setVelocity(orbVel);
 			}
-			
 		}
 		break;
 
@@ -2297,6 +2294,53 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case 1519706651: //lynch
+		{
+			if(isServer())
+			{
+				CBlob@ sentry = server_CreateBlob("lynch", this.getTeamNum(), aimpos);
+
+				if (sentry !is null)
+				{
+					sentry.SetDamageOwnerPlayer(this.getPlayer());
+
+					u8 ttd = 15 * 30;
+					u8 launch_after_time = 105; // 3.5s
+					f32 damage = 2.0f;
+
+					switch (charge_state)
+					{
+						case 1:
+						case 2:
+						case 3:
+						break;
+						case 4:
+						{
+							break;
+						}
+						case 5:
+						{
+							damage += 1.0f;
+							launch_after_time -= 15;
+							ttd += 5 * 30;
+							break;
+						}
+					}
+
+					if (this.hasTag("extra_damage"))
+					{
+						ttd += 5 * 30;
+						launch_after_time -= 30;
+					}
+
+					sentry.set_u8("launch_delay", launch_after_time);
+					sentry.set_s32("aliveTime", ttd);
+					sentry.server_SetTimeToDie(ttd);
+				}
+			}
+		}
+		break;
+
 		case -1418908460://bunker_buster
 		{
 			this.getSprite().PlaySound("bunkercast.ogg", 2.0f);
@@ -2561,9 +2605,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 				if(isServer() && can_place)
 				{
-					CBlob@ mush = server_CreateBlob("dmine",this.getTeamNum(),Vec2f(aimpos.x,height) );
-					mush.SetDamageOwnerPlayer(this.getPlayer());
-					mush.set_s32("aliveTime",charge_state == 5 ? 1350 : 900); //45s\30s
+					CBlob@ sentry = server_CreateBlob("dmine",this.getTeamNum(),Vec2f(aimpos.x,height) );
+					sentry.SetDamageOwnerPlayer(this.getPlayer());
+					sentry.set_s32("aliveTime",charge_state == 5 ? 1350 : 900); //45s\30s
 				}
 			}
 			else
@@ -4089,7 +4133,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 1631791652: //arcane_circle
+		case 1631791652: // flame circle
 			if(isServer())
 			{
 				bool failedCast = false;
@@ -4107,7 +4151,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 					return;
 				}
-			
+
 				CBlob@ circle = server_CreateBlob('flamecircle',this.getTeamNum(),aimpos);
 				circle.SetDamageOwnerPlayer(this.getPlayer());
 				circle.set_s32("aliveTime",charge_state == 5 ? 1200 : 900);
@@ -5323,15 +5367,17 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					f32 dmg = charge_state == 5 ? 5.0f : 4.0f;
 					if (this.hasTag("extra_damage")) dmg += 1.0f;
 
-					CBlob@ mush = server_CreateBlob("bobomb",this.getTeamNum(),Vec2f(aimpos.x,height-12));
-					mush.SetDamageOwnerPlayer(this.getPlayer());
-					mush.set_s32("aliveTime",charge_state == 5 ? 600 : 300);
+					CBlob@ sentry = server_CreateBlob("bobomb",this.getTeamNum(),Vec2f(aimpos.x,height-12));
+					sentry.SetDamageOwnerPlayer(this.getPlayer());
+					sentry.set_s32("aliveTime",charge_state == 5 ? 600 : 300);
+					
 					if (this.hasTag("extra_damage"))
-						mush.add_s32("aliveTime", 300);
-					mush.set_f32("damage", dmg);
-					mush.Sync("aliveTime", true);
-					mush.server_SetTimeToDie(mush.get_s32("aliveTime"));
-					mush.SetFacingLeft(this.isFacingLeft());
+						sentry.add_s32("aliveTime", 300);
+
+					sentry.set_f32("damage", dmg);
+					sentry.Sync("aliveTime", true);
+					sentry.server_SetTimeToDie(sentry.get_s32("aliveTime"));
+					sentry.SetFacingLeft(this.isFacingLeft());
 				}
 			}
 			else
