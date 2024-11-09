@@ -10,7 +10,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("shoot_sfx");
 	
 	this.getShape().SetGravityScale(0.0f);
-	this.server_SetTimeToDie(13);
+	this.server_SetTimeToDie(12);
 	this.SetLight(true);
 	this.SetLightRadius(24.0f);
 	this.SetLightColor(SColor(255, 155, 155, 255));
@@ -57,7 +57,7 @@ void onTick(CSprite@ this)
 	}
 }
 
-const f32 radius = 128.0f;
+const f32 radius = 112.0f;
 
 void onTick(CBlob@ this)
 {

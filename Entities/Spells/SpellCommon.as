@@ -237,8 +237,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 
 			f32 orbspeed = necro_shoot_speed * 0.2f;
-			f32 orbDamage = this.hasTag("extra_damage") ? 2.0f : 1.5f;
-			u8 cooldown = 45;
+			f32 orbDamage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
+			u8 cooldown = 60;
 			u8 max_lightnings_per_attack = this.hasTag("extra_damage") ? 2 : 1;
             
 			if (charge_state == super_cast) {
