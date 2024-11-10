@@ -75,6 +75,7 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
 	Button@ startCloseBtn;
     Button@ toggleSpellWheelBtn;
 	Button@ toggleHoverMessagesBtn;
+	Button@ oneDimensionalSpellbar;
 	Button@ achievementBtn;
 	Button@ classesBtn;
     Button@ togglemenuBtn;
@@ -107,6 +108,7 @@ bool isGUINull()
 		|| startCloseBtn is null
         || toggleSpellWheelBtn is null
 		|| toggleHoverMessagesBtn is null
+		|| oneDimensionalSpellbar is null
 		|| achievementBtn is null
 		|| optionsFrame is null
 		|| helpIcon is null
@@ -205,7 +207,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 		barNumBtn.toggled = !barNumBtn.toggled;
 		getRules().set_bool("spell_number_selection", barNumBtn.toggled);
 
-		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - Enabled" : "Spell Bar - Disabled";
+		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
 		barNumBtn.saveBool("Bar Numbers",barNumBtn.toggled,"WizardWars");
 	}
 	if (sender is startCloseBtn){
@@ -216,7 +218,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
     if (sender is toggleSpellWheelBtn)
     {
         toggleSpellWheelBtn.toggled = !toggleSpellWheelBtn.toggled;
-		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - Enabled" : "Spell Wheel - Disabled";
+		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - ON" : "Spell Wheel - OFF";
 		toggleSpellWheelBtn.saveBool("Spell Wheel Active", toggleSpellWheelBtn.toggled,"WizardWars");
         
         WheelMenu@ menu = get_wheel_menu("spells");
@@ -227,10 +229,18 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 	if (sender is toggleHoverMessagesBtn)
     {
         toggleHoverMessagesBtn.toggled = !toggleHoverMessagesBtn.toggled;
-		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - Enabled" : "Hover Messages - Disabled";
+		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
 		toggleHoverMessagesBtn.saveBool("Hover Messages Active", toggleHoverMessagesBtn.toggled,"WizardWars");
         
         getRules().set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
+    }
+	if (sender is oneDimensionalSpellbar)
+    {
+        oneDimensionalSpellbar.toggled = !oneDimensionalSpellbar.toggled;
+		oneDimensionalSpellbar.desc = (oneDimensionalSpellbar.toggled) ? "Spell bar in 1 row - ON" : "Spell bar in 1 row - OFF";
+		oneDimensionalSpellbar.saveBool("Spell bar in 1 row", oneDimensionalSpellbar.toggled, "WizardWars");
+        
+        getRules().set_bool("one_row_spellbar", oneDimensionalSpellbar.toggled);
     }
 
     //getRules().set_bool("no_hotkey_emotes", true); // toggleHotkeyEmotesBtn
@@ -238,7 +248,7 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
     if (sender is toggleHotkeyEmotesBtn)
     {
         toggleHotkeyEmotesBtn.toggled = !toggleHotkeyEmotesBtn.toggled;
-		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - Enabled" : "Emotes - Disabled";
+		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - ON" : "Emotes - OFF";
 		toggleHotkeyEmotesBtn.saveBool("Hotkey Emotes", toggleHotkeyEmotesBtn.toggled,"WizardWars");
         
         getRules().set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
@@ -319,6 +329,9 @@ void onTick( CRules@ this )
 
 		@toggleHoverMessagesBtn = @Button(Vec2f(10,240),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleHoverMessagesBtn.addClickListener(ButtonClickHandler);
+		
+		@oneDimensionalSpellbar = @Button(Vec2f(10,280),Vec2f(200,30),"",SColor(255,255,255,255));
+		oneDimensionalSpellbar.addClickListener(ButtonClickHandler);
 
         @toggleHotkeyEmotesBtn = @Button(Vec2f(10,50),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleHotkeyEmotesBtn.addClickListener(ButtonClickHandler);
@@ -361,6 +374,7 @@ void onTick( CRules@ this )
 		optionsFrame.addChild(barNumBtn);
         optionsFrame.addChild(toggleSpellWheelBtn);
 		optionsFrame.addChild(toggleHoverMessagesBtn);
+		optionsFrame.addChild(oneDimensionalSpellbar);
         optionsFrame.addChild(toggleHotkeyEmotesBtn);
 		helpWindow.addChild(spellHelpIcon);
 		helpWindow.addChild(spellAssignHelpIcon);
@@ -374,24 +388,28 @@ void onTick( CRules@ this )
 		startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
         
 		toggleSpellWheelBtn.toggled = toggleSpellWheelBtn.getBool("Spell Wheel Active","WizardWars");
-		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - Enabled" : "Spell Wheel - Disabled";
+		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - ON" : "Spell Wheel - OFF";
         WheelMenu@ menu = get_wheel_menu("spells");
         if (menu != null){
             this.set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
         }
 		
 		toggleHoverMessagesBtn.toggled = toggleHoverMessagesBtn.getBool("Hover Messages Active","WizardWars");
-		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - Enabled" : "Hover Messages - Disabled";
+		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
         this.set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
 
+		oneDimensionalSpellbar.toggled = oneDimensionalSpellbar.getBool("Spell bar in 1 row","WizardWars");
+		oneDimensionalSpellbar.desc = (oneDimensionalSpellbar.toggled) ? "Spell bar in 1 row - ON" : "Spell bar in 1 row - OFF";
+        this.set_bool("one_row_spellbar", oneDimensionalSpellbar.toggled);
+
         toggleHotkeyEmotesBtn.toggled = toggleHotkeyEmotesBtn.getBool("Hotkey Emotes","WizardWars");
-		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - Enabled" : "Emotes - Disabled";
+		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - ON" : "Emotes - OFF";
         this.set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
 
 		barNumBtn.toggled = barNumBtn.getBool("Bar Numbers","WizardWars");
 		this.set_bool("spell_number_selection", barNumBtn.toggled);
 		
-		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - Enabled" : "Spell Bar - Disabled";
+		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
 		optionsFrame.isEnabled = false;
 		changeText.isEnabled = false;
 		infoText.isEnabled = false;
