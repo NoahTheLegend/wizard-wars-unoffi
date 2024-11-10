@@ -118,7 +118,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 void onDie(CBlob@ this)
 {
 	sparks(this.getPosition(), 50);
-	this.getSprite().PlaySound("waterbolt_death.ogg", 0.75f, 1.5f + XORRandom(11)*0.01f);
+	this.getSprite().PlaySound("waterbolt_death.ogg", 0.4f, 1.5f + XORRandom(11)*0.01f);
 	Splash(this, 1, 1, 0, false);
 }
 
