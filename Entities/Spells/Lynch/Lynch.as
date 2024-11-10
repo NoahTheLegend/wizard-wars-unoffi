@@ -65,21 +65,18 @@ void onTick(CBlob@ this)
 		CBlob@ trapped = getBlobByNetworkID(this.get_u16("trapped_id"));
 		if (trapped !is null)
 		{
-            if (trapped.getDistanceTo(this) > rad * 2)
-            {
-                this.set_u16("trapped_id", 0);
-                this.set_u8("state", 0);
-
-                SyncId(this, 0);
-
-                if (isServer())
-                {
-                    ClearSwords(this);
-
-                    this.server_Hit(trapped, trapped.getPosition(), Vec2f_zero, dmg, Hitters::fall, true);
-                    return;
-                }
-            }
+            //if (trapped.getDistanceTo(this) > rad * 2)
+            //{
+            //    this.set_u16("trapped_id", 0);
+            //    this.set_u8("state", 0);
+            //    SyncId(this, 0);
+            //    if (isServer())
+            //    {
+            //        ClearSwords(this);
+            //        this.server_Hit(trapped, trapped.getPosition(), Vec2f_zero, dmg, Hitters::fall, true);
+            //        return;
+            //    }
+            //}
 
             Vec2f dir = this.getPosition() - trapped.getPosition();
             f32 dist = dir.Length();
@@ -295,7 +292,7 @@ void onTick(CSprite@ sprite)
 	}
     
     f32 amplitude = 0.05f;
-    f32 power = 5;
+    f32 power = 6.0f;
     f32 factor = Maths::Sin(getGameTime() * amplitude) * power;
     factor = Maths::Abs(factor);
 
