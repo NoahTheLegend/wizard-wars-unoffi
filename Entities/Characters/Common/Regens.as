@@ -33,8 +33,8 @@ void onInit(CBlob@ this)
             else teamUnspecified++;
         }
 
-        f32 avg_kdr_team0 = team0kdr / team0;
-        f32 avg_kdr_team1 = team1kdr / team1;
+        f32 avg_kdr_team0 = team0 > 0 ? team0kdr / team0 : 0;
+        f32 avg_kdr_team1 = team1 > 0 ? team1kdr / team1 : 0;
 
         if ((tn == 0 && team0 == 1 && team1 >= 2 && avg_kdr_team0 < avg_kdr_team1)
             || (tn == 1 && team1 == 1 && team0 >= 2 && avg_kdr_team1 < avg_kdr_team0))
