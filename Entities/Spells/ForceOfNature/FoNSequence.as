@@ -56,6 +56,7 @@ void onTick(CBlob@ this)
 			{
 				orb.SetMass(orb.getMass() * 0.5f); // black hole goes brrrrrrr
 				orb.getShape().getConsts().mapCollisions = false;
+				orb.Tag("extra_damage");
 			}
 			orb.IgnoreCollisionWhileOverlapped( this );
 			orb.SetDamageOwnerPlayer( this.getPlayer() );
@@ -133,10 +134,10 @@ void makeFoNParticle(CBlob@ this, Vec2f pos, Vec2f vel )
 	Vec2f dirVec = newPos - pos;
 	Vec2f dirNorm = dirVec;
 	dirNorm.Normalize();
-	Vec2f newVel = vel + dirNorm.RotateBy(60.0f)*12.0f;
+	Vec2f newVel = vel + dirNorm.RotateBy(60.0f)*16.0f;
 	
 	//CParticle@ p = ParticlePixelUnlimited( newPos, newVel, SColor( 255, 0, 0, 0), true );
-	CParticle@ p = ParticleAnimated( "GreenBlob.png", newPos, Vec2f(0,0), -newVel.getAngleDegrees(), 1.0f, 3+XORRandom(3), 0.0f, true );
+	CParticle@ p = ParticleAnimated( "GreenBlob.png", newPos, Vec2f(0,0), -newVel.getAngleDegrees()+XORRandom(360), 0.5f, 3, 0.0f, true );
 	if(p !is null)
 	{
 		p.Z = 500.0f;

@@ -2,9 +2,9 @@
 #include "SpellUtils.as";
 
 const f32 heal_radius = 128.0f;
-const f32 heal_amount = 0.5f; // 1.0f is 5 HP
+const f32 heal_amount = 0.3f; // 0.5f is 5 HP
 const f32 max_charges = 8;
-const u32 heal_rate = 50;
+const u32 heal_rate = 45;
 
 void onInit(CBlob@ this)
 {

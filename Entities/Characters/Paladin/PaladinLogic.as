@@ -509,7 +509,12 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (damage > 0.1f && this.get_bool("damagetomana")) // has effect
+	if (isServer() && this.get_bool("manatohealth"))
+	{
+		damage *= aura_omega_damage_mod_self;
+	}
+
+	if (damage >= 0.1f && this.get_bool("damagetomana")) // has effect
 	{
 		if (isServer())
 		{
@@ -527,15 +532,15 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 				if (b is null) continue; 
 
 				if (b.getTeamNum() == teamNum) continue; 
-				if (!b.hasTag("hull") && !b.hasTag("flesh") && !b.hasTag("counterable")) continue; 
-				if (b.hasTag("dead")) continue;
+				if (!b.hasTag("flesh") || b.hasTag("dead")) continue; 
 			
 				enemiesInRadius.push_back(b.getNetworkID());
-				
 			}
 			if (enemiesInRadius.size() > 0)
 			{
 				f32 split_dmg = (damage * aura_omega_damage_mod) / enemiesInRadius.size();
+				if (sv_test) printf(""+damage+" "+aura_omega_damage_mod+" "+enemiesInRadius.size()+" "+split_dmg);
+				
 				for (uint i = 0; i < enemiesInRadius.size(); i++)
 				{
 					CBlob@ b = getBlobByNetworkID(enemiesInRadius[i]);
@@ -545,8 +550,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 					}
 				}
 			}
-
-			damage *= aura_omega_damage_mod_self;
 		}
 		if (isClient())
 		{

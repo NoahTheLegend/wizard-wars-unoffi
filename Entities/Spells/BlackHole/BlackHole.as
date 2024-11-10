@@ -44,15 +44,22 @@ void onTick(CSprite@ this)
 void onTick(CBlob@ this)
 {
 	Vec2f thisPos = this.getPosition();
-	if (isServer() && this.hasTag("extra_damage") && this.getTickSinceCreated() < 1)
+	if (isServer())
 	{
-		this.Sync("extra_damage", true);
-		this.set_f32("base_mass", this.getMass());
+		this.Sync("mod", true);
+		this.Sync("old_mod", true);
+		this.Sync("base_mass", true);
+		
+		if (this.hasTag("extra_damage") && this.getTickSinceCreated() < 15)
+		{
+			this.Sync("extra_damage", true);
+			this.set_f32("base_mass", this.getMass());
+		}
 	}
 
 	CMap@ map = getMap();
 	if (map is null)
-	return;
+		return;
 	
 	if (this.getTickSinceCreated() < 1)
 	{		
@@ -92,7 +99,8 @@ void onTick(CBlob@ this)
 			continue;
 
 		Vec2f blobPos = attractedblob.getPosition();
-		if ( map.rayCastSolidNoBlobs(thisPos, blobPos) )
+		if (map.rayCastSolidNoBlobs(thisPos, blobPos)
+			&& !(attractedblob.getName() == "force_of_nature" && attractedblob.hasTag("extra_damage")))
 			continue;
 		
 		if ( ((attractedblob.getTeamNum() != this.getTeamNum() || attractedblob.hasTag("magic_circle")) && !attractedblob.hasTag("dead"))

@@ -24,7 +24,7 @@ namespace NecromancerParams
 	const ::Spell[] spells = 
 	{
 		Spell("bloodarrow_rain", "Tome of Blood", 122, "Embodies many drops of blood into sharp daggers to launch.",
-			SpellType::other, 5, 25, 0, 312.0f, true),
+			SpellType::other, 4, 25, 0, 256.0f, true),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 25, 8, 0, 270.0f, true),

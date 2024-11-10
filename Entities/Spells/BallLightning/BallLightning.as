@@ -108,7 +108,7 @@ void onTick(CBlob@ this)
 					orb.set_f32("damage", this.get_f32("damage"));
 
 					orb.set_u8("targets", 0);
-					orb.set_Vec2f("aim pos", t.getPosition());
+					orb.set_Vec2f("aim pos", t.getPosition() + t.getVelocity());
 
 					orb.Tag("secondary");
 

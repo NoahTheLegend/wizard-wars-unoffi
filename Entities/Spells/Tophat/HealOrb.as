@@ -106,7 +106,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         CBlob@ blob = getBlobByNetworkID(id);
         if (blob is null) return;
 
-        Heal(this, blob, 0.125f);
+        Heal(this, blob, 0.2f);
     }
 }
 
@@ -114,13 +114,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
     if (blob !is null && blob.getPlayer() !is null && blob.getNetworkID() == this.get_u16("follow_id"))
     {
-        CBitStream params;
-        params.write_u16(blob.getNetworkID());
-        this.SendCommand(this.getCommandID("heal_fx"), params);
-        
         if (isServer())
         {
-            Heal(this, blob, 0.125f);
+            CBitStream params;
+            params.write_u16(blob.getNetworkID());
+            this.SendCommand(this.getCommandID("heal_fx"), params);
+            
+            Heal(this, blob, 0.2f);
+
             this.Tag("dead");
             this.server_Die();
         }

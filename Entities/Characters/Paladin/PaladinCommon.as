@@ -2,7 +2,7 @@
 
 const f32 aura_omega_radius = 64.0f;
 const f32 aura_omega_damage_mod = 0.5f;
-const f32 aura_omega_damage_mod_self = 1.5f; // 150% intake damage
+const f32 aura_omega_damage_mod_self = 2.0f; // 150% intake damage
 f32 dmg_to_mana_ratio = 1.5f; // 1.0f is 200% of damage 
 f32 friendly_damage_factor = 0.5f;
 const f32 connection_dist = 356.0f;

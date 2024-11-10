@@ -16,15 +16,31 @@ void onInit(CBlob@ this)
 	
 	CSprite@ thisSprite = this.getSprite();
 	thisSprite.SetZ(900.0f);
+	thisSprite.SetLighting(true);
 	
 	//dont collide with edge of the map
-	this.SetMapEdgeFlags(CBlob::map_collide_none);
+	this.SetMapEdgeFlags(CBlob::map_collide_none | CBlob::map_collide_nodeath);
 }
 
 void onTick(CBlob@ this)
 {
 	if ( this.getTickSinceCreated() == 1 )
 		this.getSprite().PlaySound("forceofnature_cast.ogg", 2.0f);
+
+	CMap@ map = getMap();
+	if (this.hasTag("extra_damage") && map !is null)
+	{
+		Vec2f pos = this.getPosition();
+		Vec2f force = Vec2f_zero;
+		f32 mass = this.getMass();
+
+		if (pos.x < 8.0f) force.x += mass;
+		if (pos.x > map.tilemapwidth * 8 - 8.0f) force.x -= mass;
+		if (pos.y < 8.0f) force.y += mass;
+		if (pos.y > map.tilemapheight * 8 - 8.0f) force.y -= mass;
+
+		this.AddForce(force);
+	}
 
 	/*
 	CBlob@[] blobsInRadius;

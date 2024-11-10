@@ -28,7 +28,7 @@ void onInit( CBlob@ this )
     this.SetLight( true );
 	this.SetLightRadius( 32.0f );
 	this.getSprite().SetAnimation("default");
-	this.getSprite().ScaleBy(Vec2f(1.25f,1.25f));
+	this.getSprite().ScaleBy(Vec2f(0.75f, 0.75f));
 
 	this.getSprite().PlaySound("FireBlast4.ogg", 1.0f, 2.5f + (XORRandom(10)/10.0f));
 }	
@@ -89,7 +89,7 @@ void onTick( CBlob@ this )
 			if (this.getNetworkID() == orbs_id[i]) this.set_u16("orb_pos", i);
 		}
 
-		f32 dist = 999999.0f;
+		f32 dist = 99999.0f;
 		for (u8 i = 0; i < getPlayersCount(); i++)
 		{
 			if (getPlayer(i) !is null && getPlayer(i).getBlob() !is null)
@@ -144,7 +144,8 @@ void onTick( CBlob@ this )
 				break;
 			}
 		}
-		Vec2f move_to = tpos+Vec2f(offset.x,offset.y-Maths::Floor((8*orb_pos)/3)).RotateBy(Maths::Sin(getGameTime() / 15.0f) * 20.0f,Vec2f(0.0f, -offset.y+Maths::Floor((8*orb_pos)/3)));
+
+		Vec2f move_to = tpos+Vec2f(offset.x,offset.y-Maths::Floor((8*orb_pos)/3)).RotateBy(Maths::Sin(getGameTime() / 15.0f) * 15.0f, Vec2f(0.0f, -offset.y+Maths::Floor((8*orb_pos)/3)));
 
 		Vec2f vel = move_to-pos;
 		//this.setVelocity(vel*(0.05f));
@@ -251,6 +252,37 @@ void ExplodeWithFire(CBlob@ this)
 			}
 		}
 	}
+}
+
+void onDie(CBlob@ this)
+{
+	death(this.getPosition());
+}
+
+Random _death_r(0x10003);
+void death(Vec2f pos)
+{
+	if (!getNet().isClient())
+		return;
+
+    Vec2f vel = Vec2f_zero;
+
+    CParticle@ p = ParticleAnimated(CFileMatcher("Implosion1.png").getFirst(), 
+								pos, 
+								vel, 
+								0, 
+								0.5f, 
+								2, 
+								0.0f, 
+								false);
+								
+    if(p is null) return; //bail if we stop getting particles
+
+    p.fastcollision = true;
+    p.damping = 0.85f;
+	p.Z = 50.0f;
+	p.lighting = true;
+    p.setRenderStyle(RenderStyle::additive);
 }
 
 Random _blast_r(0x10002);

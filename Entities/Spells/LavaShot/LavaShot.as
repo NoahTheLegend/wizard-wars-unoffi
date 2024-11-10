@@ -55,7 +55,7 @@ void onTick(CBlob@ this)
 
 	if (isServer())
 	{
-		if (this.getTickSinceCreated() > 15 && getGameTime()%this.get_u8("lavadrop_time")==0)
+		if (getGameTime()%this.get_u8("lavadrop_time")==0)
 		{
 			CBlob@ b = server_CreateBlob("lavadrop", this.getTeamNum(), this.getPosition());
 			if (b !is null)

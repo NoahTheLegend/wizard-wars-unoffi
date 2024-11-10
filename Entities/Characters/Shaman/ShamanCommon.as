@@ -30,10 +30,10 @@ namespace ShamanParams
 			SpellType::other, 6, 20, 0, 256.0f, true),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 25, 6, 0, 270.0f, true), 
+			SpellType::other, 20, 6, 0, 270.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 25, 10, 0, 64.0f, true),
+			SpellType::other, 20, 10, 0, 64.0f, true),
 
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
 			SpellType::other, 10, 20, 0, 360.0f, true),
@@ -57,10 +57,10 @@ namespace ShamanParams
 			SpellType::other, 50, 75, 10, 224.0f, true, true),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freezes everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
-			SpellType::other, 20, 45, 15, 0.0f, true),
+			SpellType::other, 20, 45, 25, 0.0f, true),
 		
 		Spell("lavashot", "Lava Shot", 80, "Throws a ball of lava. Periodically drops a bit of lava while moving. Overcharge increases the rate of dropping lava and amount from impact.",
-			SpellType::other, 35, 50, 3, 256.0f, true),
+			SpellType::other, 40, 50, 3, 256.0f, true),
 		
 		Spell("spikeburst", "Spike Burst", 81, "Throws a bunch of spikes that die on touch.",
 			SpellType::other, 10, 30, 0, 16.0f),
@@ -75,10 +75,10 @@ namespace ShamanParams
 			SpellType::other, 25, 60, 6, 360.0f, true),
 
 		Spell("meteor_rain", "Volcano", 121, "Makes a nearby volcano rain with hot magma.",
-			SpellType::other, 60, 75, 8, 256.0f, true),
+			SpellType::other, 65, 75, 10, 256.0f, true),
 		
 		Spell("balllightning", "Lightning Ball", 123, "Creates an electrified and moving ball of pure lightning.",
-			SpellType::other, 50, 50, 7, 128.0f, true),
+			SpellType::other, 35, 40, 4, 128.0f, true),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),

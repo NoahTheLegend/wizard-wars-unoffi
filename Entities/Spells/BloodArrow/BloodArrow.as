@@ -18,7 +18,7 @@ void onInit(CBlob@ this)
 	
 	this.set_f32("lifetime",0);
     //dont collide with top of the map
-	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
+	this.SetMapEdgeFlags(CBlob::map_collide_none);
 
     this.server_SetTimeToDie(60);
 	this.set_f32("stoprange", stoprange_base + XORRandom(stoprange_random));

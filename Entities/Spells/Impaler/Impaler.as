@@ -18,7 +18,7 @@ void onInit(CBlob@ this)
 	shape.SetGravityScale( 0.0f );
 
     //dont collide with top of the map
-	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
+	this.SetMapEdgeFlags(CBlob::map_collide_none | CBlob::map_collide_nodeath);
 
     this.server_SetTimeToDie(5);
 }

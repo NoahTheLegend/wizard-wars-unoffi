@@ -247,11 +247,11 @@ void onTick( CBlob@ this)
 							CBlob@ ownerBlob = ownerPlayer.getBlob();
 							if ( ownerBlob !is null )
 							{
-								f32 amo = 1.0f;
+								f32 amo = 0.5f;
 								if (this.hasTag("extra_damage"))
-									amo = 2.0f;
+									amo = 1.0f;
 
-								Heal(this, ownerBlob, amo);
+								Heal(this, ownerBlob, amo, false, false, 0);
 							}
 						}
 						

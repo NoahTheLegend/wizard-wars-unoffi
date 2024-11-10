@@ -56,6 +56,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			CBlob@ mushroom1 = null;
 			CBlob@ mushroom2 = null;
+			CBlob@ mushroom3 = null;
 
 			for(int i = 0; i < mushrooms.length; i++)
 			{
@@ -67,8 +68,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					if (mushroom1 is null) @mushroom1 = @mushrooms[i];
 					else if (mushroom2 is null) @mushroom2 = @mushrooms[i];
+					else if (mushroom3 is null) @mushroom3 = @mushrooms[i];
 					
 					if (mushroom1 !is null && mushroom2 !is null)
+					{
+						mushroom1.server_Die();
+						break;
+					}
+					else if (mushroom2 !is null && mushroom3 !is null)
+					{
+						mushroom2.server_Die();
+						break;
+					}
+					if (mushroom1 !is null && mushroom3 !is null)
 					{
 						mushroom1.server_Die();
 						break;
@@ -165,7 +177,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			bool extraDamage = this.hasTag("extra_damage");
 
-			f32 orbspeed = 4.0f;
+			f32 orbspeed = 6.0f;
 			f32 orbDamage = 0.2f + (extraDamage ? 0.1f : 0);
 
 			Vec2f orbPos = thispos;
@@ -177,7 +189,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				case super_cast:
 				{
-					orbspeed = 3.0f;
+					orbspeed += 1.0f;
 					spawn_second = true;
 					ttd += 1.0f;
 				}
@@ -679,7 +691,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 979982427://heal
 		{
 			f32 orbspeed = 4.0f;
-			f32 healAmount = 0.4f;
+			f32 healAmount = this.hasTag("extra_damage") ? 0.6f : 0.4f;
 
 			switch(charge_state)
 			{
@@ -4029,17 +4041,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (orb !is null)
 			{
 				if (charge_state == complete_cast) {
-					orb.set_u8("lavadrop_time", 30);
+					orb.set_u8("lavadrop_time", 10);
 					orb.set_u8("lavadrop_amount", 8);
 					orbDamage *= 1.15f;
 					orbspeed *= 1.15f;
 				}
 				else if (charge_state == super_cast) {
-					orb.set_u8("lavadrop_time", 20);
+					orb.set_u8("lavadrop_time", 8);
 					orb.set_u8("lavadrop_amount", 10);
 					orbDamage *= 1.33f;
 					orbspeed *= 1.33f;
 				}
+
+				if (this.hasTag("extra_damage")) orb.sub_u8("lavadrop_time", 3);
 				orb.set_f32("damage", orbDamage);
 
 				orbVel.Normalize();

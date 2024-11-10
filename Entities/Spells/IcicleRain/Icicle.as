@@ -18,6 +18,9 @@ void onInit(CBlob@ this)
 	this.getShape().SetGravityScale(0.0f);
 	this.setAngleDegrees(-Vec2f(0,-8).Angle()-90);
 	this.getShape().getConsts().mapCollisions = false;
+	this.getSprite().setRenderStyle(RenderStyle::additive);
+
+	this.SetMapEdgeFlags(CBlob::map_collide_none);
 }
 
 const f32 ticks_noclip = 30;
@@ -57,22 +60,11 @@ void onTick(CBlob@ this)
 	}
 	else if (!this.hasTag("arrived"))
 	{
-		string particleName = "IcicleFire.png";
-		CParticle@ p2 = ParticleAnimated( particleName , targetPos, Vec2f_zero, getGameTime()%360*(0.3f+0.15f*Maths::Sin(getGameTime())), 0.5f, 6, 0.0f, false );
-		if ( p2 !is null)
-		{
-			p2.bounce = 0;
-    		p2.fastcollision = true;
-			p2.Z = -1.0f;
-			p2.frame = 3;
-			p2.scale = 1.3f;
-		}
 		sparks(this.getPosition()+Vec2f(0,-10).RotateBy(this.getAngleDegrees()), 5, Vec2f_zero, Vec2f(0,0.5f).RotateBy(this.getAngleDegrees()));
 
 		this.setVelocity(Vec2f(0,-4).RotateBy(-(this.getPosition()-this.get_Vec2f("moveTo")).Angle()-90));
 
 		if (this.getTickSinceCreated() > 1) this.setAngleDegrees(Maths::Clamp(0, 360, -this.getVelocity().Angle()-90));
-		
 	}
 	else
 	{
@@ -190,5 +182,6 @@ void sparks(Vec2f pos, int amount, Vec2f gravity, Vec2f vel)
         p.scale = 0.5f + _sprk_r.NextFloat();
         p.damping = 0.985f;
 		p.Z = -1.0f;
+		p.setRenderStyle(RenderStyle::additive);
     }
 }

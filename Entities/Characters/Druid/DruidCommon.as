@@ -33,7 +33,7 @@ namespace DruidParams
 			SpellType::other, 20, 6, 0, 270.0f, true), 
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 15, 10, 0, 64.0f, true),
+			SpellType::other, 20, 10, 0, 64.0f, true),
 			 
 		Spell("revive", "Revive", 15, "Fully bring trusty allies back from the dead by aiming a reviving missile at their gravestone.",
 			SpellType::other, 80, 60, 30, 360.0f, true),
@@ -48,13 +48,13 @@ namespace DruidParams
 			SpellType::other, 35, 30, 7, 128.0f, true),
 				
 		Spell("rock_wall", "Rock Wall", 36, "Create a wall of ordinary rock in front of you that blocks most things both ways. Its not exactly durable though.",
-			SpellType::other, 10, 15, 0, 30.0f),
+			SpellType::other, 15, 15, 0, 30.0f),
 				
 		Spell("healing_plant", "Nature's Remedy", 37, "This blessing from nature will seal your wounds. Despelling this may heal everyone inside, along with the enemy.",
 			SpellType::other, 35, 30, 5, 128.0f, true, true),
 
 		Spell("mushroom", "Dancing Shroom", 34, "A happy mushroom that will create it's own cloud of spores for you.",
-			SpellType::other, 15, 25, 0, 60.0f, true, true),
+			SpellType::other, 14, 20, 0, 96.0f, true, true),
 
 		Spell("boulder_throw", "Rock Throw", 35, "Throws a heavy rock that is highly affected by gravity.",
 			SpellType::other, 25, 35, 2, 16.0f, true),
@@ -66,7 +66,7 @@ namespace DruidParams
 			SpellType::other, 15, 20, 0, 360.0f, true),
 
 		Spell("stone_spikes", "Stone Spikes", 38, "Creates a line of dangerous sharp rocks.",
-			SpellType::other, 35, 30, 8, 180.0f, true, true),
+			SpellType::other, 30, 25, 8, 180.0f, true, true),
 
 		Spell("airblast_shield", "Airblast Shield", 56, "Cover your team or yourself in a volatile wind barrier that blasts away nearby enemies whenever you take damage.",
 			SpellType::other, 15, 20, 0, 360.0f, true),
@@ -78,7 +78,7 @@ namespace DruidParams
 			SpellType::other, 30, 45, 5, 128.0f, false, true),
 
 		Spell("balllightning", "Lightning Ball", 123, "Creates an electrified and moving ball of pure lightning.",
-			SpellType::other, 50, 50, 7, 128.0f, true),
+			SpellType::other, 35, 40, 4, 128.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),
