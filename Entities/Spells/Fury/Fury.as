@@ -20,7 +20,12 @@ void onInit(CBlob@ this)
 	this.set_bool("has_target", false);
 	this.set_u32("lock_time", 0);
 
-	this.getSprite().SetRelativeZ(1531.0f);
+	this.getSprite().SetRelativeZ(11.0f);
+	this.getSprite().setRenderStyle(RenderStyle::additive);
+
+	this.set_Vec2f("smashtoparticles_grav", Vec2f(0,0));
+    this.set_Vec2f("smashtoparticles_grav_rnd", Vec2f(0,0));
+	this.Tag("smashtoparticles_additive");
 }
 
 f32 cap_dist = 256.0f + 64.0f;
@@ -32,7 +37,7 @@ void onTick(CBlob@ this)
 {
 	if (this.hasTag("dead")) return;
 
-	this.SetFacingLeft(true);
+	this.SetFacingLeft(this.getVelocity().x < 0);
 	if (this.getTickSinceCreated()==0)
 	{
 		this.getSprite().PlaySound("flame_slash_sound.ogg", 1.75f, 1.45f + XORRandom(16)*0.01f);
@@ -176,17 +181,18 @@ void onTick(CSprite@ this) //rotating sprite
 
 	if (!has_target)
 	{
-		this.RotateBy(8+Maths::Sin(getGameTime()*0.33f)*5, Vec2f_zero);
+		this.animation.time = 3;
 
-		Particles(blob, 2, 1.0f);
+		//Particles(blob, 2, 1.0f);
 	}
 	else
 	{
+		this.animation.time = 2;
+
 		int diff = Maths::Clamp(Maths::Min(power*scale*mod, getGameTime()-lock_time), 0, 50);
 		f32 rot = power+diff/mod;
-		this.RotateBy(rot, Vec2f_zero);
 
-		Particles(blob, 6, rot/power);
+		//Particles(blob, 6, rot/power);
 	}
 }
 

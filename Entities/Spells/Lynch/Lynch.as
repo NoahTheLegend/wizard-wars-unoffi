@@ -11,8 +11,6 @@ void onInit(CBlob@ this)
 	this.addCommandID("sync_id");
     this.addCommandID("sfx");
 
-	this.Tag("counterable");
-
 	//default values
 	if (!this.exists("lifetime")) this.set_u16("lifetime", 90);
 	this.set_u16("trapped_id", 0);
@@ -51,6 +49,7 @@ const u8 anim_time = 3;
 
 void onTick(CBlob@ this)
 {
+    if (this.get_u8("despelled") >= 2) this.server_Die();
     if (this.getTickSinceCreated() < 16 * anim_time) return;
     
     f32 rad = this.getRadius() * 2 + 4.0f;
@@ -292,7 +291,7 @@ void onTick(CSprite@ sprite)
 	}
     
     f32 amplitude = 0.05f;
-    f32 power = 6.0f;
+    f32 power = 7.5f;
     f32 factor = Maths::Sin(getGameTime() * amplitude) * power;
     factor = Maths::Abs(factor);
 

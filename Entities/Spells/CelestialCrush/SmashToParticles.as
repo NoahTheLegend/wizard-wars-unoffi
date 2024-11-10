@@ -6,9 +6,6 @@ void onDie(CBlob@ this) //so its synced
     }
 }
 
-//doing this shitcode bc i am tired of trying to connect it to palette swap, i will hang myself
-//if i get back to it again
-
 const int[] cols = {0xff2cafde,0xff1d85ab,0xff1a4e83,0xff222760,0xffd5543f,0xffb73333,0xff941b1b,0xff3b1406,0xffd379e0,0xff9e3abb,0xff621a83,0xff2a0b47};
 
 SColor colorSwap(SColor oldcol, u8 t)
@@ -70,6 +67,9 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
 
         u32 max = 100000;
         u32 temp_max = 0;
+
+        bool additive = this.hasTag("smashtoparticles_additive");
+
         while(image.nextPixel() && w != 0 && h != 0)
 		{
             if (temp_max >= max)
@@ -106,7 +106,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
             //printf(pos+"<pos center>"+center+" & "+offset+"<offset px_pos>"+px_pos+" pos+offset>"+(pos+offset));
             
             offset.RotateBy(deg);
-            MakeParticle(pos + offset, vel * (0.5f + XORRandom(51)*0.01f), px_col, layer, grav, grav_rnd);
+            MakeParticle(pos + offset, vel * (0.5f + XORRandom(51)*0.01f), px_col, layer, additive, grav, grav_rnd);
         }
 
         return true;
@@ -115,7 +115,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
     return false;
 }
 
-void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, Vec2f grav = Vec2f(69,0), Vec2f grav_rnd = Vec2f(69,0))
+void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, bool additive = false, Vec2f grav = Vec2f(69,0), Vec2f grav_rnd = Vec2f(69,0))
 {
     CParticle@ p = ParticlePixelUnlimited(pos, vel, col, true);
     if(p !is null)
@@ -136,5 +136,6 @@ void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, Vec2f grav = Vec2
         p.gravity = grav + Vec2f(grx, gry);
         p.timeout = 15+XORRandom(30);
         p.Z = layer;
+        if (additive) p.setRenderStyle(RenderStyle::additive);
     }
 }

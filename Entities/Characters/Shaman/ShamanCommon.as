@@ -80,8 +80,8 @@ namespace ShamanParams
 		Spell("balllightning", "Lightning Ball", 123, "Creates an electrified and moving ball of pure lightning.",
 			SpellType::other, 35, 40, 4, 128.0f, true),
 		
-		Spell("", "", 0, "Empty spell.",
-			SpellType::other, 1, 1, 0, 0.0f),
+		Spell("waterbolt", "Water Bolt", 126, "A dense sphere of water. Speeds up and costs 1 mana less when spelled inside Water barrier.",
+			SpellType::other, 7, 35, 0, 256.0f),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)

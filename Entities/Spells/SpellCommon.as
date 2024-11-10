@@ -70,17 +70,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					else if (mushroom2 is null) @mushroom2 = @mushrooms[i];
 					else if (mushroom3 is null) @mushroom3 = @mushrooms[i];
 					
-					if (mushroom1 !is null && mushroom2 !is null)
-					{
-						mushroom1.server_Die();
-						break;
-					}
-					else if (mushroom2 !is null && mushroom3 !is null)
-					{
-						mushroom2.server_Die();
-						break;
-					}
-					if (mushroom1 !is null && mushroom3 !is null)
+					if (mushroom1 !is null && mushroom2 !is null && mushroom3 !is null)
 					{
 						mushroom1.server_Die();
 						break;
@@ -177,19 +167,18 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			bool extraDamage = this.hasTag("extra_damage");
 
-			f32 orbspeed = 6.0f;
+			f32 orbspeed = 5.0f;
 			f32 orbDamage = 0.2f + (extraDamage ? 0.1f : 0);
 
 			Vec2f orbPos = thispos;
 			Vec2f orbVel = (aimpos - this.getPosition());
 			bool spawn_second = false;
-			f32 ttd = extraDamage ? 6.0f : 4.0f;
+			f32 ttd = extraDamage ? 5.0f : 3.5f;
             
 			switch(charge_state)
 			{
 				case super_cast:
 				{
-					orbspeed += 1.0f;
 					spawn_second = true;
 					ttd += 1.0f;
 				}
@@ -3757,6 +3746,73 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 			break;
 		}
+
+		case 195194419: // waterbolt
+		{
+			if (!isServer()){
+           		return;
+			}
+
+			f32 orbspeed = 2.5f;
+			f32 dmg = this.hasTag("extra_damage") ? 1.6f : 1.2f;
+
+			if (this.get_bool("waterbarrier"))
+			{
+				orbspeed += 1.5f;
+
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += 1;
+			}
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				{
+					orbspeed *= 0.5f;
+					dmg -= 0.4f;
+				}
+				break;
+				case medium_cast:
+				{
+					orbspeed *= 0.75f;
+					dmg -= 0.2f;
+				}
+				break;
+
+				case complete_cast:
+				break;
+
+				case super_cast:
+				{
+					orbspeed *= 1.25f;
+					dmg += 0.25f;
+				}
+				break;
+				default:return;
+			}
+
+			Vec2f orbPos = thispos;
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob("waterbolt");
+			if (orb !is null)
+			{
+				orb.IgnoreCollisionWhileOverlapped(this);
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+				orb.set_f32("damage", dmg);
+				orb.server_setTeamNum(this.getTeamNum());
+				orb.setPosition(orbPos);
+				orb.setVelocity(orbVel);
+			}
+			break;
+		}
+
 		case 241951502: // massfreeze
 		{
 			f32 distance = 48.0f;
@@ -4975,7 +5031,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			f32 extraDamage = this.hasTag("extra_damage") ? 0.5f : 0.0f;
+			f32 extraDamage = this.hasTag("extra_damage") ? 1.0f : 0.0f;
 			f32 orbDamage = 1.5f + extraDamage;
 			f32 orbspeed = 6;
 			f32 explode_radius = 24.0f;
@@ -4998,6 +5054,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				break;
 				case super_cast:
 				{
+					orbDamage += 0.5f;
 					orbspeed *= 1.5f;
 					explode_radius += 8.0f;
 					ttd += 2.5f;

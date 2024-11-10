@@ -49,15 +49,6 @@ void onInit(CSprite@ this)
     this.getBlob().set_s32("frame",0);
 }
 
-void onTick(CSprite@ this)
-{
-    if(getGameTime() % 3 == 0)
-        this.getBlob().add_s32("frame",1);
-    this.SetFrame(this.getBlob().get_s32("frame")%5);
-    this.SetOffset(Vec2f(0,-6));
-    
-}
-
 bool canBePickedUp( CBlob@ this, CBlob@ byBlob ){
     return false;
 }
