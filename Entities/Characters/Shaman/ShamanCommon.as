@@ -81,7 +81,7 @@ namespace ShamanParams
 			SpellType::other, 35, 40, 4, 128.0f, true),
 		
 		Spell("waterbolt", "Water Bolt", 126, "A dense sphere of water. Speeds up and costs 1 mana less when spelled inside Water barrier.",
-			SpellType::other, 7, 35, 0, 256.0f),
+			SpellType::other, 6, 35, 0, 256.0f),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)
