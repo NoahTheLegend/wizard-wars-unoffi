@@ -30,13 +30,16 @@ void onTick(CBlob@ this)
             if (link !is null && this.getDistanceTo(link) < connection_dist
                 && link.getHealth()/link.getInitialHealth() > min_connection_health_ratio)
             {
-                Vec2f dir = link.getPosition() - this.getPosition();
-                Vec2f norm_dir = dir;
-                norm_dir.Normalize();
-                for (uint step = 0; step < dir.Length(); step += 16)
-		    	{
-		    		ConnectionSparks(this.getPosition() + norm_dir*step, 1, norm_dir*4.0f * (1.25f - step/dir.Length()));
-		    	}
+                if (!(link.exists("dmgconnection") && link.get_u16("dmgconnection") > 0)) // prevent infinite loop
+                {
+                    Vec2f dir = link.getPosition() - this.getPosition();
+                    Vec2f norm_dir = dir;
+                    norm_dir.Normalize();
+                    for (uint step = 0; step < dir.Length(); step += 16)
+		    	    {
+		    	    	ConnectionSparks(this.getPosition() + norm_dir*step, 1, norm_dir*4.0f * (1.25f - step/dir.Length()));
+		    	    }
+                }
             }
         }
     }
@@ -105,26 +108,25 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
         if (this.get_u16("dmgconnection") > 0 && this.get_u16("dmgconnection_id") != 0)
         {
-            if (isClient())
-            {
-
-            }
             if (isServer())
             {
                 CBlob@ link = getBlobByNetworkID(this.get_u16("dmgconnection_id"));
                 if (link !is null && this.getDistanceTo(link) < connection_dist
                     && link.getHealth()/link.getInitialHealth() > min_connection_health_ratio)
                 {
-                    f32 transfer_dmg = damage*connection_dmg_transfer;
-
-                    if (hitterBlob !is null)
+                    if (!(link.exists("dmgconnection") && link.get_u16("dmgconnection") > 0))
                     {
-                        hitterBlob.server_Hit(link, link.getPosition(), Vec2f_zero, transfer_dmg, Hitters::fall, true);
-                    }
-                    else
-                        this.server_Hit(link, link.getPosition(), Vec2f_zero, transfer_dmg, Hitters::fall, true);
+                        f32 transfer_dmg = damage*connection_dmg_transfer;
 
-                    damage *= connection_dmg_reduction;
+                        if (hitterBlob !is null)
+                        {
+                            hitterBlob.server_Hit(link, link.getPosition(), Vec2f_zero, transfer_dmg, Hitters::fall, true);
+                        }
+                        else
+                            this.server_Hit(link, link.getPosition(), Vec2f_zero, transfer_dmg, Hitters::fall, true);
+
+                        damage *= connection_dmg_reduction;
+                    }
                 }
             }
         }
