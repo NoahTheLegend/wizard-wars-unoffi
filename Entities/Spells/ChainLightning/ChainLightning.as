@@ -258,7 +258,7 @@ void onTick( CBlob@ this)
 						}
 
 						f32 dmg = this.get_f32("damage") * extraDamage;
-						if (target.get_bool("waterbarrier")) dmg *= 2.0f;
+						if (target.get_bool("waterbarrier")) dmg *= 1.5f;
 
 						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
 						// reduce length greatly when hit barrier
@@ -305,7 +305,7 @@ void onTick( CBlob@ this)
 									orb.set_f32("damage", this.get_f32("damage"));
 
 									if (this.get_u8("targets") > 0) orb.set_u8("targets", this.get_u8("targets")-1);
-									orb.set_Vec2f("aim pos", t.getPosition());
+									orb.set_Vec2f("aim pos", t.getPosition() + t.getVelocity());
 
 									orb.set_u16("follow_id", target.getNetworkID());
 									orb.Tag("secondary");

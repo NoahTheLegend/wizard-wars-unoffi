@@ -3753,12 +3753,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			f32 orbspeed = 2.5f;
+			f32 orbspeed = 3.5f;
 			f32 dmg = this.hasTag("extra_damage") ? 1.5f : 1.0f;
 
 			if (this.get_bool("waterbarrier"))
 			{
-				orbspeed += 1.5f;
+				orbspeed += 2.0f;
 
 				ManaInfo@ manaInfo;
 				if (!this.get( "manaInfo", @manaInfo )) {
