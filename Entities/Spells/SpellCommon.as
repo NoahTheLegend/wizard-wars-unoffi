@@ -3571,13 +3571,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							}
 							case 4:
 							{
-								tot.set_u16("charge_delay", 115);
+								tot.set_u16("charge_delay", 105);
 								tot.set_s32("aliveTime", 2400);//1m20s
 								break;
 							}
 							case 5:
 							{
-								tot.set_u16("charge_delay", 105);
+								tot.set_u16("charge_delay", 90);
 								tot.set_s32("aliveTime", 2700); //1m30s
 								break;
 							}
@@ -3585,7 +3585,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						if (this.hasTag("extra_damage"))
 						{
 							tot.set_s32("aliveTime", 2700); //1m30s
-							tot.set_u16("charge_delay", 90);
+							tot.sub_u16("charge_delay", 20);
 						}
 					}
 				}

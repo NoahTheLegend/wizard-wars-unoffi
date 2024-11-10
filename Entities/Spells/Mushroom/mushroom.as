@@ -19,7 +19,7 @@ void onTick(CBlob@ this)
     if(getGameTime() >= this.get_s32("nextSpore"))
     {
         createSporeshot(this);
-        this.set_s32("nextSpore",getGameTime() + 150/2);
+        this.set_s32("nextSpore",getGameTime() + 150);
     }
 
 }

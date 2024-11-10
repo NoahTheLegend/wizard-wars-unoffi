@@ -26,6 +26,14 @@ void onReset( CRules@ this)
 
 void onTick(CRules@ this)
 {
+	u8 spawnbuff = this.get_u8("spawnbuff");
+	u32 gameEndTime = this.get_u32("game_end_time");
+	if (spawnbuff != 0 && getGameTime() > gameEndTime - 2700 * spawnbuff)// 900 is 30 seconds
+    {
+        server_CreateBlob("damage_buff", 0, Vec2f(128 + XORRandom(getMap().getMapDimensions().x - 256), 0));//create damage buff at top of map 128 pixels away from the sides randomly
+        this.set_u8("spawnbuff", spawnbuff - 1);
+    }
+	
 	if (!getNet().isServer() || !this.isMatchRunning() || this.get_bool("no timer"))
 	{
 		return;
@@ -40,14 +48,6 @@ void onTick(CRules@ this)
 
 		players++;
 	}
-	
-	u8 spawnbuff = this.get_u8("spawnbuff");
-	u32 gameEndTime = this.get_u32("game_end_time");
-	if (spawnbuff != 0 && getGameTime() > gameEndTime - 2700 * spawnbuff)// 900 is 30 seconds
-    {
-        server_CreateBlob("damage_buff", 0, Vec2f(128 + XORRandom(getMap().getMapDimensions().x - 256), 0));//create damage buff at top of map 128 pixels away from the sides randomly
-        this.set_u8("spawnbuff", spawnbuff - 1);
-    }
 
 	if (players <= 2)
 	{
