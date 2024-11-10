@@ -196,6 +196,7 @@ void sparks(Vec2f Pos, int amount, CBlob@ this, bool blue, f32 speed = 1.0f)
 			p.deadeffect = -1;
 			p.diesonanimate = true;
 			p.alivetime = 10;
+			p.Z = 1.02f;
 
 			particleList.push_back(p);
 		}
@@ -204,7 +205,7 @@ void sparks(Vec2f Pos, int amount, CBlob@ this, bool blue, f32 speed = 1.0f)
 	{
 		CParticle@ particle = particleList[a];
 		//check
-		if(particle is null || particle.alivetime == 0)
+		if(particle is null || particle.alivetime == 0 || particle.Z != 1.02f)
 		{
 			particleList.erase(a);
 			a--;

@@ -99,6 +99,7 @@ void sparks(Vec2f Pos, int amount, CBlob@ this)
 			p.bounce = 1;
 			p.lighting = false;
 			p.timeout = 90;
+			p.Z = 1.01f;
 
 			particleList.push_back(p);
 		}
@@ -107,7 +108,7 @@ void sparks(Vec2f Pos, int amount, CBlob@ this)
 	{
 		CParticle@ particle = particleList[a];
 		//check
-		if(particle.timeout < 1)
+		if(particle.timeout < 1 || particle.Z != 1.01f)
 		{
 			particleList.erase(a);
 			a--;
