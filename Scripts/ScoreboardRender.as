@@ -202,7 +202,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		}
 		else
 		{
-			classTexture = "playercardicons.png";
+			classTexture = "ScoreboardIcons.png";
 			classIndex = 0;
 
 			// why are player-scoreboard functions hardcoded
@@ -211,7 +211,6 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 			// knight is 3 but should be 0 for this texture
 			// fyi it's pure coincidence builder and archer are already a match
-			classIndex %= 3;
 			
 			classIconSize = Vec2f(16, 16);
 
@@ -584,7 +583,7 @@ void onRenderScoreboard(CRules@ this)
 		}
 
 		int teamNum = p.getTeamNum();
-		if (teamNum == 3) //blue team
+		if (teamNum == 0) //blue team
 		{
 			for (u32 j = 0; j < blueplayers.length; j++)
 			{

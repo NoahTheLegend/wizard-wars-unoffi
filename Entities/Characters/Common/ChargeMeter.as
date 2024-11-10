@@ -27,7 +27,7 @@ void onTick(CBlob@ this)
             CPlayer@ p = getPlayer(i);
             if (p !is null)
             {
-                if (p.getTeamNum() == 3)
+                if (p.getTeamNum() == 0)
                     team0++;
                 else if (p.getTeamNum() == 1)
                     team1++;
@@ -41,7 +41,7 @@ void onTick(CBlob@ this)
             {
                 int thisPlayerTeamNum = thisPlayer.getTeamNum();//Get the players team
                 
-                if ( team0 < team1 && thisPlayerTeamNum == 3 )//if we are team 0 and there are more team members on the enemy team
+                if ( team0 < team1 && thisPlayerTeamNum == 0 )//if we are team 0 and there are more team members on the enemy team
                 {
                     chargeRegenRate *= (team1/team0);
                 }

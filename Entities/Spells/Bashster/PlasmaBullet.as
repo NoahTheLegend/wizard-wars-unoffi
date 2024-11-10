@@ -35,7 +35,7 @@ void onTick(CBlob@ this)
 	if (isClient())
 	{
 		this.getSprite().setRenderStyle(RenderStyle::additive);
-		sparks(this.getPosition(), 1, this, this.getTeamNum() == 3);
+		sparks(this.getPosition(), 1, this, this.getTeamNum() == 0);
 
 		if (this.getTickSinceCreated() == 1)
 		{

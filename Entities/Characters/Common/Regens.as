@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
             if (p is null) continue;
 
             int pn = p.getTeamNum();
-            if (pn == 3) {team0++; team0kdr += getKDR(p);}
+            if (pn == 0) {team0++; team0kdr += getKDR(p);}
             else if (pn == 1) {team1++; team1kdr += getKDR(p);}
             else teamUnspecified++;
         }
@@ -118,7 +118,7 @@ void onTick(CBlob@ this)
             {
                 int thisPlayerTeamNum = thisPlayer.getTeamNum();//Get the players team
                 
-                if ( team0 < team1 && thisPlayerTeamNum == 3 )//if we are team 0 and there are more team members on the enemy team
+                if ( team0 < team1 && thisPlayerTeamNum == 0 )//if we are team 0 and there are more team members on the enemy team
                 {
                     manaRegenRate *= 2;
                 }

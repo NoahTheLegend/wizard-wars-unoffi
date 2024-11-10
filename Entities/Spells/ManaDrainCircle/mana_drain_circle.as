@@ -8,7 +8,7 @@ void onInit(CBlob@ this)
     this.set_u8("frame", 0);
     this.Tag("magic_circle");
     this.getShape().SetGravityScale(0);
-    if(this.getTeamNum() == 3){this.set("colour",SColor(255,255,100,255));}
+    if(this.getTeamNum() == 0){this.set("colour",SColor(255,255,100,255));}
     else{this.set("colour",SColor(255,255,100,100));}
 }
 

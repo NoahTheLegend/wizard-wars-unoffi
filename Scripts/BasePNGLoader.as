@@ -627,13 +627,11 @@ CBlob@ spawnHall(CMap@ map, int offset, u8 team)
 
 CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position)
 {
-	if (team == 0) team = 3;
 	return server_CreateBlob(name, team, position);
 }
 
 CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position, const bool fixed)
 {
-	if (team == 0) team = 3;
 	CBlob@ blob = server_CreateBlob(name, team, position);
 	blob.getShape().SetStatic(fixed);
 
@@ -642,7 +640,6 @@ CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position, cons
 
 CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position, s16 angle)
 {
-	if (team == 0) team = 3;
 	CBlob@ blob = server_CreateBlob(name, team, position);
 	blob.setAngleDegrees(angle);
 
@@ -664,7 +661,6 @@ CBlob@ spawnBlob(CMap@ map, const string& in name, int offset, u8 team = 255, bo
 
 CBlob@ spawnVehicle(CMap@ map, const string& in name, int offset, int team = -1)
 {
-	if (team == 0) team = 3;
 	CBlob@ blob = server_CreateBlob(name, team, getSpawnPosition( map, offset));
 	if(blob !is null)
 	{

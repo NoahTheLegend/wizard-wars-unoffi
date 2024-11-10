@@ -47,7 +47,7 @@ void onTick(CBlob@ this)
 	Vec2f target_pos = this.get_Vec2f("target_pos");
 
 	SColor col = SColor(155+XORRandom(55), 125+XORRandom(55), 10+XORRandom(25), 0);
-	if (this.getTeamNum() == 3) col = SColor(155+XORRandom(55), 10+XORRandom(25), 0, 125+XORRandom(55));
+	if (this.getTeamNum() == 0) col = SColor(155+XORRandom(55), 10+XORRandom(25), 0, 125+XORRandom(55));
 	
 	bool stop = this.get_bool("stop");
 	f32 stoprange = this.get_f32("stoprange");
