@@ -3754,7 +3754,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 
 			f32 orbspeed = 2.5f;
-			f32 dmg = this.hasTag("extra_damage") ? 1.6f : 1.2f;
+			f32 dmg = this.hasTag("extra_damage") ? 1.5f : 1.0f;
 
 			if (this.get_bool("waterbarrier"))
 			{
@@ -3773,13 +3773,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case minimum_cast:
 				{
 					orbspeed *= 0.5f;
-					dmg -= 0.4f;
+					dmg -= 0.6f;
 				}
 				break;
 				case medium_cast:
 				{
 					orbspeed *= 0.75f;
-					dmg -= 0.2f;
+					dmg -= 0.4f;
 				}
 				break;
 
