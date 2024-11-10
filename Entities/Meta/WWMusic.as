@@ -107,8 +107,6 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	}
 	else
 	{
-		#ifndef STAGING
 		mixer.FadeOutAll(0.0f, 1.0f);
-		#endif
 	}
 }
