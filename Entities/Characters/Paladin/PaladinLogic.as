@@ -517,28 +517,32 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			u8 teamNum = this.getTeamNum();
 			CMap@ map = getMap();
 			CBlob@[] playersInRadius;
-			uint16[] enemiesInRadius;
+
+			u16[] enemiesInRadius;
 			map.getBlobsInRadius(thisPos, aura_omega_radius, @playersInRadius);
-			for (uint i = 0; i < playersInRadius.length; i++)
+
+			for (uint i = 0; i < playersInRadius.size(); i++)
 			{
 				CBlob@ b = playersInRadius[i];
 				if (b is null) continue; 
 
 				if (b.getTeamNum() == teamNum) continue; 
-
 				if (!b.hasTag("hull") && !b.hasTag("flesh") && !b.hasTag("counterable")) continue; 
-
 				if (b.hasTag("dead")) continue;
 			
 				enemiesInRadius.push_back(b.getNetworkID());
 				
 			}
-			if (!enemiesInRadius.isEmpty())
+			if (enemiesInRadius.size() > 0)
 			{
+				f32 split_dmg = (damage * aura_omega_damage_mod) / enemiesInRadius.size();
 				for (uint i = 0; i < enemiesInRadius.size(); i++)
 				{
 					CBlob@ b = getBlobByNetworkID(enemiesInRadius[i]);
-					this.server_Hit(b, b.getPosition(), Vec2f_zero, (damage * aura_omega_damage_mod / enemiesInRadius.size()), Hitters::burn, true);
+					if (b !is null)
+					{
+						this.server_Hit(b, b.getPosition(), Vec2f_zero, split_dmg, Hitters::fall, true);
+					}
 				}
 			}
 
