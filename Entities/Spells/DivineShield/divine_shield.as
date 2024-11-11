@@ -50,7 +50,17 @@ void onTick(CBlob@ this)
             {
                 Vec2f tpos = this.getPosition();
                 Vec2f bpos = b.getPosition();
-                if (b.hasTag("magic_circle")) b.AddForce((bpos-tpos).Length() < 64.0f ? (bpos-tpos)*10 : bpos-tpos);
+                if (b.hasTag("magic_circle"))
+                {
+                    Vec2f dir = b.getPosition() - pos;
+                    dir.Normalize();
+                    b.getShape().SetStatic(false);
+
+                    //Vec2f newpos = Vec2f_lerp(b.getPosition(), pos + dir * effectRadius * 1.25f, 0.25f);
+                    Vec2f newpos = pos + dir * effectRadius * 1.25f;
+                    b.setPosition(newpos);
+                    b.getShape().SetStatic(true);
+                }
                 else 
                 {
                     b.setVelocity(Vec2f(0,0));

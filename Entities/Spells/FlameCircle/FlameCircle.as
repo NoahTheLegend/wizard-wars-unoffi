@@ -27,6 +27,8 @@ void onTick(CBlob@ this)
         }
     }
 
+    if (!isServer()) return;
+    
     if(reverse && this.get_u8("frame") < 1) this.server_Die();
     if(!this.hasTag("finished") || reverse) return;
 
@@ -35,7 +37,7 @@ void onTick(CBlob@ this)
     CBlob@[] blobs;
     map.getBlobsInRadius(pos,effectRadius,@blobs);
 
-    if(getGameTime() % (fullCharge ? 5 : 10) == 0 && !this.hasTag("reverse"))
+    if(getGameTime() % (fullCharge ? 3 : 5) == 0 && !this.hasTag("reverse"))
     {
         for(float i = 0; i < blobs.length; i++)
         {
@@ -44,18 +46,19 @@ void onTick(CBlob@ this)
             if (b.exists("fireProt") && b.get_u16("fireProt") > 0) continue;
             if (b.isInWater()) continue;
             
-            if((b.getName() != "skeleton" && b.getName() != "zombie" && b.getName() != "zombieknight" && b.getPlayer() is null ) || b.getTeamNum() == this.getTeamNum()) continue;
+            bool exclusive = b.hasTag("water projectile");
+            if(!exclusive &&
+                ((b.getName() != "skeleton" && b.getName() != "zombie" && b.getName() != "zombieknight" && b.getPlayer() is null ) || b.getTeamNum() == this.getTeamNum())) continue;
             Vec2f bPos = b.getInterpolatedPosition();
 
             Vec2f norm = bPos-pos;
             norm.Normalize();
 
-            this.getSprite().PlaySound("flame_slash_sound", 1.5f, 1.35f + XORRandom(26)*0.01f);
             if(getNet().isServer())
             {
                 uint8 t = 11;
                 float dmg = 0.5f;
-                b.server_Hit(b, bPos, Vec2f(0,0), dmg,Hitters::hits::fire);
+                this.server_Hit(b, bPos, Vec2f(0,0), dmg, Hitters::hits::fire);
             }
         }
     }
@@ -167,14 +170,16 @@ void onTick(CSprite@ this)
         float pRot = 220.0f * (f32(b.get_u8("frame")) / 11.0f);
         Vec2f pVel = Vec2f_zero;
         f32 gt = getGameTime();
-        for(int i = 0; i < (v_fastrender ? 15 : 30); i++) //particle splash
+
+        SColor col = b.getTeamNum() == 0 ? SColor(255, 5+XORRandom(75),25+XORRandom(55),200+XORRandom(55)) : SColor(255, 200+XORRandom(75),25+XORRandom(75),10+XORRandom(25));
+        for(int i = 0; i < (v_fastrender ? 10 : 20); i++) //particle splash
         {
             pRot = 360.0f * _rnd.NextFloat();
             pVel = Vec2f(2.5f*(1.0f + _rnd.NextFloat()), 0 );
             pVel.RotateByDegrees(pRot);
             u16 pTimeout = 10 * _rnd.NextFloat();
-
-            CParticle@ p = ParticlePixelUnlimited(b.getPosition() + Vec2f(Maths::Sin(gt*0.1f)*8, 0).RotateBy((gt * 2.0f) % 360), b.getVelocity() + pVel, SColor(255, 200+XORRandom(55), 55+XORRandom(155), 25+XORRandom(25)), true);
+                
+            CParticle@ p = ParticlePixelUnlimited(b.getPosition() + Vec2f(Maths::Sin(gt*0.1f)*8, 0).RotateBy((gt * 2.0f) % 360), b.getVelocity() + pVel, col, true);
             if(p !is null)
             {
                 p.gravity = Vec2f(0,0);

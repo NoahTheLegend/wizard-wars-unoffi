@@ -47,13 +47,13 @@ namespace PaladinParams
 				SpellType::other, 10, 40, 3, 256.0f, true, true),
 
 		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target receives 50% less damage but transfers 25% back to you when nearby and if your health is more than 25%.",
-				SpellType::other, 20, 45, 6, 256.0f, true),
+				SpellType::other, 20, 45, 4, 256.0f, true),
 
 		Spell("manatohealth", "Aura: Sigma", 94, "Transfers your mana regeneration into health regeneration.",
-				SpellType::other, 0, 15, 3, 0, true),
+				SpellType::other, 0, 15, 8, 0, true),
 
 		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 300% of received enemy damage and 150% of friendly damage. Returns 20% of damage to enemies in radius.",
-				SpellType::other, 0, 15, 3, 0, true),
+				SpellType::other, 0, 15, 6, 0, true),
 
 		Spell("hallowedbarrier", "Hallowed Protection", 97, "Applies magic barriers that absorb 50% of next magical or physical damage taken. Overcharge adds more barriers and increases effect time.",
 				SpellType::other, 20, 45, 10, 0.0f),

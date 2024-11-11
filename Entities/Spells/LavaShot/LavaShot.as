@@ -7,6 +7,7 @@ void onInit(CBlob@ this)
 	consts.mapCollisions = true;
 	consts.bullet = false;
 
+	this.Tag("kill water spells");
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("exploding");

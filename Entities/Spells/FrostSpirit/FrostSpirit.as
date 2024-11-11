@@ -1,7 +1,7 @@
 #include "Hitters.as"
 
 f32 max_angle = 45.0f; // max capture angle, actually doubled so this is 135 degree coverage
-const f32 angle_lerp = 0.3f;
+const f32 angle_lerp = 0.35f;
 
 void onInit(CBlob@ this)
 {
@@ -112,35 +112,31 @@ void onTick(CBlob@ this)
 	CBlob@ target = getBlobByNetworkID(this.get_u16("target_id"));
 	if (target !is null)
 	{
-		Vec2f dir = target.getPosition() - this.getPosition();
-		dir.Normalize();
+	    Vec2f dir = target.getPosition() - this.getPosition();
+	    dir.Normalize();
 
-		f32 angle = -(target.getPosition()-this.getPosition()).Angle()+90.0f;
-		if (angle > 360.0f) angle -= 360.0f;
-		if (angle < -0.0f) angle += 360.0f;
 
-		if (this.getDistanceTo(target) > 16.0f
-				&& !((Maths::Abs(angle-this.getAngleDegrees()) <= max_angle
-				|| (angle <= max_angle/2 && this.getAngleDegrees() >= 360-max_angle/2)
-				|| (angle >= 360-max_angle/2 && this.getAngleDegrees() <= max_angle/2))))
-		{
-			this.set_u16("target_id", 0);
-		}
+	    f32 angle = -(target.getPosition() - this.getPosition()).Angle() + 90.0f;
 
-		if (angle < 1.0f || angle > 359.0f)
-		{
-			this.setAngleDegrees(0);
-		}
-		else if ((angle <= max_angle && this.getAngleDegrees() >= 360-max_angle)
-			|| (angle >= 360-max_angle && this.getAngleDegrees() <= max_angle))
-		{
-			//printf("a "+angle+" d "+this.getAngleDegrees());
-			this.setAngleDegrees((angle == 0 ? 180 : 0) + Maths::Lerp(this.getAngleDegrees()+(this.getPosition().x<=target.getPosition().x?90:-90), angle, angle_lerp));
-		}
-		else
-		{
-			this.setAngleDegrees(Maths::Lerp(this.getAngleDegrees(), angle, 0.1f));
-		}
+	    while (angle < 0) angle += 360.0f;
+	    while (angle >= 360) angle -= 360.0f;
+
+	    if (this.getDistanceTo(target) > 16.0f &&
+	        !((Maths::Abs(angle - this.getAngleDegrees()) <= max_angle) ||
+	          (angle <= max_angle / 2 && this.getAngleDegrees() >= 360 - max_angle / 2) ||
+	          (angle >= 360 - max_angle / 2 && this.getAngleDegrees() <= max_angle / 2)))
+	    {
+	        this.set_u16("target_id", 0);
+	        return;
+	    }
+
+	    f32 currentAngle = this.getAngleDegrees();
+	    f32 deltaAngle = angle - currentAngle;
+
+	    if (deltaAngle > 180.0f) deltaAngle -= 360.0f;
+	    if (deltaAngle < -180.0f) deltaAngle += 360.0f;
+
+	    this.setAngleDegrees(currentAngle + deltaAngle * 0.1f);
 	}
 
 	this.setVelocity(Vec2f(0,-2.0f * (1.0f + Maths::Min(5.0f, (this.getTickSinceCreated() / 30.0f)))).RotateBy(this.getAngleDegrees()));

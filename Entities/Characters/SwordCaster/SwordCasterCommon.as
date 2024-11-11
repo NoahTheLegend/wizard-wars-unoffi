@@ -63,7 +63,7 @@ namespace SwordCasterParams
 				SpellType::other, 30, 30, 3, 384.0f),
 			 
 		Spell("lynch", "Lynch", 125, "Pulls the enemy inside and casts a several execution swords with a delay. Teleporting outside will harm the trapped.",
-				SpellType::other, 35, 45, 12, 156.0f, true),
+				SpellType::other, 45, 55, 12, 156.0f, true),
 			
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),

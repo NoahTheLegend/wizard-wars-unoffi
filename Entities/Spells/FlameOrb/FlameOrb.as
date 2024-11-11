@@ -4,6 +4,7 @@ void onInit(CBlob@ this)
 {
 	this.Tag("projectile");
 	this.Tag("counterable");
+	this.Tag("kill other spells");
 	this.Tag("exploding");
 	this.set_f32("explosive_radius", 8.0f);
 	this.set_f32("explosive_damage", 0.1f);

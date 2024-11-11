@@ -28,6 +28,7 @@ void onInit(CSprite@ this)
 	this.SetEmitSound( "EnergyLoop1.ogg" );
 	this.SetEmitSoundSpeed(0.5f);
 	this.SetEmitSoundPaused( false );
+	this.ScaleBy(Vec2f(2,2));
 }
 
 void onTick(CSprite@ this)
@@ -70,7 +71,7 @@ void onTick(CBlob@ this)
 
 	f32 old_mod = this.get_f32("old_mod");
 	this.SetMass(this.get_f32("base_mass"));
-	if (isClient()) this.getSprite().ScaleBy(Vec2f(1.0f / old_mod, 1.0f / old_mod));
+	//if (isClient()) this.getSprite().ScaleBy(Vec2f(1.0f / old_mod, 1.0f / old_mod));
 
 	if (this.hasTag("extra_damage"))
 	{
@@ -85,7 +86,7 @@ void onTick(CBlob@ this)
 	else
 		this.getShape().setDrag(1.0f);
 
-	if (isClient()) this.getSprite().ScaleBy(Vec2f(mod, mod));
+	//if (isClient()) this.getSprite().ScaleBy(Vec2f(mod, mod));
 
 	f32 rad = mod * PULL_RADIUS;
 	CBlob@[] attracted;

@@ -81,7 +81,7 @@ namespace DruidParams
 			SpellType::other, 35, 40, 4, 128.0f, true),
 
 		Spell("waterbolt", "Water Bolt", 126, "A dense sphere of water.",
-			SpellType::other, 6, 35, 0, 256.0f),
+			SpellType::other, 6, 30, 0, 256.0f),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)

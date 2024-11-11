@@ -10,6 +10,8 @@ void onInit(CBlob@ this)
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("exploding");
+	this.Tag("kill water spells");
+	
 	shape.SetGravityScale( 0.0f );
 	this.Tag("die_in_divine_shield");
 

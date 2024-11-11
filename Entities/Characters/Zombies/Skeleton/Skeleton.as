@@ -321,6 +321,8 @@ void MadAt( CBlob@ this, CBlob@ hitterBlob )
 {
 	const u16 damageOwnerId = (hitterBlob.getDamageOwnerPlayer() !is null && hitterBlob.getDamageOwnerPlayer().getBlob() !is null) ? 
 		hitterBlob.getDamageOwnerPlayer().getBlob().getNetworkID() : 0;
+	
+	if (hitterBlob.hasTag("magic_circle")) return;
 
 	const u16 friendId = this.get_netid(friend_property);
 	if (friendId == hitterBlob.getNetworkID() || friendId == damageOwnerId) // unfriend

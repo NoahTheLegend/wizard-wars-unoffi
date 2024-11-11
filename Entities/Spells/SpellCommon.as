@@ -3750,7 +3750,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 195194419: // waterbolt
 		{
 			f32 orbspeed = 4.0f;
-			if (this.get_bool("waterbarrier"))
+			if (this.get_bool("waterbarrier") || this.isInWater())
 			{
 				orbspeed += 2.0f;
 
@@ -3772,13 +3772,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				case minimum_cast:
 				{
-					orbspeed *= 0.5f;
+					orbspeed *= 0.75f;
 					dmg -= 0.6f;
 				}
 				break;
 				case medium_cast:
 				{
-					orbspeed *= 0.75f;
+					orbspeed *= 0.85f;
 					dmg -= 0.4f;
 				}
 				break;

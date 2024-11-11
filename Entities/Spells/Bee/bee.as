@@ -91,7 +91,7 @@ int closestBlobIndex(CBlob@ this, CBlob@[] blobs, CPlayer@ caster)
 {
     if (this.getTickSinceCreated() < 15) return -1;
 
-    f32 bestDistance = 99999999;
+    f32 bestDistance = 99999;
     int bestIndex = -1;
 
     for(int i = 0; i < blobs.length; i++){

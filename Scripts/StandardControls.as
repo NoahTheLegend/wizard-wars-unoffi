@@ -180,6 +180,13 @@ void onTick(CBlob@ this)
 	ManageCamera(this);
 
 	CControls@ controls = getControls();
+	if (this.isAttached())
+	{
+		this.setKeyPressed(key_action1, false);
+		this.setKeyPressed(key_action2, false);
+		this.setKeyPressed(key_action3, false);
+		this.setKeyPressed(key_taunts, false);
+	}
 
 	// use menu
 

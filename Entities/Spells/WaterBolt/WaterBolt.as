@@ -6,6 +6,7 @@ void onInit(CBlob@ this)
 	this.Tag("projectile");
 	this.Tag("kill other spells");
 	this.Tag("counterable");
+	this.Tag("water projectile");
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
@@ -103,7 +104,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
-	if (solid) this.server_Die();
+	if (solid || (blob !is null && blob.hasTag("kill water spells"))) this.server_Die();
 	if (blob !is null && doesCollideWithBlob(this, blob))
 	{
 		if (isEnemy(this, blob))

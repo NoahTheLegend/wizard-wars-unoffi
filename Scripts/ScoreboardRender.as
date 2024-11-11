@@ -216,7 +216,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 			if (dead)
 			{
-				classIndex += 8;
+				classIndex = 5;
 			}
 		}
 		// don't draw class for specs

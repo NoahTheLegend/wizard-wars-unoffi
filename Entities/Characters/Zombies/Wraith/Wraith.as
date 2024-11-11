@@ -16,7 +16,7 @@ const string damageboost_layer2 = "damage boost 2";
 void onSetPlayer( CBlob@ this, CPlayer@ player )
 {
 	if (player !is null){
-		player.SetScoreboardVars("ScoreboardIcons.png", 5, Vec2f(16,16));
+		player.SetScoreboardVars("ScoreboardIcons.png", 15, Vec2f(16,16));
 	}
 }
 
@@ -384,6 +384,8 @@ void MadAt( CBlob@ this, CBlob@ hitterBlob )
 {
 	const u16 damageOwnerId = (hitterBlob.getDamageOwnerPlayer() !is null && hitterBlob.getDamageOwnerPlayer().getBlob() !is null) ? 
 		hitterBlob.getDamageOwnerPlayer().getBlob().getNetworkID() : 0;
+
+	if (hitterBlob.hasTag("magic_circle")) return;
 
 	const u16 friendId = this.get_netid(friend_property);
 	if (friendId == hitterBlob.getNetworkID() || friendId == damageOwnerId) // unfriend
