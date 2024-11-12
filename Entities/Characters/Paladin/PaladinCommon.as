@@ -2,7 +2,8 @@
 
 const f32 aura_omega_radius = 64.0f;
 const f32 aura_omega_damage_mod = 0.5f;
-const f32 aura_omega_damage_mod_self = 2.0f; // 150% intake damage
+const f32 aura_omega_damage_mod_self = 1.5f; // 150% intake damage
+const f32 health_per_regen = 1.5f;
 f32 dmg_to_mana_ratio = 1.5f; // 1.0f is 200% of damage 
 f32 friendly_damage_factor = 0.5f;
 const f32 connection_dist = 356.0f;
@@ -11,7 +12,6 @@ const f32 connection_dmg_transfer = 0.25f;
 const f32 min_connection_health_ratio = 0.25f;
 const f32 barrier_dmg_decrease = 0.5f;
 const f32 mana_to_health_ratio = 0.0f;
-const f32 health_per_regen = 2.0f;
 
 namespace PaladinParams
 {

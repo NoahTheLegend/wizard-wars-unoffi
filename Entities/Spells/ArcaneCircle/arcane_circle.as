@@ -63,7 +63,7 @@ void onTick(CBlob@ this)
             {
                 uint8 t = 11;
                 float dmg = 0.2;
-                b.server_Hit(b, bPos, Vec2f(0,0),dmg,Hitters::hits::burn);
+                this.server_Hit(b, bPos, Vec2f(0,0),dmg,Hitters::hits::burn);
             }
 
             int ammount = XORRandom(15) + 5;

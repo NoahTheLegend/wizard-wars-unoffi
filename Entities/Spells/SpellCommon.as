@@ -2164,10 +2164,15 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 								{
                         			orb.Tag("extra_damage");
 								}
+								if (other.exists("initvel"))
+								{
+									orb.set_Vec2f("initvel", other.get_Vec2f("initvel"));
+								}
 
 								orb.IgnoreCollisionWhileOverlapped( other );
 								orb.SetDamageOwnerPlayer( this.getPlayer() );
 								orb.getShape().SetGravityScale(0);
+								orb.server_SetTimeToDie(other.getTimeToDie());
 
 								other.Untag("exploding");
 								other.server_Die();
@@ -3149,8 +3154,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			CBlob@ orb = server_CreateBlob( "singularity" , this.getTeamNum() , aimpos);
 			if (orb !is null)
 			{
-				f32 time = 15.0f;
-				if (charge_state == super_cast) time = 10.0f;
+				f32 time = 12.5f;
+				if (charge_state == super_cast) time = 8.0f;
 
 				orb.set_f32("lifetime", time * (this.hasTag("extra_damage") ? 0.5f : 1));
 				orb.SetDamageOwnerPlayer(this.getPlayer());

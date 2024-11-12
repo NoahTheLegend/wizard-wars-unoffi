@@ -118,7 +118,7 @@ void onTick(CBlob@ this)
 
 			if (attractedblob.getName() == "black_hole")
 			{
-				if (attractedblob.getDistanceTo(this) > 40.0f)
+				if (attractedblob.getDistanceTo(this) > 48.0f)
 					attractedblob.set_u32("blackhole_force", getGameTime());
 				else onCollision(this, attractedblob, false);
 				attractedblob.server_SetTimeToDie(Maths::Max(1.0f, attractedblob.getTimeToDie()));

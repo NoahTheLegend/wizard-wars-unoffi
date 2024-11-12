@@ -79,7 +79,7 @@ void onTick(CBlob@ this)
 	u16[] ignore_ids;
 	this.get("ignore_ids", ignore_ids);
 	CBlob@[] bs;
-	map.getBlobsInRadius(next_pos, 20.0f, @bs);
+	map.getBlobsInRadius(next_pos, 32.0f, @bs);
 	for (u16 i = 0; i < bs.size(); i++)
 	{
 		CBlob@ b = bs[i];

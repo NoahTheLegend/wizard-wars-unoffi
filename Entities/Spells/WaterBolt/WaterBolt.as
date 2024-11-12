@@ -53,8 +53,8 @@ void onTick(CBlob@ this)
 		this.SetLight(true);
 		this.SetLightRadius(24.0f);
 		this.SetLightColor(SColor(255, 114, 121, 224));
-		this.getSprite().PlaySound("waterbolt_wave.ogg", 0.5f, 1.75f + XORRandom(11)*0.01f);
-		this.getSprite().PlaySound("waterbolt_splash0.ogg", 0.5f, 1.75f + XORRandom(11)*0.01f);
+		this.getSprite().PlaySound("waterbolt_wave.ogg", 0.375f, 1.75f + XORRandom(11)*0.01f);
+		this.getSprite().PlaySound("waterbolt_splash0.ogg", 0.375f, 1.75f + XORRandom(11)*0.01f);
 		this.getSprite().SetZ(100.0f);
 	}
 }
@@ -63,7 +63,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
 	(
-		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") )
+		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") || target.hasTag("barrier") )
 		||
 		(
 			target.hasTag("flesh") 
@@ -99,7 +99,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		}
 	}
 	
-	return ( isEnemy(this, blob) || blob.hasTag("barrier") );
+	return ( isEnemy(this, blob) );
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
@@ -119,7 +119,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 void onDie(CBlob@ this)
 {
 	sparks(this.getPosition(), 50);
-	this.getSprite().PlaySound("waterbolt_death.ogg", 0.4f, 1.5f + XORRandom(11)*0.01f);
+	this.getSprite().PlaySound("waterbolt_death.ogg", 0.375f, 1.5f + XORRandom(11)*0.01f);
 	Splash(this, 1, 1, 0, false);
 }
 

@@ -24,6 +24,7 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.Tag("cantparry");
 	this.Tag("follower");
+	this.Tag("cantmove");
 	this.addCommandID("shoot_fx");
 
 	CShape@ shape = this.getShape();
