@@ -144,6 +144,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				else
 				{
 					this.server_Hit(blob, blob.getPosition(), this.getVelocity(), expundamage, Hitters::arrow, true);
+					if (this.hasTag("collided")) this.server_Die();
 				}
 
 				if(this.hasTag("primed"))
