@@ -33,7 +33,7 @@ namespace EntropistParams
 			SpellType::other, 5, 15, 0, 360.0f, true),
 			 
 		Spell("disruption_wave", "Disruption Wave", 51, "Unleash a destructive burst of warping energy, tearing apart anything in its path.",
-				SpellType::other, 25, 30, 2, 360.0f, true),
+				SpellType::other, 30, 30, 2, 128.0f, true),
 			 
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 10, 10, 0, 64.0f, true),

@@ -33,7 +33,7 @@ void onTick( CBlob@ this)
 	Vec2f distance = this.get_Vec2f("boomDir")*(dist_const*1.5f);
 	Vec2f hitPos = thisPos+distance;
 
-	if ( currentTime % 4 == 0 && boomNum <= 10)
+	if ( currentTime % 2 == 0 && boomNum <= 10)
 	{
 		CMap@ map = this.getMap();
 		if (map is null)
