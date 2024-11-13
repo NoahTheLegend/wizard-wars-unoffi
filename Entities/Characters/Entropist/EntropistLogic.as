@@ -342,11 +342,15 @@ void ManageSpell( CBlob@ this, EntropistInfo@ entropist, PlayerPrefsInfo@ player
 		bool spellSelected = this.get_bool("spell selected");
 		int currHotkey = playerPrefsInfo.primaryHotkeyID;
 		int nextHotkey =  playerPrefsInfo.hotbarAssignments_Entropist.length;
+		
 		CRules@ rules = getRules();
-		if (rules !is null && rules.hasTag("update_spell_selected"))
+		if (rules !is null && rules.hasTag("update_spell_selected")
+			&& rules.exists("reset_spell_id") && rules.get_u16("reset_spell_id") > 0)
 		{
 			rules.Untag("update_spell_selected");
-			nextHotkey = rules.get_u16("reset_spell_id")-1;
+
+			currHotkey = rules.get_u16("reset_spell_id")-1;
+			nextHotkey = currHotkey;
 		}
 
 		if ( controls.isKeyJustPressed(KEY_KEY_1) || controls.isKeyJustPressed(KEY_NUMPAD1) )
