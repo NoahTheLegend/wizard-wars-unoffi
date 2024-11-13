@@ -51,7 +51,7 @@ namespace JesterParams
 				SpellType::other, 15, 20, 0, 32.0f),
 
 		Spell("carddeck", "Jester Deck", 114, "Six cards of magic in the air, overcharge sends them spinning near.",
-				SpellType::other, 20, 30, 5, 180.0f, true),
+				SpellType::other, 20, 30, 12, 180.0f, true),
 
 		Spell("airhorn", "Air Horn", 115, "A gusty blast, foes feel the strain, soon will none remain.",
 				SpellType::other, 10, 25, 0, 64.0f, true), // jesterlogic.as
