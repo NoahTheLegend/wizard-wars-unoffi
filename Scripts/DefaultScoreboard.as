@@ -18,9 +18,9 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 				helper.setAssists(helper.getAssists() + 1);
 			}
 
-			if (victim !is null)
+			if (victim !is null && blob.getName() != "wraith" && blob.getName() != "knight")
 			{
-				if (blob.getName() != "wraith" && blob.getName() != "knight") victim.setDeaths(victim.getDeaths() + 1);
+				victim.setDeaths(victim.getDeaths() + 1);
 				// temporary until we have a proper score system
 				victim.setScore(100 * (f32(victim.getKills()) / f32(victim.getDeaths() + 1)));
 
