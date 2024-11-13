@@ -291,6 +291,8 @@ void onTick( CRules@ this )
 			{
 				resetSpell_value = cfg.read_u16("reset_spell_id");
 			}
+
+			this.set_u16("reset_spell_id", resetSpell_value);
         }
 
 		CFileImage@ image = CFileImage( "GameHelp.png" );
@@ -510,6 +512,8 @@ void onTick( CRules@ this )
             cfg.add_u16("item_distance", itemDistance.value);
             cfg.add_u16("hover_distance", hoverDistance.value);
 			cfg.add_u16("reset_spell_id", resetSpell.value);
+
+			this.set_u16("reset_spell_id", resetSpell.value);
 
             cfg.saveFile("WW_OptionsMenu.cfg");
         }

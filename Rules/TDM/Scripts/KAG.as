@@ -39,9 +39,22 @@ void onInit(CRules@ this)
 	#endif
 }
 
+void ReselectSpell(CRules@ this)
+{
+	CPlayer@ p = getLocalPlayer();
+	if (p is null) return;
+
+	if (!this.exists("reset_spell_id")) return;
+	if (this.get_u16("reset_spell_id") == 0) return;
+	
+	this.Tag("update_spell_selected");
+}
+
 bool need_sky_check = true;
 void onRestart(CRules@ this)
 {
+	ReselectSpell(this);
+
 	//map borders
 	CMap@ map = getMap();
 	if (map !is null)

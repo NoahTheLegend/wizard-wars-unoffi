@@ -349,6 +349,13 @@ void ManageSpell( CBlob@ this, PriestInfo@ priest, PlayerPrefsInfo@ playerPrefsI
 		bool spellSelected = this.get_bool("spell selected");
 		int currHotkey = playerPrefsInfo.primaryHotkeyID;
 		int nextHotkey =  playerPrefsInfo.hotbarAssignments_Priest.length;
+		CRules@ rules = getRules();
+		if (rules !is null && rules.hasTag("update_spell_selected"))
+		{
+			rules.Untag("update_spell_selected");
+			nextHotkey = rules.get_u16("reset_spell_id")-1;
+		}
+
 		if ( controls.isKeyJustPressed(KEY_KEY_1) || controls.isKeyJustPressed(KEY_NUMPAD1) )
 		{
 			if ( (currHotkey == 0 || currHotkey == 5) && !spellSelected )
