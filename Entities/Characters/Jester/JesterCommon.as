@@ -57,7 +57,7 @@ namespace JesterParams
 				SpellType::other, 10, 25, 0, 64.0f, true), // jesterlogic.as
 
 		Spell("baseballbat", "Bat", 116, "Spinning bat of Jester's grace, erases foes without a trace.",
-				SpellType::other, 40, 45, 8, 256.0f, true),
+				SpellType::other, 35, 45, 8, 256.0f, true),
 		
 		Spell("tophat", "Obsessed Tophat", 117, "Obsessed tophat with mystic deals, dropping bombs and giving heals.",
 				SpellType::other, 65, 60, 20, 312.0f, true),
