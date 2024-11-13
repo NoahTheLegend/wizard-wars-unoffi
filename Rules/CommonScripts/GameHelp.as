@@ -65,6 +65,7 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
 	Label@ infoText;
 	Label@ helpText;
 	Label@ changeText;
+	Label@ resetSpellText;
 	Label@ particleText;
     Label@ itemDistanceText;
     Label@ hoverDistanceText;
@@ -76,6 +77,7 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
     Button@ toggleSpellWheelBtn;
 	Button@ toggleHoverMessagesBtn;
 	Button@ oneDimensionalSpellbar;
+	ScrollBar@ resetSpell;
 	Button@ achievementBtn;
 	Button@ classesBtn;
     Button@ togglemenuBtn;
@@ -109,6 +111,8 @@ bool isGUINull()
         || toggleSpellWheelBtn is null
 		|| toggleHoverMessagesBtn is null
 		|| oneDimensionalSpellbar is null
+		|| resetSpellText is null
+		|| resetSpell is null
 		|| achievementBtn is null
 		|| optionsFrame is null
 		|| helpIcon is null
@@ -267,8 +271,8 @@ void onTick( CRules@ this )
         ConfigFile cfg;
         
         u16 itemDistance_value = 6;
-
         u16 hoverDistance_value = 6;
+		u16 resetSpell_value = 0;
 
         if(cfg.loadFile("../Cache/WW_OptionsMenu.cfg"))//Load file, if file exists
         {
@@ -276,13 +280,17 @@ void onTick( CRules@ this )
             if(cfg.exists("item_distance"))//Value already set?
             {
                 print("default set");
-                itemDistance_value = cfg.read_u8("item_distance");//Set default
+                itemDistance_value = cfg.read_u16("item_distance");//Set default
                 print(""+itemDistance_value);
             }
             if(cfg.exists("hover_distance"))//Value already set?
             {
-                hoverDistance_value = cfg.read_u8("hover_distance");//Set default
+                hoverDistance_value = cfg.read_u16("hover_distance");//Set default
             }
+			if (cfg.exists("reset_spell_id"))
+			{
+				resetSpell_value = cfg.read_u16("reset_spell_id");
+			}
         }
 
 		CFileImage@ image = CFileImage( "GameHelp.png" );
@@ -332,6 +340,10 @@ void onTick( CRules@ this )
 		
 		@oneDimensionalSpellbar = @Button(Vec2f(10,280),Vec2f(200,30),"",SColor(255,255,255,255));
 		oneDimensionalSpellbar.addClickListener(ButtonClickHandler);
+
+		@resetSpell = @ScrollBar(Vec2f(10,340),160,16,true,resetSpell_value);
+		@resetSpellText = @Label(Vec2f(10,320),Vec2f(100,10),"Reset spell on restart: ",SColor(255,0,0,0),false);
+		resetSpell.addSlideEventListener(SliderClickHandler);
 
         @toggleHotkeyEmotesBtn = @Button(Vec2f(10,50),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleHotkeyEmotesBtn.addClickListener(ButtonClickHandler);
@@ -383,6 +395,9 @@ void onTick( CRules@ this )
 		optionsFrame.addChild(itemDistanceText);
         optionsFrame.addChild(hoverDistance);
 		optionsFrame.addChild(hoverDistanceText);
+		optionsFrame.addChild(resetSpellText);
+		optionsFrame.addChild(resetSpell);
+
 		showHelp = startCloseBtn.getBool("Start Closed","WizardWars");
 		startCloseBtn.toggled = !startCloseBtn.getBool("Start Closed","WizardWars");
 		startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
@@ -494,6 +509,7 @@ void onTick( CRules@ this )
 
             cfg.add_u16("item_distance", itemDistance.value);
             cfg.add_u16("hover_distance", hoverDistance.value);
+			cfg.add_u16("reset_spell_id", resetSpell.value);
 
             cfg.saveFile("WW_OptionsMenu.cfg");
         }
@@ -616,6 +632,14 @@ void onRender( CRules@ this )
 		playerClassButtons.display();
 	}
 
+	{
+		if (resetSpell is null) return;
+		string temp = "Index: "+resetSpell.value;
+		if (resetSpell.value == 0) temp = "No resetting";
+
+		resetSpellText.setText(temp);
+	}
+
 	if (particleCount is null) return;
 	string temp = "Particle count: ";
 	if (particleCount.value == 0){
@@ -628,7 +652,6 @@ void onRender( CRules@ this )
 		temp += "High";
 	}
 	particleText.setText(temp);
-
 
 	int minHelpYPos = -530;
 	int maxHelpYPos = 48;
