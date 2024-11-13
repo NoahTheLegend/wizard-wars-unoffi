@@ -75,7 +75,12 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 		"Objection.ogg",
 		"SteelSamurai.ogg",
 		"Trainer.ogg",
-		"GoldenCountry.ogg"
+		"GoldenCountry.ogg",
+		"Duel.ogg",
+		"ZealsForge.ogg",
+		"FreiyasCage.ogg",
+		"AtlasTerrace.ogg ",
+		"FinalDuel.ogg"
 	};
 
 	array<bool> addedTracks(trackNames.length(), false);
