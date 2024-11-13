@@ -10,6 +10,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("launch");
 	this.Tag("controller");
 	this.Tag("cantmove");
+	this.Tag("just_update_on_parry");
 
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
@@ -27,14 +28,13 @@ void onInit(CBlob@ this)
 	this.set_u32("unpack_time", 0);
 	this.set_u32("disabled", 0);
 	this.set_u8("ricochets", 0);
+	this.Tag("hidden");
+	this.set_u8("state", 0);
 
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
-	this.Tag("hidden");
 	this.getSprite().ScaleBy(Vec2f(0.75f, 0.75f));
 	this.getSprite().SetRelativeZ(510.0f);
-
-	this.set_u8("state", 0);
 }
 
 const u8 cards = 6;

@@ -2131,7 +2131,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					case 0: //normal projectiles
 					{
 						other.server_setTeamNum(ownTeam);
-						other.SetDamageOwnerPlayer( this.getPlayer() ); //<<doesn't seem to work properly
+						other.SetDamageOwnerPlayer( this.getPlayer() );
 						float othVelAngle = othVel.getAngleDegrees();
 						float parryAngle = castDir.getAngleDegrees();
 						float redirectAngle = (othVelAngle-parryAngle) % 360;
@@ -2145,37 +2145,30 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					{
 						if (isServer())
 						{
-							CBlob@ orb = server_CreateBlob(other.getName(),this.getTeamNum(),other.getPosition());
-							if (orb !is null)
+							if (other.hasTag("just_update_on_parry"))
 							{
-								if(other.exists("explosive_damage"))
+								other.SetDamageOwnerPlayer(this.getPlayer());
+								other.server_setTeamNum(this.getTeamNum());
+							}
+							else
+							{
+								CBlob@ orb = server_CreateBlob(other.getName(),this.getTeamNum(),other.getPosition());
+								if (orb !is null)
 								{
-									orb.set_f32("explosive_damage", other.get_f32("explosive_damage"));
-								}
-								if(other.exists("damage"))
-								{
-									orb.set_f32("damage", other.get_f32("damage"));
-								}
-								if(other.exists("lifetime"))
-								{
-									orb.set_f32("lifetime", other.get_f32("lifetime"));
-								}
-								if(other.hasTag("extra_damage"))
-								{
-                        			orb.Tag("extra_damage");
-								}
-								if (other.exists("initvel"))
-								{
-									orb.set_Vec2f("initvel", other.get_Vec2f("initvel"));
-								}
+									if (other.exists("explosive_damage")) {orb.set_f32("explosive_damage", other.get_f32("explosive_damage")); orb.Sync("explosive_damage", true);}
+									if (other.exists("damage")) {orb.set_f32("damage", other.get_f32("damage")); orb.Sync("damage", true);}
+									if (other.exists("lifetime")) {orb.set_f32("lifetime", other.get_f32("lifetime")); orb.Sync("lifetime", true);}
+									if (other.hasTag("extra_damage")) {orb.Tag("extra_damage"); orb.Sync("extra_damage", true);}
+									if (other.exists("initvel")) {orb.set_Vec2f("initvel", other.get_Vec2f("initvel")); orb.Sync("initvel", true);}
 
-								orb.IgnoreCollisionWhileOverlapped( other );
-								orb.SetDamageOwnerPlayer( this.getPlayer() );
-								orb.getShape().SetGravityScale(0);
-								orb.server_SetTimeToDie(other.getTimeToDie());
+									orb.IgnoreCollisionWhileOverlapped(other);
+									orb.SetDamageOwnerPlayer(this.getPlayer());
+									orb.getShape().SetGravityScale(other.getShape().getGravityScale());
+									orb.server_SetTimeToDie(other.getTimeToDie());
 
-								other.Untag("exploding");
-								other.server_Die();
+									other.Untag("exploding");
+									other.server_Die();
+								}
 							}
 						}
 					}

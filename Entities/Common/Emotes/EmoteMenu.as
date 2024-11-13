@@ -218,6 +218,7 @@ void onTick(CRules@ rules)
     CPlayer@ local = getLocalPlayer();
     if (local is null) return;
 
+    /*
     PlayerPrefsInfo@ playerPrefsInfo;
     if (!rules.get_bool("spellwheel_loaded") && local.get("playerPrefsInfo", @playerPrefsInfo)) 
     {
@@ -265,6 +266,7 @@ void onTick(CRules@ rules)
             }
         }
     }
+    */
 
     bool usespellwheel = rules.get_bool("usespellwheel");
     WheelMenu@ menu;
