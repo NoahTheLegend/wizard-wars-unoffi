@@ -27,7 +27,7 @@ namespace EntropistParams
 			SpellType::other, 3, 25, 0, 360.0f),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 15, 6, 0, 270.0f, true),
+			SpellType::other, 12, 6, 0, 270.0f, true),
 			
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
 			SpellType::other, 5, 15, 0, 360.0f, true),
@@ -39,10 +39,10 @@ namespace EntropistParams
 			SpellType::other, 10, 10, 0, 64.0f, true),
 			 
 		Spell("sidewind", "Sidewind", 53, "Temporarily accelerate your own time by transporting yourself to another dimension for a few moments. Harder to damage while in this dimension.",
-				SpellType::other, 5, 2, 3, 1.0f, true),
+				SpellType::other, 5, 1, 3, 1.0f, true),
 			 
 		Spell("voltage_field", "Voltage Field", 54, "Releases a bubble of electricity that knocks away projectiles and enemies that collide with it. Cannot cast spells while active.",
-				SpellType::other, 25, 60, 6, 1.0f, true),
+				SpellType::other, 20, 45, 6, 1.0f, true),
 			
 		Spell("nova", "Nova", 55, "Releases a homing, concentrated energy star. Explodes on contact.",
 				SpellType::other, 30, 45, 25, 100.0f, true),
@@ -51,13 +51,13 @@ namespace EntropistParams
 				SpellType::other, 20, 60, 45, 0.0f, true),
 			
 		Spell("negentropy", "Negentropy", 59, "Cause Negentropy. Gain 1 extra mana generation.",
-				SpellType::other, 150, 150, 45, 0.0f, true),
+				SpellType::other, 180, 150, 45, 0.0f, true),
 				
 		Spell("crystallize", "Crystallize", 61, "Create a new shard.",
-				SpellType::other, 20, 20, 0, 0.0f, true),
+				SpellType::other, 20, 10, 0, 0.0f, true),
 							
 		Spell("dematerialize", "Dematerialize", 62, "Converts a shard back into mana.",
-				SpellType::other, 0, 15, 0, 0.0f, true),
+				SpellType::other, 0, 10, 0, 0.0f, true),
 				
 		Spell("polarity", "Shards Polarity", 63, "Switch between attack and defense mode.",
 				SpellType::other, 5, 30, 3, 0.0f, true),

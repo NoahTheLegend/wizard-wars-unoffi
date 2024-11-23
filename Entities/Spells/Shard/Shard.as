@@ -167,7 +167,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				blob.server_Die();
 			}
 
-			if(doesShardDefend( blob ))
+			if(doesShardDefend(blob))
 			{
 				this.set_u32("deadTimer", timeout_time);
 			}

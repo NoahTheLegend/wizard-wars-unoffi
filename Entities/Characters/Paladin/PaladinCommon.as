@@ -3,7 +3,7 @@
 const f32 aura_omega_radius = 64.0f;
 const f32 aura_omega_damage_mod = 0.5f;
 const f32 aura_omega_damage_mod_self = 1.5f; // 150% intake damage
-const f32 health_per_regen = 1.5f;
+const f32 health_per_regen = 1.0f;
 f32 dmg_to_mana_ratio = 1.5f; // 1.0f is 200% of damage 
 f32 friendly_damage_factor = 0.5f;
 const f32 connection_dist = 356.0f;
@@ -50,7 +50,7 @@ namespace PaladinParams
 				SpellType::other, 20, 45, 4, 256.0f, true),
 
 		Spell("manatohealth", "Aura: Sigma", 94, "Transfers your mana regeneration into health regeneration.",
-				SpellType::other, 0, 15, 8, 0, true),
+				SpellType::other, 0, 15, 3, 0, true),
 
 		Spell("damagetomana", "Aura: Omega", 95, "Disables mana regeneration. Restores mana for 300% of received enemy damage and 150% of friendly damage. Returns 20% of damage to enemies in radius.",
 				SpellType::other, 0, 15, 6, 0, true),

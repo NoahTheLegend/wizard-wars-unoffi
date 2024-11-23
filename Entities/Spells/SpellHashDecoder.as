@@ -417,26 +417,10 @@ bool doesShardDefend ( CBlob@ b )
 	return true;
 }
 
-bool doesShardKill ( CBlob@ b )
+bool doesShardKill (CBlob@ b)
 {
-	if(b is null){return false;}
+	if (b is null) return false;
+	if (b.hasTag("kill other spells") || b.hasTag("counterable")) return true;
 
-	string blobname = b.getName();
-	switch(blobname.getHash())
-	{
-		case _nova_bolt:
-		case _effect_missile_circle:
-		case _stone_spike:
-		case _sporeshot:
-		case _spikeorb:
-		{
-			return true;
-		}
-
-		default: //don't kill it
-		{
-			return false;
-		}
-	}
 	return false;
 }

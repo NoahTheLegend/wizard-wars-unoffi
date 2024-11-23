@@ -69,7 +69,7 @@ namespace ShamanParams
 			SpellType::other, 25, 30, 6, 512.0f),
 
 		Spell("waterbarrier", "Water Barrier", 83, "Covers yourself in a bubble of water, which slows down the enemies and some of their spells, acts as Fire Protection. While under this effect, you are unable to use fire spells and receive more damage from electricity and ice.",
-			SpellType::other, 10, 35, 0, 0.0f),
+			SpellType::other, 15, 35, 0, 0.0f),
 
 		Spell("frost_spirit", "Glacial Spirit", 107, "Summon a homing spirit of frost to freeze your foes.",
 			SpellType::other, 25, 60, 6, 360.0f, true),
@@ -81,7 +81,7 @@ namespace ShamanParams
 			SpellType::other, 35, 40, 4, 128.0f, true),
 		
 		Spell("waterbolt", "Water Bolt", 126, "A dense sphere of water. Speeds up and costs 1 mana less if water is covering the caster.",
-			SpellType::other, 6, 30, 0, 256.0f),
+			SpellType::other, 5, 30, 0, 256.0f),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)

@@ -2,6 +2,7 @@
 
 const f32 duration = 15;
 const f32 radius = 24.0f;
+const f32 visible_radius = 48.0f;
 const f32 damage = 0.5f;
 const u8 delay = 3;
 
@@ -75,7 +76,7 @@ void onTick(CBlob@ this)
         if (b !is null) 
         {
             if (this.getTeamNum() == b.getTeamNum()) sprite.SetVisible(true);
-            else if (this.getTeamNum() != b.getTeamNum() && this.getDistanceTo(b) > 24.0f) sprite.SetVisible(false);
+            else if (this.getTeamNum() != b.getTeamNum() && this.getDistanceTo(b) > visible_radius) sprite.SetVisible(false);
             else sprite.SetVisible(true);
         }
         else // spectator team

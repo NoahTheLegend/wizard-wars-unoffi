@@ -59,7 +59,8 @@ void onTick( CBlob@ this )
 				{	
 					CBlob@ touchBlob = ps[step];
 					bool allowed_to_consume = touchBlob !is null && !touchBlob.hasTag("no_mana_pool")
-						&& (touchBlob.getName() != "entropist" || !touchBlob.get_bool("burnState"));
+						&& (touchBlob.getName() != "entropist" || !touchBlob.get_bool("burnState"))
+						&& !touchBlob.get_bool("manatohealth");
 
 					if (allowed_to_consume)
 					{
