@@ -48,19 +48,19 @@ namespace EntropistParams
 				SpellType::other, 30, 45, 25, 100.0f, true),
 			
 		Spell("burn", "Burn", 60, "Ignite your mana reserves and fuel your magic with blinding heat. Reduces mana generation by 1.",
-				SpellType::other, 20, 60, 45, 0.0f, true),
+				SpellType::other, 10, 60, 45, 0.0f, true),
 			
 		Spell("negentropy", "Negentropy", 59, "Cause Negentropy. Gain 1 extra mana generation.",
 				SpellType::other, 180, 150, 45, 0.0f, true),
 				
 		Spell("crystallize", "Crystallize", 61, "Create a new shard.",
-				SpellType::other, 20, 10, 0, 0.0f, true),
+				SpellType::other, 20, 5, 0, 0.0f, true),
 							
 		Spell("dematerialize", "Dematerialize", 62, "Converts a shard back into mana.",
-				SpellType::other, 0, 10, 0, 0.0f, true),
+				SpellType::other, 0, 5, 0, 0.0f, true),
 				
 		Spell("polarity", "Shards Polarity", 63, "Switch between attack and defense mode.",
-				SpellType::other, 5, 30, 3, 0.0f, true),
+				SpellType::other, 5, 30, 1, 0.0f, true),
 				
 		Spell("dmine", "Disruption Mine", 87, "Places an invisible to enemies mine on the ground. They still can see it within 3 blocks radius. Overcharge increases duration.",
 				SpellType::other, 20, 30, 0, 64.0f, true, true),
