@@ -23,7 +23,7 @@ const string[] specialties_names = {
 
 // first is main
 const u8[] specialties_wizard = {24, 0, 5, 6, 21, 22, 23, 29};
-const u8[] specialties_necromancer = {20, 8, 19, 21, 22, 26, 28};
+const u8[] specialties_necromancer = {20, 8, 21, 22, 26, 28};
 const u8[] specialties_druid = {18, 1, 2, 4, 5, 19, 22, 26, 30};
 const u8[] specialties_swordcaster = {25, 21, 22, 24, 30};
 const u8[] specialties_entropist = {29, 3, 21, 23, 24, 25, 26};
