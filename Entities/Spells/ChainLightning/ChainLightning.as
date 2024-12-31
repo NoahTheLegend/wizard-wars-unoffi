@@ -258,7 +258,7 @@ void onTick( CBlob@ this)
 						}
 
 						f32 dmg = this.get_f32("damage") * extraDamage;
-						if (target.get_bool("waterbarrier")) dmg *= 1.5f;
+						if (target.get_bool("waterbarrier") || target.isInWater()) dmg *= 1.5f;
 
 						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
 						// reduce length greatly when hit barrier
