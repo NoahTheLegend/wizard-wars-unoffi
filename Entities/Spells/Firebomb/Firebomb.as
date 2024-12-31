@@ -94,7 +94,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 		if(isEnemy(this, blob))
 		{
 			if (blob.hasTag("zombie")) this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 2.0f, Hitters::fire, true);
-			else this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f_zero, 0.0f, Hitters::fire, false);
+			else this.server_Hit(blob, blob.getPosition(), Vec2f_zero, 0.0f, Hitters::fire, false);
 		}
 		else if ( (blob.hasTag("player") && isEnemy(this, blob)) && this.getTickSinceCreated() > min_detonation_time )
 		{
