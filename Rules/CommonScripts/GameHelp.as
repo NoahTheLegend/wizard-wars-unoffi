@@ -638,8 +638,8 @@ void onRender( CRules@ this )
 
 	{
 		if (resetSpell is null) return;
-		string temp = "Index: "+resetSpell.value;
-		if (resetSpell.value == 0) temp = "No resetting";
+		string temp = "Default spell selection: "+resetSpell.value;
+		if (resetSpell.value == 0) temp = "Default spell selection: none";
 
 		resetSpellText.setText(temp);
 	}
