@@ -7,8 +7,30 @@ string classesVersion = "1";
 u32 lastHotbarPressTime = 0;
 const u8 max_classes_on_page = 8;
 
+string tooltip = "";
+
 //----KGUI ELEMENTS----\\
 	 	WWPlayerClassButtonList playerClassButtons;
+
+const string[] specialities_names = {
+	"Fire - may ignite enemies",			"Water - extinguishes fire",			"Earth",			"Air - high knockback",			"Nature",			"Electricity - deals more damage to wet enemies",
+	"Ice - may freeze or deal more damage to wet enemies",			"Holy",			"Unholy",			"",			"",			"",
+	"",			"",			"",			"",			"",			"",
+	"Heal - restore health to allies or yourself",			"Support - wide variety of buffs",			"Summoner - create npcs and sentries",			"AoE - Area of Effect spells",			"Control - tools to manipulate your enemies",			"Versatile - good at offense and defense",
+	"Impacter - damage dealer",			"Agility - movement spells",			"Map control - long-living static spells",			"Tank - redirect enemy focus to yourself",			"Life stealer - some spells will heal upon dealing damage",			"Mana dependency - shortage of mana will make you vulnerable",
+	"Cheap spells - spamming those is not a bad decision",			"",			"",			"",			"",			"",
+};
+
+// first is main
+const u8[] specialities_wizard = {24, 0, 5, 6, 21, 22, 23, 29};
+const u8[] specialities_necromancer = {20, 8, 19, 21, 22, 26, 28};
+const u8[] specialities_druid = {18, 1, 2, 4, 5, 19, 22, 26, 30};
+const u8[] specialities_swordcaster = {25, 21, 22, 24, 30};
+const u8[] specialities_entropist = {29, 3, 21, 23, 24, 25, 26};
+const u8[] specialities_priest = {18, 0, 7, 19, 21, 22, 26};
+const u8[] specialities_shaman = {0, 1, 2, 3, 5, 6, 18, 20, 26};
+const u8[] specialities_paladin = {27, 7, 19, 24, 29};
+const u8[] specialities_jester = {23, 19, 21, 22, 25, 26};
 
 class WWPlayerClassButton 
 {
@@ -23,9 +45,13 @@ class WWPlayerClassButton
 	Label@ desc, conLbl, spellDescText;
 	u32 classCost;
 
-	bool gained,hasCon = false;
+	u8[] specialities;
+
+	Rectangle@ specialities_bg;
+
+	bool gained, hasCon = false;
 	
-	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, int _size)
+	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, int _size, u8[] _specialities)
 	{
 		name = _name;
 		modName = _modName;
@@ -44,11 +70,12 @@ class WWPlayerClassButton
 		}
 		classButton.addChild(display);
 		@rarity = @Icon("GUI/Rarity.png",Vec2f(5,5),Vec2f(18,18),_rarity,1.0f);
+
+		specialities = _specialities;
 		
 		//gained = checkUnlocked();
 		
 		classButton.name = _configFilename;
-		
 		classButton.addClickListener(ClassButtonHandler);
 		
 		@classFrame = @Rectangle(Vec2f(232,0),Vec2f(760,490), SColor(0,0,0,0));
@@ -58,12 +85,6 @@ class WWPlayerClassButton
 		swapButton.name = _configFilename;
 		classFrame.addChild(swapButton);
 		swapButton.addClickListener(SwapButtonHandler);
-		
-		//@unlockButton = @Button(Vec2f(300,-24), Vec2f(200,24), "Unlock for: "+_cost+" platinum", SColor(255,255,255,255));
-		//classFrame.addChild(unlockButton);
-		//unlockButton.addClickListener(UnlockButtonHandler);
-		//if ( gained == true )
-			//unlockButton.isEnabled = false;
 		
 		Label@ classDescText = @Label(Vec2f(0,16), Vec2f(480,34), "", SColor(255,0,0,0), false);
 		classDescText.setText(classDescText.textWrap(_desc));
@@ -109,12 +130,26 @@ class WWPlayerClassButton
 			
 			classFrame.addChild(spellButtons[i]);
 		}
+
+		Vec2f firstIconPos = Vec2f(98 + 40*0 + (0 == 0 ? 0 : 12), 12) + (0 == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-6, -6);
+		Vec2f lastIconPos = Vec2f(98 + 40*(specialities.size()-1) + ((specialities.size()-1) == 0 ? 0 : 12), 12) + ((specialities.size()-1) == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-70, 22);
+		
+		classFrame.addChild(@Rectangle(firstIconPos, lastIconPos + Vec2f(16,16), SColor(255,66,72,75)));
+		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(2,2), lastIconPos + Vec2f(12,12), SColor(255,151,167,146)));
+		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(4,4), lastIconPos + Vec2f(8,8), SColor(255,108,119,110)));
+		
+		for (u8 i = 0; i < specialities.size(); i++)
+		{
+			Icon@ temp = @Icon("Specializations.png", Vec2f(98 + 40*i + (i == 0 ? 0 : 12), 12) + (i == 0 ? Vec2f_zero : Vec2f(8,8)), Vec2f(16,16), specialities[i], i == 0 ? 1.5f : 1.0f);
+			temp.addHoverStateListener(iconHover);
+			classFrame.addChild(temp);
+		}
 		
 		@spellDescText = @Label(Vec2f(0,200), Vec2f(480,34), "Select a spell above to see its description.", SColor(255,0,0,0), false);
 		classFrame.addChild(spellDescText);
 		
 		Label@ hotbarHelpText = @Label(Vec2f(0,408), Vec2f(480,34), "", SColor(255,0,0,0), false);
-		hotbarHelpText.setText(hotbarHelpText.textWrap("HOW TO ASSIGN HOTKEYS: Select a spell at the top of the page and click a location in the hotbar directly above")); 
+		hotbarHelpText.setText(hotbarHelpText.textWrap("HOW TO ASSIGN HOTKEYS: Select a spell at the top of the page and click a location in the hotbar directly above this hint")); 
 		classFrame.addChild(hotbarHelpText);
 		
 		classFrame.isEnabled = false;
@@ -184,7 +219,7 @@ class WWPlayerClassButtonList : GenericGUIItem
 	List@ playerChooser = @List(Vec2f(0,0),Vec2f(300,30));
 	Button@ playerChooserArrow = @Button(Vec2f(-322,-430),Vec2f(30,30),"V",SColor(255,255,255,255));
 	bool displaying = false, needsUpdate = false, hoverDet = false;
-	
+	u8[] specialities;
 
 	//Styles: 0 = mini|1= small\\
 	WWPlayerClassButtonList(Vec2f _position,Vec2f _size,int _style){
@@ -207,13 +242,14 @@ class WWPlayerClassButtonList : GenericGUIItem
 	}
 
 	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0,string _modName = "Default", 
-		string _imageName = "GUI/ClassIcons.png", int _size = 1)
+		u8[] _specialities = array<u8>(), string _imageName = "GUI/ClassIcons.png", int _size = 1)
 	{
-		WWPlayerClassButton@ classButton = @WWPlayerClassButton(_name, _desc, _configFilename, _classID, _cost, _imageName, _icon, _rarity, _modName, position, _size);
+		WWPlayerClassButton@ classButton = @WWPlayerClassButton(_name, _desc, _configFilename, _classID, _cost, _imageName, _icon, _rarity, _modName, position, _size, _specialities);
 		list.push_back(classButton);
 		totalPages = (list.length / ApP)+1;
 		if (totalPages > 1)nextP.locked = false;
 		pageNum.setText("PAGE "+page);
+		this.specialities = _specialities;
 	}
 	
 	/*void unlockByName(string _name)
@@ -336,73 +372,87 @@ void intitializeClasses()
 	playerClassButtons.isEnabled = false;
 	
 	playerClassButtons.registerWWPlayerClassButton("Wizard", 
-													"     A versatile magic-weilding class with a wide variety of spells at their disposal. Control the natural elements to defeat foes and assist allies. Complexity: HARD" +
+													"\nSpecialities: \n\n" +
 													"\n     Health: 75" +
-													"\n     Mana: 150" +
-													"\n     Mana Regen: 3 mana/sec", 
-													"wizard", 0, 0, 2, 5, "WizardWars");
+													"     Mana: 150" +
+													"     Mana rate: 3 mana/sec", 
+													"wizard", 0, 0, 2, 5, "WizardWars", specialities_wizard);
 	
 	playerClassButtons.registerWWPlayerClassButton("Necromancer", 
-													"     A spell-caster who is able to summon the undead and specializes in dark magic. Takes on the role of AOE damage support, but can hold his own in combat. Complexity: EASY" +
+													"\nSpecialities: \n\n" +
 													"\n     Health: 100" +
-													"\n     Mana: 100" +
-													"\n     Mana Regen: 4 mana/sec", 
-													"necromancer", 1, 0, 3, 5, "WizardWars");
+													"     Mana: 100" +
+													"     Mana rate: 4 mana/sec", 
+													"necromancer", 1, 0, 3, 5, "WizardWars", specialities_necromancer);
 
 	playerClassButtons.registerWWPlayerClassButton("Druid", 
-													"     A healing bastard. Druids claim to be in tune with nature, but they fail to mention how annoying bees can be. Complexity: EASY" +
+													"\nSpecialities: \n\n" +
 													"\n     Health: 70" +
-													"\n     Mana: 150" +
-													"\n     Mana Regen: 4 mana/sec",
-													"druid", 3, 20, 4, 0, "WizardWars");
+													"     Mana: 150" +
+													"     Mana rate: 4 mana/sec",
+													"druid", 3, 20, 4, 0, "WizardWars", specialities_druid);
 													
 	playerClassButtons.registerWWPlayerClassButton("Swordcaster", 
-													"     \"This is a good day for Swordcasters all around the world.\" Complexity: HARD\" " +
+													"\nSpecialities: \n\n" +
 													"\n     Health: 90" +
-													"\n     Mana: 100" +
-													"\n     Mana Regen: 3 mana/sec",
-													"swordcaster", 4, 0, 5, 0, "WizardWars");
+													"     Mana: 100" +
+													"     Mana rate: 3 mana/sec",
+													"swordcaster", 4, 0, 5, 0, "WizardWars", specialities_swordcaster);
 	playerClassButtons.registerWWPlayerClassButton("Entropist", 
-													"     There is no better feeling than giving the enemy a taste of their own medicine. Good enemy rusher with impactful damage. Complexity: HARD" +
+													"\nSpecialities: \n\n" +
 													"\n     Health: 75" +
-													"\n     Mana: 200" +
-													"\n     Mana Regen: 2 mana/sec",
-													"entropist", 5, 0, 6, 0, "WizardWars");
+													"     Mana: 200" +
+													"     Mana rate: 2 mana/sec",
+													"entropist", 5, 0, 6, 0, "WizardWars", specialities_entropist);
 
 	playerClassButtons.registerWWPlayerClassButton("Priest", 
-													"Has a breathe of smite and holy water. Owns expensive, but impactful AOE spells. Complexity: MEDIUM" +
+													"\nSpecialities: \n\n" +
 													"\n     Health: 80" +
-													"\n     Mana: 150" +
-													"\n     Mana Regen: 4 mana/sec",
-													"priest", 6, 0, 7, 0, "WizardWars");
+													"     Mana: 150" +
+													"     Mana rate: 4 mana/sec",
+													"priest", 6, 0, 7, 0, "WizardWars", specialities_priest);
 
 	playerClassButtons.registerWWPlayerClassButton("Shaman", 
-													"A powerful elementalist, so known totemist. Has a variety of counterattack spells which deal more damage near or from inside enemy groups. Complexity: MEDIUM" +
+													"\nSpecialities: \n\n" +
 													"\n     Health: 80" +
-													"\n     Mana: 125" +
-													"\n     Mana Regen: 4 mana/sec",
-													"shaman", 7, 0, 8, 0, "WizardWars");
+													"     Mana: 125" +
+													"     Mana rate: 4 mana/sec",
+													"shaman", 7, 0, 8, 0, "WizardWars", specialities_shaman);
 
 	playerClassButtons.registerWWPlayerClassButton("Paladin", 
-													"Justice guardian. Handicapped in spells range and agility. Complexity: MEDIUM" +
+													"\nSpecialities: \n\n" +
 													"\n     Health: 100" +
-													"\n     Mana: 250" +
-													"\n     Mana Regen: 3 mana/sec",
-													"paladin", 8, 0, 9, 0, "WizardWars");
+													"     Mana: 250" +
+													"     Mana rate: 3 mana/sec",
+													"paladin", 8, 0, 9, 0, "WizardWars", specialities_paladin);
 
 	playerClassButtons.registerWWPlayerClassButton("Jester", 
-													"Master of mayhem, casting chaos with jests and jokes. And you are about to conceive a hatred soon." +
+													"\nSpecialities: \n\n" + 
 													"\n     Health: 80" +
-													"\n     Mana: 150" +
-													"\n     Mana Regen: 3 mana/sec",
-													"jester", 9, 0, 10, 0, "WizardWars");
-													
-/*	playerClassButtons.registerWWPlayerClassButton("Archer", 
-													"     The most powerful class ever with over 1000 mana fit for taking on the Gods. Too bad they skipped magic class. " +
-													"\n\n     Health: 40" +
-													"\n     Mana: 1001" +
-													"\n     Mana Regen: 100 mana/sec",
-													"archer", 6, 0, 6, 0, "WizardWars");*/
+													"     Mana: 150" +
+													"     Mana rate: 3 mana/sec",
+													"jester", 9, 0, 10, 0, "WizardWars", specialities_jester);
+}
+
+void iconHover(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Icon@ sender = cast<Icon>(item);
+	if (sender is null) return;
+
+	string text = specialities_names[sender.index];
+	if (hover)
+	{
+		if (text != "")
+		{
+			tooltip = text;
+		}
+	}
+	else if (text == tooltip) 
+	{
+		tooltip = "";
+	}
 }
 
 void SwapButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
@@ -532,7 +582,7 @@ void SpellButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 
 				playerClassButtons.list[c].spellDescText.setText(playerClassButtons.list[c].spellDescText.textWrap("-- " + sSpell.name + " --" + 
 																													"\n     " + sSpell.spellDesc + 
-																													"\n\n  Mana cost: " + sSpell.mana));
+																													"\n  Mana cost: " + sSpell.mana));
 			}
 			else
 			{
@@ -551,6 +601,19 @@ void RenderClassMenus()		//very light use of KGUI
 	if (localPlayer is null )
 	{
 		return;
+	}
+
+	if (tooltip != "")
+	{
+		GUI::SetFont("hud");
+
+		Vec2f mouseScreenPos = getControls().getInterpMouseScreenPos();
+		Vec2f dim;
+		GUI::GetTextDimensions(tooltip, dim);
+
+		Vec2f extra = Vec2f(8,8);
+		GUI::DrawSunkenPane(mouseScreenPos - extra + Vec2f(8,8), mouseScreenPos + dim + extra + Vec2f(8,8));
+		GUI::DrawText(tooltip, mouseScreenPos + Vec2f(7,8), color_white);
 	}
 	
 	PlayerPrefsInfo@ playerPrefsInfo;
