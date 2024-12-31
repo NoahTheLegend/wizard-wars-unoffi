@@ -16,7 +16,7 @@ const string[] specialties_names = {
 	"Fire - may ignite enemies",			"Water - extinguishes fire",			"Earth",			"Air - high knockback",			"Nature",			"Electricity - deals more damage to wet enemies",
 	"Ice - may freeze or deal more damage to wet enemies",			"Holy",			"Unholy",			"",			"",			"",
 	"",			"",			"",			"",			"",			"",
-	"Heal - restore health to allies or yourself",			"Support - wide variety of buffs",			"Summoner - create npcs and sentries",			"AoE - Area of Effect spells",			"Control - tools to manipulate your enemies",			"Versatile - good at offense and defense",
+	"Heal - restore health to allies or yourself",			"Support - wide variety of buffs",			"Summoner - create NPCs or sentries",			"AoE - Area of Effect spells",			"Control - tools to manipulate your enemies",			"Versatile - good at offense and defense",
 	"Impacter - damage dealer",			"Agility - movement spells",			"Map control - long-living static spells",			"Tank - redirect enemy focus to yourself",			"Life stealer - some spells will heal upon dealing damage",			"Mana dependency - shortage of mana will make you vulnerable",
 	"Cheap spells - spamming those is not a bad decision",			"",			"",			"",			"",			"",
 };
