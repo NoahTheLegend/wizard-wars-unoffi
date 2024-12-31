@@ -91,33 +91,20 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {	
 	if (blob !is null)
 	{
-		if( blob.hasTag("zombie") && isEnemy(this, blob))
+		if(isEnemy(this, blob))
 		{
-			this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 2.0f, Hitters::fire, true);
+			if (blob.hasTag("zombie")) this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 2.0f, Hitters::fire, true);
+			else this.server_Hit(radiusBlob, radiusBlob.getPosition(), Vec2f_zero, 0.0f, Hitters::fire, false);
 		}
 		else if ( (blob.hasTag("player") && isEnemy(this, blob)) && this.getTickSinceCreated() > min_detonation_time )
 		{
 			if (!this.isOnGround() && !this.isInWater() && !this.get_bool("bomb armed"))
 			{
-				if(blob.get_u16("fireProt") > 0)
-				{
-					this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 0.0f, Hitters::fire, true);
-				}
-				else
-				{
-					this.server_Hit(blob, blob.getPosition(), this.getVelocity(), hit_amount_air, Hitters::fire, true);
-				}
+				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), hit_amount_air, Hitters::fire, true);
 			}
 			else
 			{
-				if(blob.get_u16("fireProt") > 0)
-				{
-					this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 0.0f, Hitters::fire, true);
-				}
-				else
-				{
-					this.server_Hit(blob, blob.getPosition(), this.getVelocity(), hit_amount_ground, Hitters::fire, true);
-				}
+				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), hit_amount_ground, Hitters::fire, true);
 			}
 			Boom( this );
 		}
