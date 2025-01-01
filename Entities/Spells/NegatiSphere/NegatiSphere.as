@@ -120,7 +120,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 
 bool doesCollideWithBlob( CBlob@ this, CBlob@ b )
 {
-	return false;
+	return b.getName() == this.getName();
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
