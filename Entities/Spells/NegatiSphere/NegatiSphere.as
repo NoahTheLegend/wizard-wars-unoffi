@@ -23,12 +23,12 @@ void onInit( CBlob@ this )
 
 void onTick( CBlob@ this )
 {     
-	if(this.getCurrentScript().tickFrequency == 1)
+	if(!this.hasTag("init"))
 	{
+		this.Tag("init");
 		if(isClient())
-		this.getSprite().PlaySound("SpriteFire1.ogg", 0.2f, 1.5f + XORRandom(10)/10.0f);
+			this.getSprite().PlaySound("SpriteFire1.ogg", 0.2f, 1.5f + XORRandom(10)/10.0f);
 		// done post init
-		this.getCurrentScript().tickFrequency = 2;
 	}
 
 	if ((getGameTime()+Maths::Pow(this.getNetworkID(), 2)) % 60 == 0
@@ -183,5 +183,5 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 				this.server_Die();
 			}
 		}
-	} 
+	}
 }
