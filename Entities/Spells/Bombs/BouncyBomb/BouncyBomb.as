@@ -2,7 +2,6 @@
 
 void onInit(CBlob@ this)
 {
-	this.Tag("standingup");
 	this.Tag("counterable");
 	this.Tag("projectile");
 	this.Tag("exploding"); 

@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.Tag("projectile");
 	this.Tag("die_in_divine_shield");
+	this.Tag("ice spell");
 
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	CSprite@ thisSprite = this.getSprite();

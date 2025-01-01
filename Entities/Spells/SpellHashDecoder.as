@@ -420,6 +420,8 @@ bool doesShardDefend ( CBlob@ b )
 bool doesShardKill (CBlob@ b)
 {
 	if (b is null) return false;
+
+	if (b.hasTag("barrier") || b.hasTag("negatisphere") || b.hasTag("totem") || b.hasTag("standingup")) return false;
 	if (b.hasTag("kill other spells") || b.hasTag("counterable")) return true;
 
 	return false;

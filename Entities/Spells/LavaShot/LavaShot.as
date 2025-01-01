@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
 	consts.bullet = false;
 
 	this.Tag("kill water spells");
+	this.Tag("fire spell");
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("exploding");

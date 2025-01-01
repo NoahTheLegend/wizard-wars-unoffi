@@ -2,6 +2,8 @@
 
 void onInit(CBlob@ this)
 {
+	this.Tag("kill water spells");
+	this.Tag("fire spell");
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("kill other spells");
@@ -24,7 +26,6 @@ void onInit(CBlob@ this)
 	this.SetLightColor(SColor(255, 211, 121, 224));
 	this.set_string("custom_explosion_sound", "OrbExplosion.ogg");
 	this.getSprite().SetZ(1000.0f);
-
 }
 
 void onTick(CBlob@ this)

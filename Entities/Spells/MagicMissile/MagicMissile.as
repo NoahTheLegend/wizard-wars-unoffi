@@ -11,7 +11,6 @@ const int SEARCH_DELAY = 5; // how often to tick to try search for new targets
 
 void onInit(CBlob@ this)
 {
-	this.Tag("phase through spells");
     this.Tag("counterable");
 	this.set_f32("damage", 1.0f);
     this.getShape().SetGravityScale(0);

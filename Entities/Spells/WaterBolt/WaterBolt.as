@@ -7,6 +7,7 @@ void onInit(CBlob@ this)
 	this.Tag("kill other spells");
 	this.Tag("counterable");
 	this.Tag("water projectile");
+	this.Tag("water spell");
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
@@ -63,7 +64,8 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
 	(
-		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") || target.hasTag("barrier") )
+		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door")
+			|| target.getName() == "trap_block") || (target.hasTag("barrier") && target.getTeamNum() != this.getTeamNum()) )
 		||
 		(
 			target.hasTag("flesh") 

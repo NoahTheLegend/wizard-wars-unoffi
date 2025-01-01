@@ -4,7 +4,6 @@ const f32 AOE = 12.0f;//radius
 const int min_detonation_time = 3;
 void onInit(CBlob@ this)
 {
-	this.Tag("standingup");
 	this.Tag("counterable");
 	this.Tag("projectile");
 	this.Tag("exploding"); //doesn't have the Explode script

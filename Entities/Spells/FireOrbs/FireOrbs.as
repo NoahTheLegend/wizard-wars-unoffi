@@ -11,6 +11,7 @@ void onInit( CBlob@ this )
 	this.set_Vec2f("target", Vec2f_zero);
 	this.set_s8("lifepoints", 10);
 	this.Tag("kill water spells");
+	this.Tag("fire spell");
 
     this.getShape().SetGravityScale( 0.0f );
 	this.getShape().getConsts().mapCollisions = false;

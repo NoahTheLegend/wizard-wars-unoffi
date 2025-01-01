@@ -206,7 +206,7 @@ class KillSpreeMessage : HoverMessage
 				);
 			}
 
-			tokens.push_back(MessageToken(kill_counter, SColor(255, 255, 0, 0), Vec2f(-username_dimensions.x/2 - 20.0f,0)));
+			if (i == 0) tokens.push_back(MessageToken(kill_counter, SColor(255, 255, 0, 0), Vec2f(-username_dimensions.x/2 - 20.0f,0)));
 
 			offset.y += Maths::Max(clantag_dimensions.y, username_dimensions.y);
 		}

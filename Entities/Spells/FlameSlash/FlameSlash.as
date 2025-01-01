@@ -77,11 +77,18 @@ void onTick(CBlob@ this)
 
 				if(this.getTeamNum() == b.getTeamNum())
 				{continue;}
+
 				if(b.getName() == "force_of_nature") //if beeg green orb, no kil
 				{continue;}
+
+				if (b.hasTag("water spell") || b.hasTag("ice spell"))
+				{
+					this.server_Hit(b, this.getPosition(), Vec2f_zero, 999.0f, Hitters::fire, false);
+				}
+
 				if (b.hasTag("cantmove") || b.hasTag("invincible")) continue;
 				
-				this.server_Hit(b,this.getPosition(), Vec2f_zero , damage , Hitters::fire , false);
+				this.server_Hit(b, this.getPosition(), Vec2f_zero, damage, Hitters::fire, false);
 				b.AddForce(aimDir*800);
 			}
 			

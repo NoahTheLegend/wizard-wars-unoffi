@@ -11,6 +11,7 @@ void onInit(CBlob@ this)
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("die_in_divine_shield");
+	this.Tag("no trampoline collision");
 	shape.SetGravityScale( 0.0f );
 
     //dont collide with top of the map

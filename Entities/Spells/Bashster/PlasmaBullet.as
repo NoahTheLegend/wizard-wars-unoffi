@@ -3,7 +3,6 @@
 
 void onInit(CBlob@ this)
 {
-	this.Tag("phase through spells");
     this.Tag("counterable");
 	this.Tag("projectile");
 	this.Tag("exploding");

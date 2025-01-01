@@ -13,6 +13,7 @@ void onInit( CBlob @ this )
 	this.Tag("counterable");
 	this.Tag("exploding");
 	this.Tag("projectile");
+	this.Tag("ice spell");
 	
     this.set_u8("launch team",255);
 	this.set_f32("freeze_power", 0.0f);

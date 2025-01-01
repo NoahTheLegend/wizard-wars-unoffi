@@ -4,6 +4,7 @@ void onInit(CBlob@ this)
 {
     this.set_u8("frame", 0);
     this.Tag("magic_circle");
+    this.Tag("fire spell");
 
     this.SetLightRadius(effectRadius);
     this.SetLightColor(SColor(255,255,0,0));

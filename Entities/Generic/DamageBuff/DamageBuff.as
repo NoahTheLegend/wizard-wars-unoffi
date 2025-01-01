@@ -8,7 +8,8 @@ void onInit(CBlob@ this)
     shape.getConsts().collidable = false;
     this.addCommandID("clientdeath");	
     this.addCommandID("message");
-	
+    
+    this.Tag("no trampoline collision");
 }
 
 void onTick( CBlob@ this )

@@ -27,11 +27,10 @@ void onTick( CBlob@ this )
 		CShape@ shape = this.getShape();
 		shape.SetStatic(true);
 		
-		
 		CSprite@ sprite = this.getSprite();
 		sprite.getConsts().accurateLighting = false;
 		//sprite.setRenderStyle(RenderStyle::additive);
-		sprite.SetRelativeZ(1000);
+		sprite.SetZ(-50);
 	}
 	
 	CMap@ map = this.getMap();

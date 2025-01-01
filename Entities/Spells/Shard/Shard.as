@@ -21,6 +21,23 @@ void onInit(CBlob@ this)
 	this.set_netid("owner",0);
 	this.set_s8("shardID",-1);
 	this.set_u32("deadTimer",0);
+	this.Tag("barrier");
+}
+
+f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
+{
+	if (this.get_u32("deadTimer") > 0)
+	{
+		return 0;
+	}
+
+	if (damage >= this.getHealth())
+	{
+		this.set_u32("deadTimer", timeout_time);
+		return 0;
+	}
+
+	return damage;
 }
 
 void onTick( CBlob@ this )
@@ -30,6 +47,14 @@ void onTick( CBlob@ this )
 	{
 		this.server_Die();
 		return;
+	}
+
+	if (getGameTime() % 30 == 0)
+	{
+		if (this.getHealth() < this.getInitialHealth())
+		{
+			this.server_SetHealth(Maths::Min(this.getInitialHealth(), this.getHealth() + 0.1f));
+		}
 	}
 
 	CSprite@ sprite = this.getSprite();
@@ -153,23 +178,32 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 	}
 	else
 	{
-		if(blob !is null && blob.hasTag("counterable") && isEnemy(this, blob))
+		if(blob !is null && blob.hasTag("counterable") && isEnemy(this, blob) && !blob.hasTag("phase through spells"))
 		{
 			//Vec2f blobVel = blob.getVelocity();
 			//blob.setVelocity(-blobVel);
 			if(doesShardKill(blob))
 			{
+				bool dead = false;
+
 				if(blob.hasTag("exploding"))
 				{
 					blob.Untag("exploding");
+					dead = true;
 				}
 
+				this.server_Hit(blob, blob.getPosition(), Vec2f(0,0), 99.0f, Hitters::crush, true);
 				blob.server_Die();
-			}
+				
+				if (blob.hasTag("kill other spells"))
+				{
+					dead = true;
+				}
 
-			if(doesShardDefend(blob))
-			{
-				this.set_u32("deadTimer", timeout_time);
+				if (dead)
+				{
+					this.set_u32("deadTimer", timeout_time);
+				}
 			}
 		}
 	}

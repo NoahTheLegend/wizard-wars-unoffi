@@ -9,6 +9,7 @@ void onInit(CBlob@ this)
 	this.set_f32("lerpfactor", 0);
 	this.Tag("projectile");
     this.Tag("counterable");
+	this.Tag("phase through spells");
 	shape.SetGravityScale( 0.0f );
 
 	this.set_f32("damage", 1.0f);

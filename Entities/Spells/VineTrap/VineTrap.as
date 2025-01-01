@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
 	shape.getConsts().collidable = false;
 	
 	this.addCommandID("sync_id");
+	this.Tag("totem");
 	this.Tag("counterable");
 
 	//default values

@@ -10,6 +10,7 @@ void onInit( CBlob @ this )
 {
 	this.Tag("kill other spells");
 	this.Tag("kill water spells");
+	this.Tag("fire spell");
 	this.Tag("counterable");
 	this.Tag("projectile");
 
