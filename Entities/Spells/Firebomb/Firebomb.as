@@ -4,7 +4,7 @@ const f32 hit_amount_ground = 0.6f;
 const f32 hit_amount_air = 3.0f;
 
 const int bomb_timer = 70;
-const int min_detonation_time = 9;
+const int min_detonation_time = 10;
 
 void onInit( CBlob @ this )
 {
@@ -96,21 +96,22 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 		{
 			if (blob.hasTag("zombie")) this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 2.0f, Hitters::fire, true);
 			else this.server_Hit(blob, blob.getPosition(), Vec2f_zero, 0.0f, Hitters::fire, false);
-		}
-		else if ( (blob.hasTag("player") && isEnemy(this, blob)) && this.getTickSinceCreated() > min_detonation_time )
-		{
-			if (!this.isOnGround() && !this.isInWater() && !this.get_bool("bomb armed"))
+
+			if ( (blob.hasTag("player")) && this.getTickSinceCreated() > min_detonation_time )
 			{
-				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), hit_amount_air, Hitters::fire, true);
+				if (!this.isOnGround() && !this.isInWater() && !this.get_bool("bomb armed"))
+				{
+					this.server_Hit(blob, blob.getPosition(), this.getVelocity(), hit_amount_air, Hitters::fire, true);
+				}
+				else
+				{
+					this.server_Hit(blob, blob.getPosition(), this.getVelocity(), hit_amount_ground, Hitters::fire, true);
+				}
+				Boom( this );
 			}
-			else
-			{
-				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), hit_amount_ground, Hitters::fire, true);
-			}
-			Boom( this );
 		}
 	}
-	if(this is null){return;}
+
 	if ( solid )
 	{
 		this.set_bool("bomb armed", true);
