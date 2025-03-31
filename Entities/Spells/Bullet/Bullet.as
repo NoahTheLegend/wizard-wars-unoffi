@@ -56,7 +56,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
 	(
-		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block") )
+		(target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block"))
 		||
 		(
 			target.hasTag("flesh") 

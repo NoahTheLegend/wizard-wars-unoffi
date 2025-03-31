@@ -44,7 +44,7 @@ namespace EntropistParams
 		Spell("voltage_field", "Voltage Field", 54, "Releases a bubble of electricity that knocks away projectiles and enemies that collide with it. Cannot cast spells while active.",
 				SpellType::other, 20, 45, 6, 1.0f, true),
 			
-		Spell("nova", "Nova", 55, "Releases a homing, concentrated energy star. Explodes on contact.",
+		Spell("nova", "Nova", 55, "Releases a homing, short-living concentrated energy star. Explodes on contact.",
 				SpellType::other, 30, 45, 25, 100.0f, true),
 			
 		Spell("burn", "Burn", 60, "Ignite your mana reserves and fuel your magic with blinding heat. Reduces mana generation by 1.",
