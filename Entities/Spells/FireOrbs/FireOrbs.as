@@ -2,6 +2,11 @@
 #include "MakeDustParticle.as";
 #include "SpellHashDecoder.as";
 
+const f32 distance = 54.0f;
+const f32 distance_fluctuation = 16.0f;
+const f32 rot_speed_base = 6;
+const f32 rot_speed_fluctuation = 1;
+
 void onInit( CBlob@ this )
 {
 	this.Tag("counterable");
@@ -12,6 +17,7 @@ void onInit( CBlob@ this )
 	this.set_s8("lifepoints", 10);
 	this.Tag("kill water spells");
 	this.Tag("fire spell");
+	this.Tag("die_in_divine_shield");
 
     this.getShape().SetGravityScale( 0.0f );
 	this.getShape().getConsts().mapCollisions = false;
@@ -26,6 +32,8 @@ void onInit( CBlob@ this )
 	this.set_bool("map_damage_raycast", true);
 	this.set_bool("explosive_teamkill", false);
     this.Tag("exploding");
+
+	this.SetMapEdgeFlags(CBlob::map_collide_none | CBlob::map_collide_nodeath);
 
     this.SetLight( true );
 	this.SetLightRadius( 32.0f );
@@ -58,7 +66,6 @@ void onTick( CBlob@ this )
 	}
 
 	bool has_target = false;
-
 	Vec2f pos = this.getPosition();
 	Vec2f tpos = shooter.getPosition();
 
@@ -74,6 +81,7 @@ void onTick( CBlob@ this )
 			if (orbs[i] is null) continue;
 			orbs_id.push_back(orbs[i].getNetworkID());
 		}
+
 		for (u16 i = 0; i < orb_count; i++)
 		{
 			for (u16 j = 0; j < orb_count; j++)
@@ -86,72 +94,52 @@ void onTick( CBlob@ this )
 				}
 			}
 		}
+
 		for (u16 i = 0; i < orb_count; i++)
 		{
 			if (this.getNetworkID() == orbs_id[i]) this.set_u16("orb_pos", i);
 		}
-
-		f32 dist = 99999.0f;
-		for (u8 i = 0; i < getPlayersCount(); i++)
-		{
-			if (getPlayer(i) !is null && getPlayer(i).getBlob() !is null)
-			{
-				CBlob@ temp_target = getPlayer(i).getBlob();
-				if (temp_target.getTeamNum() == this.getTeamNum() || temp_target.hasTag("dead") || this.getDistanceTo(temp_target) > 128.0f)
-				{
-					continue;
-				}
-				{
-					f32 temp_dist = this.getDistanceTo(temp_target);
-					if (temp_dist < dist)
-					{
-						dist = temp_dist;
-						this.set_u16("tnetid", temp_target.getNetworkID());
-					}	
-				}
-			}
-		}
 	}
-	u16 netid = this.get_u16("tnetid");
+
 	u16 orb_pos = this.get_u16("orb_pos");
+	s8 face = this.getTeamNum() == 1 ? -1 : 1;
+	f32 rot_speed = shooter.hasTag("extra_damage") ? rot_speed_base * 1.25f : rot_speed_base; 
+	Vec2f target_radius_pos = tpos + Vec2f(0, -distance - Maths::Sin(getGameTime() / distance_fluctuation) * (distance_fluctuation + XORRandom(rot_speed_fluctuation * 10) * 0.1f)).RotateBy(face * ((shooter.getTickSinceCreated() * rot_speed) % 360 + 360/orb_count * orb_pos));
 
-	CBlob@ target = getBlobByNetworkID(netid);
-	if (target !is null)
-	{
-		Vec2f move_to = target.getPosition();
-		Vec2f vel = move_to-pos;
+	Vec2f vel = target_radius_pos-pos;
+	this.setVelocity(vel/4);
 
-		this.AddForce(vel/2.5f);
-		if (vel.Length() <= 1.0f) Boom( this );
-	}
-	else
+	if (isClient())
 	{
-		Vec2f offset;
-		u8 row_pos = orb_pos%3;
-		switch (row_pos)
+		//sinusoidal ray of particles
+
+		u8 pc = v_fastrender ? 10 : 20;
+		for (u8 i = 0; i < pc; i++)
 		{
-			case 0:
-			{
-				offset = Vec2f(0.0f,-32.0f);
-				break;
-			}
-			case 1:
-			{
-				offset = Vec2f(-16.0f,-24.0f);
-				break;
-			}
-			case 2:
-			{
-				offset = Vec2f(16.0f,-24.0f);
-				break;
-			}
+			f32 t = float(i) / pc;
+			Vec2f pPos = shooter.getPosition() * (1.0f - t) + this.getPosition() * t;
+
+			Vec2f direction = (this.getPosition() - shooter.getPosition());
+			direction.Normalize();
+			Vec2f perpendicular = Vec2f(-direction.y, direction.x);
+			f32 sideOffset = Maths::Sin(t * Maths::Pi * 1.0f) * 12.0f * face;
+			Vec2f sideAdjustment = perpendicular * sideOffset;
+
+			Vec2f pVel = (this.getPosition() - pPos) * 0.1f;
+			pPos += sideAdjustment;
+
+			u8 alpha = u8(t * 255.0f);
+			CParticle@ p = ParticlePixelUnlimited(pPos, pVel, SColor(alpha, 180 + XORRandom(40), 180 + XORRandom(50), XORRandom(175)), true);
+			if (p is null) return;
+
+			p.collides = false;
+			p.fastcollision = true;
+			p.bounce = 0.0f;
+			p.timeout = 15;
+			p.damping = 0.95;
+			p.gravity = Vec2f(0, 0);
+			p.Z = -50.0f;
 		}
-
-		Vec2f move_to = tpos+Vec2f(offset.x,offset.y-Maths::Floor((8*orb_pos)/3)).RotateBy(Maths::Sin(getGameTime() / 15.0f) * 15.0f, Vec2f(0.0f, -offset.y+Maths::Floor((8*orb_pos)/3)));
-
-		Vec2f vel = move_to-pos;
-		//this.setVelocity(vel*(0.05f));
-		this.setPosition(move_to);
 	}
 }
 
@@ -159,26 +147,28 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
 	(
-		target != null
+		(target !is null && target.getTeamNum() != this.getTeamNum() && (target.hasTag("barrier") || target.hasTag("flesh")))
+		||
+		(target !is null
 		&& target.hasTag("counterable") //all counterables
 		&& !target.hasTag("dead") 
 		&& target.getTeamNum() != this.getTeamNum() //as long as they're on the enemy side
-		&& !target.hasTag("black hole")  //as long as it's not a black hole, go as normal.
+		&& !target.hasTag("black hole"))  //as long as it's not a black hole, go as normal.
 	);
 }	
 
-bool doesCollideWithBlob( CBlob@ this, CBlob@ b )
+bool doesCollideWithBlob(CBlob@ this, CBlob@ b)
 {
-	return false;
+	return isEnemy(this, b);
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
-	if(blob is null || this is null){return;}
+	if (blob is null || this is null) {return;}
 
-	if((blob.hasTag("flesh") || blob.hasTag("barrier")) && blob.getTeamNum() != this.getTeamNum())
+	if (isEnemy(this, blob))
 	{
-		if ( isClient() )
+		if (isClient())
 		{
 			Vec2f dispelPos = this.getPosition();
 			CParticle@ p = ParticleAnimated( "Flash2.png",
@@ -187,9 +177,9 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 					0,
 					0.25f, 
 					8, 
-					0.0f, true ); 	
+					0.0f, true); 	
 									
-			if ( p !is null)
+			if (p !is null)
 			{
 				p.bounce = 0;
    				p.fastcollision = true;
@@ -209,6 +199,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 				pb.Z = -10.0f;
 			}
 		}
+
 		Boom(this);
 		this.server_Die();
 	} 
@@ -236,19 +227,20 @@ void ExplodeWithFire(CBlob@ this)
 	{
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
-			CBlob @b = blobsInRadius[i];
-			if (b !is null)
+			CBlob@ b = blobsInRadius[i];
+			if (b !is null && isEnemy(this, b))
 			{
 				Vec2f bPos = b.getPosition();
 				{
 					f32 damage = this.get_f32("damage");
-					if(b.get_u16("fireProt") > 0)
+					if (b.get_u16("fireProt") > 0)
 					{
-						this.server_Hit(b, bPos, bPos-thisPos, 0.0f, Hitters::fire, false);
+						this.server_Hit(b, bPos, bPos-thisPos, 0.0f, Hitters::explosion, false);
 					}
 					else
 					{
-						this.server_Hit(b, bPos, bPos-thisPos, damage, XORRandom(3) == 0 ? Hitters::fire : Hitters::fire, false);
+						this.server_Hit(b, bPos, bPos-thisPos, 0.0f, Hitters::fire, false);
+						this.server_Hit(b, bPos, bPos-thisPos, damage, Hitters::explosion, false);
 					}
 				}
 			}

@@ -19,8 +19,10 @@ const f32 LASER_WIDTH = 1.0f; //0.5f;
 
 Random@ _laser_r = Random(0x10001);
 
-void onInit( CBlob @ this )
+void onInit(CBlob@ this)
 {
+	this.addCommandID("upgrade");
+
 	this.Tag("phase through spells");
 	this.Tag("counterable");
 	this.Tag("cantparry");
@@ -73,22 +75,64 @@ void setPositionToOwner(CBlob@ this)
 
 void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 {
-    if(this.getCommandID("beam") == cmd)
+    if (this.getCommandID("beam") == cmd)
     {
         if (isServer())
 		{
 			CBlob@ shooter = getBlobByNetworkID(this.get_u16("shooter"));
 			if (shooter is null) return;
+
 			ManaInfo@ manaInfo;
-			if (!shooter.get( "manaInfo", @manaInfo )) {
+			if (!shooter.get( "manaInfo", @manaInfo)) {
 				return;
 			}
+
 			this.server_SetTimeToDie(0.5);
 		}
     }
+	else if (cmd == this.getCommandID("upgrade"))
+	{
+		if (this.hasTag("upgraded")) return;
+		this.Tag("upgraded");
+
+		if (isServer())
+		{
+			this.server_SetTimeToDie(0.5);
+		}
+
+		if (isClient())
+		{
+			CSprite@ thisSprite = this.getSprite();
+			CSpriteLayer@ l = thisSprite.getSpriteLayer("beam");
+			if (l !is null)
+			{
+				l.ResetTransform();
+				l.ScaleBy(Vec2f(1.0f, 1.5f));
+				l.SetRelativeZ(100.0f);
+				l.SetVisible(true);
+
+				Animation@ anim = l.addAnimation("default", 3, true);
+				if (anim !is null)
+				{
+					int[] frames = {3,2,1,0};
+					anim.AddFrames(frames);
+					l.SetAnimation(anim);
+				}
+			}
+
+			CSpriteLayer@ e = thisSprite.getSpriteLayer("endpos");
+			if (e !is null)
+			{
+				e.ResetTransform();
+				e.ScaleBy(Vec2f(1.0f, 1.5f));
+				e.SetRelativeZ(100.0f);
+				e.SetVisible(true);
+			}
+		}
+	}
 }
 
-void onTick( CBlob@ this)
+void onTick(CBlob@ this)
 {
 	CSprite@ thisSprite = this.getSprite();
 	thisSprite.setRenderStyle(RenderStyle::additive);
@@ -96,20 +140,27 @@ void onTick( CBlob@ this)
 	CSpriteLayer@ l = thisSprite.getSpriteLayer("beam");
 	CSpriteLayer@ e = thisSprite.getSpriteLayer("endpos");
 
+	bool upgraded = this.hasTag("upgraded");
 	setPositionToOwner(this);
 
-	if (getGameTime() % 10 == 0) thisSprite.PlaySound("ManaGain.ogg", 0.5f, 1.45f);
-	
+	if (getGameTime() % 10 == 0) thisSprite.PlaySound("ManaGain.ogg", upgraded ? 0.75f : 0.6f, upgraded ? 1.4f : 1.5f);
+	int mod = upgraded ? 2 : 1;
+
+	f32 range = RANGE;
+	f32 damage = DAMAGE * mod;
+	u8 manaTakePeriod = MANA_TAKE_PERIOD;
+	u8 continuousManaTake = CONTINUOUS_MANA_TAKE * mod;
+
 	if (this.getTickSinceCreated() > 1)
 	{
 		this.SetLight(true);
 		this.SetLightRadius(24.0f);
-		SColor lightColor = SColor( 255, 255, 150, 0);
-		this.SetLightColor( lightColor );
+		SColor lightColor = SColor(255, 255, 150, 0);
+		this.SetLightColor(lightColor);
 		thisSprite.SetZ(500.0f);
 		if (l !is null) l.SetVisible(true);
 		if (e !is null) e.SetVisible(true);
-		
+
 		CBlob@ shooter = getBlobByNetworkID(this.get_u16("shooter"));
 		if (shooter is null)
 		{
@@ -121,26 +172,30 @@ void onTick( CBlob@ this)
 			if (isServer()) this.server_Die();
 			return;
 		}
-		
+		shooter.set_u16("beam_id", this.getNetworkID());
+
 		ManaInfo@ manaInfo;
-		if (!shooter.get( "manaInfo", @manaInfo )) {
+		if (!shooter.get("manaInfo", @manaInfo))
+		{
 			return;
 		}
+
 		if (manaInfo.mana > 1)
 		{
-			if (getGameTime() % MANA_TAKE_PERIOD == 0)
+			if (getGameTime() % manaTakePeriod == 0)
 			{
 				if (shooter.isKeyPressed(key_action1) && isClient())
 				{
 					CBitStream params;
 					this.SendCommand(this.getCommandID("beam"), params);
-					shooter.set_u32("NOLMB", getGameTime()+10);
+					if (upgraded) shooter.set_u32("NOLMB", getGameTime() + 10);
 				}
-				manaInfo.mana -= CONTINUOUS_MANA_TAKE;
+
+				manaInfo.mana -= continuousManaTake;
 			}
 		}
 		else if (isServer() && this.getTimeToDie() <= 0.25f) this.server_Die();
-		
+
 		Vec2f aimPos = shooter.getAimPos();
 		Vec2f aimVec = aimPos - thisPos;
 		Vec2f aimNorm = aimVec;
@@ -151,16 +206,16 @@ void onTick( CBlob@ this)
 			this.setAngleDegrees(-aimNorm.Angle());
 			this.getShape().SetAngleDegrees(-aimNorm.Angle());
 		}
-		
-		Vec2f shootVec = aimNorm*RANGE;
-		
-		Vec2f destination = thisPos+shootVec;
-		
+
+		Vec2f shootVec = aimNorm * range;
+
+		Vec2f destination = thisPos + shootVec;
+
 		CMap@ map = this.getMap();
 		f32 shortestHitDist = 9999.9f;
 		HitInfo@[] hitInfos;
 		int attackAngle = this.getAngleDegrees();
-		bool hasHit = map.getHitInfosFromRay(thisPos, attackAngle, RANGE, this, @hitInfos);
+		bool hasHit = map.getHitInfosFromRay(thisPos, attackAngle, range, this, @hitInfos);
 		bool no_reset = false;
 		if (hasHit)
 		{
@@ -168,7 +223,7 @@ void onTick( CBlob@ this)
 			for (uint i = 0; i < hitInfos.length; i++)
 			{
 				HitInfo@ hi = hitInfos[i];
-				
+
 				if (hi.blob !is null) // blob
 				{
 					CBlob@ target = hi.blob;
@@ -176,28 +231,30 @@ void onTick( CBlob@ this)
 					{
 						continue;
 					}
-					else if ( !damageDealt )
+					else if (!damageDealt)
 					{
-                        f32 extraDamage = 1.0f;
-                        if(this.hasTag("extra_damage"))
-                    	{extraDamage += 0.25f;}
-						Vec2f attackVector = Vec2f(1,0).RotateBy(attackAngle);
-						f32 heal = 0.075f+(XORRandom(50)*0.001f);
-						if (getGameTime()%5==0 && target.getTeamNum() != this.getTeamNum())
+						f32 extraDamage = 1.0f;
+						if (this.hasTag("extra_damage"))
+						{
+							extraDamage += 0.25f;
+						}
+						Vec2f attackVector = Vec2f(1, 0).RotateBy(attackAngle);
+						f32 heal = 0.075f + (XORRandom(50) * 0.001f);
+						if (getGameTime() % 5 == 0 && target.getTeamNum() != this.getTeamNum())
 						{
 							if (isServer())
-								this.server_Hit(target, hi.hitpos, this.hasTag("pull") ? -attackVector : attackVector, DAMAGE * extraDamage, Hitters::flying, true);
+								this.server_Hit(target, hi.hitpos, this.hasTag("pull") ? -attackVector : attackVector, damage * extraDamage, Hitters::flying, true);
 						}
-						else if (getGameTime()%10==0 && target.getTeamNum() == this.getTeamNum() && target.getHealth()+heal < target.getInitialHealth())
+						else if (getGameTime() % 10 == 0 && target.getTeamNum() == this.getTeamNum() && target.getHealth() + heal < target.getInitialHealth())
 						{
 							Heal(this, target, heal);
 						}
 					}
 				}
-				
+
 				Vec2f hitPos = hi.hitpos;
 				f32 distance = hi.distance;
-				if ( shortestHitDist > distance )
+				if (shortestHitDist > distance)
 				{
 					shortestHitDist = distance;
 					destination = hitPos;
@@ -206,13 +263,15 @@ void onTick( CBlob@ this)
 				no_reset = true;
 			}
 		}
-		
+
 		f32 dist = this.get_f32("dist");
-		if (!no_reset) dist = RANGE; 
+		if (!no_reset) dist = range;
 
 		CSpriteLayer@ b = thisSprite.getSpriteLayer("beam");
 		CSpriteLayer@ e = thisSprite.getSpriteLayer("endpos");
-		if (e !is null) e.SetOffset(Vec2f(-dist, 1).RotateBy(-attackAngle,Vec2f(-dist, 1)));
+
+		f32 width_mod = upgraded ? 0.7f : 1;
+		if (e !is null) e.SetOffset(Vec2f(-dist, 1).RotateBy(-attackAngle, Vec2f(-dist, 1)));
 		if (b !is null)
 		{
 			b.SetAnimation("default");
@@ -220,27 +279,25 @@ void onTick( CBlob@ this)
 			{
 				b.ResetTransform();
 				b.setRenderStyle(RenderStyle::additive);
-				b.ScaleBy(Vec2f((dist/128.0f)*7.75f, 1.0f));
-				b.SetOffset(Vec2f(64.0f*(dist/-128.0f),0));
+				b.ScaleBy(Vec2f((dist / 128.0f) * 7.75f * width_mod, 1.0f));
+				b.SetOffset(Vec2f(64.0f * (dist / -128.0f), 0));
 			}
 			else
 			{
 				b.ResetTransform();
 				b.setRenderStyle(RenderStyle::additive);
-				b.ScaleBy(Vec2f(7.75f, 1.0f));
-				b.SetOffset(Vec2f(-64.0f,0));
-				
+				b.ScaleBy(Vec2f(7.75f * width_mod, 1.0f));
+				b.SetOffset(Vec2f(-64.0f, 0));
 			}
 		}
-		
+
 		this.set_Vec2f("aim pos", destination);
-		
+
 		Vec2f normal = (Vec2f(aimVec.y, -aimVec.x));
 		normal.Normalize();
-		
-		if ( shortestHitDist < RANGE )
-			beamSparks(destination - aimNorm*4.0f, 20);
 
+		if (shortestHitDist < range)
+			beamSparks(destination - aimNorm * 4.0f, 20);
 	}
 	else this.Sync("pull", true);
 }
