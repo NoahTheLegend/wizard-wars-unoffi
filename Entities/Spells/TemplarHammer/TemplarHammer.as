@@ -20,8 +20,9 @@ void onInit(CBlob@ this)
 
     //dont collide with top of the map
     this.server_SetTimeToDie(3);
+	
 	CSprite@ sprite = this.getSprite();
-	this.set_u16("smashtoparticles_probability", 4); // 1 is 100%, 2 is 50% and so on
+	this.set_u16("smashtoparticles_probability", 3); // 1 is 100%, 2 is 50% and so on
 }
 
 void onTick(CBlob@ this)

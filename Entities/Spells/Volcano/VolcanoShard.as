@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
 	this.set_f32("map dmg modifier", 0.0f); //handled in this script
 	this.set_u8("hurtoncollide hitter", Hitters::boulder);
 	
-	this.getSprite().PlaySound("PlasmaBlast.ogg", 2.5f, 1.25f + + XORRandom(16)*0.01f);
+	this.getSprite().PlaySound("PlasmaBlast.ogg", 2.5f, 1.25f + XORRandom(16)*0.01f);
 
 	this.getShape().SetRotationsAllowed(true);
 	this.getShape().SetGravityScale( 1.15f );
