@@ -26,7 +26,7 @@ namespace PriestParams
 		//Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
 		//	SpellType::other, 3, 30, 0, 360.0f),
 		Spell("epicorbmain", "Orbiting Orbs", 74, "Summons magic orbs rotating around its center. Amount of orbs scales with charge.",
-				SpellType::other, 8, 35, 0, 360.0f, true),
+				SpellType::other, 8, 45, 0, 360.0f, true),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 				SpellType::other, 20, 6, 0, 270.0f, true),
@@ -56,7 +56,7 @@ namespace PriestParams
 				SpellType::other, 75, 120, 30, 92.0f, true),
 				
 		Spell("beam", "Divine Beam", 67, "Continuously damages enemies or heals teammates in beam area. Hold LMB after casting to keep firing. Pushes enemies when overcharged. Merges into a bigger beam when second is cast.",
-				SpellType::other, 8, 15, 2, 128.0f, true),
+				SpellType::other, 8, 25, 2, 128.0f, true),
 							
 		Spell("fireorbs", "Sacrilege Fire", 68, "Summons a smiting ball to spin around you.",
 				SpellType::other, 30, 30, 0, 32.0f, true),	
@@ -65,7 +65,7 @@ namespace PriestParams
 				SpellType::other, 60, 45, 15, 360.0f, true),	
 
 		Spell("fiery_star", "Fiery Stars", 58, "Launch a several concetrated fire elements at your enemies. Overcharge to store them at aim position.",
-				SpellType::other, 25, 30, 1, 256.0f),
+				SpellType::other, 30, 30, 3, 256.0f),
 							
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
 				SpellType::other, 40, 60, 18, 16.0f, true),
