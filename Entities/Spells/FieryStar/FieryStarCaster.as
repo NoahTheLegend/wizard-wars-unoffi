@@ -11,6 +11,11 @@ void onInit(CBlob@ this)
 
     this.getSprite().SetZ(501.0f);
     this.getSprite().setRenderStyle(RenderStyle::additive);
+
+    Vec2f aimpos = this.getPosition();
+	this.set_Vec2f("aimpos", aimpos);
+
+	this.addCommandID("aimpos sync");
 }
 
 void onTeamChange(CBlob@ this, const int oldTeam)
@@ -31,6 +36,24 @@ void onTick(CBlob@ this)
     Vec2f dir = target_pos - this.getPosition();
     f32 dist = dir.Length();
     
+    Vec2f aimpos = this.get_Vec2f("aimpos");
+    CPlayer@ p = this.getDamageOwnerPlayer();
+	if (p !is null)
+	{
+		CBlob@ b = p.getBlob();
+		if (b !is null)
+		{
+			if (p.isMyPlayer())
+			{
+				aimpos = b.getAimPos();
+
+				CBitStream params;
+				params.write_Vec2f(aimpos);
+				this.SendCommand(this.getCommandID("aimpos sync"), params);
+			}
+		}
+	}
+
     if (dist <= 8.0f)
     {
         this.Tag("armed");
@@ -79,5 +102,13 @@ void sparks(CBlob@ this, Vec2f vel, int amount)
             p.fastcollision = true;
             p.damping = 0.9f+XORRandom(10) * 0.01f;
         }
+    }
+}
+
+void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
+{
+    if (cmd == this.getCommandID("aimpos sync"))
+    {
+        this.set_Vec2f("aimpos", params.read_Vec2f());
     }
 }
