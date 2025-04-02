@@ -261,7 +261,7 @@ void onRender(CRules@ this)
 				//GUI::DrawRectangle(hp_bar_pos + extra, hp_br - extra,
 				//	healblock ? SColor(hp_alpha, 120, 120, 120) : SColor(hp_alpha, 34, 120, 14));
 
-				GUI::DrawRectangle(hp_bar_pos + extra, hp_br - extra,
+				GUI::DrawRectangle(hp_bar_pos, hp_br,
 					healblock ? SColor(hp_alpha, 155, 155, 155) : SColor(hp_alpha, 55, 190, 40));
 
 				GUI::SetFont("default");
