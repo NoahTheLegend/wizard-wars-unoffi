@@ -221,7 +221,6 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		}
 
 		Boom(this);
-		this.server_Die();
 	} 
 }
 
