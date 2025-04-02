@@ -35,6 +35,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
 	if (image.isLoaded())
 	{
         sprite.SetVisible(false); // force disable sprite visibility to prevent dublicate in rendering
+        
         Vec2f pos = this.getOldPosition();
         Vec2f vel = this.getOldVelocity();
         f32 deg = this.getAngleDegrees();
@@ -69,8 +70,8 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
         u32 temp_max = 0;
 
         bool additive = this.hasTag("smashtoparticles_additive");
-
-        while(image.nextPixel() && w != 0 && h != 0)
+        
+        while (image.nextPixel() && w != 0 && h != 0)
 		{
             if (temp_max >= max)
             {
