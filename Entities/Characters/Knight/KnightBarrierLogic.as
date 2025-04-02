@@ -25,7 +25,6 @@ void onTick(CBlob@ this)
 	}
 
 	s32 currentCharge = chargeInfo.charge;
-	
 	if(this.get_bool("shifting")) //gets shifting from ShiftTrigger.as
 	{
 		if (!this.hasTag("materializing") && currentCharge > 0) //if no shield is active and available charge, do what's below
