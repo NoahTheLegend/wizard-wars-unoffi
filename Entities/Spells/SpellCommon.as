@@ -3552,10 +3552,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (orb !is null)
 			{
 				orb.set_u8("orbs", orbs);
-				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.Init();
 
 				orb.IgnoreCollisionWhileOverlapped( this );
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.server_setTeamNum( this.getTeamNum() );
 				orb.setPosition( orbPos );
 				orb.setVelocity( orbVel );
