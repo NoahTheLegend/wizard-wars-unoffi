@@ -5,6 +5,8 @@
 #include "TeamColour.as";
 #include "PaladinCommon.as";
 #include "SpellUtils.as";
+#include "EffectsCollection.as";
+#include "PaladinCommon.as";
 
 Random _r(94712);
 
@@ -56,20 +58,20 @@ void onTick(CBlob@ this)
 		antidebuff--;
 		this.set_u16("antidebuff", antidebuff);
 		
-		if ( antidebuff % 2 == 0 )
+		if (antidebuff % 2 == 0)
 		{
 			for (int i = 0; i < 1; i++)
 			{		
-				if(getNet().isClient()) 
+				if (getNet().isClient()) 
 				{
 					const f32 rad = 6.0f;
-					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-					CParticle@ p = ParticleAnimated( "MissileFire8.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true );
-					if ( p !is null)
+					Vec2f random = Vec2f(XORRandom(128)-64, XORRandom(128)-64) * 0.015625f * rad;
+					CParticle@ p = ParticleAnimated("MissileFire8.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
+					if (p !is null)
 					{
 						p.bounce = 0;
     					p.fastcollision = true;
-						if ( XORRandom(2) == 0 )
+						if (XORRandom(2) == 0)
 							p.Z = 10.0f;
 						else
 							p.Z = -10.0f;
@@ -946,38 +948,34 @@ void onTick(CBlob@ this)
 	if (dmgconnection > 0)
 	{
 		dmgconnection--;
+
 		if(!this.hasScript("Wards.as"))
-		{
 			this.AddScript("Wards.as");
-		}
 
-		if(!this.exists("dmgconnectionSetupDone") || !this.get_bool("dmgconnectionSetupDone")) //Ward sprite setup
-		{
-			CSpriteLayer@ layer = thisSprite.addSpriteLayer("dmgconnection_ward","SpiritualConnection.png",64,64);
-			if (layer !is null)
-			{
-				layer.SetRelativeZ(565.55f);
-				layer.ScaleBy(Vec2f(0.75f,0.75f));
-				layer.setRenderStyle(RenderStyle::additive);
-			}
-			this.set_bool("dmgconnectionSetupDone",true);
-		}
+		f32 narrow_center = (Maths::Sin(this.getTickSinceCreated() * 0.05f) + 8.0f) * 0.125f;
+		f32 narrow_top = 	0.0f + narrow_center * 0.1f;
+		f32 narrow_bottom = 0.0f + narrow_center * 0.1f;
 
-		if (thisSprite.getSpriteLayer("dmgconnection_ward") !is null)
-		{
-			CSpriteLayer@ layer = thisSprite.getSpriteLayer("dmgconnection_ward");
-			if (layer !is null)
-			{
-				layer.SetFacingLeft(false);
-				layer.RotateBy(3, Vec2f_zero);
-				layer.setRenderStyle(RenderStyle::additive);
-			}
-		}
+		f32 sin = (Maths::Sin(getGameTime() * 0.1f) + 1.0f) * 0.5f;
+		f32 lasthit_mod_old = this.get_f32("lasthit_mod");
+		int t = 60;
+		f32 diff = Maths::Clamp(float(getGameTime() - this.get_u32("dmgconnection_lasthit")) / t, 0.0f, 1.0f);
+		f32 lasthit_mod = Maths::Sin(diff * Maths::Pi); // Peaks at 1 when diff = 0.5 (t/2) and 0 at 0 or 1 (t)
+		this.set_f32("lasthit_mod", lasthit_mod);
+		
+		CBlob@ caster = getBlobByNetworkID(this.get_u16("dmgconnection_id"));
+		bool is_caster_null = caster is null || caster.hasTag("dead");
+		bool can_transfer = !is_caster_null && caster.getHealth() / caster.getInitialHealth() > min_connection_health_ratio;
+		f32 height_mod = can_transfer ? 1 : 0.33f;
+
+		makeSineSparks(this.getPosition(), 50 + sin*50 + lasthit_mod*50, 28 + 12 * lasthit_mod, height_mod * (24 + 12 * lasthit_mod),
+			SColor(255, 255, 255, XORRandom(155)), narrow_top, narrow_bottom, narrow_center, 1.25f,
+				1.0f, 2 + 4*sin + 6*lasthit_mod, SineStyle::easein, getSineSeed(this.getNetworkID()),
+					can_transfer ? caster.getPosition() : Vec2f_zero, connection_dist);
 
 		if (dmgconnection == 0 || this.hasTag("dead"))
 		{
 			dmgconnection = 0;
-			thisSprite.RemoveSpriteLayer("dmgconnection_ward"); //Ward sprite removal
 			this.set_bool("dmgconnectionSetupDone", false);
 		}
 
@@ -987,7 +985,6 @@ void onTick(CBlob@ this)
 	{
 		this.set_u16("dmgconnection_id", 0);
 	}
-
 
 	u16 hallowedbarrier = this.get_u16("hallowedbarrier");
 	if (hallowedbarrier > 0)

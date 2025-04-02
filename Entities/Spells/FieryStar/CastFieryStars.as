@@ -28,7 +28,7 @@ void onTick(CBlob@ this)
     }
     Vec2f thisPos = this.getPosition();
 
-    if ((getGameTime() - start_time) % delay == 0)
+    if ((getGameTime() - start_time) % delay == 0 || current == max)
     {
         this.set_u8("fierystars_current", current-1);
         if (isServer())
@@ -43,6 +43,7 @@ void onTick(CBlob@ this)
                 orb.set_bool("left", current % 2 == 0);
                 orb.SetDamageOwnerPlayer(this.getPlayer() !is null ? this.getPlayer() : this.getDamageOwnerPlayer());
 
+                if (caster) orb.Tag("instantly_collide");
                 orb.server_SetTimeToDie(1.5f);
             }
         }

@@ -522,7 +522,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if (isServer() && this.get_bool("manatohealth"))
 	{
-		damage *= aura_omega_damage_mod_self;
+		damage *= aura_sigma_damage_mod_self;
 	}
 
 	if (damage >= 0.1f && this.get_bool("damagetomana")) // has effect
@@ -549,8 +549,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			}
 			if (enemiesInRadius.size() > 0)
 			{
-				f32 split_dmg = (damage * aura_omega_damage_mod) / enemiesInRadius.size();
-				if (sv_test) printf(""+damage+" "+aura_omega_damage_mod+" "+enemiesInRadius.size()+" "+split_dmg);
+				f32 split_dmg = (damage * aura_omega_returned_damage_ratio) / enemiesInRadius.size();
+				if (sv_test) printf(""+damage+" "+aura_omega_returned_damage_ratio+" "+enemiesInRadius.size()+" "+split_dmg);
 				
 				for (uint i = 0; i < enemiesInRadius.size(); i++)
 				{
@@ -574,8 +574,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 				s32 maxMana = manaInfo.maxMana;
 				s32 maxtestmana = manaInfo.maxtestmana;
 
-        		s32 amount = damage * 10 * dmg_to_mana_ratio;
-				if (friendly) amount *= friendly_damage_factor;
+        		s32 amount = damage * 10 * aura_omega_dmg_to_mana_ratio;
+				if (friendly) amount *= aura_omega_friendly_damage_factor;
 
 				if (mana < maxMana)
 				{

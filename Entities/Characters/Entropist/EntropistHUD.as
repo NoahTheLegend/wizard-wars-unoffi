@@ -53,7 +53,7 @@ void DrawManaBar(CBlob@ this, Vec2f origin)
 	f32 halfManaSeg = manaPerSegment*(1.0f/2.0f);
 	f32 threeFourthsManaSeg = manaPerSegment*(3.0f/4.0f);
 
-	SColor col = SColor(255,208, 78, 228);
+	SColor col = SColor(255, 218, 88, 238);
     if (this.get_u16("manaburn") > 0) col = SColor(255,155,155,155);
 	
 	int MANA = 0;
