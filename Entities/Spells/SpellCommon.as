@@ -2147,6 +2147,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						{
 							if (other.hasTag("just_update_on_parry"))
 							{
+								print("parried");
 								other.SetDamageOwnerPlayer(this.getPlayer());
 								other.server_setTeamNum(this.getTeamNum());
 							}
