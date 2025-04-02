@@ -10,7 +10,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("launch");
 	this.Tag("controller");
 	this.Tag("cantmove");
-	this.Tag("just_update_on_parry");
+	//this.Tag("just_update_on_parry");
 
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
@@ -391,8 +391,6 @@ void onTeamChange(CBlob@ this, const int oldTeam)
 
 	CBlob@ owner = player.getBlob();
 	if (owner is null) return;
-
-	
 }
 
 enum effects
