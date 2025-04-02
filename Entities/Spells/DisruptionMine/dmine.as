@@ -2,7 +2,7 @@
 
 const f32 duration = 15;
 const f32 radius = 24.0f;
-const f32 visible_radius = 40.0f;
+const f32 visible_radius = 56.0f;
 const f32 damage = 0.5f;
 const u8 delay = 3;
 
