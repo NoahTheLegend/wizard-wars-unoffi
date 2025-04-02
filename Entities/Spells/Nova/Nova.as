@@ -36,7 +36,7 @@ void onTick( CBlob@ this )
 	if(!this.exists("initialized"))
 	{
 		this.getShape().SetGravityScale( 0.0f );
-		this.server_SetTimeToDie(1);
+		this.server_SetTimeToDie(5);
 		this.SetLight( true );
 		this.SetLightRadius( 32.0f );
 		this.SetLightColor( getTeamColor(this.getTeamNum()) );
