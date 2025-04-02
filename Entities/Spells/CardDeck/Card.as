@@ -384,6 +384,17 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 }
 
+void onTeamChange(CBlob@ this, const int oldTeam)
+{
+	CPlayer@ player = this.getDamageOwnerPlayer();
+	if (player is null) return;
+
+	CBlob@ owner = player.getBlob();
+	if (owner is null) return;
+
+	
+}
+
 enum effects
 {
 	heal = 0,

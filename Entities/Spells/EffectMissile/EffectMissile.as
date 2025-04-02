@@ -35,11 +35,8 @@ void onInit( CBlob @ this )
 	this.set_u8("effect", 255);
 	
 	this.set_bool("target found", false);
-	
 	this.set_bool("dead", false);
 	
-	this.set_bool("onCollision triggered", false);
-	this.set_netid("onCollision blob", 0);
 	this.getShape().getConsts().mapCollisions = false;
 }
 
@@ -103,9 +100,6 @@ void onTick( CBlob@ this)
 	}
 
 	u8 targetType = this.get_u8("target_type");
-	
-	bool onCollisionTriggered = this.get_bool("onCollision triggered");	//used to sync server and client onCollision 
-	
 	if ( this.get_bool("initialized") == false && this.getTickSinceCreated() > INIT_DELAY )
 	{
 		this.SetLight(true);
@@ -122,11 +116,11 @@ void onTick( CBlob@ this)
 	}
 	
 	//targetting 
-	if ( this.getTickSinceCreated() > HOMING_DELAY)
+	if (this.getTickSinceCreated() > HOMING_DELAY)
 	{	
 		// try to find player target	
 		CBlob@ target = getBlobByNetworkID(this.get_netid("target"));
-		if ( target is null )
+		if (target is null)
 		{
 			CBlob@[] blobs;
 			this.getMap().getBlobsInRadius( thisPos, SEARCH_RADIUS, @blobs );
@@ -209,11 +203,15 @@ void onTick( CBlob@ this)
 			targetNorm.Normalize();
 			
 			this.AddForce( targetNorm*HOMING_FACTOR );
+			if (this.getDistanceTo(target) < target.getRadius())
+			{
+				setEffect(this, target);
+			}
 		}
 	}
 	
 	//delayed death
-	if ( this !is null )
+	if  (this !is null)
 	{
 		if ( this.get_bool("target found") && this.getTickSinceCreated() > (LIFETIME + EXTENDED_LIFETIME)*30 )
 		{
@@ -224,133 +222,134 @@ void onTick( CBlob@ this)
 			this.server_Die();
 		}
 	}
-	
-	//activate onCollision events
-	if ( onCollisionTriggered && this !is null)
+}
+
+void setEffect(CBlob@ this, CBlob@ blob)
+{
+	if (this.hasTag("set")) {return;}
+
+	if (blob is null) {return;}
+	bool sameTeam = blob.getTeamNum() == this.getTeamNum();
+
+	Vec2f thisPos = this.getPosition();
+	u8 effectType = this.get_u8("effect");
+	u8 targetType = this.get_u8("target_type");
+
+	if (blob.hasTag("player") && !blob.hasTag("set"))
 	{
-		CBlob@ blob = getBlobByNetworkID( this.get_netid("onCollision blob") );
-		
-		if ( blob is null )
-		{return;}
-
-		bool sameTeam = blob.getTeamNum() == this.getTeamNum();
-		this.set_bool("onCollision triggered", false);
-		
-		if (blob.hasTag("player") && !blob.hasTag("dead"))
-		{
-			if ( sameTeam && targetType == 0 && !isOwnerBlob(this, blob) )	//buff status effects
-			{
-				switch(effectType)
-				{
-					case haste_effect_missile:
-					{
-						Haste(blob, this.get_u16("effect_time"));
-					}
-					break;
-
-					case heal_effect_missile:
-					{
-						Heal(this, blob, this.get_f32("heal_amount"));
-					}
-					break;
-
-					case regen_effect_missile:
-					{
-						Regen(blob, this.get_u16("effect_time"));
-					}
-					break;
-
-					case dmgconnection_effect_missile:
-					{
-						Connect(blob, this.get_u16("effect_time"), this.get_u16("link_id"));
-					}
-					break;
-
-					case mana_effect_missile:
-					{
-						manaShot(blob, this.get_u8("mana_used"), this.get_u8("caster_mana"), this.get_bool("silent"), this.get_u8("direct_restore"));
-					}
-					break;
-					
-					case airblastShield_effect_missile:
-					{
-						AirblastShield(blob, this.get_u16("effect_time"));
-					}
-					break;
-
-					case fireProt_effect_missile:
-					{
-						FireWard(blob, this.get_u16("effect_time"));
-					}
-					break;
-
-					case cooldownreduce_effect_missile:
-					{
-						CooldownReduce(blob, this.get_u16("effect_time"), 0.5f);
-					}
-					break;
-
-					case antidebuff_effect_missile:
-					{
-						AntiDebuff(blob, this.get_u16("effect_time"));
-					}
-					break;
-
-					default: break; 
-				} //switch end
-
-				this.server_Die();
-				return;
-			}
-			else if (!sameTeam && targetType == 2)	//curse status effects
-			{
-				if (effectType == slow_effect_missile)
-				{
-					Slow(blob, this.get_u16("effect_time"));
-				}
-				else if (effectType == manaburn_effect_missile)
-				{
-					ManaBurn(blob, this.get_u16("effect_time"));
-				}
-				else if (effectType == healblock_effect_missile)
-				{
-					HealBlock(blob, this.get_u16("effect_time"));
-				}
-						
-				this.server_Die();
-				return;
-			}
-		}
-		else if (blob.getName() == "gravestone" && sameTeam && targetType == 1)	//ally revive spells
+		if (sameTeam && targetType == 0 && !isOwnerBlob(this, blob))	//buff status effects
 		{
 			switch(effectType)
 			{
-				case revive_effect_missile:
+				case haste_effect_missile:
 				{
-					Revive(blob);
+					Haste(blob, this.get_u16("effect_time"));
 				}
 				break;
 
-				case revive_knight_effect_missile:
+				case heal_effect_missile:
 				{
-					ReviveKnight(blob);
+					Heal(this, blob, this.get_f32("heal_amount"));
 				}
 				break;
-			
-				case unholyRes_effect_missile:
+
+				case regen_effect_missile:
 				{
-					UnholyRes(blob);
+					Regen(blob, this.get_u16("effect_time"));
+				}
+				break;
+
+				case dmgconnection_effect_missile:
+				{
+					Connect(blob, this.get_u16("effect_time"), this.get_u16("link_id"));
+				}
+				break;
+
+				case mana_effect_missile:
+				{
+					manaShot(blob, this.get_u8("mana_used"), this.get_u8("caster_mana"), this.get_bool("silent"), this.get_u8("direct_restore"));
 				}
 				break;
 				
-				default: break;
-			} //switch end
+				case airblastShield_effect_missile:
+				{
+					AirblastShield(blob, this.get_u16("effect_time"));
+				}
+				break;
 
+				case fireProt_effect_missile:
+				{
+					FireWard(blob, this.get_u16("effect_time"));
+				}
+				break;
+
+				case cooldownreduce_effect_missile:
+				{
+					CooldownReduce(blob, this.get_u16("effect_time"), 0.5f);
+				}
+				break;
+
+				case antidebuff_effect_missile:
+				{
+					AntiDebuff(blob, this.get_u16("effect_time"));
+				}
+				break;
+
+				default: break; 
+			} //switch end
+			
+			this.Tag("set");
 			this.server_Die();
 			return;
 		}
+		else if (!sameTeam && targetType == 2)	//curse status effects
+		{
+			if (effectType == slow_effect_missile)
+			{
+				Slow(blob, this.get_u16("effect_time"));
+			}
+			else if (effectType == manaburn_effect_missile)
+			{
+				ManaBurn(blob, this.get_u16("effect_time"));
+			}
+			else if (effectType == healblock_effect_missile)
+			{
+				HealBlock(blob, this.get_u16("effect_time"));
+			}
+
+			this.Tag("set");
+			this.server_Die();
+			return;
+		}
+	}
+	else if (blob.getName() == "gravestone" && sameTeam && targetType == 1)	//ally revive spells
+	{
+		switch(effectType)
+		{
+			case revive_effect_missile:
+			{
+				Revive(blob);
+			}
+			break;
+
+			case revive_knight_effect_missile:
+			{
+				ReviveKnight(blob);
+			}
+			break;
 		
-		this.set_bool("onCollision triggered", false);
+			case unholyRes_effect_missile:
+			{
+				UnholyRes(blob);
+			}
+			break;
+			
+			default: break;
+		} //switch end
+
+		this.Tag("set");
+		this.server_Die();
+		return;
 	}
 }
 
@@ -388,18 +387,16 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {	
-	if ( blob is null )
+	if (this.hasTag("dead") || this.getTickSinceCreated() < HOMING_DELAY) {return;}
+
+	if (blob is null)
 	return;
 	
 	CBlob@ target = getBlobByNetworkID(this.get_netid("target"));
 	
 	if(this.get_bool("target found") && target !is null && target is blob)
 	{
-		this.set_bool("onCollision triggered", true);
-		this.set_netid("onCollision blob", blob.getNetworkID());
-	
-		this.Sync("onCollision triggered", true);
-		this.Sync("onCollision blob", true);
+		setEffect(this, blob);
 	}
 }
 

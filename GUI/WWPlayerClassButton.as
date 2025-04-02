@@ -17,7 +17,7 @@ const string[] specialties_names = {
 	"Ice - may freeze or deal more damage to wet enemies",			"Holy",			"Unholy",			"",			"",			"",
 	"",			"",			"",			"",			"",			"",
 	"Heal - restore health to allies or yourself",			"Support - wide variety of buffs",			"Summoner - create NPCs or sentries",			"AoE - Area of Effect spells",			"Control - spells to manipulate your enemies",			"Versatile - good at offense and defense",
-	"Impacter - damage dealer",			"Agility - movement spells",			"Map control - deny large area on the map for some time",			"Tank - redirect enemy focus to yourself",			"Life stealer - some spells will heal upon dealing damage",			"Mana dependency - shortage of mana will make you vulnerable",
+	"Impacter - damage dealer",			"Agility - movement spells",			"Map control - deny large area on the map for some time",			"Tank - redirect enemy focus to yourself",			"Life stealer - some spells will heal upon dealing damage",			"Mana dependency - the more mana you have, the stronger you are",
 	"Cheap spells - spamming those is not a bad decision",			"",			"",			"",			"",			"",
 };
 

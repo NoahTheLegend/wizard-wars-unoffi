@@ -65,7 +65,7 @@ namespace PriestParams
 				SpellType::other, 60, 45, 15, 360.0f, true),	
 
 		Spell("fiery_star", "Fiery Stars", 58, "Launch a several concetrated fire elements at your enemies. Overcharge to store them at aim position.",
-				SpellType::other, 20, 40, 0, 360.0f),
+				SpellType::other, 25, 40, 0, 180.0f),
 							
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
 				SpellType::other, 40, 60, 18, 16.0f, true),

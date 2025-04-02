@@ -13,6 +13,8 @@ Random _sprk_r2(12345);
 void onInit(CBlob@ this)
 {
     this.set_f32("majestyglyph_cd_reduction", 1.0f);
+    this.set_u32("dmgconnection_lasthit", 0);
+    this.set_f32("lasthit_mod", 0);
 }
 
 void onTick(CBlob@ this)
@@ -21,7 +23,7 @@ void onTick(CBlob@ this)
     CSprite@ sprite = this.getSprite();
     if (sprite is null) return;
 
-    if (isClient())
+    /*if (isClient())
     {   
         if (this.get_u16("dmgconnection") > 0) // spiritual connection
         {
@@ -42,7 +44,7 @@ void onTick(CBlob@ this)
                 }
             }
         }
-    }
+    }*/
 
     if (this.get_u16("hallowedbarrier") > 0) // hallowed barrier, spinning shields
     {
@@ -108,6 +110,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
         if (this.get_u16("dmgconnection") > 0 && this.get_u16("dmgconnection_id") != 0)
         {
+            this.set_u32("dmgconnection_lasthit", getGameTime());
+
             if (isServer())
             {
                 CBlob@ link = getBlobByNetworkID(this.get_u16("dmgconnection_id"));
