@@ -64,7 +64,7 @@ void makeSineSparks(Vec2f pos, uint amount, f32 width, f32 height, SColor color,
             Vec2f rel_dir = offset;
             rel_dir.Normalize();
 
-            f32 mod = 0.01f;
+            f32 mod = 0.01f * Maths::Clamp(dir.Length()/58.0f, 0.0f, 1.0f);
 
             if ((lean_pos - (pos + offset)).Length() < distance && (dir.x * rel_dir.x + dir.y * rel_dir.y) > 0)
             {
@@ -78,7 +78,7 @@ void makeSineSparks(Vec2f pos, uint amount, f32 width, f32 height, SColor color,
                 f32 angleFactor = 1.0f - Maths::Clamp(angleDiff, 0.0f, 1.0f);
 
                 extra_offset = dir * mod * edgeFactor * forceFactor * Maths::Pow((angleFactor * 4), 6.0f + (Maths::Sin(Maths::Cos(gt * 0.1f)) + 1.0f) * 0.5f);
-            }
+			}
         }
 
 		CParticle@ p = ParticlePixelUnlimited(pos + offset + extra_offset, pVel, color, true);
