@@ -184,7 +184,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ b)
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (blob is null || this is null) {return;}
-
+	if (this.getTickSinceCreated() < 30) {return;}
 	if (isEnemy(this, blob))
 	{
 		if (isClient())
@@ -362,6 +362,12 @@ void smoke(Vec2f pos, int amount)
 
 void Boom( CBlob@ this )
 {
+	CBlob@ owner = getBlobByNetworkID(this.get_u16("shooter"));
+	if (owner !is null && this.getDistanceTo(owner) < distance * 2)
+	{
+		return;
+	}
+
 	this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 2.0f + XORRandom(20)/10.0f);
 	this.getSprite().PlaySound("FireBlast4.ogg", 0.8f, 1.0f + XORRandom(20)/10.0f);
 	ExplodeWithFire(this);
