@@ -207,12 +207,12 @@ void onTick(CBlob@ this)
 						}
 					}
 
-					if (isServer()) this.setPosition(Vec2f_lerp(pos, origin - offset, lerp));
+					this.setPosition(Vec2f_lerp(pos, origin - offset, lerp));
 				}
 				else
 				{
 					this.Tag("hidden");
-					if (ready && isServer())
+					if (ready)
 					{
 						this.setPosition(Vec2f_lerp(pos, origin +
 							Vec2f(0, unfold_dist.y).RotateBy(

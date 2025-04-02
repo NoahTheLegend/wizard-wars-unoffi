@@ -40,12 +40,12 @@ void onTick(CBlob@ this)
 	Vec2f aimpos = this.get_Vec2f("aimpos");
 
 	CPlayer@ p = this.getDamageOwnerPlayer();
-	if (p !is null)
+	if(p !is null)
 	{
 		CBlob@ b = p.getBlob();
 		if (b !is null)
 		{
-			if (p.isMyPlayer())
+			if(p.isMyPlayer())
 			{
 				aimpos = b.getAimPos();
 

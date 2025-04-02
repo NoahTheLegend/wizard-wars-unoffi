@@ -18,7 +18,13 @@ void onTick(CBlob@ this)
     }
     else
     {
-        aimPos = this.get_Vec2f("aimpos");
+        CPlayer@ owner = this.getDamageOwnerPlayer();
+        if (owner is null) return;
+        
+        CBlob@ owner_blob = owner.getBlob();
+        if (owner_blob is null) return;
+        
+        aimPos = owner_blob.getAimPos();
     }
     Vec2f thisPos = this.getPosition();
 
