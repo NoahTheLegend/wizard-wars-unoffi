@@ -2165,24 +2165,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 									if (other.hasTag("extra_damage")) { orb.Tag("extra_damage"); orb.Sync("extra_damage", true); }
 									if (other.exists("initvel")) { orb.set_Vec2f("initvel", other.get_Vec2f("initvel")); orb.Sync("initvel", true); }
 									
-									if (other.exists("explosive_damage")) { orb.set_f32("explosive_damage", other.get_f32("explosive_damage")); orb.Sync("explosive_damage", true); }
-									if (other.exists("damage")) { orb.set_f32("damage", other.get_f32("damage")); orb.Sync("damage", true); }
 									if (other.exists("dmg")) { orb.set_f32("dmg", other.get_f32("dmg")); orb.Sync("dmg", true); }
 									if (other.exists("vel")) { orb.set_Vec2f("vel", other.get_Vec2f("vel")); orb.Sync("vel", true); }
-									if (other.exists("initvel")) { orb.set_Vec2f("initvel", other.get_Vec2f("initvel")); orb.Sync("initvel", true); }
 									if (other.exists("origin")) { orb.set_Vec2f("origin", other.get_Vec2f("origin")); orb.Sync("origin", true); }
 									else { orb.set_Vec2f("origin", Vec2f_zero); }
 									if (other.exists("index")) { orb.set_u8("index", other.get_u8("index")); orb.Sync("index", true); }
 									else { orb.set_u8("index", 0); }
 									if (other.exists("type")) { orb.set_u8("type", other.get_u8("type")); orb.Sync("type", true); }
-									if (other.exists("lifetime")) { orb.set_f32("lifetime", other.get_f32("lifetime")); orb.Sync("lifetime", true); }
-									if (other.exists("pack_time")) { orb.set_u32("pack_time", other.get_u32("pack_time")); orb.Sync("pack_time", true); }
-									if (other.exists("unpack_time")) { orb.set_u32("unpack_time", other.get_u32("unpack_time")); orb.Sync("unpack_time", true); }
-									if (other.exists("disabled")) { orb.set_u32("disabled", other.get_u32("disabled")); orb.Sync("disabled", true); }
-									if (other.exists("ricochets")) { orb.set_u8("ricochets", other.get_u8("ricochets")); orb.Sync("ricochets", true); }
 									if (other.hasTag("card_"+un)) { orb.Tag("card_"+un); orb.Sync("card_"+un, true); }
 									if (other.hasTag("overcharge")) { orb.Tag("overcharge"); orb.Sync("overcharge", true); }
-									if (other.hasTag("extra_damage")) { orb.Tag("extra_damage"); orb.Sync("extra_damage", true); }
+									if (!other.exists("pack_time")) { orb.set_u32("pack_time", 0); }
+									if (!other.exists("unpack_time")) { orb.set_u32("unpack_time", 0); }
+									if (!other.exists("disabled")) { orb.set_u32("disabled", 0); }
+									if (!other.exists("ricochets")) { orb.set_u8("ricochets", 0); }
 									if (!other.hasTag("hidden")) { orb.Tag("hidden"); }
 									if (!other.exists("state")) { orb.set_u8("state", 0); }
 

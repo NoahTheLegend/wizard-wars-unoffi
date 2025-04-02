@@ -8,8 +8,11 @@ const Vec2f sc_pos = getDriver().getScreenCenterPos();
 
 void onInit(CRules@ this)
 {
-	this.addCommandID("sync_mana");
-	this.addCommandID("callback_mana_request");
+	if (isClient())
+	{
+		this.addCommandID("sync_mana");
+		this.addCommandID("callback_mana_request");
+	}
 }
 
 void onRestart(CRules@ this)
@@ -238,7 +241,7 @@ void onRender(CRules@ this)
 				GUI::DrawText(name, draw_pos - text_dim_half, text_color);
 
 				Vec2f padding = Vec2f(3, 0);
-				Vec2f dim = Vec2f(48, 16) - padding;
+				Vec2f dim = Vec2f(50, 16) - padding;
 				Vec2f hp_bar_pos = draw_pos + Vec2f(-dim.x/2, dim.y-2) + padding;
 				f32 hp_ratio = Maths::Clamp(blob.getHealth()/blob.getInitialHealth(), 0.1f, 1.0f);
 				u8 hp_alpha = text_color.getAlpha();
@@ -261,7 +264,7 @@ void onRender(CRules@ this)
 				//GUI::DrawRectangle(hp_bar_pos + extra, hp_br - extra,
 				//	healblock ? SColor(hp_alpha, 120, 120, 120) : SColor(hp_alpha, 34, 120, 14));
 
-				GUI::DrawRectangle(hp_bar_pos, hp_br,
+				GUI::DrawRectangle(hp_bar_pos + extra * 2, hp_br - extra * 2,
 					healblock ? SColor(hp_alpha, 155, 155, 155) : SColor(hp_alpha, 55, 190, 40));
 
 				GUI::SetFont("default");
