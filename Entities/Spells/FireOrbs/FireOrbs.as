@@ -185,7 +185,6 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (blob is null || this is null) {return;}
 	if (this.getTickSinceCreated() < 30) {return;}
-
 	if (isEnemy(this, blob))
 	{
 		if (isClient())
@@ -364,7 +363,7 @@ void smoke(Vec2f pos, int amount)
 void Boom( CBlob@ this )
 {
 	CBlob@ owner = getBlobByNetworkID(this.get_u16("shooter"));
-	if (owner !is null && this.getDistanceTo(owner) >= distance * 2)
+	if (owner !is null && this.getDistanceTo(owner) < distance * 2)
 	{
 		return;
 	}
