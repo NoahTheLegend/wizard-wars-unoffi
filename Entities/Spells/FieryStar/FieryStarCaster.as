@@ -36,7 +36,7 @@ void onTick(CBlob@ this)
         this.Tag("armed");
     }
 
-    this.setPosition(Vec2f_lerp(this.getPosition(), target_pos, 0.25f));
+    this.setPosition(Vec2f_lerp(this.getPosition(), target_pos, 0.15f));
     if (this.hasTag("armed"))
     {
         if (caster_blob.get_bool("shifting") && !this.hasScript("CastFieryStars.as"))

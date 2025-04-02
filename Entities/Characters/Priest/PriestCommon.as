@@ -56,16 +56,16 @@ namespace PriestParams
 				SpellType::other, 75, 120, 30, 92.0f, true),
 				
 		Spell("beam", "Divine Beam", 67, "Continuously damages enemies or heals teammates in beam area. Hold LMB after casting to keep firing. Pushes enemies when overcharged. Merges into a bigger beam when second is cast.",
-				SpellType::other, 8, 25, 2, 128.0f, true),
+				SpellType::other, 8, 25, 2, 96.0f, true),
 							
 		Spell("fireorbs", "Sacrilege Fire", 68, "Summons a smiting ball to spin around you.",
-				SpellType::other, 25, 30, 2, 32.0f, true),	
+				SpellType::other, 15, 25, 0, 32.0f, true),	
 
 		Spell("singularity", "Singularity", 69, "Summons an essence of stars, which explodes with colossal power after some time. Takes less time to explode if overchaged. Can not be denied. Does not pierce blocks.",
 				SpellType::other, 60, 45, 15, 360.0f, true),	
 
 		Spell("fiery_star", "Fiery Stars", 58, "Launch a several concetrated fire elements at your enemies. Overcharge to store them at aim position.",
-				SpellType::other, 25, 30, 3, 256.0f),
+				SpellType::other, 25, 40, 0, 180.0f),
 							
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
 				SpellType::other, 40, 60, 18, 16.0f, true),

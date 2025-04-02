@@ -3188,7 +3188,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -49146465://fireorbs
 		{
-			u8 max = 6;
+			u8 max = 12;
 			u8 count = 0;
 			CBlob@[] orbs;
 			getBlobsByTag(player.getUsername(), @orbs);

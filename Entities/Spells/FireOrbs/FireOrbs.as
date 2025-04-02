@@ -226,8 +226,6 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 void ExplodeWithFire(CBlob@ this)
 {
-	if (this.hasTag("dead")) return;
-	
     CMap@ map = getMap();
 	Vec2f thisPos = this.getPosition();
     if (map is null)   return;
