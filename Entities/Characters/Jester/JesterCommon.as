@@ -61,18 +61,18 @@ namespace JesterParams
 		
 		Spell("tophat", "Obsessed Tophat", 117, "Obsessed tophat with mystic deals, dropping bombs and giving heals.",
 				SpellType::other, 65, 60, 20, 312.0f, true),
+			 
+		Spell("kogun", "K.O. GUN!", 118, "A powerful glove, K.O. delight, box their face, end the fight!",
+				SpellType::other, 4, 10, 0, 80.0f, true),
 			
 		Spell("bashster", "Bashster", 119, "Knocking blast, a foe's overthrow, hold to charge, let it grow.",
-				SpellType::other, 30, 45, 6, 256.0f, true),
+				SpellType::other, 35, 45, 6, 256.0f, true),
 			
 		Spell("haste", "Haste", 20, "Boost your friends with added speed, or overcharge for self, if you need.",
 			SpellType::other, 12, 20, 0, 360.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
-
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),		
+				SpellType::other, 1, 1, 0, 0.0f),			
 				
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
