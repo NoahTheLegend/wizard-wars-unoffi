@@ -175,7 +175,8 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 			{
 				blob.Untag("exploding");
 			}
-
+			
+			blob.Tag("dead");
 			blob.server_Die();
 
 			if (this.get_s8("lifepoints") <= 0)
