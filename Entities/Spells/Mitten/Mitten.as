@@ -26,6 +26,7 @@ void onInit(CBlob@ this)
 	this.Tag("cantparry");
 	this.Tag("follower");
 	this.Tag("cantmove");
+	this.Tag("phase through spells");
 	this.addCommandID("shoot_fx");
 
 	CShape@ shape = this.getShape();
