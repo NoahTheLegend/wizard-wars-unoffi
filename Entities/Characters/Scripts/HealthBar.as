@@ -261,8 +261,8 @@ void onRender(CRules@ this)
 				Vec2f extra = Vec2f(2, 2);
 
 				bool healblock = blob.get_u16("healblock") > 0;
-				GUI::DrawRectangle(hp_bar_pos + extra, hp_br - extra,
-					healblock ? SColor(hp_alpha, 120, 120, 120) : SColor(hp_alpha, 34, 120, 14));
+				//GUI::DrawRectangle(hp_bar_pos + extra, hp_br - extra,
+				//	healblock ? SColor(hp_alpha, 120, 120, 120) : SColor(hp_alpha, 34, 120, 14));
 
 				GUI::DrawRectangle(hp_bar_pos + extra * 2, hp_br - extra * 2,
 					healblock ? SColor(hp_alpha, 155, 155, 155) : SColor(hp_alpha, 55, 190, 40));
