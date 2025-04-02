@@ -30,7 +30,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getTickSinceCreated() == 0)
+	if (this.getTickSinceCreated()==0)
 	{
 		this.getSprite().PlaySound("FireBlast4.ogg", 1.0f, 1.8f + XORRandom(11)*0.01f);
 		this.getSprite().PlaySound("WizardShoot.ogg", 1.0f, 0.7f);
@@ -38,23 +38,19 @@ void onTick(CBlob@ this)
 	}
 
 	if(isClient())
-		sparks(this, 8);
+		sparks(this, 20);
 
-	if (!this.hasTag("instantly_collide"))
+	bool has_solid = this.getShape().isOverlappingTileSolid(true);
+	if (!this.hasTag("solid") && getMap() !is null && !has_solid)
 	{
-		bool has_solid = this.getShape().isOverlappingTileSolid(true);
-		if (!this.hasTag("solid") && getMap() !is null && !has_solid)
-		{
-			this.getShape().getConsts().mapCollisions = true;
-			if (has_solid) this.server_Die();
-			this.Tag("solid");
-		}
-		else if (!this.hasTag("solid") && this.getTickSinceCreated() > ticks_noclip)
-			this.server_Die();
-
-		if (this.isInWater()) this.server_Die();
+		this.getShape().getConsts().mapCollisions = true;
+		if (has_solid) this.server_Die();
+		this.Tag("solid");
 	}
-	else this.getShape().getConsts().mapCollisions = true;
+	else if (!this.hasTag("solid") && this.getTickSinceCreated() > ticks_noclip)
+		this.server_Die();
+	
+	if (this.isInWater()) this.server_Die();
 
 	Vec2f pos = this.getPosition();
 	if (pos.x < 0.1f ||
@@ -170,7 +166,7 @@ void onDie(CBlob@ this)
 	if (isClient()) this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 1.5f + XORRandom(20)/100.0f);
 
 	CBlob@[] blobsInRadius;
-	map.getBlobsInRadius(this.getPosition(), 16.0f, @blobsInRadius);
+	map.getBlobsInRadius(this.getPosition(), 32.0f, @blobsInRadius);
 	for (uint i = 0; i < blobsInRadius.length; i++)
 	{
 		if(blobsInRadius[i] is null)
@@ -219,7 +215,6 @@ void blast(Vec2f pos, int amount)
         p.damping = 0.85f;
 		p.Z = 200.0f;
 		p.lighting = false;
-		p.setRenderStyle(RenderStyle::additive);
     }
 }
 
@@ -251,29 +246,28 @@ void smoke(Vec2f pos, int amount)
         p.damping = 0.8f;
 		p.Z = 200.0f;
 		p.lighting = false;
-		p.setRenderStyle(RenderStyle::additive);
     }
 }
 
-void sparks(CBlob@ this, int amount, f32 gap = 1)
+void sparks(CBlob@ this, int amount)
 {
 	if (!getNet().isClient())
 		return;
-	
+
 	Vec2f pos = this.getPosition();
 	Vec2f thisVel = this.getVelocity();
-	const int width = 10;
+	const int width = 16;
 	for (int i = 0; i < amount; i++)
 	{
-		f32 mod = (1.0f - Maths::Abs((i - amount / 2.0f) / (amount / 2.0f)));
-		Vec2f vel = thisVel * -0.1f + getRandomVelocity(-thisVel.Angle(), 1, 4);
-		vel *= 1.0f * mod;
-		Vec2f offset = Vec2f(0, -1).RotateByDegrees(-thisVel.Angle()) * ((i - width / 2.0f) * gap);
+		float factor = 4 * (1.0f - Maths::Abs((i - width / 2.0f) / (width / 2.0f)));
+		Vec2f vel = thisVel * -0.1f * factor + getRandomVelocity(-thisVel.Angle(), 1 * factor, 4);
+		vel *= 0.1f;
+		Vec2f offset = Vec2f(0, -1).RotateByDegrees(-thisVel.Angle()) * ((i - width / 2.0f) * 0.5f);
 		CParticle@ p = ParticlePixel(pos + offset, vel, SColor(255, 255, 225 + XORRandom(30), 50 + XORRandom(50)), true);
 		if (p !is null)
 		{
-			p.timeout = 8 + XORRandom(2) + 5 * mod;
-			p.damping = 0.85f + 0.15f * mod;
+			p.timeout = (factor * 2) + XORRandom(3);
+			p.damping = 0.85f + XORRandom(15) * 0.01f;
 			p.fastcollision = true;
 			p.collides = false;
 			p.gravity = Vec2f_zero;

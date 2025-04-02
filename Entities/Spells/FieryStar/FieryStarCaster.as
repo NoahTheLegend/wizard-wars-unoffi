@@ -1,24 +1,15 @@
-#include "EffectsCollection.as";
-
 void onInit(CBlob@ this)
 {
-    this.Tag("counterable");
-
     CShape@ shape = this.getShape();
     shape.SetGravityScale(0.0f);
     ShapeConsts@ consts = shape.getConsts();
     consts.mapCollisions = false;
 
     this.getSprite().SetZ(501.0f);
-    this.getSprite().setRenderStyle(RenderStyle::additive);
-}
-
-void onTeamChange(CBlob@ this, const int oldTeam)
-{
-    this.getSprite().setRenderStyle(RenderStyle::additive);
 }
 
 const f32 speed = 6;
+
 void onTick(CBlob@ this)
 {
     CPlayer@ caster = this.getDamageOwnerPlayer();
@@ -31,13 +22,16 @@ void onTick(CBlob@ this)
     Vec2f dir = target_pos - this.getPosition();
     f32 dist = dir.Length();
     
-    if (dist <= 8.0f)
+    if (dist <= 1.0f)
     {
         this.Tag("armed");
     }
 
-    this.setPosition(Vec2f_lerp(this.getPosition(), target_pos, 0.15f));
-    if (this.hasTag("armed"))
+    if (!this.hasTag("armed"))
+    {
+        this.setPosition(Vec2f_lerp(this.getPosition(), target_pos, 0.2f));
+    }
+    else
     {
         if (caster_blob.get_bool("shifting") && !this.hasScript("CastFieryStars.as"))
         {
@@ -47,16 +41,7 @@ void onTick(CBlob@ this)
     }
 
     if (!isClient()) return;
-
-    f32 narrow_center = (Maths::Sin(this.getTickSinceCreated() * 0.05f) + 8.0f) * 0.125f;
-	f32 narrow_top = 	0.0f + narrow_center * 0.1f;
-	f32 narrow_bottom = 0.0f + narrow_center * 0.1f;
-
-    f32 sin = (Maths::Sin(getGameTime() * 0.1f) + 1.0f) * 0.5f;
-    makeSineSparks(this.getPosition(), 20 + sin*20, 12, 12, SColor(255, 255, 255, XORRandom(155)),
-        narrow_top, narrow_bottom, narrow_center, 1.25f, 1.0f, 2 + 3*sin, SineStyle::easeout,
-            getSineSeed(this.getNetworkID()));
-
+    makeSineSparks(this);
     sparks(this, Vec2f(0,-2), 1);
     sparks(this, Vec2f(0,2), 1);
 }
@@ -80,4 +65,48 @@ void sparks(CBlob@ this, Vec2f vel, int amount)
             p.damping = 0.9f+XORRandom(10) * 0.01f;
         }
     }
+}
+
+void makeSineSparks(CBlob@ this)
+{
+    float width = 24.0f;
+    float narrow_top = 0.5f;
+    float narrow_bottom = 0.5f;
+    f32 mod = 0.25f;
+
+    for (u8 i = 0; i < (v_fastrender ? 35 : 70); i++)
+    {
+        float baseAngle = getGameTime() * 0.1f;
+        float angle = baseAngle + i * 30.0f;
+        float height = i * mod;
+
+        float heightFactor = 1.0f - (Maths::Abs(height - 2.5f) * 0.4f);
+        float narrowFactor = 1.0f - (height * narrow_top + (5.0f - height) * narrow_bottom) * 0.2f;
+
+        float xOffset = width * Maths::Cos(angle) * Maths::Clamp(heightFactor * narrowFactor, 0.1f, 1.0f);
+        float yOffset = Maths::Cos(i * 0.4f) * 5.0f;
+        float zOffset = 10000 * Maths::Sin(angle);
+
+        Vec2f offset = Vec2f(xOffset, yOffset);
+        Vec2f pVel = Vec2f(0, 0).RotateByDegrees(angle) * speed;
+
+        CParticle@ p = ParticlePixelUnlimited(this.getPosition() + offset, pVel, 
+            SColor(155 + XORRandom(100), 255, 255, XORRandom(255)), true);
+
+        if (p !is null)
+        {
+            p.gravity = Vec2f(0, 0);
+            p.timeout = 3;
+            p.Z = -100 + zOffset;
+            p.collides = false;
+            p.bounce = 0.0f;
+            p.fastcollision = true;
+            p.damping = 0.95f;
+        }
+    }
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+    return false;
 }

@@ -15,10 +15,9 @@ const f32 recoil_falloff_delay = 8;
 const f32 bullet_mana_cost = 1;
 // slam & swipe
 const f32 min_dmg = 0.5f;
-const f32 max_dmg = 5.0f;
+const f32 max_dmg = 4.0f;
 const f32 base_radius = 32.0f;
 const f32 damp = 2.0f;
-const f32 horizontal_acceleration = 1.5f;
 
 void onInit(CBlob@ this)
 {
@@ -234,7 +233,7 @@ void onTick( CBlob@ this )
 		if (isServer())
 		{
 			bool force_fl = this.get_bool("force_fl");
-			this.AddForce(Vec2f(force_fl ? -this.getMass()/damp * horizontal_acceleration : this.getMass()/damp * horizontal_acceleration, 0));
+			this.AddForce(Vec2f(force_fl ? -this.getMass()/damp : this.getMass()/damp, 0));
 			this.SetFacingLeft(force_fl);
 			this.setAngleDegrees(0);
 

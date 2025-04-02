@@ -147,7 +147,7 @@ void onTick(CBlob@ this)
 	int mod = upgraded ? 2 : 1;
 
 	f32 range = RANGE;
-	f32 damage = DAMAGE * (mod * 0.75f);
+	f32 damage = DAMAGE * mod;
 	u8 manaTakePeriod = MANA_TAKE_PERIOD;
 	u8 continuousManaTake = CONTINUOUS_MANA_TAKE * mod;
 

@@ -43,7 +43,7 @@ void onInit( CBlob@ this )
 	this.getSprite().PlaySound("FireBlast4.ogg", 1.0f, 2.5f + (XORRandom(10)/10.0f));
 }	
 
-void onTick(CBlob@ this)
+void onTick( CBlob@ this )
 {     
 	CBlob@ shooter = getBlobByNetworkID(this.get_u16("shooter"));
 	if (shooter is null)
@@ -56,27 +56,7 @@ void onTick(CBlob@ this)
 		if (isServer()) this.server_Die();
 		return;
 	}
-
-	if (shooter.getTeamNum() != this.getTeamNum())
-	{
-		CPlayer@ p = this.getDamageOwnerPlayer();
-		if (p !is null)
-		{
-			CBlob@ pb = p.getBlob();
-			if (pb !is null && pb.getTeamNum() != this.getTeamNum())
-			{
-				@shooter = pb;
-				this.set_u16("shooter", pb.getNetworkID());
-				// known issue kept as a feature - bypassing orbs limit
-			}
-		}
-	}
-	
-	if (shooter.getPlayer() is null)
-	{
-		if (XORRandom(100) == 0) this.server_Die();
-		return;
-	}
+	if (shooter.getPlayer() is null) return;
 	this.Tag(""+shooter.getPlayer().getUsername());
 
 	if (getMap() !is null && this.getPosition().y/8 >= getMap().tilemapheight-2)
@@ -132,7 +112,8 @@ void onTick(CBlob@ this)
 	if (isClient())
 	{
 		//sinusoidal ray of particles
-		u8 pc = v_fastrender ? 5 : 15;
+
+		u8 pc = v_fastrender ? 10 : 20;
 		for (u8 i = 0; i < pc; i++)
 		{
 			f32 t = float(i) / pc;
@@ -154,7 +135,7 @@ void onTick(CBlob@ this)
 			p.collides = false;
 			p.fastcollision = true;
 			p.bounce = 0.0f;
-			p.timeout = 1 + 10 * Maths::Pow(f32(i) / f32(pc), 2.5f);
+			p.timeout = 15;
 			p.damping = 0.95;
 			p.gravity = Vec2f(0, 0);
 			p.Z = -50.0f;

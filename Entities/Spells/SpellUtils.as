@@ -3,7 +3,6 @@
 #include "PlayerPrefsCommon.as";
 #include "SpellHashDecoder.as";
 #include "HoverMessage.as";
-#include "PaladinCommon.as";
 
 Random _spell_common_r(26784);
 
@@ -698,7 +697,7 @@ void CooldownReduce(CBlob@ blob, u16 time, f32 power)
 	blob.set_u16("cdreduction", time);
 	blob.Sync("cdreduction", true);
 
-	blob.set_f32("majestyglyph_cd_reduction", glyph_cooldown_reduction);
+	blob.set_f32("majestyglyph_cd_reduction", 0.5f);
 	blob.Sync("majestyglyph_cd_reduction", true);
 
 	blob.getSprite().PlaySound("negentropySound.ogg", 0.75f, 2.5f + XORRandom(1)/10.0f);

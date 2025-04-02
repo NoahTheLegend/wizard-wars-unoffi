@@ -1511,11 +1511,6 @@ void TakeItem(CBlob@ this, const string &in name)
 	}
 }
 
-f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
-{
-	return damage;
-}
-
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
 	KnightInfo@ knight;
