@@ -209,87 +209,57 @@ void onRender(CRules@ this)
 			CPlayer@ player = blob.getPlayer();
 			if (player !is null)
 			{
-				Vec2f draw_pos = blob.getInterpolatedPosition() + Vec2f(0.0f, blob.getRadius() * 1.5f);
-				draw_pos = getDriver().getScreenPosFromWorldPos(draw_pos);
+				Vec2f center = blob.getPosition();
+				Vec2f mouseWorld = getControls().getMouseWorldPos();
+				const f32 renderRadius = (blob.getRadius()) * 4.0f;
 
-				// change alpha depending on distance between mouse and player
-                float dist = Maths::Min(max_radius, (mouse_screen_pos - blob.getInterpolatedScreenPos()).Length());
-				float alpha = Maths::Min(1.0f, 2.0f - (dist / max_radius)); // min 0.4, max 1
+				// Show health
+				Vec2f pos2d = blob.getScreenPos() + Vec2f(0, 20);
+				Vec2f dim = Vec2f(24, 8);
+				const f32 y = blob.getHeight() * 0.8f;
 
-				// now draw nickname
-				string name = player.getCharacterName();
-
-				Vec2f text_dim;
-				GUI::SetFont("menu");
-				GUI::GetTextDimensions(name, text_dim);
-				Vec2f text_dim_half = Vec2f(text_dim.x/2.0f, text_dim.y/2.0f);
-
-				SColor text_color = SColor(255, 200, 200, 200);
-
-				u8 teamnum = blob.getTeamNum();
-				if (teamnum != 6) // violet is black here so keep the text white
-					text_color = teamnum == 0 ? SColor(255, 115, 115, 255) : SColor(255, 225, 85, 85);
-				
-                text_color.setAlpha(255 * alpha);
-
-				SColor rect_color = SColor(80 * alpha, 0, 0, 0);
-                
-				GUI::DrawRectangle(draw_pos - text_dim_half, draw_pos + text_dim_half + Vec2f(5.0f, 3.0f), rect_color);
-				GUI::DrawText(name, draw_pos - text_dim_half, text_color);
-
-				Vec2f padding = Vec2f(3, 0);
-				Vec2f dim = Vec2f(48, 16) - padding;
-				Vec2f hp_bar_pos = draw_pos + Vec2f(-dim.x/2, dim.y-2) + padding;
-				f32 hp_ratio = Maths::Clamp(blob.getHealth()/blob.getInitialHealth(), 0.1f, 1.0f);
-				u8 hp_alpha = text_color.getAlpha();
-
-				//red
-				if (hp_ratio < 1)
+				const f32 initialHealth = blob.getInitialHealth();
+				const f32 health = blob.getHealth();
+				if (initialHealth > 0.0f)
 				{
-					Vec2f hp_missing_tl = hp_bar_pos + dim * hp_ratio;
-					hp_missing_tl.y = hp_bar_pos.y;
-					
-					GUI::DrawPane(hp_missing_tl - Vec2f(padding.x, 0), hp_bar_pos + dim, SColor(hp_alpha, 85, 55, 35));
+					const f32 perc = Maths::Clamp(health / initialHealth, 0.0f, 1.0f);
+					if (perc >= 0.0f)
+					{
+						GUI::DrawRectangle(Vec2f(pos2d.x - dim.x, pos2d.y + y), Vec2f(pos2d.x + dim.x + 2, pos2d.y + y + dim.y + 6), SColor(100, 255, 255, 255));
+						GUI::DrawRectangle(Vec2f(pos2d.x - dim.x + 2, pos2d.y + y + 2), Vec2f(pos2d.x - dim.x + perc * 2.0f * dim.x, pos2d.y + y + dim.y + 4),
+							SColor(150, (perc < 0.5f ? 255 : 255 - 255 * (perc - 0.5f) * 2), (perc < 0.5f ? 230 * perc * 2 : 230), 0));
+						GUI::DrawTextCentered("" + Maths::Round(health * 10) + " / " + Maths::Round(initialHealth * 10), Vec2f(pos2d.x - dim.x + 22, pos2d.y + y + 5), SColor(255, 255, 255, 255));
+					}
 				}
 
-				//green
-				Vec2f hp_br = hp_bar_pos + dim * hp_ratio;
-				hp_br.y = hp_bar_pos.y + dim.y;
-				Vec2f extra = Vec2f(2, 2);
-
-				bool healblock = blob.get_u16("healblock") > 0;
-				//GUI::DrawRectangle(hp_bar_pos + extra, hp_br - extra,
-				//	healblock ? SColor(hp_alpha, 120, 120, 120) : SColor(hp_alpha, 34, 120, 14));
-
-				GUI::DrawRectangle(hp_bar_pos + extra + Vec2f(1, 0), hp_br - extra,
-					healblock ? SColor(hp_alpha, 155, 155, 155) : SColor(hp_alpha, 55, 190, 40));
-
-				GUI::SetFont("default");
-				GUI::DrawTextCentered(Maths::Floor(blob.getHealth() * 10) + "/" + Maths::Floor(blob.getInitialHealth() * 10), hp_bar_pos + Vec2f(dim.x/2, dim.y/2) - Vec2f(extra.x + 1.5f, extra.y), SColor(hp_alpha, 255, 255, 255));
-
-				u8 local_team = 0;
-				CBlob@ local_blob = getLocalPlayerBlob();
-				if (local_blob !is null)
-					local_team = local_blob.getTeamNum();
-
-				ManaInfo@ manaInfo;
-				if (blob.getTeamNum() == local_team && local_team != this.getSpectatorTeamNum() && blob.get("manaInfo", @manaInfo))
+				ManaInfo@ info;
+				if (blob.get("manaInfo", @info))
 				{
-					Vec2f mana_bar_pos = draw_pos + Vec2f(-dim.x / 2 + padding.x * 2, dim.y * 2 - 3);
-					f32 mana_ratio = f32(manaInfo.mana) / f32(manaInfo.maxMana);
-					u8 mana_alpha = text_color.getAlpha();
+					CPlayer@ local = getLocalPlayer();
+					if (local is null) break;
+					
+					// Show mana
+					if (blob.getTeamNum() == local.getTeamNum() || local.getTeamNum() == getRules().getSpectatorTeamNum())
+					{
+						Vec2f pos2d = blob.getScreenPos() + Vec2f(0, 40);
+						Vec2f dim = Vec2f(24, 8);
+						const f32 y = blob.getHeight() * 0.8f;
 
-					Vec2f mana_dim = Vec2f(dim.x - padding.x - extra.x, 4); // height of mana bar is 4 px
-					Vec2f mana_br = mana_bar_pos + mana_dim * mana_ratio;
-					mana_br.y = mana_bar_pos.y + mana_dim.y;
+						const f32 maxMana = info.maxMana;
+						const f32 mana = info.mana;
 
-					SColor col = SColor(255, 163, 66, 178); // mana bar color
-
-					// background
-					GUI::DrawRectangle(mana_bar_pos - Vec2f(0, 1), mana_bar_pos + mana_dim, SColor(255, 42, 11, 71));
-
-					// foreground
-					GUI::DrawRectangle(mana_bar_pos + Vec2f(1, 1), mana_br - Vec2f(1, 1), col);
+						if (maxMana > 0.0f)
+						{
+							const f32 perc = mana / maxMana;
+							if (perc >= 0.0f)
+							{
+								GUI::DrawRectangle(Vec2f(pos2d.x - dim.x, pos2d.y + y), Vec2f(pos2d.x + dim.x + 2, pos2d.y + y + dim.y + 6), SColor(100, 255, 255, 255));
+								GUI::DrawRectangle(Vec2f(pos2d.x - dim.x + 2, pos2d.y + y + 2), Vec2f(pos2d.x - dim.x + perc * 2.0f * dim.x, pos2d.y + y + dim.y + 4),
+									SColor(150, (perc < 0.5f ? 127 : 127 - 127 * (perc - 0.5f) * 2), 0, (perc < 0.5f ? 230 * perc * 2 : 230)));
+								GUI::DrawTextCentered("" + Maths::Round(mana) + " / " + Maths::Round(maxMana), Vec2f(pos2d.x - dim.x + 22, pos2d.y + y + 5), SColor(255, 255, 255, 255));
+							}
+						}
+					}
 				}
 			}
 		}
