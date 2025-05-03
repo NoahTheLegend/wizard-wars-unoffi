@@ -844,6 +844,7 @@ void onInit(CRules@ this)
 	Reset(this);
 }
 
+/*
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
     uint team0 = 0;
@@ -874,3 +875,4 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
         LoadNextMap();
 	}
 }
+*/
