@@ -4,8 +4,7 @@ void RunServer()
 {
 	if (getNet().CreateServer())
 	{
-		LoadRules("Rules/" + sv_gamemode + "/gamemode" + sv_gamemode + ".cfg");
-		//LoadRules("Rules/" + "CTF" + "/gamemodeCTF.cfg");
+		LoadRules("Rules/" + sv_gamemode + "/gamemode.cfg");
 
 		if (sv_mapcycle.size() > 0)
 		{
@@ -13,8 +12,7 @@ void RunServer()
 		}
 		else
 		{
-			LoadMapCycle("Rules/" + sv_gamemode + "/mapcycle" + sv_gamemode + ".cfg");
-			//LoadMapCycle("Rules/" + "CTF" + "/mapcycleCTF.cfg");
+			LoadMapCycle("Rules/" + sv_gamemode + "/mapcycle.cfg");
 		}
 
 		LoadNextMap();
