@@ -118,7 +118,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 		if (blob is null && isServer() && this.hasTag("die_on_collide"))
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 	}
 
@@ -134,7 +134,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	if(causeSparks)
 	{sparks(this.getPosition(), 4);}
 	if(blobDeath)
-	{this.server_Die();}
+	{this.Tag("mark_for_death");}
 }
 
 void onDie( CBlob@ this )

@@ -37,7 +37,7 @@ void onTick(CBlob@ this)
 				pos.x < 0.1f ||
 				pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f
 			) {
-				this.server_Die();
+				this.Tag("mark_for_death");
 				return;
 			}
 		}
@@ -152,13 +152,13 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), expundamage, Hitters::arrow, true);
 				if (blob.hasTag("barrier"))
 				{
-					this.server_Die();
+					this.Tag("mark_for_death");
 				}
 			}
 			else
 			{
 				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 0.2f , Hitters::arrow, true);
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		}
 	}

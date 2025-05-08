@@ -62,7 +62,7 @@ void onTick(CBlob@ this)
 		thisSprite.SetZ(1000.0f);
 	}
 
-	if (this.isInWater()) this.server_Die();
+	if (this.isInWater()) this.Tag("mark_for_death");
 	
 	//face towards target like a ballista bolt
 	Vec2f velocity = this.getVelocity();
@@ -281,7 +281,7 @@ void Boom( CBlob@ this )
 	smoke(this.getPosition(), 5);	
 	blast(this.getPosition(), 10);	
 	
-    this.server_Die();
+    this.Tag("mark_for_death");
 }
 
 /*sprite

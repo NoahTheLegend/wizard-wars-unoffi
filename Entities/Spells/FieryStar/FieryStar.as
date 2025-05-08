@@ -46,13 +46,13 @@ void onTick(CBlob@ this)
 		if (!this.hasTag("solid") && getMap() !is null && !has_solid)
 		{
 			this.getShape().getConsts().mapCollisions = true;
-			if (has_solid) this.server_Die();
+			if (has_solid) this.Tag("mark_for_death");
 			this.Tag("solid");
 		}
 		else if (!this.hasTag("solid") && this.getTickSinceCreated() > ticks_noclip)
-			this.server_Die();
+			this.Tag("mark_for_death");
 
-		if (this.isInWater()) this.server_Die();
+		if (this.isInWater()) this.Tag("mark_for_death");
 	}
 	else this.getShape().getConsts().mapCollisions = true;
 
@@ -60,7 +60,7 @@ void onTick(CBlob@ this)
 	if (pos.x < 0.1f ||
 	pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f)
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
@@ -150,7 +150,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {	
 	if ((solid && blob is null) || isEnemy(this, blob))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 }
 

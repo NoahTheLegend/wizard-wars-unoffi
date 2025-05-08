@@ -137,7 +137,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			if (isServer())
 			{
 				if (!this.hasTag("was_hit")) this.server_Hit(blob, blob.getPosition(), this.getVelocity(), damage, Hitters::arrow, true);
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 
 			this.Tag("was_hit");

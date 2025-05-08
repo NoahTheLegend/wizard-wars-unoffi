@@ -133,7 +133,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		this.getSprite().PlaySound("SpriteFire3.ogg", 0.05f, 0.5f + XORRandom(10)/20.0f);
 		if(blob !is null && (isEnemy(this, blob) || blob.hasTag("barrier")) )
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		} 
 	}
 }

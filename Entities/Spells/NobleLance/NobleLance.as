@@ -65,14 +65,14 @@ void onTick(CBlob@ this)
 
 	if (dist < stoprange && vel.Length() < 1.0f)
 	{
-		if (back) this.server_Die();
+		if (back) this.Tag("mark_for_death");
 		this.set_bool("back", true);
 		back = true;
 
 		CPlayer@ p = this.getDamageOwnerPlayer();
 		if (p is null || p.getBlob() is null)
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 		else
 		{
@@ -97,7 +97,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 				if (blob.hasTag("barrier"))
 				{
-					this.server_Die();
+					this.Tag("mark_for_death");
 				}
 			}
 		}

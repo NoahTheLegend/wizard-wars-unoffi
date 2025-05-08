@@ -36,7 +36,7 @@ void onTick(CBlob@ this)
     	this.getSprite().PlaySound("MagicMissile.ogg", 0.33f, 1.0f + XORRandom(6)*0.01f);
 	}
 	sparks(this.getPosition(), 5, Vec2f_zero);
-	if (this.isInWater()) this.server_Die();
+	if (this.isInWater()) this.Tag("mark_for_death");
 }
 
 bool isEnemy( CBlob@ this, CBlob@ target )
@@ -100,12 +100,12 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 					map.server_setFireWorldspace(blob.getPosition(), true);
 					map.server_setFireWorldspace(this.getPosition(), true);
 				}
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 			if (blob is null)
 			{
 				map.server_setFireWorldspace(this.getPosition(), true);
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		}
 	}

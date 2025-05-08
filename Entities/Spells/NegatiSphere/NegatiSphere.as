@@ -60,7 +60,7 @@ void onTick( CBlob@ this )
 			}
 			else
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		}
 	}
@@ -92,7 +92,7 @@ void onTick( CBlob@ this )
 	{
 		if (this.getPosition().x <= 12 || this.getPosition().x >= getMap().tilemapwidth*8-12)
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 	}
 
@@ -166,7 +166,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 		if(blob.getName() == this.getName())
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 		else
 		{
@@ -177,11 +177,11 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 			}
 			
 			blob.Tag("dead");
-			blob.server_Die();
+			blob.Tag("mark_for_death");
 
 			if (this.get_s8("lifepoints") <= 0)
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		}
 	}

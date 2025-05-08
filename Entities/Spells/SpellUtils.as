@@ -133,10 +133,10 @@ void CastNegentropy( CBlob@ this )
 			b.server_Hit(this, this.getPosition(), velocity, 1.0f, Hitters::water, true);
 		}
 		
-		if(kill)
+		if (kill)
 		{
 			b.Untag("exploding");
-			b.server_Die();
+			b.Tag("mark_for_death");
 		}
 		gatheredMana += absorbed;
 		
@@ -306,7 +306,7 @@ void Revive(CBlob@ blob)
 			
 			makeReviveParticles(newBlob);
 			
-			blob.server_Die();
+			blob.Tag("mark_for_death");
 		}
 	}
 		
@@ -337,7 +337,7 @@ void ReviveKnight(CBlob@ blob)
 			
 			makeReviveParticles(newBlob);
 			
-			blob.server_Die();
+			blob.Tag("mark_for_death");
 		}
 	}
 		
@@ -365,7 +365,7 @@ void UnholyRes(CBlob@ blob)
 			
 			makeReviveParticles(newBlob);
 			
-			blob.server_Die();
+			blob.Tag("mark_for_death");
 		}
 	}
 		
@@ -447,7 +447,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			{
 				b.Untag("exploding");
 				b.Tag("just_countered");
-				b.server_Die();
+				b.Tag("mark_for_death");
 				if (b.getName() == "plant_aura")
 				{retribution = true;}
 					

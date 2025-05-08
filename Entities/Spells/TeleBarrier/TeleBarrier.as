@@ -32,7 +32,7 @@ void onTick( CBlob@ this )
 	TileType overtile = map.getTile(thisPos).type;
 	if(map.isTileSolid(overtile))
 	{
-		//this.server_Die();
+		//this.Tag("mark_for_death");
 	}
 }
 

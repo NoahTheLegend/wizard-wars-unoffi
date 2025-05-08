@@ -17,7 +17,7 @@ void onTick( CBlob@ this)
 	u8 boomNum = this.get_u8("boomNum");
 	if (boomNum >= 11)
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 	if ( currentTime < 1)

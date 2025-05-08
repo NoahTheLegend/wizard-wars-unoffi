@@ -45,7 +45,7 @@ void onTick( CBlob@ this )
 	CBlob@ ownerBlob = getBlobByNetworkID(this.get_netid("owner"));
 	if(ownerBlob is null || ownerBlob.hasTag("dead"))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
@@ -105,7 +105,7 @@ void onTick( CBlob@ this )
 
 	if(shardAmount < this.get_s8("shardID"))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 
 }
@@ -127,7 +127,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 	CBlob@ ownerBlob = getBlobByNetworkID(this.get_netid("owner"));
 	if(ownerBlob is null || ownerBlob.hasTag("dead"))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
@@ -193,7 +193,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				}
 
 				this.server_Hit(blob, blob.getPosition(), Vec2f(0,0), 99.0f, Hitters::crush, true);
-				blob.server_Die();
+				blob.Tag("mark_for_death");
 				
 				if (blob.hasTag("kill other spells"))
 				{
@@ -226,7 +226,7 @@ bool doesCollideWithBlob( CBlob@ this, CBlob@ b )
 	CBlob@ ownerBlob = getBlobByNetworkID(this.get_netid("owner"));
 	if(ownerBlob is null || ownerBlob.hasTag("dead"))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return false;
 	}
 

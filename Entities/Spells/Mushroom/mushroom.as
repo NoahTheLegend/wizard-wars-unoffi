@@ -13,7 +13,7 @@ void onTick(CBlob@ this)
 
     if(this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
     }
 
     if(getGameTime() >= this.get_s32("nextSpore"))

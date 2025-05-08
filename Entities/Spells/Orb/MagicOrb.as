@@ -110,7 +110,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		{
 			if(!blob.hasScript("BladedShell.as"))
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		} 
 	}

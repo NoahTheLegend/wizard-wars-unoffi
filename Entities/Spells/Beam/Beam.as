@@ -169,7 +169,7 @@ void onTick(CBlob@ this)
 		}
 		if (shooter is null || shooter.hasTag("dead"))
 		{
-			if (isServer()) this.server_Die();
+			if (isServer()) this.Tag("mark_for_death");
 			return;
 		}
 		shooter.set_u16("beam_id", this.getNetworkID());
@@ -194,7 +194,7 @@ void onTick(CBlob@ this)
 				manaInfo.mana -= continuousManaTake;
 			}
 		}
-		else if (isServer() && this.getTimeToDie() <= 0.25f) this.server_Die();
+		else if (isServer() && this.getTimeToDie() <= 0.25f) this.Tag("mark_for_death");
 
 		Vec2f aimPos = shooter.getAimPos();
 		Vec2f aimVec = aimPos - thisPos;

@@ -57,7 +57,7 @@ void onTick( CBlob@ this )
 	CBlob@ caster = getBlobByNetworkID(this.get_u16("caster"));
 	if (caster is null || caster.hasTag("dead"))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
@@ -244,7 +244,7 @@ void onTick( CBlob@ this )
 			{
 				if (this.getPosition().x < this.getRadius()
 					|| this.getPosition().x > map.tilemapwidth * 8 - this.getRadius())
-						this.server_Die();
+						this.Tag("mark_for_death");
 			}
 		}
 	}
@@ -293,7 +293,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			CBlob@ caster = getBlobByNetworkID(this.get_u16("caster"));
 			if (caster is null || caster.hasTag("dead"))
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 				return;
 			}
 

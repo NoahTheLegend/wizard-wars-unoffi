@@ -25,7 +25,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.set_f32("hit dmg modifier", 0.1f);
 
 		// we want the corpse to stay but player to respawn so we force a die event in rules
-
 		if (getNet().isServer())
 		{		
 			CPlayer@ thisPlayer = this.getPlayer();

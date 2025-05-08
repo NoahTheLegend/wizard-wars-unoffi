@@ -41,7 +41,7 @@ void onTick(CBlob@ this)
 
 	if(this.get_s32("trap_time") > this.get_s32("aliveTime"))
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
     }
 	
 	if (this.get_u16("trapped_id") > 0)

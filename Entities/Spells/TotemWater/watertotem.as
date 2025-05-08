@@ -53,7 +53,7 @@ void onTick(CBlob@ this)
     //////////
     if(this.get_u8("despelled") >= 1 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
     }
 
     u16 charge_delay = this.get_u16("charge_delay");

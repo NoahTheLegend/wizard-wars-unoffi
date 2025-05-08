@@ -23,7 +23,7 @@ namespace NecromancerParams
 
 	const ::Spell[] spells = 
 	{
-		Spell("bloodarrow_rain", "Tome of Blood", 122, "Embodies many drops of blood into sharp daggers to launch.",
+		Spell("bloodarrow_rain", "Blood Arrows", 122, "Embodies many drops of blood into sharp daggers to launch.",
 			SpellType::other, 4, 25, 0, 256.0f, true),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
@@ -66,7 +66,7 @@ namespace NecromancerParams
 				SpellType::other, 40, 30, 3, 360.0f, true),
 				
 		Spell("arcane_circle","Arcane Circle",32,"Summon an unholy circle that will drain the life force of your foes",
-			SpellType::other,50,60,10,360, true),
+			SpellType::other, 50, 60, 10, 360, true),
 							
 		Spell("bunker_buster", "Bunker Buster", 39, "Anti-Barrier spell.",
 				SpellType::other, 15, 40, 0, 360.0f, true),	
@@ -77,8 +77,8 @@ namespace NecromancerParams
 		Spell("manaburn", "Mana Burn", 73, "Slowly burns enemy mana and disables their mana regeneration.",
 				SpellType::other, 30, 75, 10, 360.0f, true),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),	
+		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows summoned around the position.",
+				SpellType::other, 16, 40, 3, 256.0f, true),	
 							
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),		

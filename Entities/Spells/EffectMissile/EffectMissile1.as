@@ -259,7 +259,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid )
 			if ( ((blob.hasTag("player") || blob.hasTag("zombie") || blob.hasTag("kill other spells") || blob.hasTag("barrier")) && isEnemy(this, blob)))
 			{
 				Explode( this );
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		}
 }

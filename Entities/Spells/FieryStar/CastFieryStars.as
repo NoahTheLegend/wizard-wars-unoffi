@@ -47,6 +47,6 @@ void onTick(CBlob@ this)
         this.RemoveScript("Castfierystars.as");
 
         if (caster)
-            this.server_Die();
+            this.Tag("mark_for_death");
     }
 }

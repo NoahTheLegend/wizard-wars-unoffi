@@ -58,7 +58,7 @@ void onTick(CBlob@ this)
 {
     if(this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
     }
     if (getGameTime()%5==0)sparks(this.getPosition()-Vec2f(0,22), 2, Vec2f_zero);
 
@@ -205,7 +205,7 @@ void Boom( CBlob@ this )
 	smoke(this.getPosition()-Vec2f(0,8), 5);	
 	blast(this.getPosition()-Vec2f(0,8), 10);	
 	
-    this.server_Die();
+    this.Tag("mark_for_death");
 }
 
 void ExplodeWithFire(CBlob@ this)

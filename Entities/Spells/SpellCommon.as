@@ -72,7 +72,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					
 					if (mushroom1 !is null && mushroom2 !is null && mushroom3 !is null)
 					{
-						mushroom1.server_Die();
+						mushroom1.Tag("mark_for_death");
 						break;
 					}
 				}
@@ -1705,6 +1705,56 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -667977758: //tomeblood
+		{
+			if(this.hasScript("TomeOfBloodRain.as"))
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo ))
+				{return;}
+				
+				manaInfo.mana += spell.mana;
+				return;
+			}
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+				case complete_cast:
+				{
+					this.set_u8("tomeblood_projectiles", 12);
+					this.set_u8("tomeblood_delay", 3);
+				}
+				break;
+				case super_cast:
+				{
+					this.set_u8("tomeblood_projectiles", 20);
+
+					this.set_u8("tomeblood_delay", 2);
+					this.set_bool("static", false);
+				}
+				break;
+			
+				default:return;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				this.add_u8("tomeblood_projectiles", 8);
+				this.sub_u8("tomeblood_delay", 1);
+			}
+			this.set_u32("tomeblood_start", getGameTime());
+			this.set_Vec2f("tomeblood_aimpos", aimpos);
+			this.set_f32("tomeblood_damage", 0.2f);
+
+			if(!this.hasScript("TomeOfBloodRain.as"))
+			{
+				this.AddScript("TomeOfBloodRain.as");
+			}
+		}
+		break;
+
 		case 770505718://leech
 		{
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
@@ -2192,7 +2242,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 									orb.server_SetTimeToDie(other.getTimeToDie());
 
 									other.Untag("exploding");
-									other.server_Die();
+									other.Tag("mark_for_death");
 								}
 							}
 						}
@@ -3590,7 +3640,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						
 						if (totem1 !is null && totem2 !is null)
 						{
-							totem1.server_Die();
+							totem1.Tag("mark_for_death");
 							break;
 						}
 					}
@@ -3669,7 +3719,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					{continue;}
 					if(totems[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
 					{
-						totems[i].server_Die();
+						totems[i].Tag("mark_for_death");
 						break;
 					}
 				}
@@ -3749,7 +3799,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					if(totems[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
 					{
 						totems[i].Tag("replaced");
-						totems[i].server_Die();
+						totems[i].Tag("mark_for_death");
 						break;
 					}
 				}
@@ -5014,7 +5064,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					{continue;}
 					if(totems[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
 					{
-						totems[i].server_Die();
+						totems[i].Tag("mark_for_death");
 						break;
 					}
 				}
@@ -5258,7 +5308,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ c = cards[i];
 				if (c is null) continue;
 
-				c.server_Die();
+				c.Tag("mark_for_death");
 			}
 
 			for (u8 i = 0; i < amount; i++)

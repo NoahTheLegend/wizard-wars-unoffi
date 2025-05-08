@@ -44,7 +44,7 @@ void onTick(CBlob@ this)
 	if ( pos.x < 0.1f ||
 	pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f)
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
@@ -83,7 +83,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 	{
 		if (isEnemy(this, blob))
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 	}
 }

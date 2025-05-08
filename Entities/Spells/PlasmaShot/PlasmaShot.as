@@ -42,11 +42,12 @@ void onTick(CSprite@ this) // note to glitch - this only runs on client, onTick 
 void onTick(CBlob@ this)
 {
 	Vec2f targetPos = this.get_Vec2f("target");
-	if(targetPos == Vec2f_zero)
+	if(targetPos == Vec2f_zero || this.hasTag("mark_for_death"))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
+
 	if(isClient())
 	makeSmokeParticle(this, targetPos);
 
@@ -71,16 +72,21 @@ void onTick(CBlob@ this)
 
 	if( dist < 2.0f )
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 }
 
 /// note (vam) -> I'm not touching these
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {
+	if (this.hasTag("mark_for_death"))
+	{
+		return;
+	}
+
     if (solid)
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
 		return;
     }
 
@@ -90,7 +96,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
     {
 		if (blob.hasTag("barrier") || blob.hasTag("flesh") || blob.getName() == "plasma_shot")
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
     }
 }

@@ -307,7 +307,7 @@ void makeSmokePuff(CBlob@ this, const f32 velocity = 1.0f, const int smallpartic
 void Boom( CBlob@ this )
 {
     this.server_SetHealth(-1.0f);
-    this.server_Die();
+    this.Tag("mark_for_death");
 }
 
 void Slam( CBlob @this, f32 angle, Vec2f vel, f32 vellen )

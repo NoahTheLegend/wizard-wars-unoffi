@@ -154,7 +154,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
     if (solid && (this.getTickSinceCreated() > (HOMING_DELAY * 2) ))
     {
 		blast(this, 4);
-        this.server_Die();
+        this.Tag("mark_for_death");
 		return;
     }
 
@@ -183,7 +183,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
         this.server_Hit(blob,blob.getPosition(),this.getVelocity()*4,damage,Hitters::explosion);
 		blast(this, 4);
-        this.server_Die();
+        this.Tag("mark_for_death");
     }
 }
 

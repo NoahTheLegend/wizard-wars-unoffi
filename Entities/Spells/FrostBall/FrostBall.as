@@ -310,7 +310,7 @@ void Boom( CBlob@ this )
 {
 	blast(this.getPosition(), 5);
 	this.getSprite().SetEmitSoundPaused(true);
-    this.server_Die();
+    this.Tag("mark_for_death");
 }
 
 void Slam( CBlob @this, f32 angle, Vec2f vel, f32 vellen )

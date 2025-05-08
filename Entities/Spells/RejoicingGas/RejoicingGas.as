@@ -54,7 +54,7 @@ void onTick(CBlob@ this)
 					if (this.get_s8("hits") <= 0)
 					{
 						this.Tag("dead");
-						this.server_Die();
+						this.Tag("mark_for_death");
 						return;
 					}
 				}

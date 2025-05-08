@@ -25,7 +25,7 @@ u8 rnd_blobs = 1;
 void onTick(CBlob@ this)
 {
     if (this.get_u8("despelled") >= 2)
-        this.server_Die();
+        this.Tag("mark_for_death");
 
     Vec2f origin = this.get_Vec2f("origin");
     u32 t = (getGameTime() + this.getNetworkID());

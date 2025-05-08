@@ -59,7 +59,7 @@ void onTick(CBlob@ this)
 {
     if(this.get_u8("despelled") >= 2 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
     }
 
     bool had_first = false;

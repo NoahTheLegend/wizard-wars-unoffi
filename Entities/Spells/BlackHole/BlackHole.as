@@ -170,8 +170,8 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 		Vec2f thisPos = this.getPosition();
 		this.Tag("dead");
 		blob.Tag("dead");
-		this.server_Die();
-		blob.server_Die();
+		this.Tag("mark_for_death");
+		blob.Tag("mark_for_death");
 
 		CBlob@ b = server_CreateBlob( "black_hole_big", -1, thisPos ); // moved down here so we dont accidently make a blob before killing the last 2
 		if (b !is null)

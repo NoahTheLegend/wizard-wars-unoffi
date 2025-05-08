@@ -60,7 +60,7 @@ void onTick(CBlob@ this){
             if (isServer())
             {
                 this.Tag("dead");
-                this.server_Die();
+                this.Tag("mark_for_death");
             }
         }
         else
@@ -77,7 +77,7 @@ void onTick(CBlob@ this){
                 }
             }
             this.server_Hit(target,this.getPosition(), Vec2f_zero,damage,41);
-            this.server_Die();
+            this.Tag("mark_for_death");
         }
     }
 }

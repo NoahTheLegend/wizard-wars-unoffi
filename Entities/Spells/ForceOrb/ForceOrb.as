@@ -92,7 +92,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 			this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 1.0f + XORRandom(3)/10.0f);
 			sparks(this.getPosition(), 4);
 			//this.server_Hit( hi.blob, pos, 100, dmg, Hitters::ram, true);
-			this.server_Die();
+			this.Tag("mark_for_death");
 			
 			
 		

@@ -104,7 +104,7 @@ void onTick(CBlob@ this)
                         {
                             if (isServer())
                             {
-                                b.server_Die();
+                                b.Tag("mark_for_death");
                             }
                             if (isClient())
                             {
@@ -132,7 +132,7 @@ void onTick(CBlob@ this)
             if (isServer())
             {
                 this.server_SetHealth(this.getHealth()-0.25f);
-                if (this.getHealth() <= 0.00f) this.server_Die();
+                if (this.getHealth() <= 0.00f) this.Tag("mark_for_death");
             }
         }
         this.getSprite().RotateByDegrees((this.hasTag("fullCharge") ? rotateSpeed*2 : rotateSpeed) * (2-2*this.getHealth()) ,Vec2f(0,0));

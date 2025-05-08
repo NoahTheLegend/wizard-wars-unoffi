@@ -25,7 +25,7 @@ void onTick(CBlob@ this)
         }
     }
 
-    if(reverse && this.get_u8("frame") < 1) this.server_Die();
+    if(reverse && this.get_u8("frame") < 1) this.Tag("mark_for_death");
 
     if(!this.hasTag("finished")) return;
 

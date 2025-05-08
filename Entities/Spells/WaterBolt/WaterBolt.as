@@ -106,7 +106,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
-	if (solid || (blob !is null && blob.hasTag("kill water spells"))) this.server_Die();
+	if (solid || (blob !is null && blob.hasTag("kill water spells"))) this.Tag("mark_for_death");
 	if (blob !is null && doesCollideWithBlob(this, blob))
 	{
 		if (isEnemy(this, blob))
@@ -114,7 +114,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 			this.server_Hit(blob, this.getPosition(), this.getVelocity() * 2, this.get_f32("damage"), Hitters::water, true);
 		}
 
-		this.server_Die();
+		this.Tag("mark_for_death");
 	} 
 }
 

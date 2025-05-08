@@ -37,7 +37,7 @@ void onTick(CBlob@ this)
 				pos.x < -128.0f ||
 				pos.x > (getMap().tilemapwidth * getMap().tilesize) + 128.0f
 			) {
-				this.server_Die();
+				this.Tag("mark_for_death");
 				return;
 			}
 		}
@@ -60,12 +60,12 @@ void onTick(CBlob@ this)
 				if (target.getPosition().y > (getMap().tilemapheight * getMap().tilesize) - 16.0f)
 				{
 					this.Tag("dead");
-					this.server_Die();
+					this.Tag("mark_for_death");
 				}
 			}
 			else
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		}
     }
@@ -131,7 +131,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 		{
 			if (blob.hasTag("barrier"))
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 			else
 			{
@@ -144,7 +144,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 				else
 				{
 					this.server_Hit(blob, blob.getPosition(), this.getVelocity(), expundamage, Hitters::arrow, true);
-					if (this.hasTag("collided")) this.server_Die();
+					if (this.hasTag("collided")) this.Tag("mark_for_death");
 				}
 
 				if(this.hasTag("primed"))
@@ -154,7 +154,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 						if (this.hasTag("nemesis"))
 						{
 							this.Tag("dead");
-							this.server_Die();
+							this.Tag("mark_for_death");
 						}
 						//if (blob.getShape().getConsts().mapCollisions)
 						{

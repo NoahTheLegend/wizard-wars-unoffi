@@ -109,7 +109,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 
 	if ((solid && enemy) || swordDeath)
-	{ this.server_Die(); }
+	{ this.Tag("mark_for_death"); }
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)

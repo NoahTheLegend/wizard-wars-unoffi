@@ -95,7 +95,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 	if (doesCollideWithBlob(this, blob))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 }
 

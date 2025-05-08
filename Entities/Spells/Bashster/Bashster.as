@@ -33,7 +33,7 @@ void onTick(CBlob@ this)
 	CPlayer@ ownerplayer = this.getDamageOwnerPlayer();
 	if (ownerplayer is null || ownerplayer.getBlob() is null)
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
@@ -95,7 +95,7 @@ void onTick(CBlob@ this)
 				orb.Sync("scale", true);
 			}
 
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 	}
 

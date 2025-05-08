@@ -69,7 +69,7 @@ void onTick(CBlob@ this)
 
 	if( dist < 1.0f )
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 }
 

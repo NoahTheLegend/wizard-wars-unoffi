@@ -38,7 +38,7 @@ void onTick(CBlob@ this)
 {
 	if(this.get_u8("despelled") >= 2)
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
 		return;
     }
 
@@ -63,7 +63,7 @@ void onTick(CBlob@ this)
 	{
 		if (Maths::Abs(this.getAngleDegrees()-(fl?360-hit_angle:hit_angle)) <= 8.0f)
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 			return;
 		}
 	}

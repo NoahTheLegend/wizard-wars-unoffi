@@ -19,7 +19,7 @@ void onTick(CBlob@ this)
 {
     if(this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
     }
 
     if (this.get_u32("boom_end") != 0)
@@ -53,7 +53,7 @@ void onTick(CBlob@ this)
             }
         }
 
-        if (diff <= 0) this.server_Die();
+        if (diff <= 0) this.Tag("mark_for_death");
     }
     
     if (!isClient()) return;

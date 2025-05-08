@@ -94,14 +94,14 @@ void onTick(CBlob@ this)
 						rshard.Tag("sync");
 					}
 
-					this.server_Die();
+					this.Tag("mark_for_death");
 				}
 			}
 		}
 		else
 		{
 			if (this.getVelocity().Length() < 1.0f)
-				this.server_Die();
+				this.Tag("mark_for_death");
 		}
 	}
 
@@ -137,7 +137,7 @@ void onTick(CBlob@ this)
 				pos.x < 0.1f ||
 				pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f
 			) {
-				this.server_Die();
+				this.Tag("mark_for_death");
 				return;
 			}
 		}
@@ -217,7 +217,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 			else
 			{
 				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), expundamage , Hitters::arrow, true);
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		}
 	}

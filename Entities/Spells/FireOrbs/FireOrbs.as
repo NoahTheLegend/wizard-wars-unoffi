@@ -53,7 +53,7 @@ void onTick(CBlob@ this)
 	}
 	if (shooter is null)
 	{
-		if (isServer()) this.server_Die();
+		if (isServer()) this.Tag("mark_for_death");
 		return;
 	}
 
@@ -74,7 +74,7 @@ void onTick(CBlob@ this)
 	
 	if (shooter.getPlayer() is null)
 	{
-		if (XORRandom(100) == 0) this.server_Die();
+		if (XORRandom(100) == 0) this.Tag("mark_for_death");
 		return;
 	}
 	this.Tag(""+shooter.getPlayer().getUsername());
@@ -374,5 +374,5 @@ void Boom( CBlob@ this )
 	smoke(this.getPosition(), 5);	
 	blast(this.getPosition(), 10);	
 	
-    this.server_Die();
+    this.Tag("mark_for_death");
 }

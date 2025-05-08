@@ -144,7 +144,7 @@ void onTick(CBlob@ this)
 
 	if (this.getPosition().y < 0 || this.getPosition().x < 0
 		|| this.getPosition().y > getMap().tilemapheight*8
-		|| this.getPosition().x > getMap().tilemapwidth*8) this.server_Die();
+		|| this.getPosition().x > getMap().tilemapwidth*8) this.Tag("mark_for_death");
 }
 
 void onDie(CBlob@ this)
@@ -200,7 +200,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
 	if(spellDeath)
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 }
 

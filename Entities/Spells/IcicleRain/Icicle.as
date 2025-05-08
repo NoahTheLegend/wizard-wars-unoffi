@@ -39,7 +39,7 @@ void onTick(CBlob@ this)
 
 	if (!this.exists("moveTo") || !this.exists("aimPos"))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 	
@@ -151,7 +151,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		{
 			if (blob.hasScript("BladedShell.as") || blob.hasScript("VoltageField"))
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 				return;
 			}
 			f32 dmg = 0.5f;

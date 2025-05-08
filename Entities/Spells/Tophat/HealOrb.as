@@ -38,7 +38,7 @@ void onTick(CBlob@ this)
         this.getSprite().SetRelativeZ(5.0f);
 
         if (this.isOnGround())
-            this.server_Die();
+            this.Tag("mark_for_death");
     }
 
     if (b !is null)
@@ -123,12 +123,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
             Heal(this, blob, 0.2f);
 
             this.Tag("dead");
-            this.server_Die();
+            this.Tag("mark_for_death");
         }
     }
 
     if (!isServer()) return;
 
     if (solid && blob is null)
-        this.server_Die();
+        this.Tag("mark_for_death");
 }

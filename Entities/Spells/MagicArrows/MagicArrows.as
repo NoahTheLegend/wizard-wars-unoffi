@@ -63,7 +63,7 @@ void onTick(CBlob@ this)
 		if (isServer() && this.getDistanceTo(target) <= 16.0f)
 		{
 			this.server_Hit(target, target.getPosition(), Vec2f(0,0.75f), this.get_f32("damage"), Hitters::arrow, true);
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 		Vec2f dir = target.getPosition() - this.getPosition();
 		dir.Normalize();
@@ -100,7 +100,7 @@ void onTick(CBlob@ this)
 
 	if (this.getPosition().y < 0 || this.getPosition().x < 0
 		|| this.getPosition().y > getMap().tilemapheight*8
-		|| this.getPosition().x > getMap().tilemapwidth*8) this.server_Die();
+		|| this.getPosition().x > getMap().tilemapwidth*8) this.Tag("mark_for_death");
 
 	sparks(this.getPosition()+Vec2f(0,8).RotateBy(this.getAngleDegrees()), 30, Vec2f_zero,
 		Vec2f(0,0.5f).RotateBy(this.getAngleDegrees()), 0.75f);
@@ -148,16 +148,16 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	if (!isServer()) return;
 	if (blob !is null && blob.getTeamNum() != this.getTeamNum() && (blob.hasTag("zombie") || blob.hasTag("barrier")))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 	if (blob !is null && this.get_u16("target_id") == blob.getNetworkID() && this.get_u16("target_id") != 0)
 	{
 		this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.75f), this.get_f32("damage"), Hitters::arrow, true);
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 	if (blob is null && solid)
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 }
 

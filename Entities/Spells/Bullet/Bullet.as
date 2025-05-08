@@ -31,11 +31,11 @@ void onTick(CBlob@ this)
 	if (!this.hasTag("solid") && getMap() !is null && !has_solid)
 	{
 		this.getShape().getConsts().mapCollisions = true;
-		if (has_solid) this.server_Die();
+		if (has_solid) this.Tag("mark_for_death");
 		this.Tag("solid");
 	}
 	else if (!this.hasTag("solid") && this.getTickSinceCreated() > ticks_noclip)
-		this.server_Die();
+		this.Tag("mark_for_death");
 
 	if (isClient())
 	{
@@ -112,7 +112,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		}
 
 		if (die)
-			this.server_Die();
+			this.Tag("mark_for_death");
 	}
 }
 

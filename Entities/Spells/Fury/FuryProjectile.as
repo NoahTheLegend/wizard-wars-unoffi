@@ -97,7 +97,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 		{
 			this.Tag("dead");
             this.server_Hit(blob, blob.getPosition(), Vec2f(0,-0.69f), this.get_f32("damage"), Hitters::arrow, false);
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 	}
 }

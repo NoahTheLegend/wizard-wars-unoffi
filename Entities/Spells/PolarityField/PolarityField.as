@@ -69,7 +69,7 @@ void onTick(CBlob@ this)
 	//			this.setPosition(center+Vec2f(2.0f, 0.0f).RotateBy(rot));
 	//			follow.setPosition(center-Vec2f(2.0f, -2.0f).RotateBy(rot));
 	//		}
-	//		else this.server_Die();
+	//		else this.Tag("mark_for_death");
 	//	}
 	//	return;
 	//}
@@ -79,7 +79,7 @@ void onTick(CBlob@ this)
 
 	if (isServer())
 	{
-		if (this.get_u8("despelled") >= 2) this.server_Die();
+		if (this.get_u8("despelled") >= 2) this.Tag("mark_for_death");
 		//create
 		if (this.getTickSinceCreated() <= stages * stage_frequency && getGameTime()%stage_frequency == 0)
 		{

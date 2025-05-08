@@ -122,7 +122,7 @@ void onTick( CBlob@ this )
 	}
 	else
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 }
 
@@ -185,19 +185,19 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	{
 		if(isEnemy(this, blob))
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 			return;
 		}
 	}
 	else
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
 	if(solid)
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 	
 }

@@ -65,7 +65,7 @@ void onTick(CBlob@ this)
 				if (b.getTeamNum() != this.getTeamNum()) continue;
 				if (this.getDistanceTo(b) <= 88.0f)
 				{
-					this.server_Die();
+					this.Tag("mark_for_death");
 					return;
 				}
 			}

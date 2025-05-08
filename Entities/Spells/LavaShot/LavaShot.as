@@ -38,7 +38,7 @@ void onTick(CBlob@ this)
 		this.getSprite().PlaySound("flame_slash_sound", 0.85f, 0.85f);
 	}
 
-	if (this.isInWater()) this.server_Die();
+	if (this.isInWater()) this.Tag("mark_for_death");
 
 	this.setAngleDegrees(Maths::Clamp(0, 360, -this.getVelocity().Angle()));
 	//prevent leaving the map
@@ -47,7 +47,7 @@ void onTick(CBlob@ this)
 	if ( pos.x < 0.1f ||
 	pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f)
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
@@ -126,14 +126,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		{
 			Shatter(this, normal);
 			this.setVelocity(Vec2f_zero);
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 	}
 	else if (solid && blob is null)
 	{
 		Shatter(this, normal);
 		this.setVelocity(Vec2f_zero);
-		this.server_Die();
+		this.Tag("mark_for_death");
 	}
 }
 

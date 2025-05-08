@@ -67,14 +67,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
     if (solid && blob is null)
     {
-        this.server_Die();
+        this.Tag("mark_for_death");
 		return;
     }
 
 	if (blob is null) {return;}
 	if (doesCollideWithBlob(this, blob))
 	{
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 
@@ -82,7 +82,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
     {
 		if (blob.hasTag("barrier") || blob.hasTag("flesh"))
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
     }
 }

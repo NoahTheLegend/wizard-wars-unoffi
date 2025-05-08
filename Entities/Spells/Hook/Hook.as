@@ -58,11 +58,11 @@ void onTick(CBlob@ this)
 			if ((this.getTickSinceCreated() > 10 && this.hasTag("returning") && !shape.isStatic() && this.getDistanceTo(owner) <= 24.0f)
 			|| (this.hasTag("collided_blob")
 				&& this.getDistanceTo(owner) <= 24.0f) && !this.getShape().isStatic())
-					this.server_Die();
+					this.Tag("mark_for_death");
 				
 			if (owner.isKeyJustPressed(key_use))
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 				return;
 			}
 
@@ -135,7 +135,7 @@ void onTick(CBlob@ this)
 				pos.x < 0.1f ||
 				pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f
 			) {
-				this.server_Die();
+				this.Tag("mark_for_death");
 				return;
 			}
 		}
@@ -157,7 +157,7 @@ void onTick(CBlob@ this)
 			}
 			else
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 		}
     }
@@ -221,7 +221,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 		{
 			if (blob.hasTag("barrier"))
 			{
-				this.server_Die();
+				this.Tag("mark_for_death");
 			}
 			else if (!this.hasTag("collided_blob") && !this.getShape().isStatic())
 			{

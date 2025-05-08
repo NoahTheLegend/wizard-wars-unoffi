@@ -187,7 +187,7 @@ void onTick( CBlob@ this)
 
 					default:
 					{
-						this.server_Die();
+						this.Tag("mark_for_death");
 						return;
 					}
 				} //switch end
@@ -215,11 +215,11 @@ void onTick( CBlob@ this)
 	{
 		if ( this.get_bool("target found") && this.getTickSinceCreated() > (LIFETIME + EXTENDED_LIFETIME)*30 )
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 		else if ( !this.get_bool("target found") && this.getTickSinceCreated() > LIFETIME*30 )
 		{
-			this.server_Die();
+			this.Tag("mark_for_death");
 		}
 	}
 }
@@ -299,7 +299,7 @@ void setEffect(CBlob@ this, CBlob@ blob)
 			} //switch end
 			
 			this.Tag("set");
-			this.server_Die();
+			this.Tag("mark_for_death");
 			return;
 		}
 		else if (!sameTeam && targetType == 2)	//curse status effects
@@ -318,7 +318,7 @@ void setEffect(CBlob@ this, CBlob@ blob)
 			}
 
 			this.Tag("set");
-			this.server_Die();
+			this.Tag("mark_for_death");
 			return;
 		}
 	}
@@ -348,7 +348,7 @@ void setEffect(CBlob@ this, CBlob@ blob)
 		} //switch end
 
 		this.Tag("set");
-		this.server_Die();
+		this.Tag("mark_for_death");
 		return;
 	}
 }

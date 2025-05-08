@@ -173,7 +173,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		if (blob is null)
 		{
 			if (isServer() && this.getVelocity().Length() > 50.0f)
-				this.server_Die();
+				this.Tag("mark_for_death");
 			else
 				this.AddForce(Vec2f(this.getMass(), 0).RotateBy(-normal.Angle()));
 		}
@@ -185,7 +185,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	}
 
 	if(blobDeath)
-	{this.server_Die();}
+	{this.Tag("mark_for_death");}
 }
 
 void onDie(CBlob@ this)
