@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	this.Tag("water projectile");
 	this.Tag("water spell");
+	this.Tag("smashtoparticles_additive");
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
