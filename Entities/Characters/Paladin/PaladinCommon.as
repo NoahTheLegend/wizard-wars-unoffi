@@ -36,7 +36,7 @@ namespace PaladinParams
 	const ::Spell[] spells = 
 	{
 		Spell("templarhammer", "Templar Hammer", 92, "Throws a magic hammer that is affected by gravity.",
-				SpellType::other, 4, 25, 0, 120.0f),
+				SpellType::other, 3, 25, 0, 120.0f),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellType::other, 25, 8, 0, 270.0f, true),
@@ -45,7 +45,7 @@ namespace PaladinParams
 			SpellType::other, 20, 10, 0, 64.0f, true),
 			 
 		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards. Weaker near cliffs.",
-				SpellType::other, 10, 40, 3, 256.0f, true, true),
+				SpellType::other, 10, 40, 1, 256.0f, true, true),
 
 		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target receives "+(connection_dmg_reduction*100)+"% less damage but transfers "+(connection_dmg_transfer*100)+"% back to you when nearby and if your health is more than "+(min_connection_health_ratio*100)+"%.",
 				SpellType::other, 20, 45, 4, 256.0f, true),
