@@ -2,7 +2,7 @@
 
 void onTick(CBlob@ this)
 {
-    if (this.hasTag("dead"))
+    if (this.hasTag("totally_dead"))
     {
         this.server_Die();
         this.getCurrentScript().runFlags |= Script::remove_after_this;
@@ -22,6 +22,7 @@ void onTick(CBlob@ this)
             shape.getConsts().collidable = false;
         }
 
+        this.Tag("totally_dead");
         this.Tag("dead");
     }
 }
