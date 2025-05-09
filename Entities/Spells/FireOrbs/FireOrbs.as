@@ -169,9 +169,9 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 		(target !is null && target.getTeamNum() != this.getTeamNum() && (target.hasTag("barrier") || target.hasTag("flesh")))
 		||
 		(target !is null
+		&& target.hasTag("flesh");
 		&& !target.hasTag("dead") 
-		&& target.getTeamNum() != this.getTeamNum() //as long as they're on the enemy side
-		&& !target.hasTag("black hole"))  //as long as it's not a black hole, go as normal.
+		&& target.getTeamNum() != this.getTeamNum())
 	);
 }	
 
