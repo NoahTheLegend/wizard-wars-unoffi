@@ -72,10 +72,9 @@ void onRestart(CRules@ this)
 	}
 }
 
-const u8 hp_sync_rate = 10;
 void onTick(CRules@ this)
 {
-	if (isServer() && getGameTime() % hp_sync_rate == 0)
+	if (isServer())
 	{
 		for (u8 i = 0; i < getPlayerCount(); i++)
 		{
