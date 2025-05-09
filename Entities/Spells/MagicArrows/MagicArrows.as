@@ -145,6 +145,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
+	if (this.hasTag("mark_for_death")) return;
 	if (!isServer()) return;
 	if (blob !is null && blob.getTeamNum() != this.getTeamNum() && (blob.hasTag("zombie") || blob.hasTag("barrier")))
 	{
