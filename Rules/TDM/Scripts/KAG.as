@@ -2,6 +2,7 @@
 #include "Default/DefaultLoaders.as"
 #include "PrecacheTextures.as"
 #include "EmotesCommon.as"
+#include "Hitters.as"
 
 void onInit(CRules@ this)
 {
@@ -71,8 +72,22 @@ void onRestart(CRules@ this)
 	}
 }
 
+const u8 hp_sync_rate = 10;
 void onTick(CRules@ this)
 {
+	if (isServer() && getGameTime() % hp_sync_rate == 0)
+	{
+		for (u8 i = 0; i < getPlayerCount(); i++)
+		{
+			CPlayer@ p = getPlayer(i);
+			if (p is null) continue;
+
+			CBlob@ blob = p.getBlob();
+			if (blob is null) continue;
+
+			blob.server_Hit(blob, blob.getPosition(), Vec2f_zero, 0.0f, Hitters::fall, true);
+		}
+	}
 	//TODO: figure out a way to optimise so we don't need to keep running this hook
 	if (need_sky_check)
 	{
