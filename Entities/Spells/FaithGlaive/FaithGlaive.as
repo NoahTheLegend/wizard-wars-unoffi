@@ -215,7 +215,7 @@ void onTick(CBlob@ this)
 				if (this.hasTag("glaive_special")) // ray
 				{
 					f32 angle = jab_count == 0 ? 0 : jab_count == 1 ? right_jab_angle * 0.5f : -left_jab_angle * 0.5f;
-					map.getHitInfosFromArc(thispos, aimangle + angle + (this.isFacingLeft() ? 180 : 0), 25, extra_distance * 2 + Maths::Abs(current_jab_distance), this, @list);
+					map.getHitInfosFromArc(thispos, aimangle + angle + (this.isFacingLeft() ? 180 : 0), 35, extra_distance * 2 + Maths::Abs(current_jab_distance), this, @list);
 				}
 				else
 					map.getHitInfosFromArc(thispos, aimangle + (this.isFacingLeft() ? 180-start_angle : start_angle), Maths::Abs(start_angle) + Maths::Abs(target_angle), extra_distance + 32 * scale, this, @list);
