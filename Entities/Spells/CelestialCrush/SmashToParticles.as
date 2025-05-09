@@ -130,8 +130,8 @@ void MakeParticle(Vec2f pos, Vec2f vel, SColor col, f32 layer, bool additive = f
         f32 gry = 0; 
         if (grav_rnd.x != 69)
         {
-            grx = (XORRandom(Maths::Abs(grav_rnd.x) * 100) * 0.01f - grav_rnd.x / 2);
-            gry = (XORRandom(Maths::Abs(grav_rnd.y) * 100) * 0.01f - grav_rnd.y / 2);
+            grx = (XORRandom(Maths::Abs(grav_rnd.x) * 1000) * 0.001f - grav_rnd.x / 2);
+            gry = (XORRandom(Maths::Abs(grav_rnd.y) * 1000) * 0.001f - grav_rnd.y / 2);
         }
 
         p.gravity = grav + Vec2f(grx, gry);

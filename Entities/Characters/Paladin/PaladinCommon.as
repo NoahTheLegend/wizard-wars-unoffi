@@ -44,7 +44,7 @@ namespace PaladinParams
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 20, 10, 0, 64.0f, true),
 			 
-		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards.",
+		Spell("celestialcrush", "Heavenly Crush", 91, "Summons a heavy hammer to smash nearby area with a delay. Launches everything upwards. Weaker near cliffs.",
 				SpellType::other, 10, 40, 3, 256.0f, true, true),
 
 		Spell("dmg_connection", "Aura: Tau", 93, "Links an ally's health to yours. Linked target receives "+(connection_dmg_reduction*100)+"% less damage but transfers "+(connection_dmg_transfer*100)+"% back to you when nearby and if your health is more than "+(min_connection_health_ratio*100)+"%.",
@@ -75,7 +75,7 @@ namespace PaladinParams
 				SpellType::other, 30, 45, 6, 198.0f, true),
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to slash in front of you. The spell disables teleport and awaits some time before attack.",
-				SpellType::other, 15, 30, 0, 0.0f),
+				SpellType::other, 18, 30, 0, 0.0f),
 
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for everyone inside. Enemies also claim this effect. Doesnt stack. Can be despelled by anyone.",
 				SpellType::other, 10, 60, 18, 198.0f, true),

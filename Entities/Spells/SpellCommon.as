@@ -4918,8 +4918,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -836474293://faith glaive
 		{
+			bool extra_damage = this.hasTag("extra_damage");
 			f32 damage = 1.0f;
-			f32 extraDamage = this.hasTag("extra_damage") ? 1.5f : 1.0f;
+			f32 extraDamage = extra_damage ? 1.5f : 1.0f;
+			u8 wait_time = extra_damage ? 15 : 20;
 
 			switch(charge_state)
 			{
@@ -4940,7 +4942,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				case super_cast:
 				{
-					damage = 3.0f;
+					wait_time -= 5;
+					damage = 1.5f; // triple jab mode
 				}
 				break;
 				
@@ -4953,13 +4956,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				this.getSprite().PlaySound("swordsummon.ogg", 1.5f, 0.85f+XORRandom(6)*0.01f);
 
+				if (charge_state == super_cast)
+					this.Tag("glaive_special");
+				else
+					this.Untag("glaive_special");
+
 				this.set_bool("faithglaiveplaysound", true);
 				this.set_f32("faithglaivedamage", damage);
 				this.set_f32("faithglaiverotation", 0);
 				this.set_u32("faithglaivetiming", getGameTime());
+				this.set_u8("faithglaivewait", wait_time);
 
 				Vec2f vel = this.getVelocity();
 				this.setVelocity(Vec2f(vel.x*0.75f, vel.y));
+
 				this.AddScript("FaithGlaive.as");
 			}
 			else

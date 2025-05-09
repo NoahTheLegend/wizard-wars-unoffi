@@ -14,17 +14,18 @@ void onInit(CBlob@ this)
 	
 	this.set_f32("lifetime",0);
 	this.Tag("no trampoline collision");
+	this.Tag("smashtoparticles_additive");
+	
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
     this.server_SetTimeToDie(60);
 	CSprite@ sprite = this.getSprite();
 	sprite.SetZ(1500.0f);
-	//sprite.setRenderStyle(RenderStyle::additive);
+	sprite.setRenderStyle(RenderStyle::additive);
 }
 
 f32 stoprange = 48.0f;
-
 void onTick(CBlob@ this)
 {
 	Vec2f pos = this.getPosition();
