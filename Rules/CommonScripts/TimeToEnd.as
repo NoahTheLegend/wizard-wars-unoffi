@@ -10,39 +10,23 @@ void onInit(CRules@ this)
 		this.set_u32("game_end_time", 0);
 	if (!this.exists("end_in"))
 		this.set_u32("end_in", 0);
-    onReset(this);
 }
 
-void onRestart( CRules@ this )
+void onRestart(CRules@ this)
 {
-    onReset(this);
 	spawn_buff_time = 0;
 }
 
-void onReset( CRules@ this)
-{
-    if (isServer())
-    {
-        this.set_u8("spawnbuff", 3);
-    }
-}
-
+u32 spawnrate = 2700; // 90 seconds
 u32 spawn_buff_time = 0;
 void onTick(CRules@ this)
 {
-	u8 spawnbuff = this.get_u8("spawnbuff");
 	u32 gameEndTime = this.get_u32("game_end_time");
 
-	if (isServer() && spawnbuff != 0 && getGameTime() > spawn_buff_time - 2700 * spawnbuff)// 900 is 30 seconds
+	if (isServer() && spawn_buff_time % spawnrate == spawnrate-1)
     {
         server_CreateBlob("damage_buff", 0, Vec2f(128 + XORRandom(getMap().getMapDimensions().x - 256), 0));//create damage buff at top of map 128 pixels away from the sides randomly
-        this.set_u8("spawnbuff", spawnbuff - 1);
     }
-	
-	if (!getNet().isServer() || !this.isMatchRunning() || this.get_bool("no timer"))
-	{
-		return;
-	}
 
 	u8 players = 0;
 	for (u8 i = 0; i < getPlayersCount(); i++)
@@ -53,11 +37,17 @@ void onTick(CRules@ this)
 
 		players++;
 	}
-
-	if (players <= 1)
+	
+	if (this.isMatchRunning() && players >= 2)
 	{
 		spawn_buff_time += 1;
 	}
+	
+	if (!getNet().isServer() || !this.isMatchRunning() || this.get_bool("no timer"))
+	{
+		return;
+	}
+
 	if (players <= 2)
 	{
 		this.add_u32("game_end_time", 1);
@@ -96,8 +86,6 @@ void onTick(CRules@ this)
 		{
 			this.SetGlobalMessage("Time is up!\nIt's a tie!");
 		}
-
-        this.set_u8("spawnbuff", 3);
 
 		//GAME OVER
 		this.SetCurrentState(3);
