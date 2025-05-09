@@ -2,6 +2,7 @@
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
+	return; // disabled, remake to server client sync
 	if (!isClient()) return;
 	if (!this.isMyPlayer()) return;
 	if (!getRules().get_bool("hovermessages_enabled")) return;

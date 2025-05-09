@@ -78,7 +78,7 @@ void onTick(CSprite@ this) //rotating sprite
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{	
+{
 	bool swordDeath = false;
 	bool enemy = true;
 
