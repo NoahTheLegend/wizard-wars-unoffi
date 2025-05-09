@@ -10,7 +10,8 @@ void onInit(CBlob@ this)
 	this.Tag("projectile");
     this.Tag("counterable");
 	this.Tag("phase through spells");
-	shape.SetGravityScale( 0.0f );
+	shape.SetGravityScale(0.0f);
+	shape.SetRotationsAllowed(false);
 
 	this.set_f32("damage", 1.0f);
 
@@ -21,12 +22,67 @@ void onInit(CBlob@ this)
 	this.set_bool("has_target", false);
 	this.set_u32("lock_time", 0);
 
-	this.getSprite().SetRelativeZ(11.0f);
-	this.getSprite().setRenderStyle(RenderStyle::additive);
-
 	this.set_Vec2f("smashtoparticles_grav", Vec2f(0,0));
     this.set_Vec2f("smashtoparticles_grav_rnd", Vec2f(0,0));
 	this.Tag("smashtoparticles_additive");
+
+	CSprite@ sprite = this.getSprite();
+	sprite.SetRelativeZ(11.0f);
+	//sprite.setRenderStyle(RenderStyle::additive);
+
+	CSpriteLayer@ front = sprite.addSpriteLayer("front", "Angel.png", 32, 32);
+	if (front !is null)
+	{
+		front.SetRelativeZ(12.0f);
+		front.SetOffset(Vec2f(0, 0));
+		front.setRenderStyle(RenderStyle::light);
+		front.ScaleBy(Vec2f(1.1f, 1.1f));
+		
+		Animation@ def = front.addAnimation("default", 0, false);
+		if (def !is null)
+		{
+			def.AddFrame(0);
+			def.AddFrame(1);
+			def.AddFrame(2);
+			def.AddFrame(3);
+			def.AddFrame(4);
+			front.SetAnimation("default");
+		}
+
+		Animation@ aggrro = front.addAnimation("aggrro", 0, false);
+		if (aggrro !is null)
+		{
+			aggrro.AddFrame(5);
+			aggrro.AddFrame(6);
+			aggrro.AddFrame(7);
+			aggrro.AddFrame(8);
+			aggrro.AddFrame(9);
+		}
+	}
+
+	CSpriteLayer@ book = sprite.addSpriteLayer("book", "AngelBook.png", 16, 16);
+	if (book !is null)
+	{
+		book.SetRelativeZ(13.0f);
+		book.SetOffset(Vec2f(0, 0));
+		book.SetFacingLeft(false);
+		
+		Animation@ open = book.addAnimation("open", 8, false);
+		if (open !is null)
+		{
+			int[] frames = {0, 0, 1, 1};
+			open.AddFrames(frames);
+		}
+
+		Animation@ idle = book.addAnimation("idle", 4, true);
+		if (idle !is null)
+		{
+			int[] frames = {2, 3, 4, 5};
+			idle.AddFrames(frames);
+		}
+
+		this.set_string("book_anim", "open");
+	}
 }
 
 f32 cap_dist = 256.0f + 64.0f;
@@ -78,8 +134,6 @@ void onTick(CBlob@ this)
 	    this.set_bool("has_target", true);
 	    if (this.get_u32("lock_time") == 0)
 			this.set_u32("lock_time", getGameTime());
-
-		
 
 	    Vec2f vel = this.getVelocity();
 	    vel.Normalize();
@@ -168,6 +222,21 @@ void Particles(CBlob@ this, u8 amount, f32 force)
 	}
 }
 
+void onRender(CSprite@ this)
+{
+	if (this is null) return;
+	
+	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
+
+	CSpriteLayer@ front = this.getSpriteLayer("front");
+	if (front !is null && front.animation !is null)
+	{
+		front.SetAnimation(this.animation.name);
+		front.animation.frame = this.animation.frame;
+	}
+}
+
 void onTick(CSprite@ this) //rotating sprite
 {
 	CBlob@ blob = this.getBlob();
@@ -176,24 +245,75 @@ void onTick(CSprite@ this) //rotating sprite
 	bool has_target = blob.get_bool("has_target");
 	u32 lock_time = blob.get_u32("lock_time");
 
-	f32 power = 8;
-	f32 scale = 2;
-	f32 mod = 5;
-
-	if (!has_target)
+	CSpriteLayer@ book = this.getSpriteLayer("book");
+	if (book !is null)
 	{
-		this.animation.time = 3;
+		string anim = blob.get_string("book_anim");
+		if (anim == "open" && book.animation.frame == 2)
+		{
+			book.SetAnimation("idle");
+		}
+		blob.set_string("book_anim", anim);
 
-		//Particles(blob, 2, 1.0f);
+		// "infinity loop" path
+		u32 gt = getGameTime();
+		f32 sin = Maths::Sin(gt * 0.1f);
+		f32 cos = Maths::Cos(gt * 0.1f);
+		
+		f32 rad = 4;
+		f32 x = sin * rad;
+		f32 y = cos * sin * rad * 0.75f;
+
+		Vec2f pos = Vec2f(x - 6, y + 6);
+		book.SetOffset(pos);
 	}
-	else
+
+	if (this.animation !is null)
 	{
-		this.animation.time = 2;
+		string anim = this.animation.name;
+		if (anim == "default" && has_target)
+		{
+			this.SetAnimation("aggrro");
+			this.animation.timer = 0;
+			for (u8 i = 0; i < 4; i++)
+			{
+				makeSmokeParticle(blob, Vec2f_zero);
+			}
+		}
+		else if (anim == "aggrro" && !has_target)
+		{
+			this.SetAnimation("default");
+			this.animation.timer = 0;
+			
+			for (u8 i = 0; i < 4; i++)
+			{
+				makeSmokeParticle(blob, Vec2f_zero);
+			}
+		}
+	}
+}
 
-		int diff = Maths::Clamp(Maths::Min(power*scale*mod, getGameTime()-lock_time), 0, 50);
-		f32 rot = power+diff/mod;
-
-		//Particles(blob, 6, rot/power);
+void makeSmokeParticle(CBlob@ this, const Vec2f vel, const string filename = "Smoke")
+{
+	const f32 rad = 2.0f;
+	Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+	{
+		CParticle@ p = ParticleAnimated("LargeSmoke.png", 
+										this.getPosition(), 
+										vel, 
+										float(XORRandom(360)), 
+										1.0f, 
+										2, 
+										0.0f, 
+										false );
+		if (p !is null)
+		{
+			p.bounce = 0;
+			p.scale = 2.0f;
+    		p.fastcollision = true;
+			p.Z = 500.0f;
+			p.setRenderStyle(RenderStyle::light);
+		}
 	}
 }
 
@@ -207,7 +327,7 @@ void onDie(CBlob@ this)
 		if (map is null)
 		{return;}
 
-		this.getSprite().PlaySound("Whack"+(1+XORRandom(3))+".ogg", 1.5f, 1.0f + XORRandom(10)/10.0f);
+		this.getSprite().PlaySound("ObsessedSpellDie.ogg", 1.25f, 1.6f + XORRandom(15)/100.0f);
 	}
 }
 

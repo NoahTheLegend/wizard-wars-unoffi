@@ -60,7 +60,7 @@ void onTick(CBlob@ this)
 	CBlob@ target = getBlobByNetworkID(this.get_u16("target_id"));
 	if (target !is null)
 	{
-		if (isServer() && this.getDistanceTo(target) <= 16.0f)
+		if (isServer() && this.getDistanceTo(target) <= 16.0f && !this.hasTag("mark_for_death"))
 		{
 			this.server_Hit(target, target.getPosition(), Vec2f(0,0.75f), this.get_f32("damage"), Hitters::arrow, true);
 			this.Tag("mark_for_death");

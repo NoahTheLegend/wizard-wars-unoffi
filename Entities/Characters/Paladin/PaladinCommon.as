@@ -83,7 +83,7 @@ namespace PaladinParams
 		Spell("knight_revive", "Revive", 106, "Summon a noble warrior back from the dead with aiming a reviving missile at their gravestone.",
 				SpellType::other, 70, 60, 25, 360.0f, true),
 
-		Spell("fury", "Fury", 101, "Cast a homing disk releasing sharp flame blades to anyone nearby. Overcharge increases spell damage and fire rate.",
+		Spell("fury", "Holy Angel", 101, "Summon an Angel releasing homing blades at enemies nearby. Overcharge increases her damage and fire rate.",
 				SpellType::other, 55, 80, 16, 64.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
