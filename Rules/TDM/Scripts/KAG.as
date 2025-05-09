@@ -83,7 +83,8 @@ void onTick(CRules@ this)
 
 			CBlob@ blob = p.getBlob();
 			if (blob is null) continue;
-
+			if (blob.hasTag("dead")) continue; //don't do this for dead players
+			
 			blob.server_Hit(blob, blob.getPosition(), Vec2f_zero, 0.0f, Hitters::fall, true);
 		}
 	}

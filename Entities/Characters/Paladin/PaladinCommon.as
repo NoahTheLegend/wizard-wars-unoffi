@@ -75,16 +75,16 @@ namespace PaladinParams
 				SpellType::other, 30, 45, 6, 198.0f, true),
 
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to slash in front of you. The spell disables teleport and awaits some time before attack.",
-				SpellType::other, 18, 30, 0, 0.0f),
+				SpellType::other, 20, 30, 0, 0.0f),
 
 		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for everyone inside. Enemies also claim this effect. Doesnt stack. Can be despelled by anyone.",
-				SpellType::other, 10, 60, 18, 198.0f, true),
+				SpellType::other, 10, 50, 18, 198.0f, true),
 							
 		Spell("knight_revive", "Revive", 106, "Summon a noble warrior back from the dead with aiming a reviving missile at their gravestone.",
 				SpellType::other, 70, 60, 25, 360.0f, true),
 
 		Spell("fury", "Holy Angel", 101, "Summon an Angel releasing homing blades at enemies nearby. Overcharge increases her damage and fire rate.",
-				SpellType::other, 55, 80, 16, 64.0f, true),
+				SpellType::other, 70, 80, 16, 64.0f, true),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
