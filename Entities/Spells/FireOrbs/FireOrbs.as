@@ -169,7 +169,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 		(target !is null && target.getTeamNum() != this.getTeamNum() && (target.hasTag("barrier") || target.hasTag("flesh")))
 		||
 		(target !is null
-		&& target.hasTag("flesh");
+		&& target.hasTag("flesh")
 		&& !target.hasTag("dead") 
 		&& target.getTeamNum() != this.getTeamNum())
 	);
