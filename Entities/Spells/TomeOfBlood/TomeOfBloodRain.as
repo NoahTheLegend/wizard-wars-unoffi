@@ -1,5 +1,6 @@
 const f32 radius = 86.0f;
 const f32 min_radius = 32.0f;
+const f32 width = 32.0f;
 
 void onTick(CBlob@ this)
 {
@@ -15,7 +16,7 @@ void onTick(CBlob@ this)
     {
         this.add_u8("launched_tomeblood_projectiles", 1);
         Vec2f aimpos = this.get_Vec2f("tomeblood_aimpos");
-        Vec2f offset = Vec2f(0, -radius + level * (radius-min_radius)).RotateBy(level * 360);
+        Vec2f offset = Vec2f(width - XORRandom(width * 2), 32.0f);
 
         Vec2f orbpos = aimpos + offset;
         CBlob@ orb = server_CreateBlob("bloodarrow", this.getTeamNum(), orbpos);
@@ -24,7 +25,7 @@ void onTick(CBlob@ this)
             orb.set_u8("count", this.get_u8("launched_tomeblood_projectiles"));
             orb.Sync("count", true);
             
-            orb.set_Vec2f("target_pos", aimpos);
+            orb.set_Vec2f("target_pos", orbpos - Vec2f(0, 32.0f + XORRandom(64)));
             orb.SetDamageOwnerPlayer(this.getPlayer());
             orb.server_SetTimeToDie(3.0f);
 

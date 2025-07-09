@@ -33,6 +33,9 @@ void onInit( CBlob@ this )
 	this.set_bool("explosive_teamkill", false);
     this.Tag("exploding");
 
+	this.set_u32("send_delay", getGameTime() + 30);
+	this.addCommandID("set_target");
+
 	this.SetMapEdgeFlags(CBlob::map_collide_none | CBlob::map_collide_nodeath);
 
     this.SetLight( true );
@@ -43,8 +46,23 @@ void onInit( CBlob@ this )
 	this.getSprite().PlaySound("FireBlast4.ogg", 1.0f, 2.5f + (XORRandom(10)/10.0f));
 }	
 
+const f32 ticks_noclip = 15;
 void onTick(CBlob@ this)
-{     
+{
+	if (this.hasTag("launched"))
+	{
+		u32 launch_time = this.get_u32("launch_time");
+		bool has_solid = this.getShape().isOverlappingTileSolid(true);
+		if (!this.hasTag("solid") && getMap() !is null && !has_solid)
+		{
+			this.getShape().getConsts().mapCollisions = true;
+			if (has_solid) this.Tag("mark_for_death");
+			this.Tag("solid");
+		}
+		else if (!this.hasTag("solid") && getGameTime() - launch_time > ticks_noclip)
+			this.Tag("mark_for_death");
+	}
+
 	CBlob@ shooter = getBlobByNetworkID(this.get_u16("shooter"));
 	if (shooter is null)
 	{
@@ -77,14 +95,21 @@ void onTick(CBlob@ this)
 		if (XORRandom(100) == 0) this.Tag("mark_for_death");
 		return;
 	}
-	this.Tag(""+shooter.getPlayer().getUsername());
 
-	if (getMap() !is null && this.getPosition().y/8 >= getMap().tilemapheight-2)
+	if (!this.hasTag("launched"))
 	{
-		this.setVelocity(Vec2f(this.getVelocity().x, 0));
-		this.AddForce(Vec2f(0, -100));
+		string casterBlobTag = ""+shooter.getPlayer().getUsername();
+		this.Tag(casterBlobTag);
+		this.set_string("casterBlobTag", casterBlobTag);
+
+		if (getMap() !is null && this.getPosition().y/8 >= getMap().tilemapheight-2)
+		{
+			this.setVelocity(Vec2f(this.getVelocity().x, 0));
+			this.AddForce(Vec2f(0, -100));
+		}
 	}
 
+	bool shifting = shooter.get_bool("shifting");
 	bool has_target = false;
 	Vec2f pos = this.getPosition();
 	Vec2f tpos = shooter.getPosition();
@@ -93,7 +118,7 @@ void onTick(CBlob@ this)
 	u16[] orbs_id;
 	getBlobsByTag(shooter.getPlayer().getUsername(), @orbs);
 	u16 orb_count = orbs.length; 
-	
+
 	if (getGameTime() % 3 == 0)
 	{
 		for (u16 i = 0; i < orb_count; i++)
@@ -122,16 +147,63 @@ void onTick(CBlob@ this)
 	}
 
 	u16 orb_pos = this.get_u16("orb_pos");
+	if (shooter.isMyPlayer())
+	{
+		if (shifting)
+		{
+			if (orb_pos == orbs.size() - 1)
+			{
+				if (!this.exists("send_delay") || this.get_u32("send_delay") < getGameTime())
+				{
+					CBitStream params;
+					params.write_Vec2f(shooter.getAimPos());
+					this.SendCommand(this.getCommandID("set_target"), params);
+				}
+			}
+			else
+			{
+				u8 delay = this.exists("default_send_delay") ? this.get_u8("default_send_delay") : 10;
+				this.set_u32("send_delay", getGameTime() + delay);
+			}
+		}
+	}
+
 	s8 face = this.getTeamNum() == 1 ? -1 : 1;
 	f32 rot_speed = shooter.hasTag("extra_damage") ? rot_speed_base * 1.25f : rot_speed_base; 
-	Vec2f target_radius_pos = tpos + Vec2f(0, -distance - Maths::Sin(getGameTime() / distance_fluctuation) * (distance_fluctuation + XORRandom(rot_speed_fluctuation * 10) * 0.1f)).RotateBy(face * ((shooter.getTickSinceCreated() * rot_speed) % 360 + 360/orb_count * orb_pos));
+	Vec2f target_radius_pos = tpos + Vec2f(6 * Maths::Sin((getGameTime() + orb_pos * 10) * 0.05f) * rot_speed + orb_pos,
+										   Maths::Cos((getGameTime() + orb_pos * 10) * 0.05f) * 8 - 48);
 
-	Vec2f vel = target_radius_pos-pos;
-	this.setVelocity(vel/4);
+	if (this.hasTag("launched"))
+	{
+		if (!this.hasTag("sent"))
+		{
+			Vec2f dir = this.get_Vec2f("target") - pos;
+			dir.Normalize();
+
+			this.setVelocity(Vec2f_zero);
+			this.set_Vec2f("move_dir", dir);
+			this.Tag("sent");
+		}
+
+		Vec2f dir = this.get_Vec2f("move_dir");
+		Vec2f vel = this.getVelocity();
+		Vec2f target_vel = dir * (14.0f + (XORRandom(11) * 0.1f) * (this.exists("orb_speed") ? this.get_f32("orb_speed") : 1.0f));
+		if ((vel - target_vel).Length() > 0.1f)
+		{
+			this.setVelocity(Vec2f_lerp(vel, target_vel, 0.15f));
+		}
+	}
+	else
+	{
+		Vec2f vel = target_radius_pos - pos;
+		this.setVelocity(vel/4);
+	}
 
 	if (isClient())
 	{
-		//sinusoidal ray of particles
+		s8 vel_face = (this.getVelocity().x > 0 ? 1 : -1);
+		f32 vel_len = Maths::Min(1.0f, this.getVelocity().Length());
+
 		u8 pc = v_fastrender ? 5 : 15;
 		for (u8 i = 0; i < pc; i++)
 		{
@@ -141,10 +213,10 @@ void onTick(CBlob@ this)
 			Vec2f direction = (this.getPosition() - shooter.getPosition());
 			direction.Normalize();
 			Vec2f perpendicular = Vec2f(-direction.y, direction.x);
-			f32 sideOffset = Maths::Sin(t * Maths::Pi * 1.0f) * 12.0f * face;
+			f32 sideOffset = Maths::Sin(t * Maths::Pi * 1.0f) * 12.0f * vel_face;
 			Vec2f sideAdjustment = perpendicular * sideOffset;
 
-			Vec2f pVel = (this.getPosition() - pPos) * 0.1f;
+			Vec2f pVel = (this.getPosition() - pPos) * 0.1f * vel_len;
 			pPos += sideAdjustment;
 
 			u8 alpha = u8(t * 255.0f);
@@ -175,17 +247,43 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 	);
 }	
 
-bool doesCollideWithBlob(CBlob@ this, CBlob@ b)
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return isEnemy(this, b);
+	if (blob.getShape() !is null && blob.getShape().isStatic())
+	{
+		if (blob.hasTag("door") && blob.isCollidable())
+		{
+			return true;
+		}
+		
+		ShapePlatformDirection@ plat = blob.getShape().getPlatformDirection(0);
+		if (plat !is null)
+		{
+			Vec2f pos = this.getPosition();
+			Vec2f bpos = blob.getPosition();
+
+			Vec2f dir = plat.direction;
+			if ((dir.x > 0 && pos.x > bpos.x)
+				|| (dir.x < 0 && pos.x < bpos.x)
+				|| (dir.y > 0 && pos.y > bpos.y)
+				|| (dir.y < 0 && pos.y < bpos.y))
+			{
+				return true;
+			}
+		}
+	}
+	
+	return isEnemy(this, blob);
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
-	if (blob is null || this is null) {return;}
-	if (this.getTickSinceCreated() < 30) {return;}
+	if (!this.hasTag("launched") || this.hasTag("mark_for_death"))
+	{
+		return;
+	}
 
-	if (isEnemy(this, blob))
+	if (isEnemy(this, blob) || (blob is null && solid))
 	{
 		if (isClient())
 		{
@@ -221,6 +319,27 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 		Boom(this);
 	} 
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
+{
+	if (cmd == this.getCommandID("set_target"))
+	{
+		if (this.hasTag("launched")) return;
+
+		this.getSprite().PlaySound("FireBlast5.ogg", 0.75f, 1.75f + (XORRandom(25)/100.0f));
+		this.Tag("launched");
+		this.Untag(this.get_string("casterBlobTag"));
+		this.set_u32("launch_time", getGameTime());
+	
+		if (!isServer()) return;
+
+		Vec2f target;
+		if (!params.saferead_Vec2f(target)) return;
+
+		this.set_Vec2f("target", target);
+		this.Sync("target", true);
+	}
 }
 
 void ExplodeWithFire(CBlob@ this)
@@ -361,12 +480,6 @@ void smoke(Vec2f pos, int amount)
 
 void Boom( CBlob@ this )
 {
-	CBlob@ owner = getBlobByNetworkID(this.get_u16("shooter"));
-	if (owner !is null && this.getDistanceTo(owner) >= distance * 2)
-	{
-		return;
-	}
-
 	this.getSprite().PlaySound("FireBlast11.ogg", 0.8f, 2.0f + XORRandom(20)/10.0f);
 	this.getSprite().PlaySound("FireBlast4.ogg", 0.8f, 1.0f + XORRandom(20)/10.0f);
 	ExplodeWithFire(this);

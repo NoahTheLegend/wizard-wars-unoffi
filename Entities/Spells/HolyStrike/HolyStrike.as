@@ -7,7 +7,7 @@ void onInit(CBlob@ this)
 
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
-	consts.mapCollisions = true;
+	consts.mapCollisions = false;
 	consts.bullet = false;
 	consts.net_threshold_multiplier = 1.0f;
 	this.Tag("projectile");
@@ -25,7 +25,6 @@ void onInit(CBlob@ this)
 }
 
 const f32 damp = 0.95f;
-
 void onTick(CBlob@ this)
 {
 	if (isClient())
@@ -51,12 +50,31 @@ void onTick(CBlob@ this)
 	if (this.hasTag("static")) return;
 	this.setVelocity(this.getVelocity()*damp);
 
-	if (this.getTickSinceCreated() < 1) this.Sync("stage", true);
+	if (this.getTickSinceCreated() == 0)
+	{
+		this.Sync("stage", true);
+	}
+
 	if (isServer()) // shatter into 2 other shards
 	{
-		if (this.get_u8("stage") < 5)
+		u8 stage = this.get_u8("stage");
+		if (stage == 0)
 		{
-			if (this.getTickSinceCreated() == (this.get_u8("stage") == 0 ? 75 : 30) && !this.getShape().isStatic())
+			if (!this.getShape().isOverlappingTileSolid(true))
+			{
+				ShapeConsts@ consts = this.getShape().getConsts();
+				consts.mapCollisions = true;
+			}
+		}
+		else
+		{
+			ShapeConsts@ consts = this.getShape().getConsts();
+			consts.mapCollisions = true;
+		}
+		
+		if (stage < 5)
+		{
+			if (this.getTickSinceCreated() == (stage == 0 ? 75 : 30) && !this.getShape().isStatic())
 			{
 				CBlob@ lshard = server_CreateBlob("holystrike");
 				CBlob@ rshard = server_CreateBlob("holystrike");

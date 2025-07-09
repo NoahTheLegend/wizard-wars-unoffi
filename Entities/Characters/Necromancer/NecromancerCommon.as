@@ -77,7 +77,7 @@ namespace NecromancerParams
 		Spell("manaburn", "Mana Burn", 73, "Slowly burns enemy mana and disables their mana regeneration.",
 				SpellType::other, 30, 75, 10, 360.0f, true),
 
-		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows summoned around the position.",
+		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows summoned beneath the position.",
 				SpellType::other, 16, 40, 3, 256.0f, true),	
 							
 		Spell("", "", 0, "Empty spell.",

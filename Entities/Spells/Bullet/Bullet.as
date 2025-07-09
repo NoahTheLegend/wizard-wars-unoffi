@@ -22,7 +22,6 @@ void onInit(CBlob@ this)
 }
 
 const f32 ticks_noclip = 15;
-
 void onTick(CBlob@ this)
 {
 	this.setAngleDegrees(-this.getVelocity().Angle());
@@ -56,7 +55,7 @@ bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
 	(
-		(target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block"))
+		(target.getTeamNum() != this.getTeamNum() && (target.hasTag("barrier") || target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block"))
 		||
 		(
 			target.hasTag("flesh") 
@@ -92,7 +91,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		}
 	}
 	
-	return ( isEnemy(this, blob) || blob.hasTag("barrier") );
+	return isEnemy(this, blob);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)

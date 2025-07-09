@@ -23,12 +23,11 @@ void onInit( CBlob@ this )
 
 void onTick( CBlob@ this )
 {     
-	if(!this.hasTag("init"))
+	if (!this.hasTag("initted"))
 	{
-		this.Tag("init");
-		if(isClient())
-			this.getSprite().PlaySound("SpriteFire1.ogg", 0.2f, 1.5f + XORRandom(10)/10.0f);
-		// done post init
+		this.Tag("initted");
+		if (isClient())
+			this.getSprite().PlaySound("SpriteFire1.ogg", 0.5f, 1.5f + XORRandom(10)/10.0f);
 	}
 
 	if ((getGameTime()+Maths::Pow(this.getNetworkID(), 2)) % 60 == 0

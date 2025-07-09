@@ -2971,7 +2971,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			f32 orbDamage = 1.0f;
 			f32 orbSpeed = 5.0f;
 			u8 delay = 12;
-			f32 fluctuation_factor = 1.0f;
+			f32 fluctuation_factor = 0.5f;
 			bool spawn_stationary = false;
 
 			switch(charge_state)
@@ -3278,8 +3278,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			f32 orbspeed = necro_shoot_speed*0.5f;
+			f32 orbspeed = 1.0f;
 			bool extraDamage = this.hasTag("extra_damage");
+			u8 default_send_delay = 10;
 
 			switch(charge_state)
 			{
@@ -3293,6 +3294,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				case super_cast:
 				{
+					default_send_delay = 7;
 					orbspeed *= 1.3f;
 				}
 				break;
@@ -3314,6 +3316,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.set_u16("shooter", this.getNetworkID());
 				orb.set_f32("damage", extraDamage ? 1.25f : 0.75f);
+				orb.set_u8("default_send_delay", default_send_delay);
+				orb.set_f32("orb_speed", orbspeed);
 
 				orb.setVelocity( orbVel );
 			}
@@ -3602,9 +3606,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (orb !is null)
 			{
 				orb.set_u8("orbs", orbs);
-				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.Init();
-
+				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.IgnoreCollisionWhileOverlapped( this );
 				orb.server_setTeamNum( this.getTeamNum() );
 				orb.setPosition( orbPos );
@@ -4301,7 +4304,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		
 		case 564111203://waterbarrier
 		{
 			switch(charge_state)
