@@ -1863,11 +1863,32 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ orb = server_CreateBlobNoInit("leech");
 				if (orb !is null)
 				{
-					if (this.getName() == "necromancer")
-					{
-						orb.Tag("green");
-						this.Sync("green", true);
-					}
+					orb.setPosition(orbPos);
+					orb.server_setTeamNum(this.getTeamNum());
+
+                    if(this.hasTag("extra_damage"))
+                        orb.Tag("extra_damage");//Remember to change this in Leech.as
+
+					orb.set_Vec2f("aim pos", aimpos);
+					if (charge_state == super_cast)
+						orb.Tag("super_cast");
+
+					orb.IgnoreCollisionWhileOverlapped( this );
+					orb.SetDamageOwnerPlayer( this.getPlayer() );
+				}
+			}
+		}
+		break;
+
+		case 880040708://leech, but green
+		{
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+		
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlobNoInit("leech_g");
+				if (orb !is null)
+				{
 					orb.setPosition(orbPos);
 					orb.server_setTeamNum(this.getTeamNum());
 

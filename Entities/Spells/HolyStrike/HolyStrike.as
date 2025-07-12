@@ -67,27 +67,27 @@ void onTick(CBlob@ this)
 		this.setAngleDegrees(-this.getVelocity().Angle());
 	}
 
-	if (isServer()) // shatter into 2 other shards
+	if (stage == 0)
 	{
-		if (stage == 0)
+		ShapeConsts@ consts = this.getShape().getConsts();
+		if (this.getTickSinceCreated() < timing)
 		{
-			ShapeConsts@ consts = this.getShape().getConsts();
-			if (this.getTickSinceCreated() < timing)
-			{
-				consts.mapCollisions = false;
-			}
-			else
-			{
-				consts.mapCollisions = true;
-			}
-				
+			consts.mapCollisions = false;
 		}
 		else
 		{
-			ShapeConsts@ consts = this.getShape().getConsts();
 			consts.mapCollisions = true;
 		}
-		
+			
+	}
+	else
+	{
+		ShapeConsts@ consts = this.getShape().getConsts();
+		consts.mapCollisions = true;
+	}
+
+	if (isServer()) // shatter into 2 other shards
+	{		
 		if (stage < 4)
 		{
 			if (this.getTickSinceCreated() == timing && !this.hasTag("collided"))
@@ -183,7 +183,7 @@ void onTick(CBlob@ this)
 		u32 fTime = shooTime + 14;
 		if (lTime > fTime)  //timer system for collision with walls
 		{
-		this.Tag("canStickNow"); //stops
+			this.Tag("canStickNow"); //stops
 		}
 	}
 

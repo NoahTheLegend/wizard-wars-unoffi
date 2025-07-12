@@ -20,6 +20,9 @@ void onInit(CBlob@ this)
 	this.set_u16("attached",0);
 	shape.SetGravityScale(1.0f);
 
+	this.addCommandID("attach_hook");
+	this.addCommandID("pull");
+
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
@@ -209,10 +212,14 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, Vec2f p2)
 {	
+	if (!isServer()) return;
+
 	float expundamage = this.get_f32("damage");
 	if (solid && blob is null && !this.hasTag("collided_blob"))
 	{
-		ArrowHitMap(this, p2, Vec2f_zero, 0, 0);
+		CBitStream params;
+		params.write_Vec2f(p2);
+		this.SendCommand(this.getCommandID("attach_hook"), params);
 	}
 
 	if (blob !is null)
@@ -228,21 +235,42 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 				this.Tag("collided_blob");
 				this.Tag("return");
 
-				if (this.getDamageOwnerPlayer() is null || this.getDamageOwnerPlayer().getBlob() is null) return;
-				CBlob@ owner = this.getDamageOwnerPlayer().getBlob();
-
-				blob.setVelocity((owner.getPosition()-blob.getPosition())/8);
-				this.setVelocity(Vec2f_zero);
-
-				blob.set_u8("dashCoolDown", 30);
-				blob.set_bool("disable_dash", true);
-				blob.set_u32("teleport_disable", getGameTime()+30);
-
-				this.Tag("returning");
-					
-				owner.setVelocity((this.getPosition()-owner.getPosition())/16);
+				CBitStream params;
+				params.write_u16(blob.getNetworkID());
+				this.SendCommand(this.getCommandID("pull"), params);
 			}
 		}
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
+{
+	if (cmd == this.getCommandID("attach_hook"))
+	{
+		Vec2f p2 = params.read_Vec2f();
+		ArrowHitMap(this, p2, Vec2f_zero, 0, 0);
+	}
+	else if (cmd == this.getCommandID("pull"))
+	{
+		u16 id;
+		if (!params.saferead_u16(id)) return;
+
+		CBlob@ blob = getBlobByNetworkID(id);
+		if (blob is null) return;
+
+		if (this.getDamageOwnerPlayer() is null || this.getDamageOwnerPlayer().getBlob() is null) return;
+		CBlob@ owner = this.getDamageOwnerPlayer().getBlob();
+
+		blob.setVelocity((owner.getPosition()-blob.getPosition())/8);
+		this.setVelocity(Vec2f_zero);
+
+		blob.set_u8("dashCoolDown", 30);
+		blob.set_bool("disable_dash", true);
+		blob.set_u32("teleport_disable", getGameTime()+30);
+
+		this.Tag("returning");
+			
+		owner.setVelocity((this.getPosition()-owner.getPosition())/16);
 	}
 }
 

@@ -40,7 +40,7 @@ void onInit( CBlob@ this )
 	string rendname = "rend3";
 
 	SColor col = SColor(220, 237, 20, 20);
-	if (this.hasTag("green"))
+	if (this.getName().find("_g") != -1)
 	{
 		col = SColor(220, 40, 255, 55);
 		rendname = "rend3_green";
