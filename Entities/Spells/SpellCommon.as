@@ -1705,6 +1705,55 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -1468069331://poison arrows
+		{
+			if(this.hasScript("PoisonArrowRain.as"))
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo ))
+				{return;}
+				
+				manaInfo.mana += spell.mana;
+				return;
+			}
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+				case complete_cast:
+				{
+					this.set_u8("poisonarrows", 3);
+					this.set_u8("poisonarrow_delay", 2);
+				}
+				break;
+				case super_cast:
+				{
+					this.set_u8("poisonarrows", 5);
+
+					this.set_u8("poisonarrow_delay", 1);
+					this.set_bool("static", false);
+				}
+				break;
+			
+				default:return;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				this.add_u8("poisonarrows", 2);
+			}
+			this.set_u32("poisonarrow_start", getGameTime());
+			this.set_Vec2f("poisonarrow_aimpos", aimpos);
+			this.set_f32("poisonarrow_damage", 0.2f);
+
+			if(!this.hasScript("PoisonArrowRain.as"))
+			{
+				this.AddScript("PoisonArrowRain.as");
+			}
+		}
+		break;
+
 		case -667977758: //tomeblood
 		{
 			if(this.hasScript("TomeOfBloodRain.as"))
@@ -1755,15 +1804,73 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case 2054033346: //tomepoison
+		{
+			if(this.hasScript("TomeOfPoisonRain.as"))
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo ))
+				{return;}
+				
+				manaInfo.mana += spell.mana;
+				return;
+			}
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+				case complete_cast:
+				{
+					this.set_u8("tomepoison_projectiles", 12);
+					this.set_u8("tomepoison_delay", 3);
+				}
+				break;
+				case super_cast:
+				{
+					this.set_u8("tomepoison_projectiles", 20);
+
+					this.set_u8("tomepoison_delay", 2);
+					this.set_bool("static", false);
+				}
+				break;
+			
+				default:return;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				this.add_u8("tomepoison_projectiles", 8);
+				this.sub_u8("tomepoison_delay", 1);
+			}
+			this.set_u32("tomepoison_start", getGameTime());
+			this.set_Vec2f("tomepoison_aimpos", aimpos);
+			this.set_f32("tomepoison_damage", 0.2f);
+
+			if(!this.hasScript("TomeOfPoisonRain.as"))
+			{
+				this.AddScript("TomeOfPoisonRain.as");
+			}
+		}
+		break;
+
 		case 770505718://leech
 		{
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 		
 			if (isServer())
 			{
-				CBlob@ orb = server_CreateBlob( "leech", this.getTeamNum(), orbPos ); 
+				CBlob@ orb = server_CreateBlobNoInit("leech");
 				if (orb !is null)
 				{
+					if (this.getName() == "necromancer")
+					{
+						orb.Tag("green");
+						this.Sync("green", true);
+					}
+					orb.setPosition(orbPos);
+					orb.server_setTeamNum(this.getTeamNum());
+
                     if(this.hasTag("extra_damage"))
                         orb.Tag("extra_damage");//Remember to change this in Leech.as
 

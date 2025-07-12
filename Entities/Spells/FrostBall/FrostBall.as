@@ -84,6 +84,7 @@ void onTick( CBlob@ this)
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {	
+	if (this.hasTag("mark_for_death")) return;
 	bool spellDeath = false;
 
 	if ( solid || (blob !is null && blob.hasTag("barrier") && blob.getTeamNum() != this.getTeamNum()) )

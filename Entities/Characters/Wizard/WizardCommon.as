@@ -64,7 +64,7 @@ namespace WizardParams
 				SpellType::other, 35, 30, 0, 180.0f, true),
 
 		Spell("mana_drain_circle", "Circle of Disenchant", 33, "Those who stand inside this circle lose their mana and are slowed to a crawl",
-				SpellType::other, 40, 60, 15, 312, true),			
+				SpellType::other, 40, 60, 20, 312, true),			
 
 		Spell("mana_transfer", "Mana Transfer", 48, "Transfers mana equivalent to the target's regen. Generates 1 extra mana if overcharged.",
 				SpellType::other, 8, 10, 0, 360.0f, true),
@@ -79,7 +79,7 @@ namespace WizardParams
 			SpellType::other, 18, 30, 1, 164.0f),
 
 		Spell("flamecircle", "Circle of Flames", 124, "A compact hell in circular area. Incinerates any enemies inside.",
-				SpellType::other, 50, 60, 15, 312.0f, true),	
+				SpellType::other, 50, 60, 25, 312.0f, true),	
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f)						

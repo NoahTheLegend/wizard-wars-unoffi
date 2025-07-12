@@ -6,7 +6,6 @@
 
 const f32 RANGE = 180.0f;
 const f32 DAMAGE = 2.0f;
-
 const f32 LIFETIME = 0.5f;
 
 const int MAX_LASER_POSITIONS = 35;
@@ -17,7 +16,7 @@ const f32 LASER_WIDTH = 0.85f; //0.5f;
 
 Random@ _laser_r = Random(0x10001);
 
-void onInit( CBlob @ this )
+void onInit( CBlob@ this )
 {
 	this.Tag("phase through spells");
 	this.Tag("counterable");
@@ -38,9 +37,17 @@ void onInit( CBlob @ this )
 	this.server_SetTimeToDie(LIFETIME);
 
 	if (!isClient()) return;
-	if (this is null) return;
+	string rendname = "rend3";
 
-	Setup(SColor(220, 237, 20, 20), "rend3", false);//Red Laser
+	SColor col = SColor(220, 237, 20, 20);
+	if (this.hasTag("green"))
+	{
+		col = SColor(220, 40, 255, 55);
+		rendname = "rend3_green";
+	}
+
+	this.set_string("rendname", rendname);
+	Setup(col, rendname, false);//Red Laser
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "Leech.as", "laserEffects");
 }
 
@@ -176,7 +183,7 @@ void laserEffects(CBlob@ this, int id)
 			v_pos.push_back(currSegPos + Vec2f( followDist * laserLength, LASER_WIDTH).RotateBy(-followNorm.Angle(), Vec2f())	); v_uv.push_back(Vec2f(1,1));//Bottom right?
 			v_pos.push_back(currSegPos + Vec2f(-followDist * laserLength, LASER_WIDTH).RotateBy(-followNorm.Angle(), Vec2f())	); v_uv.push_back(Vec2f(0,1));//Bottom left?
 				
-			Render::Quads("rend3", z, v_pos, v_uv);
+			Render::Quads(this.get_string("rendname"), z, v_pos, v_uv);
 			
 			v_pos.clear();
 			v_uv.clear();

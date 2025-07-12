@@ -40,6 +40,8 @@ void onTick(CBlob@ this)
 {
 	if (isServer())
 	{
+		this.server_setTeamNum(-1);
+		
 		this.Sync("mod", true);
 		this.Sync("old_mod", true);
 		this.Sync("base_mass", true);

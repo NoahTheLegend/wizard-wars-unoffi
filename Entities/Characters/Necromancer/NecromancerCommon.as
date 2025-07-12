@@ -23,7 +23,7 @@ namespace NecromancerParams
 
 	const ::Spell[] spells = 
 	{
-		Spell("bloodarrow_rain", "Blood Arrows", 122, "Embodies many drops of blood into sharp daggers to launch.",
+		Spell("poisonarrow_rain", "Poison Arrows", 128, "Solidifies many drops of poison into sharp daggers to launch.",
 			SpellType::other, 4, 25, 0, 256.0f, true),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
@@ -59,7 +59,7 @@ namespace NecromancerParams
 		Spell("unholy_resurrection", "Unholy Resurrection", 24, "Inexpensively resurrect fallen allies... Though they may not find themselves completely restored to their former glory.",
 				SpellType::other, 20, 30, 5, 360.0f, true),
 							
-		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes the user.",
+		Spell("leech", "Leech", 130, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
 				SpellType::other, 22, 40, 3, 180.0f, true),
 				
 		Spell("force_of_nature", "Force of Nature", 27, "By invoking this spell, you call into being an orb of ghastly green light which destroys anything foolish enough to cross its path, including you!",
@@ -77,7 +77,7 @@ namespace NecromancerParams
 		Spell("manaburn", "Mana Burn", 73, "Slowly burns enemy mana and disables their mana regeneration.",
 				SpellType::other, 30, 75, 10, 360.0f, true),
 
-		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows summoned beneath the position.",
+		Spell("tomepoison", "Tome of Poison", 129, "A swarm of poison arrows to summon beneath the position.",
 				SpellType::other, 16, 40, 3, 256.0f, true),	
 							
 		Spell("", "", 0, "Empty spell.",

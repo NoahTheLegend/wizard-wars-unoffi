@@ -47,24 +47,40 @@ void onTick(CBlob@ this)
     		}
 		}
 	}
-	if (this.hasTag("static")) return;
+
+	u8 stage = this.get_u8("stage");
+	int timing = (stage == 0 ? 75 : 30);
+
+	if (this.hasTag("collided"))
+	{
+		if (stage >= 5) this.Tag("mark_for_death");
+		return;
+	}
 	this.setVelocity(this.getVelocity()*damp);
 
 	if (this.getTickSinceCreated() == 0)
 	{
 		this.Sync("stage", true);
 	}
+	else if (stage > 0 && this.getVelocity().Length() > 0.1f)
+	{
+		this.setAngleDegrees(-this.getVelocity().Angle());
+	}
 
 	if (isServer()) // shatter into 2 other shards
 	{
-		u8 stage = this.get_u8("stage");
 		if (stage == 0)
 		{
-			if (!this.getShape().isOverlappingTileSolid(true))
+			ShapeConsts@ consts = this.getShape().getConsts();
+			if (this.getTickSinceCreated() < timing)
 			{
-				ShapeConsts@ consts = this.getShape().getConsts();
+				consts.mapCollisions = false;
+			}
+			else
+			{
 				consts.mapCollisions = true;
 			}
+				
 		}
 		else
 		{
@@ -72,9 +88,9 @@ void onTick(CBlob@ this)
 			consts.mapCollisions = true;
 		}
 		
-		if (stage < 5)
+		if (stage < 4)
 		{
-			if (this.getTickSinceCreated() == (stage == 0 ? 75 : 30) && !this.getShape().isStatic())
+			if (this.getTickSinceCreated() == timing && !this.hasTag("collided"))
 			{
 				CBlob@ lshard = server_CreateBlob("holystrike");
 				CBlob@ rshard = server_CreateBlob("holystrike");
@@ -91,8 +107,8 @@ void onTick(CBlob@ this)
 						lshard.setPosition(Vec2f(this.getPosition() + Vec2f(6.0f-(1.0f*this.get_u8("stage")),0).RotateBy(this.getAngleDegrees()-90)));
 
 						lshard.SetDamageOwnerPlayer( this.getDamageOwnerPlayer() );
-						lshard.getShape().SetGravityScale(0);
-						lshard.getShape().SetAngleDegrees(this.getAngleDegrees()-22.5f);
+						lshard.getShape().SetGravityScale(0.1f);
+						lshard.getShape().SetAngleDegrees(this.getAngleDegrees()-30.0f/(stage+1));
 						lshard.set_u8("stage", this.get_u8("stage")+1);
 						lshard.Tag("sync");
 					}
@@ -106,8 +122,8 @@ void onTick(CBlob@ this)
 						rshard.setPosition(Vec2f(this.getPosition() + Vec2f(-6.0f+(1.0f*this.get_u8("stage")),0).RotateBy(this.getAngleDegrees()-90)));
 
 						rshard.SetDamageOwnerPlayer( this.getDamageOwnerPlayer() );
-						rshard.getShape().SetGravityScale(0);
-						rshard.getShape().SetAngleDegrees(this.getAngleDegrees()+22.5f);
+						rshard.getShape().SetGravityScale(0.1f);
+						rshard.getShape().SetAngleDegrees(this.getAngleDegrees()+30.0f/(stage+1));
 						rshard.set_u8("stage", this.get_u8("stage")+1);
 						rshard.Tag("sync");
 					}
@@ -115,11 +131,6 @@ void onTick(CBlob@ this)
 					this.Tag("mark_for_death");
 				}
 			}
-		}
-		else
-		{
-			if (this.getVelocity().Length() < 1.0f)
-				this.Tag("mark_for_death");
 		}
 	}
 
@@ -208,13 +219,18 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	{
 		this.getSprite().PlaySound("bling.ogg", 1.0f, 1.075f+(XORRandom(126)*0.001f));
 	}
-	this.Tag("static");
+	if (this.getShape().getConsts().mapCollisions) this.Tag("collided");
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {	
+	if (solid && this.getShape().getConsts().mapCollisions)
+	{
+		this.getShape().SetStatic(true);
+		this.Tag("collided");
+	}
+
 	if (isServer() && this.get_u8("stage") == 0 && this.getTickSinceCreated() < 30) return;
-	if (solid) this.getShape().SetStatic(true);
 	if (blob !is null)
 	{
 		if (isEnemy(this, blob))

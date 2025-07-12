@@ -32,11 +32,11 @@ namespace WarlockParams
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 10, 10, 0, 64.0f, true),
 			
-		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes the user.",
+		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
 				SpellType::other, 20, 40, 3, 180.0f, true),
 		
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows to summon beneath the position.",
+				SpellType::other, 16, 40, 3, 256.0f, true),	
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),
