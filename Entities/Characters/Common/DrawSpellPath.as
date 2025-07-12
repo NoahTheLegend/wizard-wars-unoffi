@@ -9,6 +9,7 @@
 #include "ShamanCommon.as";
 #include "PaladinCommon.as";
 #include "JesterCommon.as";
+#include "WarlockCommon.as";
 
 const u32 fall_step = 24.0f;
 const u32 fall_max_len = 24.0f;
@@ -144,6 +145,18 @@ void onRender(CSprite@ this)
 					casting_key == "a2" ? playerPrefsInfo.hotbarAssignments_Jester[Maths::Min(15,hotbarLength-1)] :
 					casting_key == "a3" ? playerPrefsInfo.hotbarAssignments_Jester[Maths::Min(16,hotbarLength-1)] :
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Jester[Maths::Min(17,hotbarLength-1)] :
+					playerPrefsInfo.primarySpellID];
+
+				draw_grounded = spell.grounded;
+				spell_range = spell.range;
+			}
+			if (bname == "warlock")
+			{
+				int hotbarLength = playerPrefsInfo.hotbarAssignments_Warlock.length;
+				Spell spell = WarlockParams::spells[
+					casting_key == "a2" ? playerPrefsInfo.hotbarAssignments_Warlock[Maths::Min(15,hotbarLength-1)] :
+					casting_key == "a3" ? playerPrefsInfo.hotbarAssignments_Warlock[Maths::Min(16,hotbarLength-1)] :
+					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Warlock[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
 				draw_grounded = spell.grounded;

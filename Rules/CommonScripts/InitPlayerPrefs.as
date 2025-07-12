@@ -135,6 +135,7 @@ void onTick(CRules@ this)
 		loadHotbarAssignments( localPlayer, "shaman" );
 		loadHotbarAssignments( localPlayer, "paladin" );
 		loadHotbarAssignments( localPlayer, "jester" );
+		loadHotbarAssignments( localPlayer, "warlock" );
 		
 		playerPrefsInfo.infoLoaded = true;
 	}

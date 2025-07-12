@@ -13,6 +13,7 @@
 #include "ShamanCommon.as"
 #include "PaladinCommon.as"
 #include "JesterCommon.as"
+#include "WarlockCommon.as"
 
 #define CLIENT_ONLY
 
@@ -28,6 +29,7 @@ enum spellClass
     Shaman,
     Paladin,
     Jester,
+    Warlock,
 }
 
 void onInit(CRules@ rules)
@@ -139,6 +141,11 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
         _class = Jester;
         spells_length = JesterParams::spells.length;
     }
+    else if(blob_name == "warlock")
+    {
+        _class = Warlock;
+        spells_length = WarlockParams::spells.length;
+    }
     else
     {
         return;
@@ -182,6 +189,9 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
             break;
             case Jester:
                 spell = JesterParams::spells[i];
+            break;
+            case Warlock:
+                spell = WarlockParams::spells[i];
             break;
 
             default:
@@ -239,6 +249,7 @@ void onTick(CRules@ rules)
             else if(blob_name == "shaman") {keybinds = playerPrefsInfo.hotbarAssignments_Shaman; spells = ShamanParams::spells;}
             else if(blob_name == "paladin") {keybinds = playerPrefsInfo.hotbarAssignments_Paladin; spells = PaladinParams::spells;}
             else if(blob_name == "jester") {keybinds = playerPrefsInfo.hotbarAssignments_Jester; spells = JesterParams::spells;}
+            else if(blob_name == "warlock") {keybinds = playerPrefsInfo.hotbarAssignments_Warlock; spells = WarlockParams::spells;}
             else return;
 
             if (keybinds.size() > 0)
@@ -320,6 +331,7 @@ void onTick(CRules@ rules)
                 else if(blob_name == "shaman") {keybinds = playerPrefsInfo.hotbarAssignments_Shaman;}
                 else if(blob_name == "paladin") {keybinds = playerPrefsInfo.hotbarAssignments_Paladin;}
                 else if(blob_name == "jester") {keybinds = playerPrefsInfo.hotbarAssignments_Jester;}
+                else if(blob_name == "warlock") {keybinds = playerPrefsInfo.hotbarAssignments_Warlock;}
                 else return;
 
                 //playerPrefsInfo.primaryHotkeyID = ???;//currently selected spell in spell selector bottom left
