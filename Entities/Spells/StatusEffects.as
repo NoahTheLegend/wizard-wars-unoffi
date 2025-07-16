@@ -319,7 +319,6 @@ void onTick(CBlob@ this)
 
 	//HASTE
 	u16 hastened = this.get_u16("hastened");
-
 	if (hastened > 0)
 	{
 		hastened--;

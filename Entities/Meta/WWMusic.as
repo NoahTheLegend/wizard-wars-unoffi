@@ -80,7 +80,9 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 		"ZealsForge.ogg",
 		"FreiyasCage.ogg",
 		"AtlasTerrace.ogg ",
-		"FinalDuel.ogg"
+		"FinalDuel.ogg",
+		"AttackOfTheKillerQueen.ogg",
+		"FieldOfHopesAndDreams.ogg"
 	};
 
 	array<bool> addedTracks(trackNames.length(), false);

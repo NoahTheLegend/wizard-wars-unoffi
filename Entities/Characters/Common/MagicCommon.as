@@ -1,5 +1,7 @@
 //Generic Magic Class Include
-//
+
+const u8 MIN_FOCUS_TIME = 5; //in seconds
+
 namespace SpellType
 {
 	enum type

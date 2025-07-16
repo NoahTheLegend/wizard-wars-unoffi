@@ -12,7 +12,7 @@ void Freeze(CBlob@ blob, f32 frozenTime)
 	blob.getShape().getConsts().collideWhenAttached = false;
 
 	Vec2f blobPos = blob.getPosition();
-	if(isServer())
+	if (isServer())
 	{
 		CBlob@ icePrison = server_CreateBlob("ice_prison", blob.getTeamNum(), blobPos);
 		if ( icePrison !is null )
@@ -24,10 +24,12 @@ void Freeze(CBlob@ blob, f32 frozenTime)
 				icePrison.server_AttachTo(blob, "PICKUP2");
 			}
 			
+			icePrison.set_f32("frozenTime", frozenTime);
+			icePrison.Sync("frozenTime", true);
+			
 			icePrison.server_SetTimeToDie(frozenTime);
 		}
 	}
-
 }
 
 void CastNegentropy( CBlob@ this )

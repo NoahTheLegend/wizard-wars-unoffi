@@ -1,8 +1,6 @@
 #include "MagicCommon.as";
 #include "PaladinCommon.as";
 
-const u8 MIN_FOCUS_TIME = 5; //in seconds
-
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().removeIfTag = "dead";

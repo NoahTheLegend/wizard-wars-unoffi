@@ -47,6 +47,11 @@ void onTick(CBlob@ this)
 	CSprite@ sprite = this.getSprite();
 	CShape@ shape = this.getShape();
 
+	if (!isServer() && this.exists("frozenTime"))
+	{
+		this.server_SetTimeToDie(this.get_f32("frozenTime")); // sync visual time to die
+	}
+
 	if ( !this.get_bool("frozen target detected") && this.getTickSinceCreated() > 2 )
 	{
 		CBlob@ blob = this.getAttachments().getAttachedBlob( "PICKUP2" );
