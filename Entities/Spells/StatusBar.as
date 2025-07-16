@@ -1,4 +1,5 @@
 #define CLIENT_ONLY
+
 #include "MagicCommon.as";
 #include "PaladinCommon.as";
 
@@ -24,7 +25,19 @@ void onInit(CSprite@ this)
     blob.set_u16("sidewinding", 0);
     blob.set_bool("burnState", false);
     blob.set_u16("dmgconnection", 0);
+    blob.set_bool("manatohealth", false);
+    blob.set_bool("damagetomana", false);
+    blob.set_u16("hallowedbarrier", 0);
+    blob.set_u16("healblock", 0);
+    blob.set_u16("cdreduction", 0);
+    blob.set_u16("antidebuff", 0);
+    blob.set_u16("confused", 0);
 
+    setBar(blob);
+}
+
+void setBar(CBlob@ blob)
+{
     Vec2f elem_dim = Vec2f(64, 64);
     if (screen_size.x < 1024 || screen_size.y < 576)
     {
@@ -36,7 +49,7 @@ void onInit(CSprite@ this)
     }
 
     Vec2f size = Vec2f(elem_dim.x * elements_per_row, elem_dim.y);
-    StatusBar bar(Vec2f(screen_size.x / 2, screen_size.y), size, elem_dim);
+    StatusBar bar(Vec2f(screen_size.x / 2 + elem_dim.x / 2, screen_size.y), size, elem_dim);
     blob.set("status_bar", @bar);
 }
 
@@ -61,19 +74,39 @@ void onTick(CSprite@ this)
     
     if (getControls().isKeyJustPressed(KEY_KEY_R))
     {
-        StatusBar newbar(Vec2f(screen_size.x / 2, screen_size.y), bar.dim, bar.elem_dim);
-        blob.set("status_bar", @newbar);
+        setBar(blob);
     }
 
-    if (getControls().isKeyJustPressed(KEY_LCONTROL)) bar.hiding = !bar.hiding;
     if (getControls().isKeyJustPressed(KEY_KEY_H))
     {
-        blob.set_u16("poisoned", 240);
-        blob.set_u16("wet timer", 9000);
-        blob.set_s16("burn timer", 9000);
-        blob.set_u16("hastened", 9000);
-        blob.set_u16("slowed", 9000);
-        blob.set_u16("airblastShield", 9000);
+        blob.add_u8("iter", 1);
+        
+        if(blob.get_u8("iter")==1)  blob.set_u16("poisoned", 240);
+        if(blob.get_u8("iter")==2)  blob.set_u16("wet timer", 9000);
+        if(blob.get_u8("iter")==3)  blob.set_s16("burn timer", 9000);
+        if(blob.get_u8("iter")==4)  blob.set_u16("hastened", 9000);
+        if(blob.get_u8("iter")==5)  blob.set_u16("slowed", 9000);
+        if(blob.get_u8("iter")==6)  blob.set_u16("airblastShield", 9000);
+        if(blob.get_u8("iter")==7)  blob.set_u32("damage_boost", getGameTime() + 9000);
+        if(blob.get_u8("iter")==8)  blob.set_u16("focus", 9000);
+        if(blob.get_u8("iter")==9)  blob.set_u32("overload mana regen", getGameTime() + 9000);
+        if(blob.get_u8("iter")==10) blob.set_u16("fireProt", 9000);
+        if(blob.get_u8("iter")==11) blob.set_u16("regen", 9000);
+        if(blob.get_u8("iter")==12) blob.set_u16("manaburn", 9000);
+        if(blob.get_u8("iter")==13) blob.set_u16("sidewinding", 9000);
+        if(blob.get_u8("iter")==14) blob.set_bool("burnState", true);
+        if(blob.get_u8("iter")==15) blob.set_u16("dmgconnection", 9000);
+        if(blob.get_u8("iter")==16) blob.set_bool("manatohealth", true);
+        if(blob.get_u8("iter")==17) blob.set_bool("damagetomana", true);
+        if(blob.get_u8("iter")==18) blob.set_u16("hallowedbarrier", 9000);
+        if(blob.get_u8("iter")==19) blob.set_u16("healblock", 9000);
+        if(blob.get_u8("iter")==20) blob.set_u16("cdreduction", 9000);
+        if(blob.get_u8("iter")==21) blob.set_u16("antidebuff", 9000);
+        if(blob.get_u8("iter")==22) blob.set_u16("confused", 9000);
+        if (blob.get_u8("iter") == 22)
+        {
+            blob.set_u8("iter", 0);
+        }
     }
     else if (getControls().isKeyJustPressed(KEY_KEY_J))
     {
@@ -83,6 +116,22 @@ void onTick(CSprite@ this)
         blob.set_u16("hastened", 0);
         blob.set_u16("slowed", 0);
         blob.set_u16("airblastShield", 0);
+        blob.set_u32("damage_boost", 0);
+        blob.set_u16("focus", 0);
+        blob.set_u32("overload mana regen", 0);
+        blob.set_u16("fireProt", 0);
+        blob.set_u16("regen", 0);
+        blob.set_u16("manaburn", 0);
+        blob.set_u16("sidewinding", 0);
+        blob.set_bool("burnState", false);
+        blob.set_u16("dmgconnection", 0);
+        blob.set_bool("manatohealth", false);
+        blob.set_bool("damagetomana", false);
+        blob.set_u16("hallowedbarrier", 0);
+        blob.set_u16("healblock", 0);
+        blob.set_u16("cdreduction", 0);
+        blob.set_u16("antidebuff", 0);
+        blob.set_u16("confused", 0);
     }
 
     if (blob.get_u16("poisoned") > 0) blob.sub_u16("poisoned", 1);
@@ -108,6 +157,96 @@ void onRender(CSprite@ this)
     bar.render();
 }
 
+// missing some paladin and jester debuffs & sprites, todo
+enum StatusType
+{
+    IGNITED = 0,
+    WET = 1,
+    FROZEN = 2,
+    POISON = 3,
+    DAMAGE_BOOST = 4, // damage buff
+    FOCUS = 5, // +1 mana regen
+    HASTE = 6,
+    SLOW = 7,
+    AIRBLAST_SHIELD = 8,
+    FIREPROOF_SHIELD = 9,
+    HEAL = 10,
+    MANABURN = 11,
+    ENTROPIST_SIDEWIND = 12,
+    ENTROPIST_BURN = 13,
+    PALADIN_TAU = 14,
+    PALADIN_SIGMA = 15,
+    PALADIN_OMEGA = 16,
+    PALADIN_HOLY_BARRIER = 17,
+    PALADIN_HUMILITY = 18,
+    PALADIN_MAJESTY = 19,
+    PALADIN_WISDOM = 20,
+    CONFUSED = 21,
+    TOTAL
+};
+
+enum StatusSpecific
+{
+    DEBUFF = 0,
+    BUFF = 1,
+    HEAL = 2,
+    PROTECTION = 3,
+    CONTROL = 4,
+    OTHER = 5
+};
+
+const u8[] TOOLTIPS_SPECIFIC =
+{
+    StatusSpecific::DEBUFF, // IGNITED
+    StatusSpecific::DEBUFF, // WET
+    StatusSpecific::CONTROL, // FROZEN
+    StatusSpecific::DEBUFF, // POISON
+    StatusSpecific::BUFF, // DAMAGE_BOOST
+    StatusSpecific::BUFF, // FOCUS
+    StatusSpecific::BUFF, // HASTE
+    StatusSpecific::DEBUFF, // SLOW
+    StatusSpecific::PROTECTION, // AIRBLAST_SHIELD
+    StatusSpecific::PROTECTION, // FIREPROOF_SHIELD
+    StatusSpecific::HEAL, // HEAL
+    StatusSpecific::DEBUFF, // MANABURN
+    StatusSpecific::OTHER, // ENTROPIST_SIDEWIND
+    StatusSpecific::OTHER, // ENTROPIST_BURN
+    StatusSpecific::PROTECTION, // PALADIN_TAU
+    StatusSpecific::HEAL, // PALADIN_SIGMA
+    StatusSpecific::OTHER, // PALADIN_OMEGA
+    StatusSpecific::PROTECTION, // PALADIN_HOLY_BARRIER
+    StatusSpecific::DEBUFF, // PALADIN_HUMILITY
+    StatusSpecific::BUFF, // PALADIN_MAJESTY
+    StatusSpecific::BUFF, // PALADIN_WISDOM
+    StatusSpecific::CONTROL // CONFUSED
+};
+
+const string[] TOOLTIPS =
+{
+    "Burning: physical DoT",
+    "Wet: vulnerable to Ice and Electricity",
+    "Frozen: immobilized",
+    "Poisoned: magic DoT",
+    "Damage Boost: enhanced spells",
+    "Focus: +1 mana regeneration",
+    "Haste: increased movement speed",
+    "Slow: decreased movement speed",
+    "Airblast Shield: blasting knockback upon taking damage",
+    "Fireproof Shield: immune to Burning",
+    "Heal: regenerating health",
+    "Manaburn: losing Mana",
+    "Entropist Sidewind: ignore collisions, increased movement speed",
+    "Entropist Burn: free spells, diminished spell cast time, losing 30 mana per second",
+    "Aura (Tau): take less damage and transfer some of it to the linked ally when nearby",
+    "Aura (Sigma): restore health instead of mana, increases damage taken, disables mana replenishment at obelisks",
+    "Aura (Omega): restore mana upon taking damage, returns some of the damage split between enemies nearby",
+    "Hallowed Barrier: decreases damage taken",
+    "Humility: disable healing",
+    "Majesty: decreased spells cooldown",
+    "Wisdom: wipe some of negative effects",
+    "Confused: reversed controls"
+};
+
 Status@[] makeStatuses()
 {
     Status@[] statuses;
@@ -127,11 +266,12 @@ Status@[] makeStatuses()
 const Vec2f screen_size = getDriver().getScreenDimensions();
 const u8 elements_per_row = 5;
 const u8 threshold = 5;
-const u8 max_fade = 5; // max fade in/out time
+const u8 max_fade = 5;
 const u16 blink_timing = 210;
+const u8 tooltip_focus_time = 7;
 f32 df = 0;
 
-Status@[] STATUSES = makeStatuses();
+Status@[] STATUSES;
 class StatusBar
 {
     Vec2f pos; // center
@@ -181,6 +321,9 @@ class StatusBar
 
     void tick()
     {
+        hiding = s.size() == 0;
+        u8 hovered_status = getHoveredStatus();
+
         // tick all active statuses
         for (u8 i = 0; i < s.size(); i++)
         {
@@ -199,16 +342,8 @@ class StatusBar
             }
 
             if (s[i].duration > 1) s[i].duration = Maths::Max(s[i].duration - 1, 1); // fake decrement
-            s[i].hover = false; // reset hover state
+            s[i].hover = hovered_status == s[i].type;
             s[i].tick();
-        }
-
-        u8 hovered_status = getHoveredStatus();
-        print(""+getControls().getInterpMouseScreenPos()+" "+hovered_status);
-        if (hovered_status < StatusType::TOTAL)
-        {
-            if (active[hovered_status] != 255)
-                s[active[hovered_status]].hover = true;
         }
 
         // limit the tick rate of status bar updates
@@ -223,7 +358,7 @@ class StatusBar
         ManaInfo@ manaInfo;
         if (!blob.get("manaInfo", @manaInfo))
             return;
-
+    
         // clear effects / debuffs from despell hook, this hook is supposed to ensure first doesnt break and to update the duration
         s16 burn_timer = blob.get_s16("burn timer");
         u16 wet_timer = blob.get_u16("wet timer");
@@ -238,8 +373,15 @@ class StatusBar
         u16 heal_timer = blob.get_u16("regen");
         u16 manaburn_timer = blob.get_u16("manaburn");
         u16 entropist_sidewind = blob.get_u16("sidewinding");
-        u16 burn_state_count = blob.get_bool("burnState") ? manaInfo.mana / 30.0f + 1 : 0;
+        u16 burn_state_count = blob.get_bool("burnState") ? 1 : 0;
         u16 paladin_tau_timer = blob.get_u16("dmgconnection");
+        u16 paladin_sigma_timer = blob.get_bool("manatohealth") ? 1 : 0; // paladin sigma aura, always active
+        u16 paladin_omega_timer = blob.get_bool("damagetomana") ? 1 : 0;
+        u16 paladin_barriers_timer = blob.get_u16("hallowedbarrier");
+        u16 humility_timer = blob.get_u16("healblock");
+        u16 majesty_timer = blob.get_u16("cdreduction");
+        u16 wisdom_timer = blob.get_u16("antidebuff");
+        u16 confused_timer = blob.get_u16("confused");
 
         handleStatus(StatusType::IGNITED,                   burn_timer);
         handleStatus(StatusType::WET,                       wet_timer);
@@ -256,9 +398,16 @@ class StatusBar
         handleStatus(StatusType::ENTROPIST_SIDEWIND,        entropist_sidewind);
         handleStatus(StatusType::ENTROPIST_BURN,            burn_state_count);
         handleStatus(StatusType::PALADIN_TAU,               paladin_tau_timer);
+        handleStatus(StatusType::PALADIN_SIGMA,            paladin_sigma_timer);
+        handleStatus(StatusType::PALADIN_OMEGA,             paladin_omega_timer);
+        handleStatus(StatusType::PALADIN_HOLY_BARRIER,      paladin_barriers_timer);
+        handleStatus(StatusType::PALADIN_HUMILITY,          humility_timer);
+        handleStatus(StatusType::PALADIN_MAJESTY,           majesty_timer);
+        handleStatus(StatusType::PALADIN_WISDOM,            wisdom_timer);
+        handleStatus(StatusType::CONFUSED,                  confused_timer);
     }
 
-    u8 getHoveredStatus() // todo: fix
+    u8 getHoveredStatus()
     {
         Vec2f mouse_pos = getControls().getMouseScreenPos();
         for (u8 i = 0; i < s.size(); i++)
@@ -267,7 +416,7 @@ class StatusBar
                 continue;
 
             Vec2f tl = s[i].pos;
-            Vec2f br = tl + s[i].dim * s[i].scale;
+            Vec2f br = tl + s[i].dim * 2 * s[i].scale;
 
             if (mouse_pos.x >= tl.x && mouse_pos.x <= br.x && mouse_pos.y >= tl.y && mouse_pos.y <= br.y)
             {
@@ -340,11 +489,10 @@ class StatusBar
 
         if (hidden)
             return;
-        
-        f32 mod = Maths::Ceil(s.size() / elements_per_row) + 1;
-        
-        bar_dim_factor = Maths::Lerp(bar_dim_factor, mod - 1, df);
-        bar_dim_current = Vec2f(dim.x, dim.y + dim.y * bar_dim_factor);
+
+        f32 mod = s.size() != 0 ? Maths::Ceil((s.size() - 1) / elements_per_row) + 1 : 1;
+        bar_dim_factor = Maths::Lerp(bar_dim_factor, mod, df);
+        bar_dim_current = Vec2f(dim.x, dim.y * bar_dim_factor);
         
         bar_dim_current.x = Maths::Ceil(bar_dim_current.x);
         bar_dim_current.y = Maths::Ceil(bar_dim_current.y);
@@ -355,6 +503,8 @@ class StatusBar
         old_tl = tl;
         Vec2f br = tl + bar_dim_current;
 
+        Tooltip@[] tooltips;
+
         // draw background
         for (u8 i = 0; i < elements_per_row * mod; i++)
         {
@@ -363,7 +513,10 @@ class StatusBar
 
             Vec2f elem_pos = tl + Vec2f(x, y + 4);
             GUI::DrawIcon(tex_back, 0, Vec2f(32, 32), elem_pos, scale, scale, SColor(255 * (1.0f - hiding_factor), 255, 255, 255));
+        }
 
+        for (u8 i = 0; i < s.size(); i++)
+        {
             if (i >= s.size())
                 continue; // no status to render in this slot
 
@@ -373,8 +526,13 @@ class StatusBar
             if (!s[i].active)
                 continue;
 
+            f32 x = (i % elements_per_row) * elem_dim.x * scale;
+            f32 y = Maths::Floor(i / elements_per_row) * elem_dim.y * scale;
+            
+            Vec2f elem_pos = tl + Vec2f(x, y + 4);
+
             s[i].pos = s[i].pos == Vec2f_zero ? elem_pos : Vec2f_lerp(s[i].pos, elem_pos, df) + delta_pos;
-            s[i].render(s[i].pos, hiding_factor);
+            s[i].render(s[i].pos, hiding_factor, tooltips);
         }
 
         // jends (frame borders)
@@ -404,6 +562,15 @@ class StatusBar
 
         GUI::DrawIcon(jends_tex, 4, jends_dim, bottom_left_pos, scale, scale, SColor(255 * (1.0f - hiding_factor), 255, 255, 255));
         GUI::DrawIcon(jends_tex, 5, jends_dim, bottom_right_pos, scale, scale, SColor(255 * (1.0f - hiding_factor), 255, 255, 255));
+
+        // tooltips
+        for (u8 i = 0; i < tooltips.size(); i++)
+        {
+            if (tooltips[i] is null)
+                continue;
+
+            tooltips[i].render();
+        }
     }
 
     void hide_or_open()
@@ -423,45 +590,20 @@ class StatusBar
     }
 };
 
-// missing some paladin and jester debuffs & sprites, todo
-enum StatusType
+SColor getTooltipColor(u8 type)
 {
-    IGNITED = 0,
-    WET = 1,
-    FROZEN = 2,
-    POISON = 3,
-    DAMAGE_BOOST = 4, // damage buff
-    FOCUS = 5, // +1 mana regen
-    HASTE = 6,
-    SLOW = 7,
-    AIRBLAST_SHIELD = 8,
-    FIREPROOF_SHIELD = 9,
-    HEAL = 10,
-    MANABURN = 11,
-    ENTROPIST_SIDEWIND = 12,
-    ENTROPIST_BURN = 13,
-    PALADIN_TAU = 14,
-    TOTAL
-};
+    switch (TOOLTIPS_SPECIFIC[type])
+    {
+        case StatusSpecific::DEBUFF: return SColor(255, 255, 55, 55); // red
+        case StatusSpecific::BUFF: return SColor(255, 155, 255, 155); // green
+        case StatusSpecific::HEAL: return SColor(255, 0, 255, 0); // light green
+        case StatusSpecific::PROTECTION: return SColor(255, 100, 180, 255); // blue
+        case StatusSpecific::CONTROL: return SColor(255, 255, 85, 255); // purple
+        case StatusSpecific::OTHER: return SColor(255, 255, 255, 0); // yellow
+    }
 
-const string[] TOOLTIPS =
-{
-    "Burning - physical DoT",
-    "Wet - Vulnerable to Ice and Electricity",
-    "Frozen - Immobilized",
-    "Poisoned - Magic DoT",
-    "Damage Boost - Enhanced spells",
-    "Focus - +1 mana regeneration",
-    "Haste - Increased movement speed",
-    "Slow - Decreased movement speed",
-    "Airblast Shield - Blasting knockback upon taking damage",
-    "Fireproof Shield - Immune to Burning",
-    "Heal - Regenerating health",
-    "Manaburn - Losing Mana",
-    "Entropist Sidewind - Ignores collisions, Increased movement speed",
-    "Entropist Burn - Free spells, Diminished spell cast time, Losing 30 mana per second",
-    "Paladin Tau - take "+(connection_dmg_reduction * 100)+"% less damage and transfer "+(connection_dmg_transfer * 100)+"% of initial\ndamage to the linked ally when nearby"
-};
+    return SColor(255, 255, 255, 255); // default white
+}
 
 class Status
 {
@@ -472,8 +614,8 @@ class Status
     int duration;
     f32 scale;
 
-    string tooltip;
-    u8 active_tooltip_fade;
+    Tooltip@ tooltip;
+    u8 tooltip_fade;
     u8 cursor_focus_time;
     bool hover;
 
@@ -490,6 +632,11 @@ class Status
         duration = _duration;
         scale = _scale;
 
+        @tooltip = @Tooltip(type, TOOLTIPS[type], Vec2f_zero, dim * scale);
+        tooltip_fade = 0;
+        cursor_focus_time = 0;
+        hover = false;
+
         active = false;
         active_fade = 0;
         blink_sine = 0.0f;
@@ -497,25 +644,32 @@ class Status
 
     void tick()
     {
+        if (hover)
+        {
+            if (cursor_focus_time < tooltip_focus_time) cursor_focus_time++;
+        }
+        else cursor_focus_time = 0;
+        
+        if (cursor_focus_time >= tooltip_focus_time)
+        {
+            if (tooltip_fade < max_fade) tooltip_fade++;
+        }
+        else if (tooltip_fade > 0) tooltip_fade--;
+
+        if (tooltip !is null)
+        {
+            tooltip.fade = Maths::Lerp(tooltip.fade, f32(tooltip_fade) / f32(max_fade), df * 2);
+            tooltip.pos = pos;
+        }
+        
         active_fade = Maths::Clamp(active_fade + (duration > 0 ? 1 : -1), 0, max_fade);
         if (duration <= 1 || duration > blink_timing) return;
         
-        f32 frequency_speed = 2.0f-Maths::Min(f32(duration) / f32(blink_timing), 1.0f);
-        blink_sine = Maths::Sin(f32(duration) * frequency_speed * 0.5f) * 0.5f + 0.5f;
-
-        if (hover)
-        {
-            active_tooltip_fade = Maths::Clamp(active_tooltip_fade + 1, 0, max_fade);
-            cursor_focus_time = 0; // reset cursor focus time
-        }
-        else
-        {
-            active_tooltip_fade = Maths::Clamp(active_tooltip_fade - 1, 0, max_fade);
-            cursor_focus_time++;
-        }
+        f32 frequency_speed = 2.0f - Maths::Min(f32(duration) / f32(blink_timing), 1.0f);
+        blink_sine = Maths::Sin(f32(duration + 5) * frequency_speed * 0.75f) * 0.5f + 0.5f;
     }
 
-    void render(Vec2f pos, f32 hiding_factor)
+    void render(Vec2f pos, f32 hiding_factor, Tooltip@[] &inout tooltip_fetcher)
     {
         f32 mod = 1.0f - scale;
         f32 fade = f32(active_fade) / f32(max_fade);
@@ -527,6 +681,11 @@ class Status
         GUI::DrawIcon(icon, type, dim, tl, scale / 2, SColor(255 * fade * (1.0f - hiding_factor), 255, 255, 255));
         
         blink(tl, br);
+
+        if (tooltip !is null)
+        {
+            if (tooltip_fade > 0) tooltip_fetcher.push_back(tooltip);
+        }
     }
 
     void blink(Vec2f tl, Vec2f br)
@@ -541,3 +700,40 @@ class Status
         //GUI::DrawRectangle(tl, tl+Vec2f(4,4), SColor(255, 255, 0, 0));
     }
 }
+
+class Tooltip
+{
+    u8 type;
+    string text;
+    Vec2f pos;
+    Vec2f dim;
+    f32 fade;
+    Vec2f text_dim;
+
+    Tooltip(u8 _type, string _text, Vec2f _pos, Vec2f _dim)
+    {
+        type = _type;
+        text = _text;
+        pos = _pos;
+        dim = _dim;
+        fade = 0.0f;
+    }
+
+    void render()
+    {
+        if (fade <= 0.01f)
+            return;
+
+        GUI::SetFont("menu");
+        GUI::GetTextDimensions(text, text_dim);
+        
+        Vec2f tooltip_pos = pos - Vec2f(text_dim.x / 2 - dim.x + 4, text_dim.y + 8);
+        GUI::DrawPane(tooltip_pos, tooltip_pos + text_dim + Vec2f(8, 8), SColor(uint8(200 * fade), 55, 55, 55));
+
+        SColor tooltip_col = getTooltipColor(type);
+        tooltip_col.setAlpha(uint8(255 * fade));
+        GUI::DrawText(text, tooltip_pos + Vec2f(2, 2), tooltip_col);
+
+        GUI::SetFont("default");
+    }
+};
