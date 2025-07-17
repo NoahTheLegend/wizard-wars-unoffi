@@ -1,6 +1,8 @@
 #include "KGUI.as";
 #include "PlayerPrefsCommon.as";
 #include "PlatinumCommon.as";
+#include "StatusCommon.as";
+#include "AttributeCommon.as";
 //#include "UnlocksCommon.as";
 
 string classesVersion = "1";
@@ -13,12 +15,12 @@ string tooltip = "";
 	 	WWPlayerClassButtonList playerClassButtons;
 
 const string[] specialties_names = {
-	"Fire - may ignite enemies",			"Water - extinguishes fire",			"Earth - physical damage",			"Air - high knockback",			"Nature - organic spells",			"Electricity - deals more damage to wet enemies",
-	"Ice - may freeze or deal more damage to wet enemies",			"Holy - holy spells",			"Unholy - unholy spells",			"",			"",			"",
-	"",			"",			"",			"",			"",			"",
-	"Heal - restore health to allies or yourself",			"Support - wide variety of buffs",			"Summoner - create NPCs or sentries",			"AoE - Area of Effect spells",			"Control - some spells can control your enemies",			"Versatile - good at offense and defense",
-	"Impacter - damage dealer",			"Agility - movement spells",			"Map control - deny large area on the map for some time",			"Tank - redirect enemy focus to yourself",			"Life stealer - some spells will heal upon dealing damage",			"Mana dependency - core spells require plenty of mana to cast",
-	"Cheap spells - spamming those is not a bad decision",			"",			"",			"",			"",			"",
+	"Fire - may ignite enemies","Water - extinguishes fire","Earth - physical damage","Air - high knockback","Nature - organic spells","Electricity - deals more damage to wet enemies",
+	"Ice - may freeze or deal more damage to wet enemies","Holy - holy spells","Unholy - unholy spells","Poison - poisonous spells","","",
+	"","","","","","",
+	"Heal - restore health of allies and self","Support - wide variety of buffs","Summoner - create NPCs or sentries","AoE - Area of Effect spells","Control - some spells can control your enemies","Versatile - good at offense and defense",
+	"Impacter - damage dealer",	"Agility - movement spells","Map control - deny large area on the map for some time","Tank - great survivability","Life stealer - some spells might heal you on damage","Mana dependency - core spells require plenty of mana to cast",
+	"Cheap spells - spamming those is not a bad decision","Life force - some spells may consume you health instead of mana",			"",			"",			"",	"",
 };
 
 // first is main
@@ -49,7 +51,6 @@ class WWPlayerClassButton
 	u8[] specialties;
 
 	Rectangle@ specialties_bg;
-
 	bool gained, hasCon = false;
 	
 	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, int _size, u8[] _specialties)
@@ -157,49 +158,6 @@ class WWPlayerClassButton
 		
 		classFrame.isEnabled = false;
 	}
-/*
-	bool checkUnlocked()
-	{
-	
-		CPlayer@ localPlayer = getLocalPlayer();
-		if ( localPlayer is null )
-			return false;
-			
-		string playerName = localPlayer.getUsername();
-		
-		bool[] unlocks = client_getPlayerUnlocks( playerName );
-		
-		if ( classID > (unlocks.length-1) )
-			return false;
-		
-		bool unlocked = unlocks[classID] == true;
-		return unlocked;
-	}
-*/
-	/*void Unlock()
-	{
-	
-		CPlayer@ localPlayer = getLocalPlayer();
-		if ( localPlayer is null )
-			return;
-
-		string playerName = localPlayer.getUsername();
-		CRules@ rules = getRules();
-		
-		CBitStream params1;
-		params1.write_string(playerName);
-		params1.write_u16(classID);
-		rules.SendCommand(rules.getCommandID("unlock class"), params1);
-		
-		CBitStream params2;
-		params2.write_string(playerName);
-		params2.write_string(name);
-		rules.SendCommand(rules.getCommandID("announce class unlock"), params2);
-		
-		print("Class Unlocked: "+ name);
-		gained = true;
-		
-	}*/
 	
 	void draw(Vec2f pos)
 	{
@@ -555,17 +513,17 @@ void SpellButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 
 	// toggle buttons accordingly
 	bool buttonToggled = false;
-	for(int c = 0; c < playerClassButtons.list.length; c++)
+	for (int c = 0; c < playerClassButtons.list.length; c++)
 	{
 		Button@ cButton = playerClassButtons.list[c].classButton;	
-		for(int s = 0; s < playerClassButtons.list[c].spellButtons.length; s++)
+		for (int s = 0; s < playerClassButtons.list[c].spellButtons.length; s++)
 		{
 			Button@ sButton = playerClassButtons.list[c].spellButtons[s];
-			if ( sButton.name == sender.name && playerClassButtons.list[c].classFrame.isEnabled )
+			if (sButton.name == sender.name && playerClassButtons.list[c].classFrame.isEnabled)
 			{
 				SetCustomSpell(localPlayer, s);
 			
-				if ( sButton.toggled == false && sender.name != "" ) 
+				if (sButton.toggled == false && sender.name != "") 
 					Sound::Play( "MenuSelect2.ogg" );
 				
 				sButton.toggled = true;
@@ -595,6 +553,21 @@ void SpellButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 				playerClassButtons.list[c].spellDescText.setText(playerClassButtons.list[c].spellDescText.textWrap("-- " + sSpell.name + " --" + 
 																													"\n     " + sSpell.spellDesc + 
 																													"\n  Mana cost: " + sSpell.mana));
+			
+				/*todo: find where to place this:
+	Tooltip@[] tooltips;
+	
+	// draw attributes
+	Vec2f attributesPos = helpWindow.position + Vec2f(350.0f, 350.0f);
+	for (u8 i = 0; i < classSpells.size(); i++)
+	{
+		Spell spell = classSpells[i];
+
+		spell.attributes[i].pos = attributesPos - Vec2f(32 * i, 0);
+		spell.attributes[i].render(spell.attributes[i].pos, 1.0f, tooltips);
+	}
+
+	RenderTooltips(tooltips);*/
 			}
 			else
 			{
@@ -604,13 +577,13 @@ void SpellButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 	}	
 }
 
-void RenderClassMenus()		//very light use of KGUI
+void RenderClassMenus()
 {
-	if ( playerClassButtons.isEnabled == false )
+	if (playerClassButtons.isEnabled == false)
 		return;
 
 	CPlayer@ localPlayer = getLocalPlayer();
-	if (localPlayer is null )
+	if (localPlayer is null)
 	{
 		return;
 	}
@@ -618,1214 +591,152 @@ void RenderClassMenus()		//very light use of KGUI
 	if (tooltip != "")
 	{
 		GUI::SetFont("hud");
-
 		Vec2f mouseScreenPos = getControls().getInterpMouseScreenPos();
 		Vec2f dim;
 		GUI::GetTextDimensions(tooltip, dim);
-
-		Vec2f extra = Vec2f(8,8);
-		GUI::DrawSunkenPane(mouseScreenPos - extra + Vec2f(8,8), mouseScreenPos + dim + extra + Vec2f(8,8));
-		GUI::DrawText(tooltip, mouseScreenPos + Vec2f(7,8), color_white);
+		Vec2f extra = Vec2f(8, 8);
+		GUI::DrawSunkenPane(mouseScreenPos - extra + Vec2f(8, 8), mouseScreenPos + dim + extra + Vec2f(8, 8));
+		GUI::DrawText(tooltip, mouseScreenPos + Vec2f(7, 8), color_white);
 	}
-	
+
 	PlayerPrefsInfo@ playerPrefsInfo;
-	if (!localPlayer.get( "playerPrefsInfo", @playerPrefsInfo )) 
-	{
-		return;
-	}
-	
-	if ( playerPrefsInfo.infoLoaded == false )
+	if (!localPlayer.get("playerPrefsInfo", @playerPrefsInfo))
 	{
 		return;
 	}
 
-	for(int i = 0; i < playerClassButtons.list.length; i++)
+	if (playerPrefsInfo.infoLoaded == false)
+	{
+		return;
+	}
+
+	for (int i = 0; i < playerClassButtons.list.length; i++)
 	{
 		Button@ iButton = playerClassButtons.list[i].classButton;
-		if ( iButton.toggled == true )
+		if (iButton.toggled == true)
 		{
 			spellAssignHelpIcon.isEnabled = false;
-			
-			if ( iButton.name == "wizard" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Wizard;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = WizardParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = WizardParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "wizard");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "wizard");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "wizard");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Wizard[15], spellsLength-1);
-				Spell secondarySpell = WizardParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "wizard");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Wizard[16], spellsLength-1);
-				Spell aux1Spell = WizardParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "wizard");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
+			const string buttonName = iButton.name;
 
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Wizard[17], spellsLength-1);
-				Spell aux2Spell = WizardParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "wizard");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			if ( iButton.name == "druid" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Druid;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = DruidParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = DruidParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "druid");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "druid");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "druid");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Druid[15], spellsLength-1);
-				Spell secondarySpell = DruidParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "druid");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Druid[16], spellsLength-1);
-				Spell aux1Spell = DruidParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "druid");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
+			if (buttonName == "wizard") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Wizard, WizardParams::spells);
+			} else if (buttonName == "druid") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Druid, DruidParams::spells);
+			} else if (buttonName == "necromancer") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Necromancer, NecromancerParams::spells);
+			} else if (buttonName == "swordcaster") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_SwordCaster, SwordCasterParams::spells);
+			} else if (buttonName == "entropist") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Entropist, EntropistParams::spells);
+			} else if (buttonName == "priest") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Priest, PriestParams::spells);
+			} else if (buttonName == "shaman") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Shaman, ShamanParams::spells);
+			} else if (buttonName == "paladin") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Paladin, PaladinParams::spells);
+			} else if (buttonName == "jester") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Jester, JesterParams::spells);
+			} else if (buttonName == "warlock") {
+				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Warlock, WarlockParams::spells);
+			} else if (buttonName == "Knight") {
 
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Druid[17], spellsLength-1);
-				Spell aux2Spell = DruidParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "druid");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
 			}
-			if ( iButton.name == "necromancer" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Necromancer;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = NecromancerParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = NecromancerParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "necromancer");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "necromancer");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "necromancer");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-							
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Necromancer[15], spellsLength-1);
-				Spell secondarySpell = NecromancerParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "necromancer");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Necromancer[16], spellsLength-1);
-				Spell aux1Spell = NecromancerParams::spells[aux1SpellID];	
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "necromancer");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
 
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Necromancer[17], spellsLength-1);
-				Spell aux2Spell = NecromancerParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "necromancer");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );						
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			if ( iButton.name == "swordcaster" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_SwordCaster;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = SwordCasterParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = SwordCasterParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "swordcaster");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "swordcaster");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "swordcaster");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_SwordCaster[15], spellsLength-1);
-				Spell secondarySpell = SwordCasterParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "swordcaster");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_SwordCaster[16], spellsLength-1);
-				Spell aux1Spell = SwordCasterParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "swordcaster");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
-
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_SwordCaster[17], spellsLength-1);
-				Spell aux2Spell = SwordCasterParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "swordcaster");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			if ( iButton.name == "entropist" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Entropist;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = EntropistParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = EntropistParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "entropist");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "entropist");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "entropist");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Entropist[15], spellsLength-1);
-				Spell secondarySpell = EntropistParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "entropist");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Entropist[16], spellsLength-1);
-				Spell aux1Spell = EntropistParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "entropist");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
-
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Entropist[17], spellsLength-1);
-				Spell aux2Spell = EntropistParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "entropist");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			if ( iButton.name == "priest" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Priest;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = PriestParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = PriestParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "priest");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "priest");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "priest");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Priest[15], spellsLength-1);
-				Spell secondarySpell = PriestParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "priest");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Priest[16], spellsLength-1);
-				Spell aux1Spell = PriestParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "priest");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
-
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Priest[17], spellsLength-1);
-				Spell aux2Spell = PriestParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "priest");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			else if ( iButton.name == "shaman" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Shaman;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = ShamanParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = ShamanParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "shaman");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "shaman");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "shaman");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Shaman[15], spellsLength-1);
-				Spell secondarySpell = ShamanParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "shaman");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Shaman[16], spellsLength-1);
-				Spell aux1Spell = ShamanParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "shaman");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
-
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Shaman[17], spellsLength-1);
-				Spell aux2Spell = ShamanParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "shaman");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			else if ( iButton.name == "paladin" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Paladin;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = PaladinParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = PaladinParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "paladin");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "paladin");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "paladin");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Paladin[15], spellsLength-1);
-				Spell secondarySpell = PaladinParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "paladin");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Paladin[16], spellsLength-1);
-				Spell aux1Spell = PaladinParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "paladin");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
-
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Paladin[17], spellsLength-1);
-				Spell aux2Spell = PaladinParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "paladin");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			else if ( iButton.name == "jester" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Jester;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = JesterParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = JesterParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "jester");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "jester");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "jester");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Jester[15], spellsLength-1);
-				Spell secondarySpell = JesterParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "jester");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Jester[16], spellsLength-1);
-				Spell aux1Spell = JesterParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "jester");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
-
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Jester[17], spellsLength-1);
-				Spell aux2Spell = JesterParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "jester");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			else if ( iButton.name == "warlock" )
-			{
-				CControls@ controls = localPlayer.getControls();
-				Vec2f mouseScreenPos = controls.getMouseScreenPos();
-			
-				u8[] primaryHotkeys = playerPrefsInfo.hotbarAssignments_Warlock;
-			
-				//PRIMARY SPELL HUD
-				Vec2f offset = Vec2f(264.0f, 350.0f);
-				Vec2f primaryPos = helpWindow.position + Vec2f( 16.0f, 0.0f ) + offset;
-				
-				bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
-				bool hotbarClicked = false;
-				int spellsLength = WarlockParams::spells.length;
-				for (uint i = 0; i < 15; i++)	//only 15 total spells held inside primary hotbar
-				{
-					u8 primarySpellID = Maths::Min(primaryHotkeys[i], spellsLength-1);
-					Spell spell = WarlockParams::spells[primarySpellID];
-					
-					if ( i < 5 )		//spells 0 through 4
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-						GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,80) + Vec2f(32,0)*i) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "warlock");
-							hotbarClicked = true;
-						}			
-					}
-					else if ( i < 10 )	//spells 5 through 9	
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5), primaryPos + Vec2f(32,64) + Vec2f(32,0)*(i-5));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,32) + Vec2f(32,0)*(i-5));
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,48) + Vec2f(32,0)*(i-5)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "warlock");
-							hotbarClicked = true;
-						}
-					}
-					else				//spells 10 through 14
-					{
-						GUI::DrawFramedPane(primaryPos + Vec2f(32,0)*(i-10), primaryPos + Vec2f(32,32) + Vec2f(32,0)*(i-10));
-						GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(32,0)*(i-10));			
-							
-						if ( canCustomizeHotbar && ( mouseScreenPos - (primaryPos + Vec2f(16,16) + Vec2f(32,0)*(i-10)) ).Length() < 16.0f )
-						{
-							assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, "warlock");
-							hotbarClicked = true;
-						}
-					}
-				}
-				
-				GUI::DrawText("Primary - "+controls.getActionKeyKeyName( AK_ACTION1 ), primaryPos + Vec2f(0,-32), color_white );
-				
-				//SECONDARY SPELL HUD
-				Vec2f secondaryPos = helpWindow.position + Vec2f( 192.0f, 0.0f ) + offset;
-				
-				u8 secondarySpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Warlock[15], spellsLength-1);
-				Spell secondarySpell = WarlockParams::spells[secondarySpellID];
-				
-				GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16,16), secondaryPos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 15, playerPrefsInfo.customSpellID, "warlock");	//hotkey 15 is the secondary fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Secondary - "+controls.getActionKeyKeyName( AK_ACTION2 ), secondaryPos + Vec2f(32,8), color_white );	
-				
-				//AUXILIARY1 SPELL HUD
-				Vec2f aux1Pos = helpWindow.position + Vec2f( 192.0f, 64.0f ) + offset;
-				
-				u8 aux1SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Warlock[16], spellsLength-1);
-				Spell aux1Spell = WarlockParams::spells[aux1SpellID];
-				
-				GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16,16), aux1Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, "warlock");	//hotkey 16 is the auxiliary1 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary1 - "+controls.getActionKeyKeyName( AK_ACTION3 ), aux1Pos + Vec2f(32,8), color_white );
-
-				//AUXILIARY2 SPELL HUD
-				Vec2f aux2Pos = helpWindow.position + Vec2f( 364.0f, 0.0f ) + offset;
-				
-				u8 aux2SpellID = Maths::Min(playerPrefsInfo.hotbarAssignments_Warlock[17], spellsLength-1);
-				Spell aux2Spell = WarlockParams::spells[aux2SpellID];
-				
-				GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32,32));
-				GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16,16), aux2Pos);
-					
-				if ( canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16,16))).Length() < 16.0f )
-				{
-					assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, "warlock");	//hotkey 17 is the auxiliary2 fire hotkey
-					hotbarClicked = true;
-				}
-				
-				GUI::DrawText("Auxiliary2 - "+controls.getActionKeyKeyName( AK_TAUNTS ), aux2Pos + Vec2f(32,8), color_white );					
-				
-				if ( canCustomizeHotbar == true )	//play sound, keep menu open by refreshing, and update selected spell 
-				{
-					if ( hotbarClicked )
-					{
-						lastHotbarPressTime = controls.lastKeyPressTime;
-						Sound::Play( "MenuSelect1.ogg" );	
-					}
-				}
-			}
-			else if ( iButton.name == "Knight" )
-			{
-			
-			}
-			/*else if ( iButton.name == "Archer" )
-			{
-			
-			}*/
-			
 			break;
 		}
-	}	
+	}
+}
+
+const u8 spells_maxcount = 15;
+void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, string className, u8[] hotbarAssignments, Spell[] classSpells)
+{
+	CControls@ controls = localPlayer.getControls();
+	Vec2f mouseScreenPos = controls.getMouseScreenPos();
+
+	Vec2f offset = Vec2f(264.0f, 350.0f);
+	bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
+	bool hotbarClicked = false;
+	int spellsLength = classSpells.length;
+
+	Vec2f primaryPos = helpWindow.position + Vec2f(16.0f, 0.0f) + offset;
+	for (uint i = 0; i < spells_maxcount; i++)
+	{
+		u8 primarySpellID = Maths::Min(hotbarAssignments[i], spellsLength - 1);
+		Spell spell = classSpells[primarySpellID];
+
+		if (i < 5)
+		{
+			GUI::DrawFramedPane(primaryPos + Vec2f(0, 64) + Vec2f(32, 0) * i, primaryPos + Vec2f(32, 96) + Vec2f(32, 0) * i);
+			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 64) + Vec2f(32, 0) * i);
+			GUI::DrawText("" + ((i + 1) % 10), primaryPos + Vec2f(8, -16) + Vec2f(32, 0) * i, color_white);
+			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 80) + Vec2f(32, 0) * i)).Length() < 16.0f)
+			{
+				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				hotbarClicked = true;
+			}
+		}
+		else if (i < 10)
+		{
+			GUI::DrawFramedPane(primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5), primaryPos + Vec2f(32, 64) + Vec2f(32, 0) * (i - 5));
+			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5));
+			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 48) + Vec2f(32, 0) * (i - 5))).Length() < 16.0f)
+			{
+				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				hotbarClicked = true;
+			}
+		}
+		else
+		{
+			GUI::DrawFramedPane(primaryPos + Vec2f(32, 0) * (i - 10), primaryPos + Vec2f(32, 32) + Vec2f(32, 0) * (i - 10));
+			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(32, 0) * (i - 10));
+			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 16) + Vec2f(32, 0) * (i - 10))).Length() < 16.0f)
+			{
+				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				hotbarClicked = true;
+			}
+		}
+	}
+	GUI::DrawText("Primary - " + controls.getActionKeyKeyName(AK_ACTION1), primaryPos + Vec2f(0, -32), color_white);
+
+	Vec2f secondaryPos = helpWindow.position + Vec2f(192.0f, 0.0f) + offset;
+	u8 secondarySpellID = Maths::Min(hotbarAssignments[spells_maxcount], spellsLength - 1);
+	Spell secondarySpell = classSpells[secondarySpellID];
+	GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32, 32));
+	GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16, 16), secondaryPos);
+	if (canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16, 16))).Length() < 16.0f)
+	{
+		assignHotkey(localPlayer, spells_maxcount, playerPrefsInfo.customSpellID, className);
+		hotbarClicked = true;
+	}
+	GUI::DrawText("Secondary - " + controls.getActionKeyKeyName(AK_ACTION2), secondaryPos + Vec2f(32, 8), color_white);
+
+	Vec2f aux1Pos = helpWindow.position + Vec2f(192.0f, 64.0f) + offset;
+	u8 aux1SpellID = Maths::Min(hotbarAssignments[16], spellsLength - 1);
+	Spell aux1Spell = classSpells[aux1SpellID];
+	GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32, 32));
+	GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16, 16), aux1Pos);
+	if (canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16, 16))).Length() < 16.0f)
+	{
+		assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, className);
+		hotbarClicked = true;
+	}
+	GUI::DrawText("Auxiliary1 - " + controls.getActionKeyKeyName(AK_ACTION3), aux1Pos + Vec2f(32, 8), color_white);
+
+	Vec2f aux2Pos = helpWindow.position + Vec2f(364.0f, 0.0f) + offset;
+	u8 aux2SpellID = Maths::Min(hotbarAssignments[17], spellsLength - 1);
+	Spell aux2Spell = classSpells[aux2SpellID];
+	GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32, 32));
+	GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16, 16), aux2Pos);
+	if (canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16, 16))).Length() < 16.0f)
+	{
+		assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, className);
+		hotbarClicked = true;
+	}
+	GUI::DrawText("Auxiliary2 - " + controls.getActionKeyKeyName(AK_TAUNTS), aux2Pos + Vec2f(32, 8), color_white);
+
+	if (canCustomizeHotbar && hotbarClicked)
+	{
+		lastHotbarPressTime = controls.lastKeyPressTime;
+		Sound::Play("MenuSelect1.ogg");
+	}
 }

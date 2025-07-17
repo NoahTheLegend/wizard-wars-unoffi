@@ -38,7 +38,7 @@ namespace PriestParams
 			SpellType::other, 20, 10, 0, 64.0f, true),
 			 
 		Spell("revive", "Revive", 15, "Fully bring trusty allies back from the dead by aiming a reviving missile at their gravestone.",
-				SpellType::other, 80, 60, 30, 360.0f, true),
+				SpellType::other, 90, 60, 15, 360.0f, true),
 
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
 				SpellType::other, 20, 20, 0, 360.0f, true), 
@@ -70,7 +70,7 @@ namespace PriestParams
 		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
 				SpellType::other, 40, 60, 18, 16.0f, true),
 
-		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, however takes your dash ability and slows down.\nCast again to disable.",
+		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, at cost of making you slower.\nCast again to disable the spell.",
 				SpellType::other, 10, 30, 5, 16.0f, true),
 
 		Spell("manaburn", "Mana Burn", 73, "Slowly burns enemy mana and disables their mana regeneration.",

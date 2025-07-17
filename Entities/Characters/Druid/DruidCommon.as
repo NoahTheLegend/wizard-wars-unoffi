@@ -1,6 +1,7 @@
 //Druid Include
 
 #include "MagicCommon.as";
+#include "StatusCommon.as";
 
 namespace DruidParams
 {
@@ -36,7 +37,7 @@ namespace DruidParams
 			SpellType::other, 20, 10, 0, 64.0f, true),
 			 
 		Spell("revive", "Revive", 15, "Fully bring trusty allies back from the dead by aiming a reviving missile at their gravestone.",
-			SpellType::other, 80, 60, 30, 360.0f, true),
+			SpellType::other, 90, 60, 15, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_REVIVE}),
 			
 		Spell("nature's helpers", "Nature's Helpers", 29, "Fires a swarm of bees. Can heal friends or attack foes.",
 			SpellType::other, 35, 75, 12, 360.0f, true),	

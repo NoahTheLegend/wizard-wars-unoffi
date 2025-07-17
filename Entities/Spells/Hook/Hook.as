@@ -264,12 +264,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		blob.setVelocity((owner.getPosition()-blob.getPosition())/8);
 		this.setVelocity(Vec2f_zero);
 
+		if (isServer())
+		{
+			this.server_Hit(blob, blob.getPosition(), Vec2f_zero, 0.01f, Hitters::fall);
+		}
+
 		blob.set_u8("dashCoolDown", 30);
 		blob.set_bool("disable_dash", true);
 		blob.set_u32("teleport_disable", getGameTime()+30);
 
 		this.Tag("returning");
-			
 		owner.setVelocity((this.getPosition()-owner.getPosition())/16);
 	}
 }
