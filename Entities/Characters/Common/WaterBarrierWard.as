@@ -1,3 +1,4 @@
+#include "MagicCommon.as";
 
 void onTick(CBlob@ this)
 {
@@ -11,6 +12,8 @@ void onTick(CBlob@ this)
         {
             CBlob@ b = list[i];
             if (b is null) continue;
+            if (b.hasTag("flesh")) b.set_u16("wet timer", wet_renew_time);
+            
             if (b.getTeamNum() == this.getTeamNum()) continue;
 
             if (b.hasTag("flesh"))

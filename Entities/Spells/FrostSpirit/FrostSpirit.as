@@ -178,7 +178,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 		if (this.get_u16("target_id") == blob.getNetworkID() )
 		{
 			f32 damage = this.get_f32("damage");
-			if (blob.get_bool("waterbarrier") || blob.isInWater()) damage *= 1.25f;
+			if (blob.get_u16("wet timer") > 0) damage *= 1.33f;
 
 			this.server_Hit(blob, blob.getPosition(), this.getVelocity(), damage, Hitters::water, true);
 			Freeze(blob, 1.5f+XORRandom(11)*0.1f);

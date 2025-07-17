@@ -13,8 +13,8 @@ string tooltip = "";
 	 	WWPlayerClassButtonList playerClassButtons;
 
 const string[] specialties_names = {
-	"Fire - may ignite enemies",			"Water - extinguishes fire",			"Earth",			"Air - high knockback",			"Nature",			"Electricity - deals more damage to wet enemies",
-	"Ice - may freeze or deal more damage to wet enemies",			"Holy",			"Unholy",			"",			"",			"",
+	"Fire - may ignite enemies",			"Water - extinguishes fire",			"Earth - physical damage",			"Air - high knockback",			"Nature - organic spells",			"Electricity - deals more damage to wet enemies",
+	"Ice - may freeze or deal more damage to wet enemies",			"Holy - holy spells",			"Unholy - unholy spells",			"",			"",			"",
 	"",			"",			"",			"",			"",			"",
 	"Heal - restore health to allies or yourself",			"Support - wide variety of buffs",			"Summoner - create NPCs or sentries",			"AoE - Area of Effect spells",			"Control - some spells can control your enemies",			"Versatile - good at offense and defense",
 	"Impacter - damage dealer",			"Agility - movement spells",			"Map control - deny large area on the map for some time",			"Tank - redirect enemy focus to yourself",			"Life stealer - some spells will heal upon dealing damage",			"Mana dependency - core spells require plenty of mana to cast",
@@ -24,7 +24,7 @@ const string[] specialties_names = {
 // first is main
 const u8[] specialties_wizard = {24, 0, 5, 6, 21, 22, 23, 29};
 const u8[] specialties_necromancer = {20, 8, 21, 22, 26, 28};
-const u8[] specialties_druid = {18, 1, 2, 4, 5, 19, 22, 26, 30};
+const u8[] specialties_druid = {18, 2, 4, 19, 22, 26, 30};
 const u8[] specialties_swordcaster = {25, 21, 22, 24, 30};
 const u8[] specialties_entropist = {29, 3, 21, 23, 24, 25, 26};
 const u8[] specialties_priest = {18, 0, 7, 19, 21, 22, 26};

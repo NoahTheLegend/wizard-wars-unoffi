@@ -1,5 +1,6 @@
 #include "SplashWater.as";
 #include "Hitters.as";
+#include "MagicCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -110,9 +111,12 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	if (solid || (blob !is null && blob.hasTag("kill water spells"))) this.Tag("mark_for_death");
 	if (blob !is null && doesCollideWithBlob(this, blob))
 	{
-		if (isEnemy(this, blob))
+		if (isServer() && isEnemy(this, blob))
 		{
 			this.server_Hit(blob, this.getPosition(), this.getVelocity() * 2, this.get_f32("damage"), Hitters::water, true);
+
+			blob.set_u16("wet timer", wet_renew_time);
+			blob.Sync("wet timer", true);
 		}
 
 		this.Tag("mark_for_death");
@@ -123,6 +127,7 @@ void onDie(CBlob@ this)
 {
 	sparks(this.getPosition(), 50);
 	this.getSprite().PlaySound("waterbolt_death.ogg", 0.375f, 1.5f + XORRandom(11)*0.01f);
+	
 	Splash(this, 1, 1, 0, false);
 }
 

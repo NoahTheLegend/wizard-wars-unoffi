@@ -21,7 +21,26 @@ void onTick(CBlob@ this)
         createSporeshot(this);
         this.set_s32("nextSpore",getGameTime() + 150);
     }
+}
 
+void onDie(CBlob@ this)
+{
+    if (isServer())
+    {
+        if (this.hasTag("extra_damage"))
+        {
+            for (u8 i = 0; i < XORRandom(2) + 2; i++)
+            {
+                CBlob@ spore = createSporeshot(this);
+                if (spore !is null)
+                {
+                    Vec2f vel = getRandomVelocity(0, 1.5f, 360);
+                    spore.setVelocity(vel);
+                    spore.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+                }
+            }
+        }
+    }
 }
 
 CBlob@ createSporeshot(CBlob@ this)

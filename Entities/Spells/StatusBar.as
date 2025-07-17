@@ -72,11 +72,13 @@ void onTick(CSprite@ this)
 
     bar.tick();
     
-    if (getControls().isKeyJustPressed(KEY_KEY_R))
+    
+    if (isClient() && isServer() && getControls().isKeyJustPressed(KEY_KEY_R))
     {
         setBar(blob);
     }
 
+    /*
     if (getControls().isKeyJustPressed(KEY_KEY_H))
     {
         blob.add_u8("iter", 1);
@@ -135,6 +137,7 @@ void onTick(CSprite@ this)
     }
 
     if (blob.get_u16("poisoned") > 0) blob.sub_u16("poisoned", 1);
+    */
 }
 
 void onRender(CSprite@ this)
@@ -198,7 +201,7 @@ enum StatusSpecific
 const u8[] TOOLTIPS_SPECIFIC =
 {
     StatusSpecific::DEBUFF, // IGNITED
-    StatusSpecific::DEBUFF, // WET
+    StatusSpecific::OTHER, // WET
     StatusSpecific::CONTROL, // FROZEN
     StatusSpecific::DEBUFF, // POISON
     StatusSpecific::BUFF, // DAMAGE_BOOST
@@ -224,7 +227,7 @@ const u8[] TOOLTIPS_SPECIFIC =
 const string[] TOOLTIPS =
 {
     "Burning: physical DoT",
-    "Wet: vulnerable to Ice and Electricity",
+    "Wet: vulnerable to Ice and Electricity, resistant to Burning",
     "Frozen: immobilized",
     "Poisoned: magic DoT",
     "Damage Boost: enhanced spells",
@@ -686,6 +689,11 @@ class Status
         {
             if (tooltip_fade > 0) tooltip_fetcher.push_back(tooltip);
         }
+
+        if (hover) // select
+        {
+            GUI::DrawRectangle(tl, br, SColor(35 * fade * (1.0f - hiding_factor), 0, 0, 0));
+        }
     }
 
     void blink(Vec2f tl, Vec2f br)
@@ -695,7 +703,7 @@ class Status
         GUI::DrawRectangle(
             tl,
             br,
-            SColor(125 * blink_sine, 255, 255, 255));
+            SColor(100 * blink_sine, 255, 255, 255));
 
         //GUI::DrawRectangle(tl, tl+Vec2f(4,4), SColor(255, 255, 0, 0));
     }

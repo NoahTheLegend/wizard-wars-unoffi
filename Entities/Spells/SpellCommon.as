@@ -86,6 +86,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					CBlob@ sentry = server_CreateBlob("mushroom",this.getTeamNum(),Vec2f(aimpos.x,height) );
 					sentry.SetDamageOwnerPlayer(this.getPlayer());
 					sentry.set_s32("aliveTime",charge_state == 5 ? 1200 : 900); //if full charge last longer
+					if (this.hasTag("extra_damage"))
+					{
+						sentry.Tag("extra_damage");
+					}
 				}
 			}
 			else
@@ -319,6 +323,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			CBlob@ orb = server_CreateBlob( "boulder" );
 			if (orb !is null)
 			{
+				if (this.hasTag("extra_damage")) orb.getShape().setElasticity(0.85f);
+
 				orb.IgnoreCollisionWhileOverlapped( this );
 				orb.SetDamageOwnerPlayer( this.getPlayer() );
 				orb.server_setTeamNum( this.getTeamNum() );
@@ -411,8 +417,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (!isServer()){
            		return;
 			}
-			f32 extraDamage = this.hasTag("extra_damage") ? 0.2f : 0.0f;
-			f32 orbDamage = 0.2f + extraDamage;
+
+			f32 orbDamage = 0.2f;
 			f32 orbspeed = necro_shoot_speed / 1.5f;
 
 			switch(charge_state)
@@ -433,7 +439,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			orbVel.Normalize();
 			orbVel *= orbspeed;
 
-			CBlob@ orb = server_CreateBlob( "spikeorb" );
+			CBlob@ orb = server_CreateBlob(this.hasTag("extra_damage") ? "spikenut" : "spikeorb");
 			if (orb !is null)
 			{
 				orb.set_f32("damage", orbDamage);

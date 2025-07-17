@@ -111,7 +111,6 @@ void onTick(CBlob@ this)
 		Vec2f thisVel = this.getVelocity();
 		this.setVelocity( Vec2f(thisVel.x*0.85f, thisVel.y) );
 		
-
 		//makeSmokeParticle(this, Vec2f(), "Smoke");
 		if (slowed % 2 == 0)
 		{
@@ -139,6 +138,51 @@ void onTick(CBlob@ this)
 		{
 			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
 			this.Sync("slowed", true);
+		}
+	}
+
+	//WET
+	bool waterbarrier = this.get_bool("waterbarrier");
+	u16 wet = this.get_u16("wet timer");
+	if (waterbarrier || this.isInWater()) wet = wet_renew_time;
+
+	if (wet > 0)
+	{
+		// decrease burn timer
+		if (getGameTime() % 3 == 0 && this.exists("burn timer") && this.get_s16("burn timer") > 0)
+		{
+			this.sub_s16("burn timer", 1);
+		}
+
+		wet--;
+		this.set_u16("wet timer", wet);
+
+		if (wet % 2 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{		
+				if(getNet().isClient())
+				{
+					const f32 rad = 6.0f;
+					Vec2f random = Vec2f(XORRandom(96)-48, XORRandom(64)-32 ) * 0.015625f * rad;
+					CParticle@ p = ParticleAnimated("WaterDrops1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
+					if (p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+
+						if (XORRandom(2) == 0)
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+					}
+				}
+			}
+		}
+
+		if (wet == 0)
+		{
+			this.Sync("wet timer", true);
 		}
 	}
 
@@ -897,7 +941,7 @@ void onTick(CBlob@ this)
 
 	//WATER BARRIER
 	{
-		bool waterbarrier = this.get_bool("waterbarrier");
+		// bool is at wet effect
 		u32 originwaterbarriertiming = this.get_u32("originwaterbarriertiming");
 		u32 waterbarriertiming = this.get_u32("waterbarrieriming");
 		u32 disablewaterbarriertiming = this.get_u32("disablewaterbarriertiming");

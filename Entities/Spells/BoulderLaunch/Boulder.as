@@ -25,10 +25,17 @@ void onInit(CBlob @ this)
 	this.getCurrentScript().tickFrequency = 3;
 	if (isServer()) this.server_SetHealth(999.0f);
 	this.SetMass(100.0f);
+	
+	this.set_f32("elasticity", this.getShape().getElasticity());
 }
 
 void onTick(CBlob@ this)
 {
+	if (this.hasTag("reset elasticity"))
+	{
+		this.getShape().setElasticity(this.get_f32("elasticity"));
+		this.Untag("reset elasticity");
+	}
 	if (isServer() && this.getTickSinceCreated() > 60 && this.isOnGround())
 	{
 		this.server_Hit(this, this.getPosition(), Vec2f(0,8), 999.0f, Hitters::boulder, true);	
@@ -158,9 +165,10 @@ bool BoulderHitMap(CBlob@ this, Vec2f worldPoint, int tileOffset, Vec2f velocity
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (solid && blob is null && isServer() && this.getTickSinceCreated() > 60)
+	if (solid && blob is null && isServer())
 	{
-		this.server_Hit(this, this.getPosition(), Vec2f(0,8), 999.0f, Hitters::boulder, true);
+		this.Tag("reset elasticity");
+		if (this.getTickSinceCreated() > 45) this.server_Hit(this, this.getPosition(), Vec2f(0,8), 999.0f, Hitters::boulder, true);
 	}
 	if (solid && blob !is null)
 	{

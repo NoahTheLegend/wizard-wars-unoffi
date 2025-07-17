@@ -154,8 +154,8 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 				this.Tag("mark_for_death");
 				return;
 			}
+			
 			f32 dmg = 0.5f;
-			if (blob.get_bool("waterbarrier")) dmg *= 2.0f;
 			this.server_Hit(blob, blob.getPosition(), Vec2f(0,0.1f), dmg, Hitters::arrow, true);
 		}
 		this.server_Hit(this, this.getPosition(), this.getVelocity(), 99.0f, Hitters::builder, true);

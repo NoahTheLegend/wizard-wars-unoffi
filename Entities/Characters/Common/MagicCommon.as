@@ -1,6 +1,7 @@
 //Generic Magic Class Include
 
 const u8 MIN_FOCUS_TIME = 5; //in seconds
+const u16 wet_renew_time = 5*30;
 
 namespace SpellType
 {

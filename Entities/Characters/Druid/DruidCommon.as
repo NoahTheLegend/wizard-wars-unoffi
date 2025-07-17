@@ -41,7 +41,7 @@ namespace DruidParams
 		Spell("nature's helpers", "Nature's Helpers", 29, "Fires a swarm of bees. Can heal friends or attack foes.",
 			SpellType::other, 35, 75, 12, 360.0f, true),	
 										
-		Spell("spikeorb", "SpikeBall", 30, "The spikeball is natures punishment to those that tread her woods unwelcomed",
+		Spell("spikeorb", "Spike Nut", 30, "The spike nut is natures punishment to those that tread her woods unwelcomed",
 			SpellType::other, 2, 6, 0, 360.0f, true),			
 				
 		Spell("vinewaver", "Vine Waver", 105, "Creates a waving phasing projectile.",
@@ -77,11 +77,11 @@ namespace DruidParams
 		Spell("vinetrap", "Vine Embrace", 89, "Plants sharp vines that will stop enemies passing through it.",
 			SpellType::other, 25, 45, 5, 128.0f, false, true),
 
-		Spell("balllightning", "Lightning Ball", 123, "Creates an electrified and moving ball of pure lightning.",
-			SpellType::other, 35, 40, 4, 128.0f, true),
+		Spell("", "", 0, "Empty spell.",
+			SpellType::other, 1, 1, 0, 0.0f),
 
-		Spell("waterbolt", "Water Bolt", 126, "A dense sphere of water.",
-			SpellType::other, 5, 20, 0, 256.0f),
+		Spell("", "", 0, "Empty spell.",
+			SpellType::other, 1, 1, 0, 0.0f),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)
