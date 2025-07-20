@@ -117,7 +117,7 @@ class GenericGUIItem : IGUIItem{
 	//Debug mode -draws colored rectangles over entire size of object to help for lining up.
 	private bool Debug = false;
 	SColor DebugColor;
-
+	SColor color;
 
 	//config properties
 	Vec2f position {
@@ -231,6 +231,7 @@ class GenericGUIItem : IGUIItem{
 		localPosition = v_localPosition;
 		position = localPosition;
 		size = v_size;
+		color = SColor(255,255,255,255);
 	}
 
 	/* Children GUI elements controls */
@@ -383,11 +384,8 @@ class GenericGUIItem : IGUIItem{
 
 	//Mouse magic
 	
-	void draw(){
-
-
-
-
+	void draw()
+	{
 		//State updates. WARNING: The order of evaluation is important!
 		updateMouseStates();
 		updateHoverStates();
@@ -395,7 +393,6 @@ class GenericGUIItem : IGUIItem{
 		updatePressedStates();
 		updateDraggingStates();
 		updateSliderStates();
-
 
 		drawSelf();
 		if(Debug) GUI::DrawRectangle(position, position+size,DebugColor);
@@ -407,9 +404,8 @@ class GenericGUIItem : IGUIItem{
 			children[i].position = position+children[i].localPosition;
 			children[i].draw();
 		}
+		
 		updateToolTipState();
-	
-
 	}
 
 	void drawSelf(){
@@ -784,7 +780,6 @@ class List : GenericGUIItem{
 
 class Button : GenericGUIItem{
 	string desc;
-	SColor color;
 	bool selfLabeled = false;
 	bool toggled = false;
 
@@ -892,7 +887,6 @@ class ScrollBar : GenericGUIItem{
 class ProgressBar : GenericGUIItem{
 	
 	float val;
-	SColor color;
 	bool colored = false;
 	bool inversed = false;
 
@@ -993,10 +987,9 @@ class TextureBar : GenericGUIItem{
 
 }
 
-class Rectangle : GenericGUIItem{
-	
+class Rectangle : GenericGUIItem
+{
 	bool useColor = false;
-	SColor color;
 
 	Rectangle(Vec2f _position,Vec2f _size, SColor _color){
 		super(_position,_size);
@@ -1033,10 +1026,8 @@ class GUIContainer : GenericGUIItem{
 
 }
 
-
-
-class Bubble : GenericGUIItem{
-	
+class Bubble : GenericGUIItem
+{
 	Bubble(Vec2f _position,Vec2f _size){
 		super(_position,_size);
 	}
@@ -1048,9 +1039,8 @@ class Bubble : GenericGUIItem{
 
 }
 
-class Line : GenericGUIItem{
-	
-	SColor color;
+class Line : GenericGUIItem
+{
 
 	Line(Vec2f _position,Vec2f _size, SColor _color){
 		super(_position,_size);
@@ -1064,10 +1054,9 @@ class Line : GenericGUIItem{
 
 }
 
-class Label : GenericGUIItem{
-	
+class Label : GenericGUIItem
+{
 	string label;
-	SColor color;
 	bool centered;
 	Label(Vec2f _position,Vec2f _size,string _label,SColor _color,bool _centered){
 		super(_position,_size);
@@ -1088,16 +1077,14 @@ class Label : GenericGUIItem{
 
 }
 
-
-class Icon : GenericGUIItem{
-	
+class Icon : GenericGUIItem
+{
 	string name;
 	float scale = 1;
 	int team = 0, index, animCurrent = 0;
 	bool animate = false;
 	Vec2f iSize;
 	Anim[] animList;
-
 
 	//Static Icon setup
 	Icon(string _name, Vec2f _position,Vec2f _size,int _index,float _scale){
@@ -1107,6 +1094,7 @@ class Icon : GenericGUIItem{
 		iSize = _size;
 		index = _index;
 		DebugColor = SColor(155,13,0,158);
+		color = SColor(255,255,255,255);
 	}
 
 	//Animated Icon setup
@@ -1120,6 +1108,12 @@ class Icon : GenericGUIItem{
 		scale = _scale;
 		animate = true;
 		DebugColor = SColor(155,31,105,158);
+		color = SColor(255,255,255,255);
+	}
+
+	Icon()
+	{
+		color = SColor(255,255,255,255);
 	}
 
 	void addAnim(Anim a){ //Add an Animation
@@ -1141,7 +1135,7 @@ class Icon : GenericGUIItem{
 			animList[animCurrent].drawAnim(position,scale,team);
 		}
 		else {
-			GUI::DrawIcon(name,index,iSize,position,scale,team);
+			GUI::DrawIcon(name,index,iSize,position,scale,scale,team,color);
 			GenericGUIItem::drawSelf();
 		}	
 	}

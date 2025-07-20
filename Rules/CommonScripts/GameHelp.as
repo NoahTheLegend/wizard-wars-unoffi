@@ -28,8 +28,7 @@ const string map_key = getControls().getActionKeyKeyName( AK_MAP );
 const string zoomIn_key = getControls().getActionKeyKeyName( AK_ZOOMIN );
 const string zoomOut_key = getControls().getActionKeyKeyName( AK_ZOOMOUT );
 
-const string lastChangesInfo = "For changes please see https://github.com/Zable-the-Unable/WizardWarsPlus";
-
+const string lastChangesInfo = "";
 const string textInfo = 
 		"- Default Basic Controls:\n" +
 		" [ " + action1_key + " ] Hold and release to fire your selected primary spell.\n"+
@@ -627,11 +626,12 @@ void onRender( CRules@ this )
 
 	//renderTutorial(this);
 	
-	if(shipAchievements.displaying)
+	if (shipAchievements.displaying)
 	{
 		shipAchievements.display();
 	}
-	if(playerClassButtons.displaying)
+	
+	if (playerClassButtons.displaying)
 	{
 		playerClassButtons.display();
 	}
@@ -648,9 +648,9 @@ void onRender( CRules@ this )
 	string temp = "Particle count: ";
 	if (particleCount.value == 0){
 		temp += "None";
-	}else if (particleCount.value == 1){
+	} else if (particleCount.value == 1){
 		temp += "Low";
-	}else if (particleCount.value == 2){
+	} else if (particleCount.value == 2){
 		temp += "Medium";
 	} else{
 		temp += "High";
@@ -677,4 +677,7 @@ void onRender( CRules@ this )
 	CControls@ controls = getControls();
 	
 	RenderClassMenus();
+
+	RenderTooltips(tooltips_fetcher);
+	tooltips_fetcher.clear();
 }

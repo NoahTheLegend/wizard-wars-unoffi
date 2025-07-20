@@ -4,26 +4,28 @@ shared string[] SPELL_TOOLTIPS()
 {
     string[] arr =
     {
-        "Magic Damage: deals magic damage",
-        "Physical Damage: deals physical damage",
-        "Fire: might ignite targets",
-        "Water: might apply wet effect",
-        "Freezing: might apply freezing effect or deal more damage to wet targets",
-        "Electricity: might deal more damage to wet targets",
-        "Poison: might apply poisont",
-        "Knockback: high knockback",
-        "Barrier: creates a barrier",
-        "Sentry: creates a sentry",
-        "Vampirism: lifesteal on hit",
-        "Heal: restores health, might require overcharge",
-        "Summon: summons an entity",
-        "Rain: creates the spell at sky",
-        "Double-Stage: pressing [SHIFT] key might activate something",
-        "Homing Cursor: following cursor projectile",
-        "Revive: revives an ally from their gravestone",
-        "Movement: movement spell",
-        "Caster Effect: effects on the caster, might require overcharge",
-        "Ally Effect: effects on allies"
+        "Creates one or more projectiles",
+        "Deals meelee damage",
+        "Might ignite targets",
+        "Might apply wet effect",
+        "Might apply freezing effect or deal more damage to wet targets",
+        "Might deal more damage to wet targets",
+        "Might apply poisont",
+        "High knockback",
+        "Creates a barrier",
+        "Creates a sentry",
+        "Lifesteal on hit",
+        "Restores health, might require overcharge",
+        "Summons an entity",
+        "Cast from sky",
+        "Pressing [SHIFT] key might activate something",
+        "Following cursor",
+        "Revives an ally from their gravestone",
+        "Movement spell",
+        "Affects the caster, might require overcharge",
+        "Affects allies",
+        "Affects enemy movement or spell casting",
+        "Cast near ground"
     };
 
     return arr;
@@ -53,8 +55,8 @@ shared Attribute@[] getAttributes()
 
 shared enum SpellAttribute
 {
-    SPELL_MAGIC_DAMAGE =        0,
-    SPELL_PHYSICAL_DAMAGE =     1,
+    SPELL_PROJECTILE =          0,
+    SPELL_MELEE =               1,
     SPELL_FIRE =                2,
     SPELL_WATER =               3,
     SPELL_FREEZING =            4,
@@ -73,7 +75,9 @@ shared enum SpellAttribute
     SPELL_MOVEMENT =            17,
     SPELL_CASTEREFFECT =        18,
     SPELL_ALLYEFFECT =          19,
-    TOTAL =                     20
+    SPELL_CONTROL =             20,
+    SPELL_GROUNDED =            21,
+    TOTAL
 }
 
 shared class Attribute : Status
@@ -107,9 +111,26 @@ shared class Attribute : Status
         if (tooltip !is null)
         {
             tooltip.fade = Maths::Lerp(tooltip.fade, f32(tooltip_fade) / f32(max_fade), df * 2);
-            tooltip.pos = pos;
+            tooltip.pos = pos - Vec2f(16, 8);
         }
     }
 
-    void blink(Vec2f tl, Vec2f br) override {}
+    void render(Vec2f pos, f32 hiding_factor, Tooltip@[] &inout tooltip_fetcher) override
+    {
+        Vec2f tl = pos;
+        Vec2f br = tl + dim * scale;
+
+        GUI::DrawIcon("StatusSlot.png", 1, Vec2f(32, 32), tl - dim / 2, scale, scale, SColor(255, 255, 255, 255));
+        GUI::DrawIcon(icon, type, dim, tl, scale / 2, SColor(255, 255, 255, 255));
+        
+        if (tooltip !is null)
+        {
+            tooltip_fetcher.push_back(tooltip);
+        }
+
+        if (hover) // select
+        {
+            GUI::DrawRectangle(tl, br, SColor(35 * (1.0f - hiding_factor), 0, 0, 0));
+        }
+    }
 };

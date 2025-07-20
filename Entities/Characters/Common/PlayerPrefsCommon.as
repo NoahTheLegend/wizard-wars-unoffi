@@ -77,6 +77,7 @@ void SetCustomSpell( CPlayer@ this, const u8 id )
 	{
 		return;
 	}
+	
 	playerPrefsInfo.customSpellID = id;
 }
 

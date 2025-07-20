@@ -23,8 +23,6 @@ shared u8 getTooltipFocusTime()
     return 7;
 }
 
-f32 df = 0;
-
 shared f32 getDeltaFactor()
 {
     return 0.25f * getRenderDeltaTime() * 60.0f;
@@ -294,7 +292,7 @@ shared class Tooltip
 
     void render()
     {
-        if (fade <= 0.01f)
+        if (fade <= 0.05f)
             return;
 
         GUI::SetFont("menu");
@@ -305,7 +303,6 @@ shared class Tooltip
 
         tooltip_col.setAlpha(uint8(255 * fade));
         GUI::DrawText(text, tooltip_pos + Vec2f(2, 2), tooltip_col);
-
         GUI::SetFont("default");
     }
 

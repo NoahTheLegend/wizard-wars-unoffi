@@ -1,3 +1,4 @@
+#include "MagicCommon.as";
 #include "SplashWater.as";
 #include "SpellUtils.as";
 
@@ -298,6 +299,8 @@ void onDie(CBlob@ this)
     {
         CBlob@ b = blobs[i];
         if (b is null) continue;
+
+        b.set_u16("wet timer", wet_renew_time);
         b.AddForce(Vec2f(0, (Maths::Max(32.0f, 80.0f-(b.getPosition()-this.getPosition()-Vec2f(0,8)).Length())) * 16.0f).RotateBy(-(b.getPosition()-this.getPosition()-Vec2f(0,8)).Angle()-90));
     }
 }
