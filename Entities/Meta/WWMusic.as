@@ -82,7 +82,8 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 		"AtlasTerrace.ogg ",
 		"FinalDuel.ogg",
 		"AttackOfTheKillerQueen.ogg",
-		"FieldOfHopesAndDreams.ogg"
+		"FieldOfHopesAndDreams.ogg",
+		"BattleUnderABrokenSky"
 	};
 
 	array<bool> addedTracks(trackNames.length(), false);

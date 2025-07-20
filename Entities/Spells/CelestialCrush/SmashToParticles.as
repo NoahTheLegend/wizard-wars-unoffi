@@ -1,8 +1,19 @@
 void onDie(CBlob@ this) //so its synced
 {
+    if (this.hasTag("particles_done")) return;
+    
     if (!makeParticlesFromSpriteAccurate(this, this.getSprite(), this.get_u16("smashtoparticles_probability")))
     {
         ParticlesFromSprite(this.getSprite());
+    }
+}
+
+void onTick(CBlob@ this)
+{
+    if (this.hasTag("mark_for_death"))
+    {
+        onDie(this);
+        this.Tag("particles_done");
     }
 }
 

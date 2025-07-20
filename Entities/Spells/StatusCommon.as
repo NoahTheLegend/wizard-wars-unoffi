@@ -325,6 +325,9 @@ shared class Tooltip
 
 void RenderTooltips(Tooltip@[] &in tooltips)
 {
+    if (tooltips is null || tooltips.size() == 0) // crashes the game on startup without this check
+        return;
+
     for (u8 i = 0; i < tooltips.size(); i++)
     {
         if (tooltips[i] is null)

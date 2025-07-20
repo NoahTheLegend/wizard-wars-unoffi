@@ -235,6 +235,56 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -6679777581: //foresttune
+		{
+			if(this.hasScript("ForesttuneRain.as"))
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo ))
+				{return;}
+				
+				manaInfo.mana += spell.mana;
+				return;
+			}
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+				case complete_cast:
+				{
+					this.set_u8("foresttune_projectiles", 12);
+					this.set_u8("foresttune_delay", 3);
+				}
+				break;
+				case super_cast:
+				{
+					this.set_u8("foresttune_projectiles", 20);
+
+					this.set_u8("foresttune_delay", 2);
+					this.set_bool("static", false);
+				}
+				break;
+			
+				default:return;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				this.add_u8("foresttune_projectiles", 8);
+				this.sub_u8("foresttune_delay", 1);
+			}
+			this.set_u32("foresttune_start", getGameTime());
+			this.set_Vec2f("foresttune_aimpos", aimpos);
+			this.set_f32("foresttune_damage", 0.2f);
+
+			if (!this.hasScript("ForesttuneRain.as"))
+			{
+				this.AddScript("ForesttuneRain.as");
+			}
+		}
+		break;
+
 		case 1159967310://ball lightning
 		{
 			if (!isServer()){

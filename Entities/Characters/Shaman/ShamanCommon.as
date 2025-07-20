@@ -49,13 +49,13 @@ namespace ShamanParams
 			SpellType::other, 25, 25, 0, 164.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_ELECTRICITY}),
 
 		Spell("firetotem", "Totem of Fire", 76, "Shoots flames at nearby enemies. Ignites everything in close range upon death. Overcharge increases lifetime and fire rate.",
-			SpellType::other, 30, 50, 2, 156.0f, true, true, array<int> = {SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_FIRE}),
+			SpellType::other, 30, 50, 2, 156.0f, true, true, array<int> = {SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_GROUNDED, SpellAttribute::SPELL_FIRE}),
 
 		Spell("watertotem", "Totem of Water", 77, "Heals most damaged nearby ally. Only one totem can heal a target. Generates heal charges passively. Overchage increases durability and generation rate. Pushes everything away upon death.",
-			SpellType::other, 40, 90, 8, 128.0f, true, true, array<int> = {SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_HEAL, SpellAttribute::SPELL_WATER, SpellAttribute::SPELL_KNOCKBACK}),
+			SpellType::other, 40, 90, 8, 128.0f, true, true, array<int> = {SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_GROUNDED, SpellAttribute::SPELL_HEAL, SpellAttribute::SPELL_WATER, SpellAttribute::SPELL_KNOCKBACK}),
 		
 		Spell("earthtotem", "Totem of Earth", 78, "Slows down enemies nearby. Overcharge increases effect distance and time. Releases different effects when removed.",
-			SpellType::other, 50, 75, 10, 224.0f, true, true, array<int> = {SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_CONTROL}),
+			SpellType::other, 50, 75, 10, 224.0f, true, true, array<int> = {SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_GROUNDED, SpellAttribute::SPELL_CONTROL}),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freeze everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
 			SpellType::other, 40, 75, 25, 0.0f, true, false, array<int> = {SpellAttribute::SPELL_FREEZING, SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),

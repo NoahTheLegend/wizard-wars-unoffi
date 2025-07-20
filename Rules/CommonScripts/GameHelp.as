@@ -673,11 +673,10 @@ void onRender( CRules@ this )
 		helpWindow.position = Vec2f( helpWindow.position.x, Maths::Max( helpWindow.position.y - scrollSpeed, minHelpYPos) );
 	}
 
-	CBlob@ localBlob = getLocalPlayerBlob();
-	CControls@ controls = getControls();
+	bool initialized = this.get_bool("GUI initialized");
+	if (!initialized) return;
 	
 	RenderClassMenus();
-
 	RenderTooltips(tooltips_fetcher);
 	tooltips_fetcher.clear();
 }

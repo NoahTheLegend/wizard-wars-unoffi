@@ -16,12 +16,12 @@ Tooltip@[] tooltips_fetcher;
 WWPlayerClassButtonList playerClassButtons;
 
 const string[] specialties_names = {
-	"Fire - may ignite enemies","Water - extinguishes fire","Earth - physical damage","Air - high knockback","Nature - organic spells","Electricity - deals more damage to wet enemies",
-	"Ice - may freeze or deal more damage to wet enemies","Holy - holy spells","Unholy - unholy spells","Poison - poisonous spells","","",
+	"Fire - might ignite enemies","Water - extinguishes fire","Earth - physical damage","Air - high knockback","Nature - organic spells","Electricity - deals more damage to wet enemies",
+	"Ice - might freeze or deal more damage to wet enemies","Holy - holy spells","Unholy - unholy spells","Poison - poisonous spells","","",
 	"","","","","","",
 	"Heal - restore health of allies and self","Support - wide variety of buffs","Summoner - create NPCs or sentries","AoE - Area of Effect spells","Control - some spells can control your enemies","Versatile - good at offense and defense",
-	"Impacter - damage dealer",	"Agility - movement spells","Map control - deny large area on the map for some time","Tank - great survivability","Life stealer - some spells might heal you on hit","Mana dependency - core spells require plenty of mana to cast",
-	"Cheap spells - spamming those is not a bad decision","Life force - some spells may consume you health instead of mana",			"",			"",			"",	""
+	"Impacter - damage dealer",	"Agility - movement spells","Map control - deny large area on the map for short amount of time","Tank - great survivability","Life stealer - some spells might heal you on hit","Mana dependency - core spells require plenty of mana to cast",
+	"Cheap spells - spamming those is not a bad decision","Life force - some spells might consume you health instead of mana",			"",			"",			"",	""
 };
 
 const u8[] specialties_wizard = {24, 0, 5, 6, 21, 22, 23, 29};
@@ -35,44 +35,67 @@ const u8[] specialties_paladin = {27, 7, 19, 24, 29};
 const u8[] specialties_jester = {23, 19, 21, 22, 25, 26};
 const u8[] specialties_warlock = {24};
 
-const u8[][] STATS =
-{
-	{3,0,0,0,0,0,0,0,0}, 				// wizard
-	{3,2,1,0,1,1,1,1,0}, 				// necromancer
-	{3,2,1,0,1,1,1,1,0}, 				// druid
-	{3,2,1,0,1,1,1,1,0}, 				// swordcaster
-	{3,2,1,0,1,1,1,1,0}, 				// entropist
-	{3,2,1,0,1,1,1,1,0}, 				// priest
-	{3,2,1,0,1,1,1,1,0}, 				// shaman
-	{3,2,1,0,1,1,1,1,0}, 				// paladin
-	{3,2,1,0,1,1,1,1,0}, 				// jester
-	{3,2,1,0,1,1,1,1,0}				// warlock
-};
-
 const string[] stats_labels =
 {
-	"DIFF", 						// center
-	"DMG", 							// top
-	"AOE", 							// top right
-	"SUP", 							// right
-	"HEAL", 						// bottom right
-	"SURV", 						// bottom
-	"VERS", 						// bottom left
-	"AGI", 							// left
-	"MANA" 							// top left
+	"", 							// center
+	"D", 							// top
+	"A", 							// top right
+	"S", 							// right
+	"H", 							// bottom right
+	"E", 							// bottom
+	"V", 							// bottom left
+	"A", 							// left
+	"M" 							// top left
+};
+
+const string[] stats_names =
+{
+	"Difficulty",
+	"Damage",
+	"Area of Effect",
+	"Support",
+	"Healing",
+	"Endurability",
+	"Versatility",
+	"Agility",
+	"Mana"
+};
+
+
+const u8[][] STATS =
+{
+  // C D A S H E V A M
+	{2,2,2,1,0,1,0,1,0}, 				// wizard
+	{0,1,2,1,0,1,0,0,2}, 				// necromancer
+	{0,0,0,2,2,2,1,1,2}, 				// druid
+	{1,2,1,0,0,1,0,2,1}, 				// swordcaster
+	{2,2,1,0,0,2,1,2,0}, 				// entropist
+	{1,1,2,2,2,1,0,0,1}, 				// priest
+	{0,1,1,1,1,1,2,1,2}, 				// shaman
+	{1,1,0,2,1,2,2,0,1}, 				// paladin
+	{2,2,1,1,0,1,2,1,0}, 				// jester
+	{3,0,0,0,0,0,0,0,0}					// warlock
+};
+
+const string[] diff_levels =
+{
+	"EASY",
+	"MEDIUM",
+	"HARD",
+	"COMPLEXLY HARD"
 };
 
 const Vec2f[] stat_labels_offsets =
 {
-	Vec2f(0,0), 						// center
-	Vec2f(0,0), 						// top
-	Vec2f(0,0), 						// top right
-	Vec2f(0,0), 						// right
-	Vec2f(0,0), 						// bottom right
-	Vec2f(0,0), 						// bottom
-	Vec2f(0,0), 						// bottom left
-	Vec2f(0,0), 						// left
-	Vec2f(0,0) 							// top left
+	Vec2f(0,0), 					// center
+	Vec2f(0,-26), 					// top
+	Vec2f(20, -20), 				// top right
+	Vec2f(26, 0), 					// right
+	Vec2f(20, 20), 					// bottom right
+	Vec2f(0, 26), 					// bottom
+	Vec2f(-20, 20), 				// bottom left
+	Vec2f(-26, 0), 					// left
+	Vec2f(-21, -20) 				// top left
 };
 
 const SColor[] stats_middle_color =
@@ -80,19 +103,19 @@ const SColor[] stats_middle_color =
 	SColor(255, 55, 255, 55), 		// green
 	SColor(255, 255, 255, 55), 		// yellow
 	SColor(255, 255, 55, 55), 		// red
-	SColor(255, 215, 100, 235)		// magenta
+	SColor(255, 255, 125, 255)		// pink
 };
 
 const SColor[] stats_color =
 {
 	SColor(255, 255, 55, 55), 		// red
-	SColor(255, 255, 255, 55), 		// orange
+	SColor(255, 255, 155, 55), 		// orange
 	SColor(255, 255, 255, 55), 		// yellow
 	SColor(255, 55, 255, 55), 		// green
 	SColor(255, 55, 255, 255), 		// cyan
 	SColor(255, 55, 55, 255), 		// blue
-	SColor(255, 215, 100, 235), 	// magenta
-	SColor(255, 175, 35, 225) 		// purple
+	SColor(255, 255, 125, 255), 	// pink
+	SColor(255, 185, 70, 225) 		// purple
 };
 
 class WWPlayerClassButton 
@@ -201,8 +224,8 @@ class WWPlayerClassButton
 			classFrame.addChild(spellButtons[i]);
 		}
 
-		Vec2f firstIconPos = Vec2f(98 + (0 == 0 ? 0 : 12), 12) + (0 == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-6, -6);
-		Vec2f lastIconPos = Vec2f(98 + 40 * specialties.size() + (specialties.size() == 0 ? 0 : 12), 12) + (specialties.size() == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-70, 22);
+		Vec2f firstIconPos = Vec2f(6 + (0 == 0 ? 0 : 12), 12) + (0 == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-6, -6);
+		Vec2f lastIconPos = Vec2f(194 + 40 * specialties.size() + (specialties.size() == 0 ? 0 : 12), 12) + (specialties.size() == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-70, 22);
 		
 		classFrame.addChild(@Rectangle(firstIconPos, lastIconPos + Vec2f(16,16), SColor(255,66,72,75)));
 		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(2,2), lastIconPos + Vec2f(12,12), SColor(255,151,167,146)));
@@ -210,30 +233,44 @@ class WWPlayerClassButton
 		
 		for (u8 i = 0; i < stats.size(); i++)
 		{
-			Vec2f pos = Vec2f(98 + 40 * i + 12, 12);
+			Vec2f pos = Vec2f(98 + 40 * i + 12, 10);
 			int frame = 47;
 
-			u8 row = 8;
+			u8 row = 12;
 			u8 level = stats[i];
 			
-			if (i > 0) frame += row * level + i;
-			SColor col = i == 0 ? stats_middle_color[level] : stats_color[level];
+			if (i > 0) frame += i + level * row;
+			SColor col = i == 0 ? stats_middle_color[level] : stats_color[i-1];
 
-			Icon@ temp = @Icon("Specializations.png", Vec2f(102, 12), Vec2f(16,16), frame, 1.5f);
+			Icon@ temp = @Icon("Specializations.png", Vec2f(104, 12), Vec2f(16,16), frame, 1.5f);
 			temp.color = col;
 
-			Label@ statLabel = @Label(pos + stat_labels_offsets[i], Vec2f(16,16), stats_labels[i], SColor(255,255,255,255), true);
-			temp.addChild(statLabel);
-			
 			classFrame.addChild(temp);
+		}
+
+		for (u8 i = 0; i < stats.size(); i++)
+		{
+			Vec2f pos = Vec2f(110.5f + 40 * i + 12, 11);
+			Vec2f centering = Vec2f(40 * i, -16);
+
+			u8 level = stats[i];
+			int seed = level * 20 + i;
+
+			Label@ statLabel = @Label(pos + stat_labels_offsets[i] - centering, Vec2f(16,16), stats_labels[i], SColor(255,255,255,255), true, "default", seed);
+			statLabel.addHoverStateListener(statHover);
+			classFrame.addChild(statLabel);
 		}
 
 		for (u8 i = 1; i < specialties.size() + 1; i++)
 		{
-			Icon@ temp = @Icon("Specializations.png", pos + Vec2f(8,8), Vec2f(16,16), specialties[i - 1], 1.0f);
+			Vec2f pos = Vec2f(104 + 40 * i + 12, 11);
+			Icon@ temp = @Icon("Specializations.png", pos + Vec2f(8,8), Vec2f(16, 16), specialties[i - 1], 1.0f);
 			temp.addHoverStateListener(iconHover);
 			classFrame.addChild(temp);
 		}
+
+		Label@ specialtiesText = @Label(Vec2f(8, 26), Vec2f(160, 33.5f), "Specialties: ", SColor(255, 255, 255, 255), false);
+		classFrame.addChild(specialtiesText);
 
 		@spellDescText = @Label(Vec2f(0,200), Vec2f(480,34), "Select a spell above to see its description.", SColor(255,0,0,0), false);
 		classFrame.addChild(spellDescText);
@@ -512,6 +549,32 @@ void intitializeClasses()
 													"warlock", 10, 0, 11, 0, "WizardWars", specialties_warlock, STATS[9]);
 }
 
+void statHover(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Label@ sender = cast<Label>(item);
+	if (sender is null) return;
+	
+	int cd = sender._customData;
+	int value = cd; // Assuming cd contains the 2-digit value
+	int textIndex = value % 20; // Extract the first 20 as text index
+	int level = value / 20; // Extract the level from the value
+	string text = stats_names[textIndex];
+
+	if (hover)
+	{
+		if (text != "")
+		{
+			tooltip = text + (textIndex == 0 ? ": " + diff_levels[level] : "");
+		}
+	}
+	else if (text == tooltip) 
+	{
+		tooltip = "";
+	}
+}
+
 void iconHover(bool hover, IGUIItem@ item)
 {
 	if (item is null) return;
@@ -720,7 +783,7 @@ void RenderClassMenus()
 
 				for (u8 i = 0; i < s.attributes.size(); i++)
 				{
-					s.attributes[i].pos = attributesPos - Vec2f((s.attributes[i].dim.x + 16) * i, 0);
+					s.attributes[i].pos = attributesPos - Vec2f((s.attributes[i].dim.x + 12) * i, 16);
 					s.attributes[i].render(s.attributes[i].pos, 1.0f, tooltips_fetcher);
 				}
 

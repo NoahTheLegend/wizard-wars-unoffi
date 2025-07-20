@@ -1058,23 +1058,28 @@ class Label : GenericGUIItem
 {
 	string label;
 	bool centered;
-	Label(Vec2f _position,Vec2f _size,string _label,SColor _color,bool _centered){
+	int _customData;
+	string font;
+
+	Label(Vec2f _position,Vec2f _size,string _label,SColor _color, bool _centered, string _font = "hud", int _cd = 0){
 		super(_position,_size);
 		label = _label;
 		color = _color;
 		centered = _centered; //center text to middle of label
 		DebugColor = SColor(155,0,76,7);
+		font = _font;
+		_customData = _cd;
 	}
 
 	void drawSelf(){
-		drawRulesFont(label,color,position,position+size,centered,centered);
+		GUI::SetFont(font);
+		GUI::DrawText(label, position, color);
 		GenericGUIItem::drawSelf();
 	}
 
 	void setText(string _label){
 		label = _label;
 	}
-
 }
 
 class Icon : GenericGUIItem

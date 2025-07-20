@@ -78,8 +78,8 @@ namespace DruidParams
 		Spell("vinetrap", "Vine Embrace", 89, "Plants sharp vines that will stop enemies passing through it.",
 			SpellType::other, 25, 45, 5, 128.0f, false, true, array<int> = {SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_GROUNDED}),
 
-		Spell("", "", 0, "Empty spell.",
-			SpellType::other, 1, 1, 0, 0.0f),
+		Spell("foresttunerain", "Forest Tune", 143, "Foliage",
+			SpellType::other, 0, 15, 0, 64.0f),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f),
