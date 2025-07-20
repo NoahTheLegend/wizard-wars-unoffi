@@ -12,28 +12,42 @@ void onTick(CBlob@ this)
 
     u8 projectiles = this.get_u8("foresttune_projectiles");
     f32 level = float(getGameTime()-this.get_u32("foresttune_start"))/float(projectiles*delay);
-    if (isServer() && getGameTime() % delay == 0)
+    if (getGameTime() % delay == 0)
     {
-        this.add_u8("launched_foresttune_projectiles", 1);
-        Vec2f aimpos = this.get_Vec2f("foresttune_aimpos");
-        Vec2f offset = Vec2f(width - XORRandom(width * 2), 32.0f);
-
-        Vec2f orbpos = aimpos + offset;
-        CBlob@ orb = server_CreateBlob("foresttune", this.getTeamNum(), orbpos);
-        if (orb !is null)
+        if (isClient())
         {
-            orb.set_u8("count", this.get_u8("launched_foresttune_projectiles"));
-            orb.Sync("count", true);
-            
-            orb.set_Vec2f("target_pos", orbpos - Vec2f(0, 32.0f + XORRandom(64)));
-            orb.SetDamageOwnerPlayer(this.getPlayer());
-            orb.server_SetTimeToDie(3.0f);
+            sprite.PlaySound("leaf-cast-"+(this.get_u8("launched_foresttune_projectiles") % 3), 0.175f, 1.4f + XORRandom(10) * 0.01f);
+        }
 
-            orb.set_f32("speed", this.hasTag("extra_damage") ? 7.5f : 6.0f);
-            orb.set_f32("damage", this.get_f32("foresttune_damage"));
+        if (isServer())
+        {
+            this.add_u8("launched_foresttune_projectiles", 1);
+            Vec2f aimdir = this.get_Vec2f("foresttune_aimdir");
+            Vec2f offset = Vec2f(width - XORRandom(width * 2), 32.0f);
 
-            orb.Sync("target_pos", true);
-            orb.Sync("speed", true);
+            f32 r = 48.0f;
+            Vec2f rand = Vec2f(XORRandom(r) - r/2, XORRandom(r/2) - r/8);
+            Vec2f orbpos = this.getPosition() + rand;
+            Vec2f dir = aimdir;
+
+            dir.Normalize();
+
+            CBlob@ orb = server_CreateBlob("foresttune", this.getTeamNum(), orbpos);
+            if (orb !is null)
+            {
+                orb.set_u8("count", this.get_u8("launched_foresttune_projectiles"));
+                orb.Sync("count", true);
+
+                orb.SetDamageOwnerPlayer(this.getPlayer());
+                orb.server_SetTimeToDie(this.get_u8("foresttune_duration"));
+
+                s32 max_side_threshold = 90;
+                orb.set_s32("side_threshold", dir.x < 0 ? -max_side_threshold : max_side_threshold);
+                orb.set_f32("speed", 6.0f);
+                orb.set_f32("damage", this.get_f32("foresttune_damage"));
+
+                orb.setVelocity(dir * orb.get_f32("speed"));
+            }
         }
     }
 

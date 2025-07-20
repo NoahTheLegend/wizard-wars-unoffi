@@ -76,6 +76,8 @@ void onTick(CBlob@ this){
                     damage = 0;
                 }
             }
+
+            //if (isClient() && XORRandom(4) == 0) this.getSprite().PlaySound("bee-sting.ogg", 0.5f, 0.65f + XORRandom(15) * 0.01f);
             this.server_Hit(target,this.getPosition(), Vec2f_zero,damage,41);
             this.Tag("mark_for_death");
         }

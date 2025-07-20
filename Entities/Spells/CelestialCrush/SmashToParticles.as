@@ -1,3 +1,8 @@
+void onInit(CBlob@ this)
+{
+    if (!this.exists("smashtoparticles_probability")) this.set_u16("smashtoparticles_probability", 1);
+}
+
 void onDie(CBlob@ this) //so its synced
 {
     if (this.hasTag("particles_done")) return;
@@ -18,7 +23,6 @@ void onTick(CBlob@ this)
 }
 
 const int[] cols = {0xff2cafde,0xff1d85ab,0xff1a4e83,0xff222760,0xffd5543f,0xffb73333,0xff941b1b,0xff3b1406,0xffd379e0,0xff9e3abb,0xff621a83,0xff2a0b47};
-
 SColor colorSwap(SColor oldcol, u8 t)
 {
     SColor newcol = oldcol.color;
@@ -110,7 +114,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
 			SColor px_col = image.readPixel();
             if (XORRandom(probability) != 0) continue;
             if (px_col.getAlpha() != 255) continue;
-            px_col = colorSwap(px_col, this.getTeamNum());
+            if (!this.hasTag("smashtoparticles_no_colorswap")) px_col = colorSwap(px_col, this.getTeamNum());
 
             if (fl) px_pos.x = w-px_pos.x;
 

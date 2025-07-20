@@ -235,9 +235,11 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case -6679777581: //foresttune
+		case 1320369652: //foresttune
 		{
-			if(this.hasScript("ForesttuneRain.as"))
+			u8 lifetime = 5;
+
+			if (this.hasScript("ForesttuneRain.as"))
 			{
 				ManaInfo@ manaInfo;
 				if (!this.get( "manaInfo", @manaInfo ))
@@ -246,6 +248,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				manaInfo.mana += spell.mana;
 				return;
 			}
+
 			switch(charge_state)
 			{
 				case minimum_cast:
@@ -255,6 +258,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					this.set_u8("foresttune_projectiles", 12);
 					this.set_u8("foresttune_delay", 3);
+					lifetime += 1;
 				}
 				break;
 				case super_cast:
@@ -263,6 +267,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 					this.set_u8("foresttune_delay", 2);
 					this.set_bool("static", false);
+
+					lifetime += 2;
 				}
 				break;
 			
@@ -273,11 +279,15 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				this.add_u8("foresttune_projectiles", 8);
 				this.sub_u8("foresttune_delay", 1);
+				lifetime += 2;
 			}
-			this.set_u32("foresttune_start", getGameTime());
-			this.set_Vec2f("foresttune_aimpos", aimpos);
-			this.set_f32("foresttune_damage", 0.2f);
 
+			this.set_u32("foresttune_start", getGameTime());
+			this.set_Vec2f("foresttune_aimdir", aimpos-this.getPosition());
+			this.set_f32("foresttune_damage", 0.4f);
+			this.set_u8("foresttune_duration", lifetime);
+
+			if (isClient()) this.getSprite().PlaySound("cleanse.ogg", 0.6f, 0.9f + XORRandom(15) * 0.01f);
 			if (!this.hasScript("ForesttuneRain.as"))
 			{
 				this.AddScript("ForesttuneRain.as");
@@ -792,6 +802,11 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1961711901://nature's helpers
 		{
+			if (isClient())
+			{
+				this.getSprite().PlaySound("bee-0"+(XORRandom(3)+1), 0.4f, 1.0f + XORRandom(10) * 0.01f);
+			}
+
 			f32 orbspeed = 5.0f;
 			f32 healAmount = 0.2f;
 			int numOrbs = 8;

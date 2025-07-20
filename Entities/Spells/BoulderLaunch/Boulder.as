@@ -8,7 +8,7 @@ const f32 hit_amount_air = 1.0f;
 const f32 hit_amount_air_fast = 3.0f;
 const f32 hit_amount_cata = 10.0f;
 
-void onInit(CBlob @ this)
+void onInit(CBlob@ this)
 {
 	this.set_u8("launch team", 255);
 	this.Tag("medium weight");
@@ -34,7 +34,6 @@ void onTick(CBlob@ this)
 	if (this.hasTag("reset elasticity"))
 	{
 		this.getShape().setElasticity(this.get_f32("elasticity"));
-		this.Untag("reset elasticity");
 	}
 	if (isServer() && this.getTickSinceCreated() > 60 && this.isOnGround())
 	{
@@ -168,8 +167,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (solid && blob is null && isServer())
 	{
 		this.Tag("reset elasticity");
+		this.getShape().setElasticity(this.get_f32("elasticity"));
 		if (this.getTickSinceCreated() > 45) this.server_Hit(this, this.getPosition(), Vec2f(0,8), 999.0f, Hitters::boulder, true);
 	}
+
 	if (solid && blob !is null)
 	{
 		Vec2f hitvel = this.getOldVelocity();
