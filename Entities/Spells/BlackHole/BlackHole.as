@@ -113,6 +113,9 @@ void onTick(CBlob@ this)
 			Vec2f forceVec = pullNorm*MAX_FORCE*mod;
 			Vec2f finalForce = forceVec*(1.0f-pullVec.Length()/rad);
 
+			f32 mass_factor = Maths::Clamp(attractedblob.getMass() / 80, 0.25f, 1.0f);
+			finalForce *= mass_factor;
+
 			if (!attractedblob.hasTag("cantmove"))
 				attractedblob.AddForce(finalForce);
 

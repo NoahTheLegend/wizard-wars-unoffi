@@ -1,5 +1,4 @@
 #include "Hitters.as";
-#include "ArcherCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -12,7 +11,6 @@ void onInit(CBlob@ this)
 
 	this.Tag("projectile");
 	this.Tag("counterable");
-	this.Tag("phase through spells");
 
 	shape.SetGravityScale(g);
 	this.set_f32("damage", 0.2f);

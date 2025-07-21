@@ -38,10 +38,10 @@ namespace WarlockParams
 		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows to summon beneath the position.",
 				SpellType::other, 16, 40, 3, 256.0f, true),	
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("warp_field", "Warp Field", 140, "Empty spell.",
+				SpellType::other, 1, 30, 0, 256.0f),
 
-		Spell("", "", 0, "Empty spell.",
+		Spell("", "", 0, "Teleport to a random location within a certain radius",
 				SpellType::other, 1, 1, 0, 0.0f),
 		
 		Spell("", "", 0, "Empty spell.",
