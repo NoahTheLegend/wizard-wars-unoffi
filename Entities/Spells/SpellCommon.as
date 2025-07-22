@@ -1615,11 +1615,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{ return; }
 
 			int teamNum = this.getTeamNum();
-
 			bool failedCast = false;
 
 			if (this.get_u16("slowed") > 0 
-			|| (this.exists("teleport_disable") && this.get_u32("teleport_disable") > getGameTime()))	//cannot teleport while slowed
+			|| (this.exists("teleport_disable") && this.get_u32("teleport_disable") > getGameTime())) //cannot teleport while slowed
 			{ failedCast = true; }
 
 			if (failedCast)
@@ -1692,7 +1691,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 				this.setVelocity( Vec2f_zero );
 				this.setPosition( aimpos );
-								
+			
+				this.set_u32("teleported_time", getGameTime());
 				this.getSprite().PlaySound("Teleport.ogg", 0.8f, 1.0f);
 			}
 		}
@@ -5860,10 +5860,17 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			if (isServer())
 			{
-				CBlob@ circle = server_CreateBlob('warp_field', 3, aimpos);
-				
-				circle.SetDamageOwnerPlayer(this.getPlayer());
-				circle.set_s32("aliveTime",charge_state == 5 ? 1800 : 1350);
+			CBlob@ circle = server_CreateBlob('warp_field', 3, aimpos);
+
+			circle.SetDamageOwnerPlayer(this.getPlayer());
+			f32 ttd = charge_state == 5 ? 40.0f : (this.hasTag("extra_damage") ? 45.0f : 30.0f);
+			circle.server_SetTimeToDie(ttd);
+
+			if (this.hasTag("extra_damage"))
+			{
+				circle.Tag("extra_damage");
+				circle.Sync("extra_damage", true);
+			}
 			}
 		}
 		break;

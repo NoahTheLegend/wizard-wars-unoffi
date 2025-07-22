@@ -1,5 +1,5 @@
 
-Vec2f getRandomFloorLocationOnMap(Vec2f from_pos)
+Vec2f getRandomFloorLocationOnMap(uint seed, Vec2f from_pos)
 {
     CMap@ map = getMap();
     if (map is null) return Vec2f_zero;
@@ -7,33 +7,39 @@ Vec2f getRandomFloorLocationOnMap(Vec2f from_pos)
     f32 x = map.tilemapwidth * map.tilesize - 32;
     f32 y = map.tilemapheight * map.tilesize - 16;
 
+    Random r(seed);
     Vec2f pos;
     for (int i = 0; i < 255; i++)
     {
-        pos = Vec2f(XORRandom(x) + 16, XORRandom(y) + 8);
-        if ((from_pos - pos).Length() < 32.0f)
+        pos = Vec2f(f32(r.NextRanged(x)) - 16.0f, f32(r.NextRanged(y)) - 8.0f);
+        if ((from_pos - pos).Length() < 128.0f)
+            continue;
+        
+        if (map.isTileSolid(map.getTile(pos)))
             continue;
         
         Vec2f floor = pos;
-        if (map.rayCastSolid(pos, pos + Vec2f(0, map.tilesize * 0.1f), floor))
+        if (map.rayCastSolid(pos, pos + Vec2f(0, map.tilesize * 0.5f), floor))
         {
-            return floor - Vec2f(0, 8);
+            return floor - Vec2f(0, 16.0f);
         }
     }
 
     return pos;
 }
 
-void createWarpPortal(Vec2f position)
+CBlob@ createWarpPortal(uint seed, Vec2f position, Vec2f at = getRandomFloorLocationOnMap(seed, position))
 {
     CMap@ map = getMap();
-    if (map is null) return;
+    if (map is null) return null;
 
-    CBlob@ portal = server_CreateBlob("warp_portal", -1, position);
+    CBlob@ portal = server_CreateBlob("p_warp_field", 3, at);
     if (portal !is null)
     {
-        portal.setPosition(position);
-        portal.setVelocity(Vec2f(0, 0));
-        portal.set_Vec2f("next_warp_portal_pos", getRandomFloorLocationOnMap(position));
+        int seed = at.x * at.y;
+        portal.setPosition(at);
+        portal.set_Vec2f("next_warp_portal_pos", getRandomFloorLocationOnMap(seed, at));
     }
+
+    return portal;
 }
