@@ -53,7 +53,11 @@ void DrawManaBar(CBlob@ this, Vec2f origin)
 	f32 halfManaSeg = manaPerSegment*(1.0f/2.0f);
 	f32 threeFourthsManaSeg = manaPerSegment*(3.0f/4.0f);
 
-	SColor col = SColor(255, 218, 88, 88);
+	f32 lifemod = 1.0f - Maths::Clamp(this.getHealth() / this.getInitialHealth(), 0.0f, 1.0f);
+	SColor col = SColor(255, 
+		245, 
+		Maths::Clamp(0 + 200 * Maths::Sin(getGameTime() * 0.1f * lifemod), 25, 50), 
+		Maths::Clamp(230 - 200 * Maths::Sin((getGameTime() + 30) * 0.1f * lifemod), 0, 230));
     if (this.get_u16("manaburn") > 0) col = SColor(255,155,155,155);
 	
 	int MANA = 0;
@@ -68,10 +72,12 @@ void DrawManaBar(CBlob@ this, Vec2f origin)
             else if (thisMANA <= halfManaSeg) { GUI::DrawIcon(manaFile, 3, Vec2f(16,16), manapos, 1, col); }
             else if (thisMANA <= threeFourthsManaSeg) { GUI::DrawIcon(manaFile, 2, Vec2f(16,16), manapos, 1, col); }
             else if (thisMANA > threeFourthsManaSeg) { GUI::DrawIcon(manaFile, 1, Vec2f(16,16), manapos, 1, col); }
-            else { GUI::DrawIcon(manaFile, 0, Vec2f(16,16), manapos, 1, col); }
+            else {GUI::DrawIcon(manaFile, 0, Vec2f(16,16), manapos, 1, col); }
         }
+		
         MANA++;
     }
+
     GUI::DrawIcon("GUI/jends.png", 1, Vec2f(8,16), origin+Vec2f(segmentWidth*MANA,0));
 	GUI::DrawText(""+currMana+"/"+maxMana, origin+Vec2f(-42,8), color_white );
 }

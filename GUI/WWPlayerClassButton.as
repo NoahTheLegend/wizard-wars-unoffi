@@ -545,7 +545,7 @@ void intitializeClasses()
 													"\nSpecialties: \n\n" + 
 													"\n   Health: 80" +
 													"     Life Mana: 50" +
-													"     Life mana restoration: 1 mana/1 dmg",
+													"     Mana restoration: 1 mana / 1 dmg",
 													"warlock", 10, 0, 11, 0, "WizardWars", specialties_warlock, STATS[9]);
 }
 

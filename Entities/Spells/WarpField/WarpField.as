@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
     this.set_u8("type", this.getName().substr(0, 1) == "p" ? 1 : 0); // 1 = portal, 0 = field
     this.server_SetTimeToDie(this.get_u8("type") == 0 ? lifetimeBase : lifetimePortal);
 
-    this.set_f32("scale", this.get_u8("type") == 0 ? 0.75f : 0.25f);
+    this.set_f32("scale", this.get_u8("type") == 0 ? 0.75f : 0.33f);
     f32 radius = effectRadiusBase * (this.get_f32("scale") / 2);
     this.set_s32("effectRadius", radius);
 
@@ -78,6 +78,7 @@ const u8 symbol_appearance_thresh = 3;
 
 void onTick(CBlob@ this)
 {
+    if (this.get_u8("despelled") >= 1) this.server_Die();
     u8 type = this.get_u8("type");
     
     if (this.getTickSinceCreated() == 0)
@@ -184,7 +185,7 @@ void onTick(CBlob@ this)
             bool tp_back = false;
             if (b.get_u32("last_warp" + this.getNetworkID()) < getGameTime()
                 && (!b.exists("global_warp_time") || b.get_u32("global_warp_time") < getGameTime())
-                && b.exists("teleported_time") && b.get_u32("teleported_time") >= getGameTime())
+                && b.exists("teleported_time") && b.get_u32("teleported_time") >= getGameTime()-1)
             {
                 if (isServer())
                 {
@@ -212,7 +213,7 @@ void onTick(CBlob@ this)
 
                         if (!isClient()) // ignore localhost
                         {
-                            CBitStream@ params;
+                            CBitStream params;
                             params.write_u16(b.getNetworkID());
                             params.write_Vec2f(portal.getPosition());
                             this.SendCommand(this.getCommandID("warp"), params);
@@ -258,7 +259,7 @@ void onTick(CBlob@ this)
                 b.setPosition(b_dir + dir * 4);
                 b.setVelocity(dir);
 
-                this.getSprite().PlaySound("NoAmmo.ogg", 1.0f, 1.5f + XORRandom(15) * 0.01f);
+                this.getSprite().PlaySound("NoAmmo.ogg", 0.5f, 1.5f + XORRandom(15) * 0.01f);
                 b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_retry);
                 b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
             }
@@ -270,24 +271,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
     if (cmd == this.getCommandID("warp"))
     {
-        if (isServer())
+        u16 blob_id;
+        Vec2f pos;
+
+        if (!params.saferead_u16(blob_id) || !params.saferead_Vec2f(pos))
+            return;
+
+        CBlob@ b = getBlobByNetworkID(blob_id);
+        if (b !is null)
         {
-            u16 blob_id;
-            Vec2f pos;
-
-            if (!params.saferead_u16(blob_id) || !params.saferead_Vec2f(pos))
-                return;
-
-            CBlob@ b = getBlobByNetworkID(blob_id);
-            if (b !is null)
-            {
-                b.setPosition(pos);
-                b.setVelocity(Vec2f(0, 0));
-                
-                b.set_u32("global_warp_time", getGameTime() + cd_warp);
-                b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_warp);
-                b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
-            }
+            b.setPosition(pos);
+            b.setVelocity(Vec2f(0, 0));
+            
+            b.set_u32("global_warp_time", getGameTime() + cd_warp);
+            b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_warp);
+            b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
         }
     }
 }

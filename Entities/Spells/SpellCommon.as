@@ -1663,7 +1663,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					}
 				}
 
-				if(isClient())
+				if (isClient())
 				{
 					Vec2f clientCastPos = this.getPosition();
 
@@ -1672,7 +1672,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					clientAimVector -= clientCastPos;
 					Vec2f clientAimNorm = clientAimVector;
 					clientAimNorm.Normalize();
-
 					clientAimVector -= clientAimNorm*4; //reduction in range of half a block
 
 					for (uint step = 0; step < clientAimVector.Length(); step += 8)
@@ -5856,21 +5855,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		break;
 
 		// WARLOCK
-		case -969070148: //bless circle
+		case -969070148: // warp field
 		{
 			if (isServer())
 			{
-			CBlob@ circle = server_CreateBlob('warp_field', 3, aimpos);
+				CBlob@ circle = server_CreateBlob('warp_field', 3, aimpos);
 
-			circle.SetDamageOwnerPlayer(this.getPlayer());
-			f32 ttd = charge_state == 5 ? 40.0f : (this.hasTag("extra_damage") ? 45.0f : 30.0f);
-			circle.server_SetTimeToDie(ttd);
+				circle.SetDamageOwnerPlayer(this.getPlayer());
+				f32 ttd = charge_state == 5 ? 40.0f : (this.hasTag("extra_damage") ? 45.0f : 30.0f);
+				circle.server_SetTimeToDie(ttd);
 
-			if (this.hasTag("extra_damage"))
-			{
-				circle.Tag("extra_damage");
-				circle.Sync("extra_damage", true);
-			}
+				if (this.hasTag("extra_damage"))
+				{
+					circle.Tag("extra_damage");
+					circle.Sync("extra_damage", true);
+				}
 			}
 		}
 		break;
