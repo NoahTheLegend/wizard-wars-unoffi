@@ -52,7 +52,7 @@ const string[] stats_labels =
 	"A", 							// top right
 	"S", 							// right
 	"H", 							// bottom right
-	"E", 							// bottom
+	"D", 							// bottom
 	"V", 							// bottom left
 	"A", 							// left
 	"M" 							// top left
@@ -65,7 +65,7 @@ const string[] stats_names =
 	"Area of Effect",
 	"Support",
 	"Healing",
-	"Endurability",
+	"Defense",
 	"Versatility",
 	"Agility",
 	"Mana"
@@ -74,10 +74,10 @@ const string[] stats_names =
 
 const u8[][] STATS =
 {
-  // C D A S H E V A M
+  // C D A S H D V A M
 	{2,2,2,1,0,1,0,1,0}, 				// wizard
 	{0,1,2,1,0,1,0,0,2}, 				// necromancer
-	{0,0,0,2,2,2,1,1,2}, 				// druid
+	{0,0,1,1,2,2,0,1,2}, 				// druid
 	{1,2,1,0,0,1,0,2,1}, 				// swordcaster
 	{2,2,1,0,0,2,1,2,0}, 				// entropist
 	{1,1,2,2,2,1,0,0,1}, 				// priest
@@ -579,7 +579,7 @@ void statHover(bool hover, IGUIItem@ item)
 			tooltip = text + (textIndex == 0 ? ": " + diff_levels[level] : "");
 		}
 	}
-	else if (text == tooltip) 
+	else
 	{
 		tooltip = "";
 	}
@@ -788,7 +788,7 @@ void RenderClassMenus()
 			if (s.attributes.size() > 0)
 			{
 				// draw attributes
-				Vec2f start_pos = s.spellButtons[s.spellButtons.size() - 1].position + Vec2f(8, 132);
+				Vec2f start_pos = s.spellButtons[s.spellButtons.size() - 1].position + Vec2f(8, 131);
 				Vec2f attributesPos = start_pos;
 
 				for (u8 i = 0; i < s.attributes.size(); i++)

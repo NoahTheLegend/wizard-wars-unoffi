@@ -158,7 +158,86 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 				
 				manaInfo.mana += spell.mana;
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			}
+		}
+		break;
+
+		case -162326189: // moss veil
+		{
+			if (!isServer())
+				return;
+
+			u8 delay = 10;
+			u8 power = 25 + XORRandom(6);
+			u8 increment = 5;
+
+			switch (charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+
+				case super_cast:
+				{
+					power = 35+XORRandom(6);
+					increment = 3;
+				}
+			}
+
+			Vec2f tilespace(int(aimpos.x / 8), int(aimpos.y / 8));
+			Vec2f worldspace = tilespace * 8 + Vec2f(4, 4);
+			Vec2f spawnpos = Vec2f_zero;
+			
+			CMap@ map = getMap(); // standard map check (very bad actually, todo: rewrite to raycasts)
+			if (map is null)
+			{return;}
+
+			for (int i = 0; i < 50; i++)
+			{
+				if (!map.isTileSolid(worldspace + Vec2f(0, i * 8)) && map.isTileSolid(worldspace + Vec2f(0, i * 8 + 8)))
+				{
+					spawnpos = worldspace + Vec2f(0, i * 8);
+					spawnpos = Vec2f(Maths::Floor(spawnpos.x / 8) * 8 + 4, Maths::Floor(spawnpos.y / 8) * 8 + 4);
+					break;
+				}	
+			}
+
+			CBlob@[] blobs;
+			map.getBlobsInRadius(spawnpos, 3.5f, @blobs);
+
+			for (int i = 0; i < blobs.length; i++)
+			{
+				CBlob@ blob = blobs[i];
+				if (blob is null || !blob.hasTag("moss"))
+					continue;
+
+				if (blob.getName() == "moss")
+				    spawnpos = Vec2f_zero; // don't spawn if there's already a moss blob in the area
+			}
+
+			if (spawnpos != Vec2f_zero)
+			{
+				CBlob@ newblob = server_CreateBlob("moss", this.getTeamNum(), spawnpos);
+				if (newblob !is null)
+				{
+					newblob.SetDamageOwnerPlayer(this.getPlayer());
+					newblob.set_u16("grow_delay", delay);
+					newblob.set_u8("grow_power", power);
+					newblob.set_u8("grow_delay_increment", increment);
+
+					newblob.Tag("first");
+				}
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
 				
+				manaInfo.mana += spell.mana;
 				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 			}
 		}
@@ -3128,29 +3207,25 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			if (!isServer())
 				return;
+				
 			bool isleft = this.isFacingLeft();
 			Vec2f tilespace(int(aimpos.x / 8), int(aimpos.y / 8));
 			Vec2f worldspace = tilespace * 8 + Vec2f(4, 4);
 			Vec2f spawnpos = Vec2f_zero;
 			
 			CMap@ map = getMap(); //standard map check
-			if(map is null)
+			if (map is null)
 			{return;}
 
-			for(int i = 0; i < 50; i++)
+			for (int i = 0; i < 50; i++)
 			{
 				if(!map.isTileSolid(worldspace + Vec2f(0, i * 8)) && map.isTileSolid(worldspace + Vec2f(0, i * 8 + 8)))
 				{
 					spawnpos = worldspace + Vec2f(0, i * 8);
 					break;
 				}	
-				/*else if(!map.isTileSolid(worldspace + Vec2f(0, i * -8)) && map.isTileSolid(worldspace + Vec2f(0, i * -8 + 8)))
-				{
-					spawnpos = worldspace + Vec2f(0, i * -8);
-					break;
-				}*/
 			}
-			if(spawnpos != Vec2f_zero)
+			if( spawnpos != Vec2f_zero)
 			{
 				if(map.getBlobAtPosition(spawnpos) is null || !(map.getBlobAtPosition(spawnpos).getName() == "stone_spike"))
 				{
@@ -3162,6 +3237,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						newblob.set_bool("leftdir", isleft);
 					}
 				}
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				if(!this.get_bool("burnState"))
+				{
+					manaInfo.mana += spell.mana;
+				}
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 			}
 		}
 		break;

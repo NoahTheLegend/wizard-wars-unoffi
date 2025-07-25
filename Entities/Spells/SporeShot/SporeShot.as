@@ -142,7 +142,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		causeSparks = true;
 	}
 
-	if( blob !is null && isEnemy(this, blob) )
+	if (blob !is null && isEnemy(this, blob))
 	{
 		causeSparks = true;
 		if (this.getTickSinceCreated() > min_detonation_time)	

@@ -25,10 +25,26 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 
 	f32 vely = this.getOldVelocity().y;
-
 	if (vely < 0 || Maths::Abs(normal.x) > Maths::Abs(normal.y) * 2) { return; }
 
-	f32 damage = FallDamageAmount(vely);
+	CBlob@[] bs;
+	getMap().getBlobsInRadius(point1, 8.0f, @bs);
+
+	f32 damage_reduction = 1.0f;
+	for (uint i = 0; i < bs.length; i++)
+	{
+		CBlob@ b = bs[i];
+		if (b is this) continue;
+
+		if (b.hasTag("fall damage reduction"))
+		{
+			damage_reduction = 0.25f;
+			break;
+		}
+	}
+
+
+	f32 damage = FallDamageAmount(vely) * damage_reduction;
 	if (damage != 0.0f) //interesting value
 	{
 		bool doknockdown = true;
