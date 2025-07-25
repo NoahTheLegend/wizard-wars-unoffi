@@ -86,7 +86,7 @@ void onTick(CBlob@ this)
             CPlayer@ p = getPlayer(i);
             if (p !is null)
             {
-                switch(p.getTeamNum())
+                switch (p.getTeamNum())
                 {
                     case 0:
                     {

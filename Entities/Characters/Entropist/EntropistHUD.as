@@ -29,7 +29,7 @@ void ManageCursors( CBlob@ this )
 		//getHUD().SetCursorImage("EntropistCursor.png", Vec2f(32,32));
 		getHUD().SetCursorImage("MagicCursor.png", Vec2f(32,32));
 		getHUD().SetCursorOffset( Vec2f(-32, -32) );
-		// frame set in logic
+		// frame is set in logic
 	}
 }
 

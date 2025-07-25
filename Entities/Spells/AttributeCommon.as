@@ -25,7 +25,8 @@ shared string[] SPELL_TOOLTIPS()
         "Affects the caster, might require overcharge",
         "Affects allies",
         "Affects enemy movement or spell casting",
-        "Cast near ground"
+        "Cast near ground",
+        "Consumes health instead of mana"
     };
 
     return arr;
@@ -77,6 +78,7 @@ shared enum SpellAttribute
     SPELL_ALLYEFFECT =          19,
     SPELL_CONTROL =             20,
     SPELL_GROUNDED =            21,
+    SPELL_HEALTHCOST =          22,
     TOTAL
 }
 
@@ -84,7 +86,7 @@ shared class Attribute : Status
 {
     Attribute(u8 _type, Vec2f _dim, string _icon, int _duration, f32 _scale = 1.0f)
     {
-        super(_type, _dim, _icon, _duration, _scale);
+        super(_type, _dim, _icon, _duration, _scale, true);
         string[] tooltips = SPELL_TOOLTIPS();
         @tooltip = @Tooltip(_type, tooltips[_type], Vec2f_zero, dim * scale);
         tooltip.tooltip_col = SColor(255, 255, 255, 255);

@@ -482,8 +482,9 @@ void onTick(CBlob@ this)
 					#endif
 					pos -= Vec2f(6,0);
 				}
+				
 				CParticle@ p = ParticleAnimated(afterimageFile, pos, Vec2f_zero, 0, 1.0f, 5, 0.0f, false);
-				if ( p !is null)
+				if (p !is null)
 				{
 					p.bounce = 0;
 					p.Z = -10.0f;

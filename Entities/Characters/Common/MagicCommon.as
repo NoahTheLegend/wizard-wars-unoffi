@@ -10,7 +10,9 @@ namespace SpellType
 	enum type
 	{
 		summoning,
-		other
+		other,
+		healthcost,
+		total
 	};
 }
 
@@ -22,7 +24,7 @@ shared class Spell
 	u16 iconFrame;
 	string spellDesc;
 	u8 type;
-	s32 mana;
+	f32 mana;
 
 	s32 fullChargeTime;
 	s32 readyTime;
@@ -43,7 +45,7 @@ shared class Spell
 	Attribute@[] attributes;
 
 	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_type,
-		s32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range,
+		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range,
 		bool fully_loaded = false, bool is_grounded = false, int[] _effect_types = -1)
 	{
 		typeName = i_typeName;

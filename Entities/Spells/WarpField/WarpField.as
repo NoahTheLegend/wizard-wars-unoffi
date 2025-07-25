@@ -92,7 +92,7 @@ void onTick(CBlob@ this)
             CBlob@ first_portal = createWarpPortal(seed, this.getPosition(), this.get_Vec2f("next_warp_portal_pos"));
             if (first_portal !is null)
             {
-                int c = 2;
+                int c = 6;
                 first_portal.Tag("prespawned");
                 first_portal.server_SetTimeToDie(lifetimeBase);
 
@@ -105,7 +105,7 @@ void onTick(CBlob@ this)
                     if (portal is null) continue;
 
                     portal.Tag("prespawned");
-                    portal.server_SetTimeToDie(lifetimeBase);
+                    portal.server_SetTimeToDie(this.getTimeToDie());
                     
                     first_portal.set_u16("next_warp_portal_chain", portal.getNetworkID());
                     portal.set_u16("last_warp_portal_chain", first_portal.getNetworkID());
@@ -115,7 +115,7 @@ void onTick(CBlob@ this)
                     if (new_portal !is null)
                     {
                         new_portal.Tag("prespawned");
-                        new_portal.server_SetTimeToDie(lifetimeBase);
+                        new_portal.server_SetTimeToDie(this.getTimeToDie());
 
                         portal.set_u16("next_warp_portal_chain", new_portal.getNetworkID());
                         new_portal.set_u16("last_warp_portal_chain", portal.getNetworkID());
@@ -246,6 +246,7 @@ void onTick(CBlob@ this)
                     {
                         // moved inside
                         b.setPosition(warp_pos);
+                        b.getSprite().PlaySound("warp_through.ogg", 0.8f, 0.65f+XORRandom(11) * 0.01f);
 
                         b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_warp);
                         b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
@@ -259,7 +260,6 @@ void onTick(CBlob@ this)
                 b.setPosition(b_dir + dir * 4);
                 b.setVelocity(dir);
 
-                this.getSprite().PlaySound("NoAmmo.ogg", 0.5f, 1.5f + XORRandom(15) * 0.01f);
                 b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_retry);
                 b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
             }
@@ -286,6 +286,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
             b.set_u32("global_warp_time", getGameTime() + cd_warp);
             b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_warp);
             b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
+
+            ParticleAnimated("Flash3.png",
+							  pos,
+							  Vec2f(0,0),
+							  360.0f * XORRandom(100) * 0.01f,
+							  1.0f, 
+							  3, 
+							  0.0f, true);
+
+            b.getSprite().PlaySound("warp_teleport.ogg", 1.0f, 1.0f+XORRandom(10) * 0.01f);
         }
     }
 }
@@ -297,9 +307,10 @@ void onInit(CSprite@ this)
 
     f32 scale = b.get_f32("scale");
     int effectRadius = b.get_s32("effectRadius");
+    u8 type = b.get_u8("type");
 
     this.ScaleBy(Vec2f(scale, scale));
-    this.PlaySound("circle_create.ogg", 5, 1.33f);
+    this.PlaySound("warp_open.ogg", type == 0 ? 0.66f : 0.45f, type == 0 ? 1.0f : 1.15f + XORRandom(10) * 0.01f);
     this.setRenderStyle(RenderStyle::additive);
 
     CSpriteLayer@ layer = this.addSpriteLayer("inner", "WarpFieldInner.png", 128, 128);
@@ -317,9 +328,7 @@ void onInit(CSprite@ this)
         }
     }
 
-    u8 type = b.get_u8("type");
     if (type == 1) return;
-
     for (int i = 0; i < max_symbols; i++)
     {
         CSpriteLayer@ layer = this.addSpriteLayer("warpsymbol_"+i, "WarpSymbols.png", 8, 8);
@@ -518,7 +527,9 @@ void onTick(CSprite@ this)
 
 void onDie(CBlob@ this)
 {
-    this.getSprite().PlaySound("circle_create.ogg",10,1.25f);
+    u8 type = this.get_u8("type");
+    this.getSprite().PlaySound(type == 0 ? "warp_end.ogg" : "warp_end_small.ogg", 1.0f, 1.0f + XORRandom(10) * 0.01f);
+
     f32 scale = this.get_f32("scale") * 2;
     Vec2f pos = this.getPosition();
 

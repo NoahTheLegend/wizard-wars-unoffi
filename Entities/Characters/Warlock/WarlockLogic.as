@@ -19,6 +19,7 @@ void onInit( CBlob@ this )
 	
 	ManaInfo manaInfo;
 	manaInfo.maxMana = WarlockParams::MAX_MANA;
+	manaInfo.mana = manaInfo.maxMana;
 	manaInfo.manaRegen = WarlockParams::MANA_REGEN;
 	this.set("manaInfo", @manaInfo);
 
@@ -30,6 +31,9 @@ void onInit( CBlob@ this )
 	this.set_bool("casting", false);
 	this.set_bool("was_casting", false);
 	//this.set_bool("shiftlaunch", false);
+
+	Vec2f[] positions;
+	this.set("old_positions", @positions);
 	
 	this.Tag("player");
 	this.Tag("flesh");
@@ -47,6 +51,7 @@ void onInit( CBlob@ this )
 	this.getShape().SetRotationsAllowed(false);
     this.addCommandID("freeze");
     this.addCommandID("spell");
+	this.addCommandID("chronomantic_teleport");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 	
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_up | CBlob::map_collide_nodeath);
@@ -197,7 +202,9 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			}
 		}
 	*/
-	bool canCastSpell = wizMana >= spell.mana && playerPrefsInfo.spell_cooldowns[spellID] <= 0;
+	f32 wizHealth = this.getHealth();
+	bool enough_health = spell.type == SpellType::healthcost ? wizHealth >= spell.mana * 0.1f : wizHealth >= spell.mana * WarlockParams::HEALTH_COST_PER_1_MANA * 0.5f;
+	bool canCastSpell = (wizMana >= spell.mana || enough_health) && playerPrefsInfo.spell_cooldowns[spellID] <= 0;
     if (is_pressed && canCastSpell) 
     {
         moveVars.walkFactor *= 0.8f;
@@ -269,7 +276,8 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			else if (warlock.charge_time > 0) {
 				frame = warlock.charge_time * 12 /spell.cast_period; 
 			}
-			getHUD().SetCursorFrame( frame );
+
+			getHUD().SetCursorFrame(frame);
 		}
 
         if (this.isKeyJustPressed(key_action3))
@@ -354,9 +362,23 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 		this.set_bool("spell selected", true);
 }
 
-void onTick( CBlob@ this )
+void onTick(CBlob@ this)
 {
-	if(getNet().isServer())
+	if (this.getTickSinceCreated() % old_positions_save_threshold == 0)
+	{
+		Vec2f[]@ positions;
+		if (this.get("old_positions", @positions))
+		{
+			if (positions.size() > positions_save_time_in_seconds * Maths::Round(f32(getTicksASecond()) / f32(old_positions_save_threshold)))
+			{
+				positions.erase(positions.size() - 1);
+			}
+
+			positions.insertAt(0, this.getPosition());
+		}
+	}
+
+	if (getNet().isServer())
 	{
 		if(getGameTime() % 5 == 0)
 		{
@@ -433,14 +455,39 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         Spell spell = WarlockParams::spells[spellID];
         Vec2f aimpos = params.read_Vec2f();
 		Vec2f thispos = params.read_Vec2f();
-        CastSpell(this, charge_state, spell, aimpos, thispos);
+
+		f32 wizHealth = this.getHealth();
+		f32 wizMana = manaInfo.mana;
+		bool enough_health = spell.type == SpellType::healthcost ? wizHealth >= spell.mana * 0.1f : wizHealth >= spell.mana * WarlockParams::HEALTH_COST_PER_1_MANA * 0.5f;
 		
-		manaInfo.mana -= spell.mana;
-    }
+		if (wizMana >= spell.mana && spell.type != SpellType::healthcost)
+		{
+			manaInfo.mana -= spell.mana;
+			CastSpell(this, charge_state, spell, aimpos, thispos);
+		}
+		else if (enough_health && spell.type != SpellType::healthcost)
+		{
+			f32 missingMana = spell.mana - wizMana;
+
+			manaInfo.mana = 0;
+			f32 healthCost = healthCost = missingMana * WarlockParams::HEALTH_COST_PER_1_MANA;
+
+			this.server_Hit(this, this.getPosition(), Vec2f_zero, healthCost, Hitters::fall, true);
+			CastSpell(this, charge_state, spell, aimpos, thispos);
+		}
+		else if (enough_health)
+		{
+			f32 healthCost = spell.mana * 0.2f;
+			
+			this.server_Hit(this, this.getPosition(), Vec2f_zero, healthCost, Hitters::fall, true);
+			CastSpell(this, charge_state, spell, aimpos, thispos);
+		}
+	}
 	else if (cmd == this.getCommandID("freeze"))
 	{
 		u16 blobid;
 		f32 power;
+		
 		if (!params.saferead_u16(blobid)) return;
 		if (!params.saferead_f32(power)) return;
 
@@ -448,6 +495,106 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		if (b is null) return;
 
 		Freeze(b, 2.0f*power);
+	}
+	else if (cmd == this.getCommandID("chronomantic_teleport"))
+	{
+		u8 spellType;
+		if (!params.saferead_u8(spellType)) return;
+
+		f32 cost;
+		if (!params.saferead_f32(cost)) return;
+
+		Vec2f pos;
+		if (!params.saferead_Vec2f(pos)) return;
+
+		s32 charge_state;
+		if (!params.saferead_s32(charge_state)) return;
+
+		bool extra_damage;
+		if (!params.saferead_bool(extra_damage)) return;
+
+		bool return_mana = false;
+		if (charge_state <= 4)
+		{
+			int seed = pos.x * pos.y;
+			Vec2f at = getRandomFloorLocationOnMap(seed, pos);
+
+			if (at == Vec2f_zero)
+			{
+				return_mana = true;
+			}
+
+			this.setPosition(at);
+			this.setVelocity(Vec2f_zero);
+
+			if (isClient())
+			{
+				this.getSprite().PlaySound("warp_teleport.ogg", 0.5f, 1.5f+XORRandom(21)*0.01f);
+			}
+
+			ParticleAnimated("Flash3.png",
+							  at,
+							  Vec2f(0,0),
+							  360.0f * XORRandom(100) * 0.01f,
+							  1.0f, 
+							  3, 
+							  0.0f, true);
+		}
+		else
+		{
+			u8 seconds_warp = Maths::Min(5, positions_save_time_in_seconds);
+			if (extra_damage) seconds_warp = Maths::Min(10, positions_save_time_in_seconds);
+
+			Vec2f[]@ positions;
+			if (!this.get("old_positions", @positions))
+			{
+				return_mana = true;
+			}
+			else
+			{
+				int index = Maths::Min(positions.length-1, seconds_warp * Maths::Round(f32(getTicksASecond()) / f32(old_positions_save_threshold)));
+				if (index < 0 || index >= positions.length)
+				{
+					return_mana = true;
+				}
+				else
+				{
+					Vec2f at = positions[index];
+					Vec2f prev = positions[index == positions.size() - 1 ? index : index + 1];
+					Vec2f vel = prev == Vec2f_zero ? Vec2f_zero : (at-prev).Length() < 32 ? at - prev : Vec2f_zero;
+	
+					this.setPosition(at);
+					this.setVelocity(vel);
+
+					if (isClient())
+					{
+						this.getSprite().PlaySound("warp_teleport.ogg", 0.5f, 1.5f+XORRandom(21) * 0.01f);
+					}
+
+					ParticleAnimated("Flash3.png",
+									  at,
+									  Vec2f(0,0),
+									  360.0f * XORRandom(100) * 0.01f,
+									  1.0f, 
+									  3, 
+									  0.0f, true);
+				}
+			}
+		}
+
+		if (return_mana)
+		{
+			ManaInfo@ manaInfo;
+			if (!this.get( "manaInfo", @manaInfo )) 
+			{
+				return;
+			}
+
+			if (spellType == SpellType::healthcost) Heal(this, this, cost);
+			else manaInfo.mana += cost;
+
+			return;
+		}
 	}
 }
 

@@ -74,6 +74,7 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
 	Button@ barNumBtn;
 	Button@ startCloseBtn;
     Button@ toggleSpellWheelBtn;
+	Button@ toggleSpellHealthConsumeScreenFlash;
 	Button@ toggleHoverMessagesBtn;
 	Button@ oneDimensionalSpellbar;
 	ScrollBar@ resetSpell;
@@ -108,6 +109,7 @@ bool isGUINull()
 		|| barNumBtn is null
 		|| startCloseBtn is null
         || toggleSpellWheelBtn is null
+		|| toggleSpellHealthConsumeScreenFlash is null
 		|| toggleHoverMessagesBtn is null
 		|| oneDimensionalSpellbar is null
 		|| resetSpellText is null
@@ -229,6 +231,21 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
             getRules().set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
         }
     }
+	if (sender is toggleSpellHealthConsumeScreenFlash)
+	{
+		toggleSpellHealthConsumeScreenFlash.toggled = !toggleSpellHealthConsumeScreenFlash.toggled;
+		toggleSpellHealthConsumeScreenFlash.desc = (toggleSpellHealthConsumeScreenFlash.toggled) ? "HP consume red flash - ON" : "HP consume red flash - OFF";
+		toggleSpellHealthConsumeScreenFlash.saveBool("Spell health consume screen flash", toggleSpellHealthConsumeScreenFlash.toggled,"WizardWars");
+		
+		if (toggleSpellHealthConsumeScreenFlash.toggled)
+		{
+			getRules().set_bool("spell_health_consume_screen_flash", true);
+		}
+		else
+		{
+			getRules().set_bool("spell_health_consume_screen_flash", false);
+		}
+	}
 	if (sender is toggleHoverMessagesBtn)
     {
         toggleHoverMessagesBtn.toggled = !toggleHoverMessagesBtn.toggled;
@@ -336,6 +353,9 @@ void onTick( CRules@ this )
         @toggleSpellWheelBtn = @Button(Vec2f(10,90),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleSpellWheelBtn.addClickListener(ButtonClickHandler);
 
+		@toggleSpellHealthConsumeScreenFlash = @Button(Vec2f(10,375),Vec2f(200,30),"",SColor(255,255,255,255));
+		toggleSpellHealthConsumeScreenFlash.addClickListener(ButtonClickHandler);
+
 		@toggleHoverMessagesBtn = @Button(Vec2f(10,240),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleHoverMessagesBtn.addClickListener(ButtonClickHandler);
 		
@@ -386,6 +406,7 @@ void onTick( CRules@ this )
         helpWindow.addChild(togglemenuBtn);
 		optionsFrame.addChild(barNumBtn);
         optionsFrame.addChild(toggleSpellWheelBtn);
+		optionsFrame.addChild(toggleSpellHealthConsumeScreenFlash);
 		optionsFrame.addChild(toggleHoverMessagesBtn);
 		optionsFrame.addChild(oneDimensionalSpellbar);
         optionsFrame.addChild(toggleHotkeyEmotesBtn);
@@ -409,7 +430,11 @@ void onTick( CRules@ this )
         if (menu != null){
             this.set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
         }
-		
+
+		toggleSpellHealthConsumeScreenFlash.toggled = toggleSpellHealthConsumeScreenFlash.getBool("Spell health consume screen flash","WizardWars");
+		toggleSpellHealthConsumeScreenFlash.desc = (toggleSpellHealthConsumeScreenFlash.toggled) ? "HP consume red flash - ON" : "HP consume red flash - OFF";
+		this.set_bool("spell_health_consume_screen_flash", toggleSpellHealthConsumeScreenFlash.toggled);
+
 		toggleHoverMessagesBtn.toggled = toggleHoverMessagesBtn.getBool("Hover Messages Active","WizardWars");
 		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
         this.set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);

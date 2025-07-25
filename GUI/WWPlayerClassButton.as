@@ -3,6 +3,16 @@
 #include "PlatinumCommon.as";
 #include "StatusCommon.as";
 #include "AttributeCommon.as";
+#include "WizardCommon.as";
+#include "NecromancerCommon.as";
+#include "DruidCommon.as";
+#include "SwordCasterCommon.as";
+#include "EntropistCommon.as";
+#include "PriestCommon.as";
+#include "ShamanCommon.as";
+#include "PaladinCommon.as";
+#include "JesterCommon.as";
+#include "WarlockCommon.as";
 //#include "UnlocksCommon.as";
 
 string classesVersion = "1";
@@ -482,70 +492,70 @@ void intitializeClasses()
 	playerClassButtons.registerWWPlayerClassButton("Wizard", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 75" +
-													"     Mana: 150" +
-													"     Mana rate: 3 mana/sec", 
+													"     Mana: " + WizardParams::MAX_MANA +
+													"     Mana rate: " + WizardParams::MANA_REGEN + " mana/sec", 
 													"wizard", 0, 0, 2, 5, "WizardWars", specialties_wizard, STATS[0]);
 	
 	playerClassButtons.registerWWPlayerClassButton("Necromancer", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 100" +
-													"     Mana: 100" +
-													"     Mana rate: 4 mana/sec", 
+													"     Mana: " + NecromancerParams::MAX_MANA +
+													"     Mana rate: " + NecromancerParams::MANA_REGEN + " mana/sec", 
 													"necromancer", 1, 0, 3, 5, "WizardWars", specialties_necromancer, STATS[1]);
 
 	playerClassButtons.registerWWPlayerClassButton("Druid", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 70" +
-													"     Mana: 150" +
-													"     Mana rate: 4 mana/sec",
+													"     Mana: " + DruidParams::MAX_MANA +
+													"     Mana rate: " + DruidParams::MANA_REGEN + " mana/sec",
 													"druid", 3, 20, 4, 0, "WizardWars", specialties_druid, STATS[2]);
 													
 	playerClassButtons.registerWWPlayerClassButton("Swordcaster", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 90" +
-													"     Mana: 100" +
-													"     Mana rate: 3 mana/sec",
+													"     Mana: " + SwordCasterParams::MAX_MANA +
+													"     Mana rate: " + SwordCasterParams::MANA_REGEN + " mana/sec",
 													"swordcaster", 4, 0, 5, 0, "WizardWars", specialties_swordcaster, STATS[3]);
 	playerClassButtons.registerWWPlayerClassButton("Entropist", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 75" +
-													"     Mana: 200" +
-													"     Mana rate: 2 mana/sec",
+													"     Mana: " + EntropistParams::MAX_MANA +
+													"     Mana rate: " + EntropistParams::MANA_REGEN + " mana/sec",
 													"entropist", 5, 0, 6, 0, "WizardWars", specialties_entropist, STATS[4]);
 
 	playerClassButtons.registerWWPlayerClassButton("Priest", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 80" +
-													"     Mana: 150" +
-													"     Mana rate: 4 mana/sec",
+													"     Mana: " + PriestParams::MAX_MANA +
+													"     Mana rate: " + PriestParams::MANA_REGEN + " mana/sec",
 													"priest", 6, 0, 7, 0, "WizardWars", specialties_priest, STATS[5]);
 
 	playerClassButtons.registerWWPlayerClassButton("Shaman", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 80" +
-													"     Mana: 125" +
-													"     Mana rate: 4 mana/sec",
+													"     Mana: " + ShamanParams::MAX_MANA +
+													"     Mana rate: " + ShamanParams::MANA_REGEN + " mana/sec",
 													"shaman", 7, 0, 8, 0, "WizardWars", specialties_shaman, STATS[6]);
 
 	playerClassButtons.registerWWPlayerClassButton("Paladin", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 100" +
-													"     Mana: 250" +
-													"     Mana rate: 3 mana/sec",
+													"     Mana: " + PaladinParams::MAX_MANA +
+													"     Mana rate: " + PaladinParams::MANA_REGEN + " mana/sec",
 													"paladin", 8, 0, 9, 0, "WizardWars", specialties_paladin, STATS[7]);
 
 	playerClassButtons.registerWWPlayerClassButton("Jester", 
 													"\nSpecialties: \n\n" + 
 													"\n     Health: 80" +
-													"     Mana: 150" +
-													"     Mana rate: 3 mana/sec",
+													"     Mana: " + JesterParams::MAX_MANA +
+													"     Mana rate: " + JesterParams::MANA_REGEN + " mana/sec",
 													"jester", 9, 0, 10, 0, "WizardWars", specialties_jester, STATS[8]);
 	
 	playerClassButtons.registerWWPlayerClassButton("Warlock", 
 													"\nSpecialties: \n\n" + 
 													"\n   Health: 80" +
-													"     Life Mana: 50" +
-													"     Mana restoration: 1 mana / 1 dmg",
+													"     Life Mana: " + WarlockParams::MAX_MANA +
+													"     Mana restoration: " + WarlockParams::MANA_PER_1_DAMAGE + " mana / 1 dmg",
 													"warlock", 10, 0, 11, 0, "WizardWars", specialties_warlock, STATS[9]);
 }
 
@@ -724,7 +734,7 @@ void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button cli
 
 				playerClassButtons.list[c].spellDescText.setText(playerClassButtons.list[c].spellDescText.textWrap("-- " + sSpell.name + " --" + 
 																													"\n     " + sSpell.spellDesc + 
-																													"\n  Mana cost: " + sSpell.mana));
+																													"\n " + (sSpell.type == SpellType::healthcost ? "Health cost: " : "Mana cost: ") + sSpell.mana));
 				playerClassButtons.list[c].attributes = sSpell.attributes;
 			}
 			else
@@ -778,7 +788,7 @@ void RenderClassMenus()
 			if (s.attributes.size() > 0)
 			{
 				// draw attributes
-				Vec2f start_pos = s.spellButtons[s.spellButtons.size() - 1].position + Vec2f(8, 102);
+				Vec2f start_pos = s.spellButtons[s.spellButtons.size() - 1].position + Vec2f(8, 132);
 				Vec2f attributesPos = start_pos;
 
 				for (u8 i = 0; i < s.attributes.size(); i++)

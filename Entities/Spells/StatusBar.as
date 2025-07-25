@@ -11,6 +11,18 @@ void onInit(CSprite@ this)
     if (blob is null)
         return;
 
+    u8 dr = 0;
+    if (blob.getName() == "necromancer") dr = 1;
+    if (blob.getName() == "druid") dr = 2;
+    if (blob.getName() == "swordcaster") dr = 3;
+    if (blob.getName() == "entropist") dr = 4;
+    if (blob.getName() == "priest") dr = 5;
+    if (blob.getName() == "shaman") dr = 6;
+    if (blob.getName() == "paladin") dr = 7;
+    if (blob.getName() == "jester") dr = 8;
+    if (blob.getName() == "warlock") dr = 9;
+    blob.set_u8("disabled_row", dr);
+
     // init empty to avoid jank memory values
     blob.set_s16("burn timer", 0);
     blob.set_u16("wet timer", 0);
@@ -157,6 +169,46 @@ void onRender(CSprite@ this)
     bar.render();
 }
 
+enum SPELL_INDEX
+{
+    BURN,
+    WET,
+    FREEZE,
+    POISON,
+    DAMAGE_BOOST,
+    FOCUS,
+    HASTE,
+    SLOW,
+    AIRBLAST_SHIELD,
+    FIREPROOF_SHIELD,
+    HEAL,
+    MANABURN,
+    ENTROPIST_SIDEWIND,
+    ENTROPIST_BURN_STATE,
+    PALADIN_TAU,
+    PALADIN_SIGMA,
+    PALADIN_OMEGA,
+    PALADIN_BARRIERS,
+    HUMILITY,
+    MAJESTY,
+    WISDOM,
+    CONFUSED
+};
+
+u8[][] disabled_for_classes =
+        {
+            {}, // wizard
+            {}, // necromancer
+            {}, // druid
+            {}, // swordcaster
+            {}, // entropist
+            {}, // priest
+            {}, // shaman
+            {}, // paladin
+            {}, // jester
+            {5} // warlock
+        };
+
 class StatusBar
 {
     Vec2f pos; // center
@@ -240,14 +292,16 @@ class StatusBar
         ManaInfo@ manaInfo;
         if (!blob.get("manaInfo", @manaInfo))
             return;
-    
+
+        u8 disabled_row = blob.get_u8("disabled_row");
+
         // clear effects / debuffs from despell hook, this hook is supposed to ensure first doesnt break and to update the duration
         s16 burn_timer = blob.get_s16("burn timer");
         u16 wet_timer = blob.get_u16("wet timer");
         u16 freeze_timer = 0; AttachmentPoint@ ap = blob.isAttached() ? blob.getAttachments().getAttachmentPoint("PICKUP2") : null; if (blob.isAttached() && ap !is null && ap.getOccupied() !is null) freeze_timer = ap.getOccupied().getTimeToDie() * 30;
         u16 poison_timer = blob.get_u16("poisoned");
         u16 damage_boost_timer = 0; u32 timer = blob.hasTag("extra_damage") ? blob.get_u32("damage_boost") : 0; if (blob.hasTag("extra_damage") && timer >= gt) damage_boost_timer = timer - gt;
-        u16 focus_timer = (blob.get_u16("focus") > MIN_FOCUS_TIME * getTicksASecond() || blob.get_u32("overload mana regen") > getGameTime()) ? 1 : 0;
+        u16 focus_timer = disabled_for_classes[disabled_row].find(SPELL_INDEX::FOCUS) != -1 ? 0 : (blob.get_u16("focus") > MIN_FOCUS_TIME * getTicksASecond() || blob.get_u32("overload mana regen") > getGameTime()) ? 1 : 0;
         u16 haste_timer = blob.get_u16("hastened");
         u16 slow_timer = blob.get_u16("slowed");
         u16 airblast_shield_timer = blob.get_u16("airblastShield");

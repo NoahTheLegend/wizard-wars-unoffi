@@ -6,6 +6,7 @@
 #include "SpellHashDecoder.as";
 #include "EffectMissileEnum.as";
 #include "SpellUtils.as";
+#include "WarpCommon.as";
 
 const int minimum_cast = NecromancerParams::cast_1;
 const int medium_cast = NecromancerParams::cast_2;
@@ -44,7 +45,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 	f32 aim_angle = aimVector.Angle();
 
-	switch(spellName.getHash())
+	switch (spellName.getHash())
 	{
 		case -825046729: //mushroom
 		{
@@ -1726,17 +1727,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 2085531767://blood arrows
+		case 2085531767: //blood arrows
 		{
-			if(this.hasScript("BloodArrowRain.as"))
+			if (this.hasScript("BloodArrowRain.as"))
 			{
 				ManaInfo@ manaInfo;
-				if (!this.get( "manaInfo", @manaInfo ))
-				{return;}
+				if (!this.get("manaInfo", @manaInfo ))
+					{return;}
 				
-				manaInfo.mana += spell.mana;
+				if (spell.type == SpellType::healthcost) Heal(this, this, spell.mana);
+				else manaInfo.mana += spell.mana;
+
 				return;
 			}
+
 			switch(charge_state)
 			{
 				case minimum_cast:
@@ -1826,15 +1830,18 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -667977758: //tomeblood
 		{
-			if(this.hasScript("TomeOfBloodRain.as"))
+			if (this.hasScript("TomeOfBloodRain.as"))
 			{
 				ManaInfo@ manaInfo;
-				if (!this.get( "manaInfo", @manaInfo ))
-				{return;}
+				if (!this.get("manaInfo", @manaInfo ))
+					{return;}
 				
-				manaInfo.mana += spell.mana;
+				if (spell.type == SpellType::healthcost) Heal(this, this, spell.mana);
+				else manaInfo.mana += spell.mana;
+
 				return;
 			}
+
 			switch(charge_state)
 			{
 				case minimum_cast:
@@ -1863,6 +1870,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				this.add_u8("tomeblood_projectiles", 8);
 				this.sub_u8("tomeblood_delay", 1);
 			}
+
 			this.set_u32("tomeblood_start", getGameTime());
 			this.set_Vec2f("tomeblood_aimpos", aimpos);
 			this.set_f32("tomeblood_damage", 0.2f);
@@ -5862,7 +5870,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ circle = server_CreateBlob('warp_field', 3, aimpos);
 
 				circle.SetDamageOwnerPlayer(this.getPlayer());
-				f32 ttd = charge_state == 5 ? 40.0f : (this.hasTag("extra_damage") ? 45.0f : 30.0f);
+				f32 ttd = charge_state == 5 ? 40.0f : (this.hasTag("extra_damage") ? 50.0f : 30.0f);
 				circle.server_SetTimeToDie(ttd);
 
 				if (this.hasTag("extra_damage"))
@@ -5870,6 +5878,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					circle.Tag("extra_damage");
 					circle.Sync("extra_damage", true);
 				}
+			}
+		}
+		break;
+
+		case -1702569748: // chronomantic teleport
+		{
+			if (isServer())
+			{
+				CBitStream params;
+				params.write_u8(spell.type);
+				params.write_f32(spell.mana);
+				params.write_Vec2f(this.getPosition() + this.getAimPos());
+				params.write_s32(charge_state);
+				params.write_bool(this.hasTag("extra_damage"));
+				this.SendCommand(this.getCommandID("chronomantic_teleport"), params); // WarlockLogic.as
 			}
 		}
 		break;

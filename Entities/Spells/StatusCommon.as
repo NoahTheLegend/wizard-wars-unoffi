@@ -178,7 +178,7 @@ shared class Status
     s8 active_fade;
     f32 blink_sine;
 
-    Status(u8 _type, Vec2f _dim, string _icon, int _duration, f32 _scale = 1.0f)
+    Status(u8 _type, Vec2f _dim, string _icon, int _duration, f32 _scale = 1.0f, bool _super = false)
     {
         type = _type;
         pos = Vec2f_zero;
@@ -187,8 +187,12 @@ shared class Status
         duration = _duration;
         scale = _scale;
 
-        string[] tooltips = TOOLTIPS();
-        @tooltip = @Tooltip(type, tooltips[type], Vec2f_zero, dim * scale);
+        if (!_super)
+        {
+            string[] tooltips = TOOLTIPS();
+            @tooltip = @Tooltip(type, tooltips[type], Vec2f_zero, dim * scale);
+        }
+
         tooltip_fade = 0;
         cursor_focus_time = 0;
         hover = false;

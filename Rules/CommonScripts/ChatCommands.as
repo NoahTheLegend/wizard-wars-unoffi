@@ -7,6 +7,7 @@
 #include "MakeCrate.as";
 #include "MakeScroll.as";
 #include "EffectMissileEnum.as";
+#include "MagicCommon.as";
 
 void onInit(CRules@ this)
 {
@@ -265,7 +266,23 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				}
 				if (tokens[0] == "!hp")
 				{
-					getPlayer(0).getBlob().server_SetHealth(parseFloat(tokens[1]) * getPlayer(0).getBlob().getInitialHealth());
+					getPlayer(0).getBlob().server_SetHealth(parseFloat(tokens[1]));
+				}
+				if (tokens[0] == "!mana")
+				{
+					CBlob@ b = getPlayer(0).getBlob();
+					if (b !is null)
+					{
+						ManaInfo@ manaInfo;
+						if (b.get("manaInfo", @manaInfo))
+						{
+							manaInfo.mana = parseInt(tokens[1]);
+						}
+						else
+						{
+							client_AddToChat("Mana info not found for " + b.getName(), SColor(255, 255, 0, 0));
+						}
+					}
 				}
 				if (tokens[0] == "!addtime")
 				{
