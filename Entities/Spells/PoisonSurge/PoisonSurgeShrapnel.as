@@ -7,41 +7,16 @@ void onInit(CBlob@ this)
 	this.Tag("kill other spells");
 	this.Tag("counterable");
 	this.Tag("poison projectile");
-	//this.Tag("smashtoparticles_additive");
-	
-	//dont collide with edge of the map
+
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	this.getShape().getConsts().bullet = true;
-	
-	CSprite@ thisSprite = this.getSprite();
-	thisSprite.ScaleBy(Vec2f(0.9f, 0.9f));
-	CSpriteLayer@ l = thisSprite.addSpriteLayer("l", "PoisonSurge.png", 24, 16);
-	if (l !is null)
-	{
-		l.ScaleBy(Vec2f(0.95f, 0.95f));
 
-		Animation@ anim = l.addAnimation("default", 0, false);
-		if (anim !is null)
-		{
-			int[] frames = {0,1,2,3};
-			anim.AddFrames(frames);
-			
-			l.SetAnimation(anim);
-			l.setRenderStyle(RenderStyle::additive);
-			l.SetRelativeZ(101.0f);
-		}
-	}
-
-	this.getShape().SetGravityScale(0.0f);
+	this.getShape().SetGravityScale(1.0f);
 }
 
 void onTick(CSprite@ this)
 {
-	CSpriteLayer@ l = this.getSpriteLayer("l");
-	if (l !is null)
-	{
-		l.animation.frame = this.animation.frame;
-	}
+	
 }
 
 void onTick(CBlob@ this)
@@ -49,18 +24,16 @@ void onTick(CBlob@ this)
 	if (this.getVelocity().Length() > 0.01f) this.setAngleDegrees(-this.getVelocity().Angle());
 	if (this.getTickSinceCreated() == 0)
 	{
-		this.getSprite().PlaySound("waterbolt_wave.ogg", 0.375f, 1.75f + XORRandom(11)*0.01f);
-		this.getSprite().PlaySound("waterbolt_splash0.ogg", 0.375f, 1.75f + XORRandom(11)*0.01f);
 		this.getSprite().SetZ(100.0f);
 	}
 }
 
-bool isEnemy(CBlob@ this, CBlob@ target)
+bool isEnemy( CBlob@ this, CBlob@ target )
 {
 	return 
 	(
-		(target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door")
-			|| target.getName() == "trap_block") || (target.hasTag("barrier") && target.getTeamNum() != this.getTeamNum()))
+		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door")
+			|| target.getName() == "trap_block") || (target.hasTag("barrier") && target.getTeamNum() != this.getTeamNum()) )
 		||
 		(
 			target.hasTag("flesh") 
