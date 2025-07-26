@@ -1,15 +1,15 @@
 const u8 chance_flowers_default = 50;
 const u8 chance_spore = 10;
-const u16 slow_time = 30; // how long the slow effect lasts
+const u16 slow_time = 60; // how long the slow effect lasts
 const u16 haste_time = 60; // how long the hasten effect lasts
 
 const u32 flowers_time_base = 450; // how long the flowers last
 const u32 flowers_time_random = 150; // random time added to the flowers time
-const u32 chance_flowers_per_tick = 10000;
+const u32 chance_flowers_per_tick = 7500;
 
 void onInit(CBlob@ this)
 {
-	this.Tag("standingup");
+	this.Tag("phase through spells");
 	this.Tag("counterable");
 	this.Tag("die_in_divine_shield");
 
