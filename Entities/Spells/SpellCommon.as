@@ -168,9 +168,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (!isServer())
 				return;
 
-			u8 delay = 10;
-			u8 power = 25 + XORRandom(6);
-			u8 increment = 5;
+			u8 delay = 30;
+			u8 power = 10 + XORRandom(4);
+			u8 increment = 8;
 
 			switch (charge_state)
 			{
@@ -181,9 +181,17 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 				case super_cast:
 				{
-					power = 35+XORRandom(6);
-					increment = 3;
+					delay = 20;
+					power = 15+XORRandom(4);
+					increment = 4;
 				}
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				power += 5;
+				delay = 10;
+				increment = Maths::Max(2, increment - 2);
 			}
 
 			Vec2f tilespace(int(aimpos.x / 8), int(aimpos.y / 8));

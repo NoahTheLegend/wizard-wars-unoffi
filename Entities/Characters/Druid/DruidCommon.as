@@ -81,8 +81,8 @@ namespace DruidParams
 		Spell("foresttunerain", "Forest Tune", 143, "Scatter and forward sharp foliage in the air towards the targets.",
 			SpellType::other, 32, 45, 6, 180.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
-		Spell("moss", "Mossy Veil", 144, "Grow spreading moss on the ground that decreases fall damage when you land on it. Nearby spores will create flowers that increase your movement and decrease for enemies on touch.",
-			SpellType::other, 1, 15, 0, 180.0f, true, true, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_GROUNDED, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
+		Spell("moss", "Mossy Veil", 144, "Grow spreading moss on the ground that decreases fall damage when you land on it. The flowers growing nearby will increase your speed and decrease for enemy. Spores might help the flowers to grow faster.",
+			SpellType::other, 18, 60, 0, 180.0f, true, true, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_GROUNDED, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT, SpellAttribute::SPELL_CONTROL}),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)

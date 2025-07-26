@@ -1,10 +1,11 @@
-const u8 chance_flowers_default = 8;
+const u8 chance_flowers_default = 50;
+const u8 chance_spore = 10;
 const u16 slow_time = 30; // how long the slow effect lasts
-const u16 haste_time = 30; // how long the hasten effect lasts
+const u16 haste_time = 60; // how long the hasten effect lasts
 
-const u32 flowers_time = 120; // how long the flowers last
-const u32 flowers_time_random = 120; // random time added to the flowers time
-const u8 chance_flowers_per_second = 12;
+const u32 flowers_time_base = 450; // how long the flowers last
+const u32 flowers_time_random = 150; // random time added to the flowers time
+const u32 chance_flowers_per_tick = 10000;
 
 void onInit(CBlob@ this)
 {
@@ -48,13 +49,7 @@ void onInit(CBlob@ this)
 
 	if (isServer() && XORRandom(chance_flowers_default) == 0)
 	{
-		u32 flowers_time = getGameTime() + flowers_time + XORRandom(flowers_time_random);
-		this.set_u32("flowers_time", flowers_time);
-		this.set_bool("has_flowers", true);
-
-		CBitStream params;
-		params.write_u32(flowers_time);
-		this.SendCommand(this.getCommandID("add_flowers"), params);
+		server_SetFlowers(this);
 	}
 }
 
@@ -74,12 +69,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		CPlayer@ player = getPlayerByNetworkId(pid);
 		if (player is null) return;
 
-		u32 flowers_time = getGameTime() + flowers_time + XORRandom(flowers_time_random);
-		this.set_u32("flowers_time", flowers_time);
-
-		CBitStream stream;
-		stream.write_u32(flowers_time);
-		this.server_SendCommandToPlayer(this.getCommandID("add_flowers"), stream, player);
+		server_SetFlowers(this);
 	}
 }
 
@@ -95,8 +85,10 @@ void onInit(CSprite@ this)
 		CSpriteLayer@ l = this.addSpriteLayer("moss_" + i, "Moss.png", 10, 8);
 		if (l !is null)
 		{
-			l.SetRelativeZ(100.0f);
-			l.RotateBy(-offsets[i].Angle() - 90, Vec2f(0, 0));
+			f32 angle = -offsets[i].Angle() - 90;
+			l.SetRelativeZ(1000.0f);
+			l.SetOffset(Vec2f(0, 2));
+			l.RotateBy(angle, -l.getOffset());
 			l.SetVisible(false);
 			l.ScaleBy(Vec2f(1.05f, 1.05f));
 			
@@ -133,13 +125,20 @@ void onTick(CBlob@ this)
 	}
 
 	const u32 tick = this.getTickSinceCreated();
-	if (tick % 30 == 0)
+	if (this.getCurrentScript().tickFrequency != 1 || tick % 30 == 0)
 	{
 		u32 flowers_time = this.get_u32("flowers_time");
-		if (flowers_time > 0 && getGameTime() >= flowers_time)
+		if (getGameTime() >= flowers_time)
 		{
 			this.set_bool("has_flowers", false);
 			this.set_u32("flowers_time", 0);
+		}
+		else if (this.get_bool("has_flowers"))
+		{
+			if (XORRandom(300 / this.getCurrentScript().tickFrequency) == 0)
+			{
+				MakeFlowerParticles(this.getPosition(), 2 + XORRandom(2), Vec2f(0, -1.0f), 60);
+			}
 		}
 
 		if (isClient())
@@ -170,6 +169,7 @@ void onTick(CBlob@ this)
 			CBitStream params;
 			params.write_u16(local.getNetworkID());
 		}
+
 		if (isServer())
 		{
 			bool[][]@ captured_tiles;
@@ -200,17 +200,9 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if (this.getTickSinceCreated() % 30 == 0)
+	if (XORRandom(chance_flowers_per_tick / this.getCurrentScript().tickFrequency) == 0)
 	{
-		if (XORRandom(chance_flowers_per_second) == 0)
-		{
-			u32 flowers_time = getGameTime() + flowers_time + XORRandom(flowers_time_random);
-			this.set_u32("flowers_time", flowers_time);
-
-			CBitStream params;
-			params.write_u32(flowers_time);
-			this.SendCommand(this.getCommandID("add_flowers"), params);
-		}
+		server_SetFlowers(this);
 	}
 
 	u16 grow_delay = this.get_u16("grow_delay");
@@ -219,6 +211,21 @@ void onTick(CBlob@ this)
 		Grow(this, this.get_u8("grow_power"));
 		this.set_bool("grown", this.get_u8("grow_power") <= 0);
 	}
+}
+
+void server_SetFlowers(CBlob@ this)
+{
+	if (!isServer()) return;
+
+	u32 rnd = XORRandom(flowers_time_random);
+	u32 flowers_time = getGameTime() + flowers_time_base + rnd;
+
+	this.set_u32("flowers_time", flowers_time);
+	this.set_bool("has_flowers", true);
+
+	CBitStream params;
+	params.write_u32(flowers_time);
+	this.SendCommand(this.getCommandID("add_flowers"), params);
 }
 
 Vec2f getFloorOffset(Vec2f pos)
@@ -267,12 +274,17 @@ void Grow(CBlob@ this, int power)
 	if (floor_offset.y > 0)
 	{
 		// on floor below, block lower tile and lower diagonals
-		blocked_offsets = {Vec2f(0, 8), Vec2f(8, 8), Vec2f(-8, 8)};
+		blocked_offsets = {Vec2f(8, 8), Vec2f(-8, 8)};
+		if (map.isTileSolid(pos + Vec2f(-8, 8)) && map.isTileSolid(pos + Vec2f(8, 8)))
+			blocked_offsets.push_back(Vec2f(0, 8)); // block lower tile if both sides are solid
+
 	}
 	else if (floor_offset.y < 0)
 	{
 		// on ceiling, block upper tile and upper diagonals
-		blocked_offsets = {Vec2f(0, -8), Vec2f(8, -8), Vec2f(-8, -8)};
+		blocked_offsets = {Vec2f(8, -8), Vec2f(-8, -8)};
+		if (map.isTileSolid(pos + Vec2f(-8, -8)) && map.isTileSolid(pos + Vec2f(8, -8)))
+			blocked_offsets.push_back(Vec2f(0, -8)); // block upper tile if both sides are solid
 	}
 	else if (floor_offset.x > 0)
 	{
@@ -405,12 +417,7 @@ void onTick(CSprite@ sprite)
 		}
 		else if (animation_name == "flowers")
 		{
-			if (this.getTickSinceCreated() % 90 == 0 && XORRandom(10) == 0)
-			{
-				MakeFlowerParticles(this.getPosition(), 2 + XORRandom(2), Vec2f(0, -1.0f), 60);
-			}
-
-			if (!has_flowers && animation_ended)
+			if (!has_flowers)
 			{
 				layer.SetAnimation("default");
 				layer.animation.frame = 3;
@@ -443,45 +450,40 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 	if (blob.hasTag("flesh"))
 	{
-		if (this.hasTag("has_flowers"))
+		if (this.get_bool("has_flowers"))
 		{
 			// sound
-			if (isClient() && XORRandom(10) == 0)
+			if (isClient() && XORRandom(4) == 0)
 			{
-				MakeFlowerParticles(this.getPosition(), 2 + XORRandom(2), Vec2f(0, -1.0f), 90);
+				MakeFlowerParticles(this.getPosition(), 3 + XORRandom(3), Vec2f(0, -1.0f), 90);
 			}
 
 			if (isServer())
 			{
-				if (isEnemy(this, blob))
+				if (isEnemy(this, blob) && blob.get_u16("hastened") == 0)
 				{
 					// apply slow effect
 					if (blob.hasTag("player"))
 					{
-						blob.set_u16("slowed", slow_time);
+						blob.set_u16("slowed", Maths::Max(slow_time, blob.get_u16("slowed")));
 						blob.Sync("slowed", true);
 					}
 				}
-				else
+				else if (blob.get_u16("slowed") == 0)
 				{
 					// apply hastens effect
 					if (blob.hasTag("player"))
 					{
-						blob.set_u16("hastened", haste_time);
+						blob.set_u16("hastened", Maths::Max(haste_time, blob.get_u16("hastened")));
 						blob.Sync("hastened", true);
 					}
 				}
 			}
 		}
 	}
-	else if (isServer() && blob.getName() == "sporeshot" && XORRandom(3) == 0)
+	else if (isServer() && blob.getName() == "sporeshot" && XORRandom(chance_spore) == 0)
 	{
-		u32 flowers_time = getGameTime() + flowers_time + XORRandom(flowers_time_random);
-		this.set_u32("flowers_time", flowers_time);
-
-		CBitStream params;
-		params.write_u32(flowers_time);
-		this.SendCommand(this.getCommandID("add_flowers"), params);
+		server_SetFlowers(this);
 	}
 }
 
@@ -493,7 +495,7 @@ void onDie(CBlob@ this)
 		SetTile(getMap(), this.getPosition(), false, captured_tiles);
 	}
 
-	if (!this.hasTag("has_flowers")) return;
+	if (!this.get_bool("has_flowers")) return;
 	MakeFlowerParticles(this.getPosition(), 5+XORRandom(4), Vec2f(0, -1.0f), 60);
 }
 
