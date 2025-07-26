@@ -117,7 +117,6 @@ void onInit(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	this.server_SetTimeToDie(25);
 	if (getControls().isKeyPressed(KEY_KEY_R))
 	{
 		this.server_Die();

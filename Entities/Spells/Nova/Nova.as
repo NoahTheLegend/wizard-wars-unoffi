@@ -1,13 +1,12 @@
 
-#include "Hitters2.as";
+#include "HittersWW.as";
 #include "TeamColour.as";
 #include "MakeDustParticle.as";
 
 const float STANDARD_SPEED = 32.0f;
-
-void onInit( CBlob@ this )
+void onInit(CBlob@ this)
 {
-    this.set_u8("custom_hitter", Hitters2::orb);
+    this.set_u8("custom_hitter", HittersWW::orb);
 	this.Tag("exploding");
 	this.Tag("projectile");
 	this.Tag("die_in_divine_shield");

@@ -1,5 +1,5 @@
 
-namespace Hitters2 {
+namespace HittersWW {
 shared enum hits {
     nothing = 0,
 
@@ -57,6 +57,8 @@ shared enum hits {
 	
 	
 	orb,
-	wizexplosion
+	wizexplosion,
+    poison,
+    lifesteal
 };
 }

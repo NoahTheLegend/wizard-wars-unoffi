@@ -11,6 +11,20 @@ void onTick(CBlob@ this)
     
     if (this.hasTag("mark_for_death"))
     {
+        CSprite@ sprite = this.getSprite();
+        if (sprite !is null)
+        {
+            sprite.SetVisible(false);
+            for (u16 i = 0; i < sprite.getSpriteLayerCount(); i++)
+            {
+                CSpriteLayer@ layer = sprite.getSpriteLayer(i);
+                if (layer !is null)
+                {
+                    layer.SetVisible(false);
+                }
+            }
+        }
+
         CShape@ shape = this.getShape();
         if (shape !is null)
         {

@@ -28,7 +28,7 @@ namespace NecromancerParams
 			SpellType::other, 4, 25, 0, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellType::other, 25, 8, 0, 270.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT}),
+			SpellType::other, 25, 6, 0, 270.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT}),
 			
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellType::other, 25, 10, 0, 64.0f, true),
@@ -57,7 +57,7 @@ namespace NecromancerParams
 		Spell("unholy_resurrection", "Unholy Resurrection", 24, "Inexpensively resurrect fallen allies... Though they may not find themselves completely restored to their former glory.",
 				SpellType::other, 20, 30, 5, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_REVIVE}),
 							
-		Spell("leech", "Leech", 130, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
+		Spell("leech_g", "Leech", 130, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
 				SpellType::other, 22, 40, 3, 180.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_VAMPIRISM}),
 				
 		Spell("force_of_nature", "Force of Nature", 27, "By invoking this spell, you call into being an orb of ghastly green light which destroys anything foolish enough to cross its path, including you!",

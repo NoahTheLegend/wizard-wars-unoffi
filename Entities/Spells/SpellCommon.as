@@ -171,6 +171,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			u8 delay = 30;
 			u8 power = 10 + XORRandom(4);
 			u8 increment = 8;
+			u8 ttd = 45;
 
 			switch (charge_state)
 			{
@@ -184,6 +185,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					delay = 20;
 					power = 15+XORRandom(4);
 					increment = 4;
+					ttd += 15;
 				}
 			}
 
@@ -192,6 +194,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				power += 5;
 				delay = 10;
 				increment = Maths::Max(2, increment - 2);
+				ttd += 15;
 			}
 
 			Vec2f tilespace(int(aimpos.x / 8), int(aimpos.y / 8));
@@ -214,7 +217,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			CBlob@[] blobs;
 			map.getBlobsInRadius(spawnpos, 3.5f, @blobs);
-
 			for (int i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
@@ -234,6 +236,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					newblob.set_u16("grow_delay", delay);
 					newblob.set_u8("grow_power", power);
 					newblob.set_u8("grow_delay_increment", increment);
+					newblob.server_SetTimeToDie(ttd);
 
 					newblob.Tag("first");
 				}
@@ -2028,18 +2031,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ orb = server_CreateBlobNoInit("leech");
 				if (orb !is null)
 				{
+					f32 damage = charge_state == super_cast ? 1.2f : 0.8f;
+					f32 heal = this.hasTag("extra_damage") ? 0.3f : 0.2f;
+					
 					orb.setPosition(orbPos);
 					orb.server_setTeamNum(this.getTeamNum());
 
-                    if(this.hasTag("extra_damage"))
-                        orb.Tag("extra_damage");//Remember to change this in Leech.as
-
 					orb.set_Vec2f("aim pos", aimpos);
-					if (charge_state == super_cast)
-						orb.Tag("super_cast");
+					orb.set_s8("remaining_casts", 2);
 
-					orb.IgnoreCollisionWhileOverlapped( this );
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.set_f32("damage", damage);
+					orb.set_f32("lifesteal_amount", heal);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
 				}
 			}
 		}
@@ -2054,18 +2059,15 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ orb = server_CreateBlobNoInit("leech_g");
 				if (orb !is null)
 				{
+					f32 damage = charge_state == super_cast ? 3.0f : 2.0f;
+					f32 heal = this.hasTag("extra_damage") ? 1.0f : 0.5f;
+					
 					orb.setPosition(orbPos);
 					orb.server_setTeamNum(this.getTeamNum());
 
-                    if(this.hasTag("extra_damage"))
-                        orb.Tag("extra_damage");//Remember to change this in Leech.as
-
 					orb.set_Vec2f("aim pos", aimpos);
-					if (charge_state == super_cast)
-						orb.Tag("super_cast");
-
-					orb.IgnoreCollisionWhileOverlapped( this );
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
 				}
 			}
 		}
@@ -5993,6 +5995,82 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
+
+		case 819257813: // poisonsurge
+		{
+			f32 orbspeed = 4.0f;
+
+			if (!isServer()){
+           		return;
+			}
+
+			f32 dmg = this.hasTag("extra_damage") ? 3.0f : 2.0f;
+			u8 shrapnel_count = 3;
+			u8 angle = 60;
+
+			switch (charge_state)
+			{
+				case minimum_cast:
+				{
+					orbspeed *= 0.75f;
+					dmg -= 0.5f;
+				}
+				break;
+				case medium_cast:
+				{
+					orbspeed *= 0.85f;
+					dmg -= 0.25f;
+				}
+				break;
+
+				case complete_cast:
+				{
+					angle = 20;
+					shrapnel_count = 5;
+					angle = 45;
+				}
+				break;
+
+				case super_cast:
+				{
+					angle = 15;
+					shrapnel_count = 5;
+					orbspeed *= 1.25f;
+					dmg += 0.5f;
+				}
+
+				break;
+				default:return;
+			}
+
+			Vec2f orbPos = thispos;
+			Vec2f orbVel = (aimpos - orbPos);
+
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob("poisonsurge");
+			if (orb !is null)
+			{
+				orb.IgnoreCollisionWhileOverlapped(this);
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+
+				orb.set_f32("damage", dmg);
+				orb.set_f32("shrapnel_damage", dmg * 0.25f);
+				orb.set_u8("shrapnel_count", shrapnel_count);
+				orb.set_u8("shrapnel_angle", angle);
+				orb.server_SetTimeToDie(1);
+				if (this.hasTag("extra_damage"))
+				{
+					orb.Tag("shrapnel_bouncy");
+				}
+
+				orb.server_setTeamNum(this.getTeamNum());
+				orb.setPosition(orbPos);
+				orb.setVelocity(orbVel);
+			}
+			break;
+		}
 
 		default:
 		{

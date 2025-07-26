@@ -166,6 +166,8 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	( 
 		blob.hasTag("standingup")
 		||
+		blob.getName() == this.getName()
+		||
 		(
 			blob.hasTag("barrier") && blob.getTeamNum() != this.getTeamNum()
 		)

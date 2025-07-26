@@ -1,39 +1,52 @@
 #include "Hitters.as";
+#include "HittersWW.as";
 #include "MagicCommon.as";
 
+const f32 explosion_radius = 24.0f;
 void onInit(CBlob@ this)
 {
 	this.Tag("projectile");
-	this.Tag("kill other spells");
 	this.Tag("counterable");
 	this.Tag("poison projectile");
-
+	//this.Tag("smashtoparticles_additive");
+	
+	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	this.getShape().getConsts().bullet = true;
-
+	
+	CSprite@ thisSprite = this.getSprite();
 	this.getShape().SetGravityScale(1.0f);
 }
 
 void onTick(CSprite@ this)
 {
-	
+	CSpriteLayer@ l = this.getSpriteLayer("l");
+	if (l !is null)
+	{
+		l.animation.frame = this.animation.frame;
+	}
 }
 
 void onTick(CBlob@ this)
 {
-	if (this.getVelocity().Length() > 0.01f) this.setAngleDegrees(-this.getVelocity().Angle());
+	f32 vellen = this.getVelocity().Length();
+	if (this.getShape().getElasticity() > 0.1 && vellen <= 0.1f)
+		this.Tag("mark_for_death");
+	else if (vellen > 0.01f && !this.hasTag("mark_for_death"))
+		this.setAngleDegrees(-this.getVelocity().Angle());
+
 	if (this.getTickSinceCreated() == 0)
 	{
 		this.getSprite().SetZ(100.0f);
 	}
 }
 
-bool isEnemy( CBlob@ this, CBlob@ target )
+bool isEnemy(CBlob@ this, CBlob@ target)
 {
 	return 
 	(
-		( target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door")
-			|| target.getName() == "trap_block") || (target.hasTag("barrier") && target.getTeamNum() != this.getTeamNum()) )
+		(target.getTeamNum() != this.getTeamNum() && (target.hasTag("kill other spells") || target.hasTag("door")
+			|| target.getName() == "trap_block") || (target.hasTag("barrier") && target.getTeamNum() != this.getTeamNum()))
 		||
 		(
 			target.hasTag("flesh") 
@@ -69,17 +82,23 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		}
 	}
 	
-	return ( isEnemy(this, blob) );
+	return (isEnemy(this, blob));
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
-	if (solid || (blob !is null && blob.hasTag("kill water spells"))) this.Tag("mark_for_death");
+	if ((solid && this.getShape().getElasticity() <= 0.1f)
+		|| (blob !is null && blob.hasTag("kill poison spells")))
+			this.Tag("mark_for_death");
+
 	if (blob !is null && doesCollideWithBlob(this, blob))
 	{
 		if (isServer() && isEnemy(this, blob))
 		{
-			this.server_Hit(blob, this.getPosition(), this.getVelocity() * 2, this.get_f32("damage"), Hitters::water, true);
+			if (blob !is null && isEnemy(this, blob))
+		    {
+		    	this.server_Hit(blob, this.getPosition(), this.getVelocity(), this.get_f32("damage"), HittersWW::poison, true);
+		    }
 		}
 
 		this.Tag("mark_for_death");
@@ -88,14 +107,28 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 void onDie(CBlob@ this)
 {
-	sparks(this.getPosition(), 50);
-	this.getSprite().PlaySound("waterbolt_death.ogg", 0.375f, 1.5f + XORRandom(11)*0.01f);
+	CParticle@ p = ParticleAnimated("ToxicGas.png", 
+										this.getPosition(), 
+										Vec2f(0, 0), 
+										0.0f, 
+										1.0f, 
+										5, 
+										0.0f, 
+										false);
+	if (p !is null)
+	{
+		p.Z = 1.0f;
+		p.fastcollision = true;
+		p.collides = false;
+		p.setRenderStyle(RenderStyle::additive);
+	}
+	sparks(this.getPosition(), 20);
 }
 
 Random _sprk_r(21342);
 void sparks(Vec2f pos, int amount)
 {
-	if ( !getNet().isClient() )
+	if (!getNet().isClient())
 		return;
 
 	for (int i = 0; i < amount; i++)
@@ -104,13 +137,16 @@ void sparks(Vec2f pos, int amount)
         vel.RotateBy(_sprk_r.NextFloat() * 360.0f);
 
 		u8 rnd = XORRandom(100);
-        CParticle@ p = ParticlePixelUnlimited( pos, vel, SColor( 255, 65+rnd/2, 255, 100+rnd), true );
+		SColor col = SColor(255, 0+rnd/2, 255, 55+rnd);
+        CParticle@ p = ParticlePixelUnlimited(pos + Vec2f(4,0).RotateBy(XORRandom(360)), vel, col, true);
         if(p is null) return; //bail if we stop getting particles
 
     	p.fastcollision = true;
         p.timeout = 10 + _sprk_r.NextRanged(20);
         p.scale = 0.5f + _sprk_r.NextFloat();
-		p.setRenderStyle(RenderStyle::additive);
+		p.forcecolor = col;
         p.damping = 0.95f;
+		p.gravity = Vec2f_zero;
+		p.setRenderStyle(RenderStyle::additive);
     }
 }

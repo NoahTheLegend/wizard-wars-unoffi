@@ -1,11 +1,11 @@
 
-#include "Hitters2.as";
+#include "HittersWW.as";
 #include "TeamColour.as";
 #include "MakeDustParticle.as";
 
 void onInit( CBlob@ this )
 {
-    this.set_u8("custom_hitter", Hitters2::orb);
+    this.set_u8("custom_hitter", HittersWW::orb);
 	this.Tag("exploding");
 	
 	this.Tag("kill other spells");

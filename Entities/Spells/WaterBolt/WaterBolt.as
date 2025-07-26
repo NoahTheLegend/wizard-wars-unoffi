@@ -48,7 +48,7 @@ void onTick(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getVelocity().Length() > 0.01f) this.setAngleDegrees(-this.getVelocity().Angle());
+	if (this.getVelocity().Length() > 0.01f && !this.hasTag("mark_for_death")) this.setAngleDegrees(-this.getVelocity().Angle());
 
 	if (this.getTickSinceCreated() == 0)
 	{
