@@ -5998,7 +5998,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 819257813: // poisonsurge
 		{
-			f32 orbspeed = 4.0f;
+			f32 orbspeed = 5.5f;
 
 			if (!isServer()){
            		return;

@@ -46,43 +46,43 @@ namespace WarlockParams
 		Spell("warp_field", "Warp Field", 140, "Open a warp-shroud on map that breaks the laws of physics for living creatures. Teleporting inside will open a portal at random location. Can be despelled by anyone.",
 				SpellType::other, 30, 50, 0, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT}),
 
-		Spell("chronomantic_teleport", "Chronomantic Teleport", 141, "Teleports you to a random location on the map. When overcharged, teleports you to where you were at 5 seconds ago.",
-				SpellType::other, 25, 30, 5, 16.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_HEALTHCOST}),
+		Spell("chronomantic_teleport", "Chronomantic Teleport", 141, "Consumes health instead of mana. Teleports you to a random location on the map. When overcharged, teleports you to where you were at 5 seconds ago.",
+				SpellType::healthcost, 3, 15, 10, 16.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_HEALTHCOST}),
 
-		Spell("poisonsurge", "Poison Surge", 137, "Unleash a sphere of toxic energy that splits into smaller, non-poisoned spheres after a short delay.",
+		Spell("poisonsurge", "Toxic Bolt", 137, "Unleash a bolt of toxic sludge that splits into smaller, non-poisoned spheres after a short delay.",
 				SpellType::other, 1, 30, 0, 256.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_POISON}),
 
-		Spell("", "", 0, "Empty spell.",
+		Spell("", "Corruption Shard", 0, "Place a venomous shard that poisons enemies nearby. After a short while, the shard explodes, restoring some of warlock's health and mana.",
 				SpellType::other, 1, 1, 0, 0.0f),
 
-		Spell("", "", 0, "Empty spell.",
+		Spell("", "Caustic Ray", 0, "Forward a beam of corrosive energy that poisons enemies and adds a cooldown to their spells.",
 				SpellType::other, 1, 1, 0, 0.0f),
+
+		Spell("", "", 0, "", // ?
+				SpellType::other, 1, 1, 0, 0.0f),
+
+		Spell("", "Shadow Spear", 0, "Throw a shadow spear which curses touched enemy and steals their mana. Anyone who deals damage to the cursed target will steal some of their mana.",
+				SpellType::other, 1, 1, 0, 0.0f),
+
+		Spell("", "Hellfire Summon", 0, "Summon a hell skull to absorb enemy spells. Press [SHIFT] to make it breath fire.",
+				SpellType::other, 1, 1, 0, 0.0f),
+
+		Spell("", "Dark Ritual", 0, "For the next 5 seconds the spells that cost health will restore it instead of consuming, however you take 3 damage for each cast spell in the end of the effect.",
+				SpellType::other, 1, 1, 0, 0.0f),
+
+		Spell("", "Demonic Pact", 0, "Consumes health instead of mana. Resurrect one of your allies into a demon. The demon will restore health to its master when killed, although not when despelled.",
+				SpellType::healthcost, 1, 1, 0, 0.0f),
 
 		Spell("fear", "Fear", 0, "Curse nearby enemies with fear, causing them to run stoplessly",
 				SpellType::other, 1, 1, 0, 0.0f),
+		
+		Spell("", "Plague", 0, "You are permanently poisoned. Anyone who deals you damage will be poisoned as well. Cast again to disable the effect.",
+				SpellType::other, 1, 1, 0, 0.0f),
 
-		Spell("resetcooldowns", "Wipe Spell Cooldowns", 0, "Spend some of your health to reset all your spell cooldowns.",
-				SpellType::healthcost, 1, 1, 0, 0.0f),
-
-		Spell("", "", 0, "For the next 5 seconds the spells you cast will not consume health, however you take 10 damage in the end of the effect.",
+		Spell("", "Silence", 0, "Silence an enemy, preventing them from casting spells, except teleport.",
 				SpellType::other, 1, 1, 0, 0.0f),
 		
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
-
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
-
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
-		
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
-
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
-		
-		Spell("", "", 0, "Empty spell.",
+		Spell("", "Shadow Realm", 0, "set warlock and target to another dimension where no one else can affect them? if its possible in code",
 				SpellType::other, 1, 1, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",

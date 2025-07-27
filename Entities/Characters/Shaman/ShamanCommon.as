@@ -63,6 +63,7 @@ namespace ShamanParams
 		Spell("lavashot", "Lava Shot", 80, "Throw a ball of lava. Periodically drops a bit of lava while moving. Overcharge increases the rate of dropping lava and amount from impact.",
 			SpellType::other, 40, 50, 3, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_FIRE}),
 		
+		// replace with "Arc Lightning" spell
 		Spell("spikeburst", "Spike Burst", 81, "Throw a bunch of spikes that die on touch.",
 			SpellType::other, 10, 30, 0, 16.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_CASTEREFFECT}),
 		

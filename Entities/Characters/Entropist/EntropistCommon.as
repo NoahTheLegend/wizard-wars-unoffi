@@ -45,7 +45,7 @@ namespace EntropistParams
 		Spell("voltage_field", "Voltage Field", 54, "Releases a bubble of electricity that knocks away projectiles and enemies that collide with it. Cannot cast spells while active.",
 				SpellType::other, 20, 45, 6, 1.0f, true, false, array<int> = {SpellAttribute::SPELL_BARRIER, SpellAttribute::SPELL_CASTEREFFECT}),
 			
-		Spell("nova", "Nova", 55, "Releases a homing, short-living concentrated energy star. Explodes on contact.",
+		Spell("nova", "Nova", 55, "Release a homing, short-living concentrated energy star. Explodes on contact.",
 				SpellType::other, 30, 45, 25, 100.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HOMING_CURSOR}),
 			
 		Spell("burn", "Burn", 60, "Ignite your mana reserves and fuel your magic with blinding heat. Reduces mana generation by 1.",
@@ -57,23 +57,23 @@ namespace EntropistParams
 		Spell("crystallize", "Crystallize", 61, "Create a mana draining shard.",
 				SpellType::other, 20, 5, 0, 0.0f, true, false, array<int> = {SpellAttribute::SPELL_BARRIER, SpellAttribute::SPELL_CASTEREFFECT}),
 							
-		Spell("dematerialize", "Dematerialize", 62, "Converts a shard back into mana.",
+		Spell("dematerialize", "Dematerialize", 62, "Convert a shard back into mana.",
 				SpellType::other, 0, 5, 0, 0.0f, true, false, array<int> = {SpellAttribute::SPELL_CASTEREFFECT}),
 				
 		Spell("polarity", "Shards Polarity", 63, "Switch between attack and defense mode.",
 				SpellType::other, 5, 30, 1, 0.0f, true, false, array<int> = {SpellAttribute::SPELL_CASTEREFFECT}),
 				
-		Spell("dmine", "Disruption Mine", 87, "Places an invisible to enemies mine on the ground. They still can see it within 3 blocks radius. Overcharge increases duration.",
+		Spell("dmine", "Disruption Mine", 87, "Place an invisible to enemies mine on the ground. They still can see it within 3 blocks radius. Overcharge increases duration.",
 				SpellType::other, 20, 30, 0, 64.0f, true, true, array<int> = {SpellAttribute::SPELL_GROUNDED}),
 							
-		Spell("magicarrows", "Magic Arrows", 88, "Launches magic arrows, which slightly home at closest enemy if the angle is not too step. Overcharge increases arrows amount and decreases launch delay.",
+		Spell("magicarrows", "Magic Arrows", 88, "Launche magic arrows, which slightly home at closest enemy if the angle is not too step. Overcharge increases arrows amount and decreases launch delay.",
 				SpellType::other, 14, 45, 4, 128.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 				
-		Spell("polarityfield", "Polarity Breaker", 90, "Summons a massive sphere that summons explosive projectiles to orbit around.\nOvercharge changes rotation side for each second level.",
+		Spell("polarityfield", "Polarity Breaker", 90, "Summon a massive sphere that summons explosive projectiles to orbit around.\nOvercharge changes rotation side for each second level.",
 				SpellType::other, 70, 105, 25, 256.0f, true),
 							
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),	
+		Spell("", "Celestial Collapse", 0, "Summon several celestial bodies to fall from the sky, dealing massive damage to moving enemies.",
+				SpellType::other, 1, 1, 0, 0.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),	

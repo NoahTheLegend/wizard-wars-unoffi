@@ -442,7 +442,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return false;
 }
 
-void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (blob is null)
 		return;
