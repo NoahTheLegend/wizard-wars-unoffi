@@ -4690,6 +4690,52 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case 554573647://chainlightning
+		{
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+		
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("arclightning", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					switch (charge_state)
+					{
+						case minimum_cast:
+						case medium_cast:
+						{
+							orb.set_f32("damage", 1.25f);
+							break;
+						}
+						case complete_cast:
+						{
+							orb.set_f32("damage", 1.75f);
+							break;
+						}
+						case super_cast:
+						{
+							orb.set_f32("damage", 2.25f);
+							break;
+						}
+						if (this.hasTag("extra_damage"))
+						{
+							
+						}
+					}
+
+                    if(this.hasTag("extra_damage"))
+                        orb.Tag("extra_damage");
+
+					orb.set_Vec2f("aim pos", aimpos);
+					orb.set_u16("follow_id", this.getNetworkID());
+
+					orb.IgnoreCollisionWhileOverlapped( this );
+					orb.SetDamageOwnerPlayer( this.getPlayer() );
+				}
+			}
+		}
+		break;
+
 		case 1631791652: // flame circle
 			if(isServer())
 			{

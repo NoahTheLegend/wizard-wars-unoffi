@@ -18,7 +18,7 @@ const int LASER_UPDATE_TIME = 10;
 const f32 TICKS_PER_SEG_UPDATE = 1;
 const f32 LASER_WIDTH = 0.66f;
 
-Random@ _laser_r = Random(0x10001);
+Random@ _laser_r = Random(0x10002);
 
 void onInit(CBlob@ this)
 {
