@@ -39,8 +39,8 @@ namespace ShamanParams
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
 			SpellType::other, 10, 20, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
 
-		Spell("airblast_shield", "Airblast Shield", 56, "Cover your team or yourself in a volatile wind barrier that blasts away nearby enemies whenever you take damage.",
-			SpellType::other, 15, 30, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_KNOCKBACK, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
+		Spell("waterbolt", "Water Bolt", 126, "A dense sphere of water. Speeds up and costs 1 mana less if water is covering the caster.",
+			SpellType::other, 5, 30, 0, 256.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_WATER}),
 
 		Spell("fire_ward", "Fire Ward", 57, "Form a heat protection aura around yourself. Completely nullifies fire damage.",
 			SpellType::other, 15, 30, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
@@ -64,7 +64,7 @@ namespace ShamanParams
 			SpellType::other, 40, 50, 3, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_FIRE}),
 		
 		Spell("arclightning", "Arc Lightning", 81, "Send a lightning arc that links to other arcs nearby.",
-			SpellType::other, 1, 1, 0, 256.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_CASTEREFFECT}),
+			SpellType::other, 15, 30, 0, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_ELECTRICITY}),
 		
 		Spell("iciclerain", "Magic Icicles", 82, "Materialize icicles to throw at the aim position. Overcharge fully to control aim position meanwhile icicles are being released.",
 			SpellType::other, 25, 30, 6, 512.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
@@ -81,8 +81,8 @@ namespace ShamanParams
 		Spell("balllightning", "Lightning Ball", 123, "Creates an electrified and moving ball of pure lightning.",
 			SpellType::other, 35, 40, 4, 128.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_ELECTRICITY}),
 		
-		Spell("waterbolt", "Water Bolt", 126, "A dense sphere of water. Speeds up and costs 1 mana less if water is covering the caster.",
-			SpellType::other, 5, 30, 0, 256.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_WATER}),
+		Spell("", "", 0, "Empty spell.",
+			SpellType::other, 1, 1, 0, 0.0f),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)

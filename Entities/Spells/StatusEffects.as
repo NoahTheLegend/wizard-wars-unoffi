@@ -1,4 +1,6 @@
 //Status Effects
+#include "HittersWW.as";
+#include "StatusEffects.as";
 #include "RunnerCommon.as"
 #include "MagicCommon.as";
 #include "SplashWater.as";
@@ -92,6 +94,10 @@ void onTick(CBlob@ this)
 		{				
 			this.set_u16("healblock", 0);
 		}
+		else if (this.get_u16("poisoned") > 0)
+		{
+			this.set_u16("poisoned", 0);
+		}
 		
 		if (antidebuff == 0)
 		{
@@ -138,6 +144,57 @@ void onTick(CBlob@ this)
 		{
 			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
 			this.Sync("slowed", true);
+		}
+	}
+
+	//POISON
+	u16 poisoned = this.get_u16("poisoned");
+
+	if (poisoned > 0)
+	{
+		poisoned--;
+		this.set_u16("poisoned", poisoned);
+
+		if (isServer() && this.getTickSinceCreated() % poisonThreshold == 0)
+		{
+			u16 last_id = this.exists("last_poison_owner_id") ? this.get_u16("last_poison_owner_id") : 0;
+			CBlob@ hitter = last_id > 0 ? getBlobByNetworkID(last_id) : this;
+			if (hitter !is null)
+			{
+				hitter.server_Hit(this, this.getPosition(), Vec2f_zero, poisonDamage, HittersWW::poison, true);
+			}
+		}
+
+		if (poisoned % 5 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{		
+				if (getNet().isClient())
+				{
+					const f32 rad = 7.0f;
+					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+					CParticle@ p = ParticleAnimated("ToxicGas.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(50)-25), 1.0f, 2 + XORRandom(3), -0.08f, true);
+					if (p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+						p.setRenderStyle(RenderStyle::additive);
+						if (XORRandom(2) == 0)
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+					}
+				}
+			}
+		}
+
+		if (poisoned == 0)
+		{
+			thisSprite.PlaySound("PoisonClean"+XORRandom(2)+".ogg", 1.25, 1.0f + XORRandom(10)*0.01f);
+
+			this.set_u16("last_poison_owner_id", 0);
+			this.Sync("last_poison_owner_id", true);
+			this.Sync("poisoned", true);
 		}
 	}
 

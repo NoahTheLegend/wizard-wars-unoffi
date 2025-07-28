@@ -1,4 +1,5 @@
-#include "Hitters.as";       
+#include "Hitters.as";
+#include "HittersWW.as";
 #include "LimitedAttacks.as";
 #include "TextureCreation.as";
 #include "ShieldCommon.as";
@@ -260,7 +261,7 @@ void onTick( CBlob@ this)
 						f32 dmg = this.get_f32("damage") * extraDamage;
 						if (target.get_u16("wet timer") > 0) dmg *= 1.33f;
 
-						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
+						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, HittersWW::electricity, true);
 						// reduce length greatly when hit barrier
 						if (target.hasTag("barrier"))
 							this.set_f32("chain_radius", Maths::Max(min_chain_radius, this.get_f32("chain_radius") * (1.0f - chain_radius_falloff_barrier)));

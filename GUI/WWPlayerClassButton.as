@@ -29,7 +29,7 @@ const string[] specialties_names = {
 	"Fire - might ignite enemies","Water - extinguishes fire","Earth - physical damage","Air - high knockback","Nature - organic spells","Electricity - deals more damage to wet enemies",
 	"Ice - might freeze or deal more damage to wet enemies","Holy - holy spells","Unholy - unholy spells","Poison - poisonous spells","","",
 	"","","","","","",
-	"Heal - restore health of allies and self","Support - wide variety of buffs","Summoner - create NPCs or sentries","AoE - Area of Effect spells","Control - some spells can control your enemies","Versatile - good at offense and defense",
+	"Heal - restore health of allies and yourself","Support - wide variety of buffs","Summoner - create NPCs or sentries","AoE - Area of Effect spells","Control - some spells can control your enemies","Versatile - good at offense and defense",
 	"Impacter - damage dealer",	"Agility - movement spells","Map control - deny large area on the map for short amount of time","Tank - great survivability","Life stealer - some spells might heal you on hit","Mana dependency - core spells require plenty of mana to cast",
 	"Cheap spells - spamming those is not a bad decision","Life force - some spells might consume you health instead of mana",			"",			"",			"",	""
 };
@@ -81,7 +81,7 @@ const u8[][] STATS =
 	{1,2,1,0,0,1,0,2,1}, 				// swordcaster
 	{2,2,1,0,0,2,1,2,0}, 				// entropist
 	{1,1,2,2,2,1,0,0,1}, 				// priest
-	{0,1,1,1,1,1,2,1,2}, 				// shaman
+	{0,1,1,1,1,1,1,1,1}, 				// shaman
 	{1,1,0,2,1,2,2,0,1}, 				// paladin
 	{2,2,1,1,0,1,2,1,0}, 				// jester
 	{3,0,0,0,0,0,0,0,0}					// warlock

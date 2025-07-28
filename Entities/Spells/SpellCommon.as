@@ -4690,7 +4690,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 554573647://chainlightning
+		case 554573647: //arclightning
 		{
 			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
 		
@@ -4699,38 +4699,38 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ orb = server_CreateBlob("arclightning", this.getTeamNum(), orbPos); 
 				if (orb !is null)
 				{
+					f32 damage = 0.025f;
+					u8 damage_thresh = 3;
+					u8 ttd = 20;
+
 					switch (charge_state)
 					{
 						case minimum_cast:
 						case medium_cast:
-						{
-							orb.set_f32("damage", 1.25f);
-							break;
-						}
-						case complete_cast:
-						{
-							orb.set_f32("damage", 1.75f);
-							break;
-						}
 						case super_cast:
 						{
-							orb.set_f32("damage", 2.25f);
+							damage_thresh = 2;
+							ttd = 25;
 							break;
-						}
-						if (this.hasTag("extra_damage"))
-						{
-							
 						}
 					}
 
-                    if(this.hasTag("extra_damage"))
-                        orb.Tag("extra_damage");
+                    if (this.hasTag("extra_damage"))
+                    {
+						damage = 0.05f;
+						ttd = 30;
+					}
 
 					orb.set_Vec2f("aim pos", aimpos);
 					orb.set_u16("follow_id", this.getNetworkID());
 
-					orb.IgnoreCollisionWhileOverlapped( this );
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.set_f32("damage", damage);
+					orb.set_u8("damage_thresh", damage_thresh);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+
+					orb.server_SetTimeToDie(ttd);
 				}
 			}
 		}
@@ -6044,27 +6044,26 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 819257813: // poisonsurge
 		{
-			f32 orbspeed = 5.5f;
+			f32 orbspeed = 5.0f;
 
 			if (!isServer()){
            		return;
 			}
 
-			f32 dmg = this.hasTag("extra_damage") ? 3.0f : 2.0f;
+			f32 dmg = this.hasTag("extra_damage") ? 3.0f : 2.5f;
 			u8 shrapnel_count = 3;
-			u8 angle = 60;
+			u8 angle = 45;
 
 			switch (charge_state)
 			{
 				case minimum_cast:
 				{
-					orbspeed *= 0.75f;
+					orbspeed *= 0.85f;
 					dmg -= 0.5f;
 				}
 				break;
 				case medium_cast:
 				{
-					orbspeed *= 0.85f;
 					dmg -= 0.25f;
 				}
 				break;
@@ -6081,7 +6080,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					angle = 15;
 					shrapnel_count = 5;
-					orbspeed *= 1.25f;
+					orbspeed *= 1.15f;
 					dmg += 0.5f;
 				}
 
@@ -6105,10 +6104,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.set_f32("shrapnel_damage", dmg * 0.25f);
 				orb.set_u8("shrapnel_count", shrapnel_count);
 				orb.set_u8("shrapnel_angle", angle);
+
+				orb.setAngleDegrees(-(aimpos - orbPos).Angle()+90);
 				orb.server_SetTimeToDie(1);
+
 				if (this.hasTag("extra_damage"))
 				{
 					orb.Tag("shrapnel_bouncy");
+					orb.Tag("no_bounce");
 				}
 
 				orb.server_setTeamNum(this.getTeamNum());

@@ -1,8 +1,13 @@
-#include "Hitters.as";	   
+#include "Hitters.as";
+#include "HittersWW.as";
 #include "LimitedAttacks.as";
 #include "TextureCreation.as";
 
 Random@ _laser_r = Random(0x10003);
+
+const f32 radius = 128.0f;
+const u8 update_thresh = 5;
+
 void onInit(CBlob@ this)
 {
 	this.Tag("counterable");
@@ -13,7 +18,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("shoot_sfx");
 	
 	this.getShape().SetGravityScale(0.0f);
-	this.getShape().getConsts().mapCollisions = false;
+	this.getShape().getConsts().mapCollisions = true;
 
 	if (!isClient()) return;
 
@@ -21,42 +26,40 @@ void onInit(CBlob@ this)
 	this.SetLightRadius(24.0f);
 	this.SetLightColor(SColor(255, 155, 155, 255));
 
-	u16[] exclude_ids;
-	this.set("exclude ids", @exclude_ids);
-	
 	CSprite@ thisSprite = this.getSprite();
-	thisSprite.ScaleBy(Vec2f(0.5f,0.5f));
-	CSpriteLayer@ l = thisSprite.addSpriteLayer("l", "BallLightning.png", 54, 54);
+	CSpriteLayer@ l = thisSprite.addSpriteLayer("l", "ArcLightning.png", 16, 16, this.getTeamNum(), 0);
 	if (l !is null)
 	{
-		l.ScaleBy(Vec2f(0.5f,0.5f));
-		thisSprite.RotateBy(XORRandom(360), Vec2f_zero);
+		thisSprite.ScaleBy(Vec2f(1.5f, 1.5f));
+		l.ScaleBy(Vec2f(1.5f, 1.5f));
 
 		Animation@ anim = l.addAnimation("default", 0, false);
 		if (anim !is null)
 		{
-			int[] frames = {0,1,2,3};
+			int[] frames = {0,1,2,3,4,5,6};
 			anim.AddFrames(frames);
 			
-			l.RotateBy(XORRandom(360), Vec2f_zero);
 			l.SetAnimation(anim);
 			l.setRenderStyle(RenderStyle::additive);
 		}
 	}
 
+	Vec2f[] last_path;
+	this.set("last_lightning_path", @last_path);
+
 	thisSprite.SetZ(525.0f);
 	thisSprite.SetEmitSound("BallLightningHum.ogg");
-	thisSprite.SetEmitSoundSpeed(0.5f);
-	thisSprite.SetEmitSoundVolume(0.25f);
+	thisSprite.SetEmitSoundSpeed(1.15f);
+	thisSprite.SetEmitSoundVolume(0.15f);
 	thisSprite.SetEmitSoundPaused(false);
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 
-	Setup(SColor(255, 155, 155, 255), "rend7", false);
-	Setup(SColor(255, 190, 220, 245), "rend8", false);
-	Setup(SColor(255, 255, 245, 255), "rend9", false);
-	Setup(SColor(255, 195, 195, 255), "rend10", false);
+	SetupImage("ArcLightningTrail.png", SColor(175, 175, 175, 255), "arc_rend0", false);
+	SetupImage("ArcLightningTrail.png", SColor(175, 210, 240, 255), "arc_rend1", false);
+	SetupImage("ArcLightningTrail.png", SColor(175, 255, 255, 255), "arc_rend2", false);
+	SetupImage("ArcLightningTrail.png", SColor(175, 215, 215, 255), "arc_rend3", false);
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "ArcLightning.as", "laserEffects");
 }
 
@@ -65,230 +68,235 @@ void onTick(CSprite@ this)
 	CSpriteLayer@ l = this.getSpriteLayer("l");
 	if (l !is null)
 	{
-		this.RotateBy(-3, Vec2f_zero);
-		l.RotateBy(3,  Vec2f_zero);
+		this.RotateBy(3, Vec2f_zero);
+		l.RotateBy(-3, Vec2f_zero);
 		l.animation.frame = this.animation.frame;
 	}
 }
 
-const f32 radius = 112.0f;
-void onTick(CBlob@ this)
+const f32 damage_mod_wet = 1.33f;
+void DamageBlobs(CBlob@ this, CBlob@ blob, Vec2f a, Vec2f b)
 {
-	this.server_SetTimeToDie(1);
+	if (!isServer()) return;
+	
+	f32 damage = Maths::Max(this.get_f32("damage"), blob.get_f32("damage"));
+	u8 damage_thresh = Maths::Max(this.get_u8("damage_thresh"), blob.get_u8("damage_thresh"));
 
-	if (this.getTickSinceCreated() == 1)
-		this.getSprite().PlaySound("BallLightningCreate.ogg", 0.8f, 0.9f+XORRandom(16)*0.01f);
-
-	Vec2f dir = this.getPosition() - this.get_Vec2f("aim pos");
-	f32 dir_len = dir.Length();
-	dir.Normalize();
-	dir *= 2.0f * Maths::Min(1.0f, dir_len / 32.0f);
-	this.setVelocity(-dir);
-
-	CBlob@[] blobsInRadius;
-	u16[] arc_ids;
-	if (getMap().getBlobsInRadius(this.getPosition(), radius, @blobsInRadius))
+	if (getGameTime() % damage_thresh == 0)
 	{
-		u16 tid = this.getNetworkID();
-
-		u16[]@ exclude_ids;
-		this.get("exclude ids", @exclude_ids);
-
-		Vec2f[] path;
-		for (uint i = 0; i < blobsInRadius.length; i++)
+		Vec2f dir = b - a;
+		HitInfo@[] hitInfos;
+		if (getMap().getHitInfosFromRay(a, dir.Angle(), dir.Length(), this, hitInfos))
 		{
-			CBlob@ blob = blobsInRadius[i];
-
-			if (blob !is null && blob !is this && blob.getName() == "arclightning")
+			for (uint i = 0; i < hitInfos.length; i++)
 			{
-				u16 bid = blob.getNetworkID();
-				if (exclude_ids.find(bid) != -1)
-					continue;
-
-				bool remove_our_id = tid < bid;
-				u16[]@ b_exclude_ids;
-				if (blob.get("exclude ids", @b_exclude_ids))
+				HitInfo@ hit = hitInfos[i];
+				CBlob@ blob = hit.blob;
+				if (blob !is null && isEnemy(blob, this))
 				{
-					if (remove_our_id && b_exclude_ids.find(tid) == -1) b_exclude_ids.push_back(tid);
+					if (blob.get_u16("wet timer") > 0) damage *= damage_mod_wet;
+					this.server_Hit(blob, hit.hitpos, Vec2f_zero, damage, HittersWW::electricity, true);
 				}
-				
-				arc_ids.push_back(blob.getNetworkID());
-				generateLightningPath(this.getPosition(), blob.getPosition(), path);
 			}
 		}
-		this.set("lightning path", @path);
 	}
-	this.set("links", @arc_ids);
-
-	updateLaserPositions(this);
 }
 
-const int MAX_LASER_POSITIONS = 2;
-
-void updateLaserPositions(CBlob@ this)
+void onTick(CBlob@ this)
 {
-	Vec2f thisPos = this.getPosition();
-	
-	Vec2f aimPos = this.get_Vec2f("aim pos");
-	Vec2f aimVec = aimPos - thisPos;
-	Vec2f aimNorm = aimVec;
-	aimNorm.Normalize();
-	
-	Vec2f destination = aimPos;
-	
-	Vec2f shootVec = destination-thisPos;
-	
-	Vec2f normal = (Vec2f(aimVec.y, -aimVec.x));
-	normal.Normalize();
-	
-	array<Vec2f> laser_positions;
-	
-	float[] positions;
-	positions.push_back(0);
-	for (int i = 0; i < MAX_LASER_POSITIONS; i++)
+    if (this.getTickSinceCreated() == 1)
+        this.getSprite().PlaySound("BallLightningCreate.ogg", 0.9f, 2.0f+XORRandom(16)*0.01f);
+
+	if (!this.hasTag("stop moving"))
+    {
+        Vec2f dir = this.getPosition() - this.get_Vec2f("aim pos");
+        f32 dir_len = dir.Length();
+        dir.Normalize();
+        dir *= 2.0f * Maths::Min(1.0f, dir_len / 32.0f);
+        this.setVelocity(-dir);
+    }
+
+    CBlob@[] blobsInRadius;
+    u16[] arc_ids;
+
+	bool was_update = false;
+    if (getMap().getBlobsInRadius(this.getPosition(), radius, @blobsInRadius))
+    {
+        u16 tid = this.getNetworkID();
+
+        dictionary lightning_paths;
+        for (uint i = 0; i < blobsInRadius.length; i++)
+        {
+            CBlob@ blob = blobsInRadius[i];
+
+            if (blob !is null && blob !is this && blob.getName() == "arclightning")
+            {
+                u16 bid = blob.getNetworkID();
+
+                bool remove_our_id = tid > bid;
+                if (remove_our_id) continue;
+
+                arc_ids.push_back(bid);
+
+				if (this.getTickSinceCreated() % update_thresh == 0)
+				{
+                	Vec2f[] path;
+					float[] positions;
+
+					positions.push_back(0);
+					for (int i = 0; i < MAX_LASER_POSITIONS / 2; i++)
+					{
+						positions.push_back(_laser_r.NextFloat());
+					}
+
+					positions.sortAsc();
+                	generateLightningPath(this, this.getPosition(), blob.getPosition(), path, positions);
+
+                	lightning_paths.set("" + bid, @path);
+					was_update = true;
+				}
+				
+				DamageBlobs(this, blob, this.getPosition(), blob.getPosition());
+            }
+        }
+        if (was_update) this.set("lightning_paths", lightning_paths);
+    }
+    if (was_update) this.set("links", @arc_ids);
+
+	if (isClient())
 	{
-		positions.push_back( _laser_r.NextFloat() );
-	}		
-	positions.sortAsc();
-	
-	const f32 sway = 10.0f;
-	const f32 jaggedness = 1.0f/(4.0f*sway);
-	
-	Vec2f prevPoint = thisPos;
-	f32 prevDisplacement = 0.0f;
-	
-	for (int i = 1; i < positions.length; i++)
-	{
-		float pos = positions[i];
- 
-		float scale = (shootVec.Length() * jaggedness) * (pos - positions[i - 1]);
-		float envelope = pos > 0.95f ? 20 * (1 - pos) : 1;
- 
-		float displacement = _laser_r.NextFloat()*sway*2.0f - sway;
-		displacement -= (displacement - prevDisplacement) * (1 - scale);
-		displacement *= envelope;
- 
-		Vec2f point = thisPos + shootVec*pos + normal*displacement;
-		
-		laser_positions.push_back(prevPoint);
-		prevPoint = point;
-		prevDisplacement = displacement;
+		const f32 sway = 24.0f;
+		const f32 jaggedness = 1.0f/((Maths::Sin(getGameTime()*0.05f)*2+sway)*sway);
+
+		this.set_f32("sway", sway);
+		this.set_f32("jaggedness", jaggedness);
 	}
-	laser_positions.push_back(destination);
-	
-	this.set("laser positions", laser_positions);
-	
-	array<Vec2f> laser_vectors;
-	for (int i = 0; i < laser_positions.length-1; i++)
-	{
-		laser_vectors.push_back(laser_positions[i+1] - laser_positions[i]);
-	}		
-	this.set("laser vectors", laser_vectors);	
 }
 
-void generateLightningPath(Vec2f start, Vec2f end, Vec2f[] &inout path)
+const int MAX_LASER_POSITIONS = 4;
+void generateLightningPath(CBlob@ this, Vec2f start, Vec2f end, Vec2f[] &inout path, float[] positions)
 {
 	Vec2f vec = end - start;
 	Vec2f norm = vec;
 	norm.Normalize();
 	Vec2f normal = Vec2f(norm.y, -norm.x);
-	
-	float[] positions;
-	positions.push_back(0);
-	for (int i = 0; i < MAX_LASER_POSITIONS / 2; i++)
-	{
-		positions.push_back(_laser_r.NextFloat());
-	}
-	positions.sortAsc();
-	
-	const f32 sway = 8.0f;
-	const f32 jaggedness = 1.0f/(4.0f*sway);
-	
+
+	f32 sway = this.get_f32("sway");
+	f32 jaggedness = this.get_f32("jaggedness");
+
+	Vec2f[]@ old_path;
+	this.get("last_lightning_path", @old_path);
+
 	Vec2f prevPoint = start;
 	f32 prevDisplacement = 0.0f;
-	
+
+	path.resize(0);
 	path.push_back(start);
-	for (int i = 1; i < positions.length; i++)
+	for (int i = 0; i < positions.length; i++)
 	{
 		float pos = positions[i];
 		float scale = (vec.Length() * jaggedness) * (pos - positions[i - 1]);
 		float envelope = pos > 0.95f ? 20 * (1 - pos) : 1;
-		
+
 		float displacement = _laser_r.NextFloat()*sway*2.0f - sway;
 		displacement -= (displacement - prevDisplacement) * (1 - scale);
 		displacement *= envelope;
-		
+
 		Vec2f point = start + vec*pos + normal*displacement;
+		if (old_path.length > i)
+		{
+			point = Vec2f_lerp(old_path[i], point, 0.5f);
+		}
+
 		path.push_back(point);
-		
+
 		prevPoint = point;
 		prevDisplacement = displacement;
 	}
-	
+
 	path.push_back(end);
+	old_path = path;
 }
 
 void laserEffects(CBlob@ this, int id)
 {
-	CSprite@ thisSprite = this.getSprite();
-	Vec2f thisPos = this.getPosition();
+    CSprite@ thisSprite = this.getSprite();
+    Vec2f thisPos = this.getPosition();
 
-	u16[]@ links;
-	if (!this.get("links", @links) || links.length == 0)
-	{
-		return;
-	}
+    u16[]@ links;
+    if (!this.get("links", @links) || links.length == 0)
+    {
+        return;
+    }
 
-	if (this.getTickSinceCreated() <= 0)
-		return;
-	
-	f32 z = this.getSprite().getZ() - 0.4f;
-	Vec2f[]@ path;
+    if (this.getTickSinceCreated() <= 0)
+        return;
+    
+    f32 z = this.getSprite().getZ() - 0.4f;
+    dictionary lightning_paths;
+    if (!this.get("lightning_paths", lightning_paths)) return;
+    u16 bid = this.getNetworkID();
 
-	if (!this.get("lightning path", @path)) return;
-
-	for (uint i = 0; i < links.length; i++)
-	{
-		CBlob@ source = getBlobByNetworkID(links[i]);
-		if (source is null) continue;
-		
-		Vec2f sourcePos = source.getPosition();
-		renderLightningPath(path, z);
-	}
+    for (uint i = 0; i < links.length; i++)
+    {
+        u16 linkId = links[i];
+        CBlob@ source = getBlobByNetworkID(linkId);
+        if (source is null) continue;
+		if (this.getDistanceTo(source) > radius) continue;
+        
+        Vec2f[]@ path;
+        if (lightning_paths.get("" + linkId, @path))
+        {
+            renderLightningPath(this, path, z);
+        }
+    }
 }
 
-void renderLightningPath(array<Vec2f>@ path, f32 z)
+const f32 SLIDE_HEIGHT = 1.0f; // Show 25% of the sprite
+void renderLightningPath(CBlob@ this, Vec2f[]@ &in path, f32 z)
 {
-	if (path.length < 2) return;
+    if (path.length < 2) return;
+    const f32 LASER_WIDTH = 8.0f;
+    
+    // Calculate the slide offset based on time
+    f32 slideOffset = Maths::Sin(this.getTickSinceCreated() * 0.1f) * Maths::Cos(this.getTickSinceCreated());
+    for (uint i = 0; i < path.length - 1; i++)
+    {
+        Vec2f start = path[i];
+        Vec2f end = path[i + 1];
+        Vec2f segVec = end - start;
+        Vec2f segNorm = segVec;
+        segNorm.Normalize();
+        Vec2f perpendicular = Vec2f(segNorm.y, -segNorm.x);
 
-	const f32 LASER_WIDTH = 1.0f;
-	for (uint i = 0; i < path.length - 1; i++)
-	{
-		Vec2f start = path[i];
-		Vec2f end = path[i + 1];
-		Vec2f segVec = end - start;
-		Vec2f segNorm = segVec;
-		segNorm.Normalize();
-		Vec2f perpendicular = Vec2f(segNorm.y, -segNorm.x);
-		
-		Vec2f[] v_pos;
-		Vec2f[] v_uv;
-		
-		v_pos.push_back(start - perpendicular * LASER_WIDTH); v_uv.push_back(Vec2f(0, 0));
-		v_pos.push_back(end - perpendicular * LASER_WIDTH); v_uv.push_back(Vec2f(1, 0));
-		v_pos.push_back(end + perpendicular * LASER_WIDTH); v_uv.push_back(Vec2f(1, 1));
-		v_pos.push_back(start + perpendicular * LASER_WIDTH); v_uv.push_back(Vec2f(0, 1));
-			
-		Render::Quads("rend" + (XORRandom(4) + 7), z, v_pos, v_uv);
-	}
+        Vec2f[] v_pos;
+        Vec2f[] v_uv;
+
+        // Apply the sliding window effect to UVs
+        // We only show SLIDE_HEIGHT portion of the texture, shifted by slideOffset
+        v_pos.push_back(start - perpendicular * LASER_WIDTH); 
+        v_uv.push_back(Vec2f(0, slideOffset));
+        
+        v_pos.push_back(end - perpendicular * LASER_WIDTH); 
+        v_uv.push_back(Vec2f(0, slideOffset + SLIDE_HEIGHT));
+        
+        v_pos.push_back(end + perpendicular * LASER_WIDTH); 
+        v_uv.push_back(Vec2f(1, slideOffset + SLIDE_HEIGHT));
+        
+        v_pos.push_back(start + perpendicular * LASER_WIDTH); 
+        v_uv.push_back(Vec2f(1, slideOffset));
+            
+        Render::Quads("rend" + (XORRandom(4) + 7), z, v_pos, v_uv);
+    }
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (blob is null && solid)
 	{
+		this.Tag("stop moving");
 		this.getSprite().PlaySound("lightning"+(1+XORRandom(2))+".ogg", 0.4f, 1.33f + XORRandom(16)*0.01f);
-		this.getSprite().PlaySound("BallLightningBounce.ogg", 0.4, 0.75f + XORRandom(16)*0.01f);
+		this.getSprite().PlaySound("BallLightningBounce.ogg", 0.4, 1.5f + XORRandom(16)*0.01f);
 	}
 }
 
@@ -298,7 +306,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		if (!isClient()) return;
 
-		this.getSprite().PlaySound("BallLightningShoot.ogg", 0.75f, 0.75f);
+		this.getSprite().PlaySound("BallLightningShoot.ogg", 0.75f, 1.5f);
 	}
 }
 
@@ -335,4 +343,39 @@ void blast(Vec2f pos, int amount, f32 scale = 1.0f)
 		p.lighting = true;
         p.setRenderStyle(RenderStyle::additive);
     }
+}
+
+bool isEnemy(CBlob@ blob, CBlob@ this)
+{
+	if (blob.getTeamNum() == this.getTeamNum()) return false;
+	return blob.hasTag("barrier") || blob.hasTag("flesh");
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	if (blob.getShape() !is null && blob.getShape().isStatic())
+	{
+		if (blob.hasTag("door") && blob.isCollidable())
+		{
+			return true;
+		}
+		
+		ShapePlatformDirection@ plat = blob.getShape().getPlatformDirection(0);
+		if (plat !is null)
+		{
+			Vec2f pos = this.getPosition();
+			Vec2f bpos = blob.getPosition();
+
+			Vec2f dir = plat.direction;
+			if ((dir.x > 0 && pos.x > bpos.x)
+				|| (dir.x < 0 && pos.x < bpos.x)
+				|| (dir.y > 0 && pos.y > bpos.y)
+				|| (dir.y < 0 && pos.y < bpos.y))
+			{
+				return true;
+			}
+		}
+	}
+
+	return blob.getName() == this.getName();
 }

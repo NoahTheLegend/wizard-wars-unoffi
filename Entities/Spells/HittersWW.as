@@ -56,9 +56,10 @@ shared enum hits {
 	
 	
 	
-	orb,
-	wizexplosion,
-    poison,
-    lifesteal
+	orb             = 150,
+	wizexplosion    = 151,
+    poison          = 152,
+    electricity     = 153,
+    lifesteal       = 154
 };
 }

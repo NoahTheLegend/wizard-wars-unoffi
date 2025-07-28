@@ -43,6 +43,7 @@ void Setup(SColor ImageColor, string test_name, bool is_fuzzy, bool override_tex
 			}
 		}
 	}
+
 	if (override_tex)
 	{
 		ImageData@ edit = Texture::data(test_name);
@@ -54,4 +55,56 @@ void Setup(SColor ImageColor, string test_name, bool is_fuzzy, bool override_tex
 
 		Texture::update(test_name, edit);
 	}
+}
+
+void SetupImage(string texture, SColor ImageColor, string test_name, bool is_fuzzy = false, bool override_tex = false)
+{
+	CFileImage@ image = CFileImage(texture);
+	if (image is null)
+	{
+		warn("Failed to load image: " + texture);
+		return;
+	}
+
+	if (Texture::exists(test_name) && !override_tex)
+	{
+		return;
+	}
+
+	ImageData@ data = TransformImageToImageData(image, ImageColor);
+	if (!Texture::update(test_name, data))
+	{
+		warn("Failed to update texture: " + test_name);
+
+		if (!Texture::createBySize(test_name, data.width(), data.height()))
+		{
+			warn("Failed to create texture for image data");
+		}
+	}
+}
+
+ImageData@ TransformImageToImageData(CFileImage@ image, SColor color)
+{
+	if (image is null)
+		return null;
+
+	ImageData@ data = @ImageData(image.getWidth(), image.getHeight());
+	for (int x = 0; x < data.width() * data.height(); x++)
+	{
+		if (image.nextPixel())
+		{
+			int offset = image.getPixelOffset();
+			int x = offset % data.width();
+			int y = offset / data.width();
+
+			SColor col = image.readPixel();
+			col.setAlpha(Maths::Min(color.getAlpha(), col.getAlpha()));
+			col.setRed(Maths::Min(color.getRed(), col.getRed()));
+			col.setGreen(Maths::Min(color.getGreen(), col.getGreen()));
+			col.setBlue(Maths::Min(color.getBlue(), col.getBlue()));
+			data.put(x, y, col);
+		}
+	}
+
+	return data;
 }

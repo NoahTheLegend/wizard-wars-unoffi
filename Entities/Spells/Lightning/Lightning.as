@@ -1,5 +1,6 @@
-#include "Hitters.as";	   
-#include "/Entities/Common/Attacks/LimitedAttacks.as";
+#include "Hitters.as";
+#include "HittersWW.as";
+#include "LimitedAttacks.as";
 
 const f32 RANGE = 2000.0f;
 const f32 DAMAGE = 0.6f;
@@ -98,8 +99,8 @@ void updateLaserPositions(CBlob@ this)
 					f32 damage = DAMAGE;
 					if (hitBlob.get_u16("wet timer") > 0) damage *= 1.33f;
 					if (hitBlob.hasTag("barrier")) damage *= 0.5f;
-					this.server_Hit(hitBlob, hi.hitpos, Vec2f(0,1), damage, Hitters::explosion, true);
-					
+					this.server_Hit(hitBlob, hi.hitpos, Vec2f(0,1), damage, HittersWW::electricity, true);
+
 					damageDealt = true;
 				}
 			}

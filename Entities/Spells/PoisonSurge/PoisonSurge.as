@@ -1,6 +1,7 @@
 #include "Hitters.as";
 #include "HittersWW.as";
 #include "MagicCommon.as";
+#include "SpellUtils.as";
 
 const f32 explosion_radius = 24.0f;
 void onInit(CBlob@ this)
@@ -48,11 +49,11 @@ void onTick(CBlob@ this)
 {
 	if (this.getVelocity().Length() > 0.01f && !this.hasTag("mark_for_death"))
 		this.setAngleDegrees(-this.getVelocity().Angle());
+	else this.Tag("mark_for_death");
 
 	if (this.getTickSinceCreated() == 0)
 	{
-		//this.getSprite().PlaySound("waterbolt_wave.ogg", 0.375f, 1.75f + XORRandom(11)*0.01f);
-		//this.getSprite().PlaySound("waterbolt_splash0.ogg", 0.375f, 1.75f + XORRandom(11)*0.01f);
+		// playsound
 		this.getSprite().SetZ(-1.0f);
 		this.getSprite().SetRelativeZ(-1.0f);
 	}
@@ -62,7 +63,7 @@ void onTick(CBlob@ this)
 	CSprite@ sprite = this.getSprite();
 	if (sprite is null) return;
 
-	if (getGameTime() % 1 == 0)
+	if (getGameTime() % 1 == 0 && this.getTickSinceCreated() > 3)
     {
         CParticle@ p = ParticleAnimated("PoisonSurgeParticle.png", this.getPosition(), Vec2f_zero, this.getAngleDegrees(), 1.0f, 5, 0.0f, true);
 	    if (p !is null)
@@ -128,15 +129,19 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (solid || (blob !is null && blob.hasTag("kill poison spells")))
 	{
-		this.Tag("no_shrapnel");
-		this.Tag("mark_for_death");
+		bool bounce = !this.hasTag("no_bounce");
+		if (!bounce)
+		{
+			this.Tag("no_shrapnel");
+			this.Tag("mark_for_death");
+		}
 	}
 	
 	if (blob !is null && doesCollideWithBlob(this, blob))
 	{
 		this.Tag("no_shrapnel");
 		this.Tag("mark_for_death");
-	} 
+	}
 }
 
 void onDie(CBlob@ this)
@@ -154,12 +159,22 @@ void Boom(CBlob@ this)
 	CBlob@[] bs;
 	getMap().getBlobsInRadius(this.getPosition(), explosion_radius, @bs);
 
+	CPlayer@ owner = this.getDamageOwnerPlayer();
+	CBlob@ hitter = owner !is null && owner.getBlob() !is null ? owner.getBlob() : null;
+
 	for (int i = 0; i < bs.length; i++)
 	{
 		CBlob@ blob = bs[i];
-		if (blob !is null && isEnemy(this, blob))
+		if (blob !is null && ((hitter !is null && blob is hitter) || isEnemy(this, blob)))
 		{
-			this.server_Hit(blob, this.getPosition(), this.getVelocity() * 2, this.get_f32("damage"), HittersWW::poison, true);
+			Vec2f dir = blob.getPosition() - this.getPosition();
+			f32 dir_len = dir.Length();
+
+			dir.Normalize();
+			dir *= explosion_radius * 2 - dir_len;
+			
+			this.server_Hit(blob, this.getPosition(), dir, this.get_f32("damage"), Hitters::explosion, true);
+			Poison(blob, defaultPoisonTime * 2, hitter);
 		}
 	}
 

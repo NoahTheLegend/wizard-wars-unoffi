@@ -7,6 +7,10 @@
 
 Random _spell_common_r(26784);
 
+const u16 defaultPoisonTime = 300; // 10 seconds
+const u8  poisonThreshold = 60; // 2 seconds
+const f32 poisonDamage = 0.2f; // 1 HP
+
 void Freeze(CBlob@ blob, f32 frozenTime)
 {	
 	blob.getShape().getConsts().collideWhenAttached = false;
@@ -464,6 +468,13 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
+			if ( b.get_u16("poisoned") > 0 && sameTeam )
+			{
+				b.set_u16("poisoned", 1);
+				b.Sync("poisoned", true);
+
+				countered = true;
+			}
 			if (b.get_u16("confused") > 0 && sameTeam)
 			{
 				b.set_u16("confused", 1);
@@ -650,11 +661,21 @@ void Slow( CBlob@ blob, u16 slowTime )
 	}
 }
 
+void Poison( CBlob@ blob, u16 poisonTime = defaultPoisonTime, CBlob@ hitter = null)
+{
+	if (hitter !is null)
+		blob.set_u16("last_poison_owner_id", hitter.getNetworkID());
+
+	if (blob.get_u16("poisoned") == 0) blob.getSprite().PlaySound("SlowOn.ogg", 0.6f, 0.75f + XORRandom(1)/10.0f);
+	blob.set_u16("poisoned", poisonTime);
+	blob.Sync("poisoned", true);
+}
+
 void Confuse( CBlob@ blob, u16 confuseTime )
 {	
 	blob.set_u16("confused", confuseTime);
 	blob.Sync("confused", true);
-	blob.getSprite().PlaySound("confuseOn.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
+	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
 }
 
 void ManaBurn( CBlob@ blob, u16 burnTime )
