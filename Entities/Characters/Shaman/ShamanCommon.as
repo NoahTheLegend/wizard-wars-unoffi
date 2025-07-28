@@ -64,7 +64,7 @@ namespace ShamanParams
 			SpellType::other, 40, 50, 3, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_FIRE}),
 		
 		Spell("arclightning", "Arc Lightning", 81, "Send a lightning arc that links to other arcs nearby.",
-			SpellType::other, 15, 30, 0, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_ELECTRICITY}),
+			SpellType::other, 18, 28, 0, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_ELECTRICITY}),
 		
 		Spell("iciclerain", "Magic Icicles", 82, "Materialize icicles to throw at the aim position. Overcharge fully to control aim position meanwhile icicles are being released.",
 			SpellType::other, 25, 30, 6, 512.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),

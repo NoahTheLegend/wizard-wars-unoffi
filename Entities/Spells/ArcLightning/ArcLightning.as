@@ -86,13 +86,14 @@ void DamageBlobs(CBlob@ this, CBlob@ blob, Vec2f a, Vec2f b)
 	{
 		Vec2f dir = b - a;
 		HitInfo@[] hitInfos;
-		if (getMap().getHitInfosFromRay(a, dir.Angle(), dir.Length(), this, hitInfos))
+		if (getMap().getHitInfosFromRay(a, -dir.Angle(), dir.Length(), this, hitInfos))
 		{
 			for (uint i = 0; i < hitInfos.length; i++)
 			{
 				HitInfo@ hit = hitInfos[i];
 				CBlob@ blob = hit.blob;
-				if (blob !is null && isEnemy(blob, this))
+
+				if (blob !is null && isEnemy(this, blob))
 				{
 					if (blob.get_u16("wet timer") > 0) damage *= damage_mod_wet;
 					this.server_Hit(blob, hit.hitpos, Vec2f_zero, damage, HittersWW::electricity, true);
@@ -111,6 +112,8 @@ void onTick(CBlob@ this)
     {
         Vec2f dir = this.getPosition() - this.get_Vec2f("aim pos");
         f32 dir_len = dir.Length();
+		if (dir_len < 4.0f) this.Tag("stop moving");
+
         dir.Normalize();
         dir *= 2.0f * Maths::Min(1.0f, dir_len / 32.0f);
         this.setVelocity(-dir);
@@ -123,20 +126,27 @@ void onTick(CBlob@ this)
     if (getMap().getBlobsInRadius(this.getPosition(), radius, @blobsInRadius))
     {
         u16 tid = this.getNetworkID();
-
         dictionary lightning_paths;
+		
         for (uint i = 0; i < blobsInRadius.length; i++)
         {
             CBlob@ blob = blobsInRadius[i];
 
-            if (blob !is null && blob !is this && blob.getName() == "arclightning")
+            if (blob !is null && blob !is this
+				&& blob.getTeamNum() == this.getTeamNum()
+				&& blob.getName() == "arclightning")
             {
                 u16 bid = blob.getNetworkID();
 
                 bool remove_our_id = tid > bid;
-                if (remove_our_id) continue;
+
+                if (remove_our_id)
+				{
+					continue;
+				}
 
                 arc_ids.push_back(bid);
+				DamageBlobs(this, blob, this.getPosition(), blob.getPosition());
 
 				if (this.getTickSinceCreated() % update_thresh == 0)
 				{
@@ -155,8 +165,6 @@ void onTick(CBlob@ this)
                 	lightning_paths.set("" + bid, @path);
 					was_update = true;
 				}
-				
-				DamageBlobs(this, blob, this.getPosition(), blob.getPosition());
             }
         }
         if (was_update) this.set("lightning_paths", lightning_paths);
@@ -286,7 +294,7 @@ void renderLightningPath(CBlob@ this, Vec2f[]@ &in path, f32 z)
         v_pos.push_back(start + perpendicular * LASER_WIDTH); 
         v_uv.push_back(Vec2f(1, slideOffset));
             
-        Render::Quads("rend" + (XORRandom(4) + 7), z, v_pos, v_uv);
+        Render::Quads("arc_rend" + (XORRandom(4)), z, v_pos, v_uv);
     }
 }
 
@@ -348,7 +356,7 @@ void blast(Vec2f pos, int amount, f32 scale = 1.0f)
 bool isEnemy(CBlob@ blob, CBlob@ this)
 {
 	if (blob.getTeamNum() == this.getTeamNum()) return false;
-	return blob.hasTag("barrier") || blob.hasTag("flesh");
+	return blob.hasTag("barrier") || blob.hasTag("flesh") || blob.hasTag("player");
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)

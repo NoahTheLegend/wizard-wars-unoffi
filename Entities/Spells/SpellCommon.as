@@ -4699,7 +4699,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ orb = server_CreateBlob("arclightning", this.getTeamNum(), orbPos); 
 				if (orb !is null)
 				{
-					f32 damage = 0.025f;
+					f32 damage = 0.05f;
 					u8 damage_thresh = 3;
 					u8 ttd = 20;
 
@@ -4717,7 +4717,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
                     if (this.hasTag("extra_damage"))
                     {
-						damage = 0.05f;
+						damage = 0.1f;
 						ttd = 30;
 					}
 

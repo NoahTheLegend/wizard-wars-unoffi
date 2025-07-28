@@ -66,19 +66,23 @@ void SetupImage(string texture, SColor ImageColor, string test_name, bool is_fuz
 		return;
 	}
 
-	if (Texture::exists(test_name) && !override_tex)
+	bool tex_exists = Texture::exists(test_name);
+	if (!override_tex && tex_exists)
 	{
+		//warn("Texture already exists: " + test_name);
 		return;
 	}
-
+	
 	ImageData@ data = TransformImageToImageData(image, ImageColor);
-	if (!Texture::update(test_name, data))
+	if (!Texture::createBySize(test_name, data.width(), data.height()))
 	{
-		warn("Failed to update texture: " + test_name);
-
-		if (!Texture::createBySize(test_name, data.width(), data.height()))
+		warn("Failed to create texture for image data");
+	}
+	else
+	{
+		if (!Texture::update(test_name, data))
 		{
-			warn("Failed to create texture for image data");
+			warn("Failed to update texture: " + test_name);
 		}
 	}
 }
@@ -86,7 +90,10 @@ void SetupImage(string texture, SColor ImageColor, string test_name, bool is_fuz
 ImageData@ TransformImageToImageData(CFileImage@ image, SColor color)
 {
 	if (image is null)
+	{
+		warn("Image is null");
 		return null;
+	}
 
 	ImageData@ data = @ImageData(image.getWidth(), image.getHeight());
 	for (int x = 0; x < data.width() * data.height(); x++)
