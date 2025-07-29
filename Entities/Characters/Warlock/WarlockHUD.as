@@ -149,7 +149,7 @@ void onTick( CSprite@ this )
 					if (index >= 0 && index < positions.length)
 					{
 						u16 frame = this.getFrameIndex();
-						bool lookingLeft = this.isFacingLeft();
+						bool lookingLeft = this.isFacingLeft(); // todo: make a duplicate array for facing left at the time we're showing the particle
 
 						Vec2f pos = positions[index];
 						string afterimageFile = "afterimages.png";

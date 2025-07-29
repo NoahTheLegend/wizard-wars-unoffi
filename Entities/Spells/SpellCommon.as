@@ -87,10 +87,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					CBlob@ sentry = server_CreateBlob("mushroom",this.getTeamNum(),Vec2f(aimpos.x,height) );
 					sentry.SetDamageOwnerPlayer(this.getPlayer());
 					sentry.set_s32("aliveTime",charge_state == 5 ? 1200 : 900); //if full charge last longer
-					if (this.hasTag("extra_damage"))
-					{
-						sentry.Tag("extra_damage");
-					}
+					if (this.hasTag("extra_damage")) sentry.Tag("extra_damage");
 				}
 			}
 			else
@@ -237,6 +234,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					newblob.set_u8("grow_power", power);
 					newblob.set_u8("grow_delay_increment", increment);
 					newblob.server_SetTimeToDie(ttd);
+					
+					if (this.getPlayer() !is null)
+					{
+						u16 netid = this.getPlayer().getNetworkID();
+						newblob.set_u16("owner_id", netid);
+					}
 
 					newblob.Tag("first");
 				}
@@ -565,6 +568,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1463630946://spikeorb
 		{
+			this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
 			if (!isServer()){
            		return;
 			}
@@ -605,6 +609,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 829656850: //sporeshot
 		{
+			this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
 			if (!isServer()){
            		return;
 			}
@@ -637,7 +642,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			orbVel.Normalize();
 			orbVel *= orbspeed;
 
-			CBlob@ orb = server_CreateBlob( "sporeshot" );
+			CBlob@ orb = server_CreateBlob("sporeshot");
 			if (orb !is null)
 			{
 				orb.set_f32("damage", orbDamage);
@@ -891,7 +896,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 1961711901://nature's helpers
+		case 1961711901://nature's helpers / bees
 		{
 			if (isClient())
 			{
@@ -4701,7 +4706,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					f32 damage = 0.05f;
 					u8 damage_thresh = 3;
-					u8 ttd = 20;
+					u8 ttd = 30;
 
 					switch (charge_state)
 					{
@@ -4710,7 +4715,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case super_cast:
 						{
 							damage_thresh = 2;
-							ttd = 25;
+							ttd = 38;
 							break;
 						}
 					}
@@ -4718,7 +4723,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
                     if (this.hasTag("extra_damage"))
                     {
 						damage = 0.1f;
-						ttd = 30;
+						ttd = 38;
 					}
 
 					orb.set_Vec2f("aim pos", aimpos);

@@ -13,6 +13,10 @@ void onInit(CBlob@ this)
 	this.set_u32("turning_at_corner_time", 0);
 	this.set_Vec2f("gravity", Vec2f(0, grav_const));
 	this.set_u32("not_on_ground_time", 0);
+	this.set_u16("target_id", 0);
+	this.set_u32("following_target", 0);
+	this.set_u16("idle_time", 0);
+	this.server_SetTimeToDie(30);
 
 	if (isServer())
 	{
@@ -25,14 +29,18 @@ const u8 idle_time = 30;
 const f32 base_accel = 1.0f;
 const f32 base_accel_opposite = 2.0f;
 const f32 stopping_damp_base = 0.7f;
-const f32 max_vel = 7.5f;
+const f32 max_vel = 8.0f;
 const f32 max_aggro_len = 128.0f;
+const f32 max_aggro_len_los = 256.0f;
+const int max_not_on_ground_time = 10;
 
 const f32 wall_raycast_dist = 4.0f;
 const f32 grav_const = 9.81f;
-const u32 max_not_on_ground_time = 5;
+const u16 max_idle_time = 150;
+const f32 explosion_radius = 32.0f;
+const f32 damage = 1.0f;
 
-void onRender(CSprite@ sprite)
+/*void onRender(CSprite@ sprite)
 {
 	CBlob@ this = sprite.getBlob();
 	if (this is null) return;
@@ -75,6 +83,7 @@ void onRender(CSprite@ sprite)
 
 	pather.Render();
 }
+*/
 
 Vec2f clampToCardinal(Vec2f vel)
 {
@@ -103,17 +112,18 @@ void onTick(CBlob@ this)
 	{
 		this.Tag("prep");
 		this.getShape().SetGravityScale(0.0f); // we have own gravity
+		this.getSprite().PlaySound("TreeGrow", 1.0f, 0.8f+XORRandom(10)*0.01f);
 	}
 	
-	if (isClient() && isServer())
-	{
-		if (getControls().isKeyJustPressed(KEY_KEY_R))
-		{
-			this.setPosition(getPlayerByUsername("NoahTheLegend").getBlob().getPosition());
-		}
-		if (getControls().isKeyJustPressed(KEY_KEY_K))
-			this.server_Die();
-	}
+	//if (isClient() && isServer())
+	//{
+	//	if (getControls().isKeyJustPressed(KEY_KEY_R))
+	//	{
+	//		this.setPosition(getPlayerByUsername("NoahTheLegend").getBlob().getPosition());
+	//	}
+	//	if (getControls().isKeyJustPressed(KEY_KEY_K))
+	//		this.server_Die();
+	//}
 
 	CMap@ map = getMap();
 	if (map is null) return;
@@ -133,7 +143,9 @@ void onTick(CBlob@ this)
 	this.set_u32("not_on_ground_time", onground ? 0 : Maths::Min(this.get_u32("not_on_ground_time") + 1, max_not_on_ground_time));
 	if (this.get_u32("not_on_ground_time") >= max_not_on_ground_time) this.set_Vec2f("gravity", Vec2f(0, grav_const));
 
+	u16 idle_time = this.get_u16("idle_time");
 	bool turning_at_corner = this.get_bool("turning_at_corner");
+
 	Vec2f grav = this.get_Vec2f("gravity");
 	this.setAngleDegrees(-grav.getAngleDegrees() - 90);
 
@@ -162,10 +174,24 @@ void onTick(CBlob@ this)
 			wall_surface.RotateBy(-90);
 			setTurningAtCorner(this, wall_surface);
 
-			this.set_Vec2f("debug_last_turn_velNorm", velNorm);
-			this.set_Vec2f("debug_last_turn_pos", pos);
-			this.set_Vec2f("debug_last_turn_next_wall", next_wall);
-			this.set_Vec2f("debug_last_turn_wall_surface", wall_surface);
+			//this.set_Vec2f("debug_last_turn_velNorm", velNorm);
+			//this.set_Vec2f("debug_last_turn_pos", pos);
+			//this.set_Vec2f("debug_last_turn_next_wall", next_wall);
+			//this.set_Vec2f("debug_last_turn_wall_surface", wall_surface);
+		}
+	}
+
+	f32 stop_before_cliff = 1;
+	if (!turning_at_corner && !map.rayCastSolidNoBlobs(pos + velNorm * 16, pos + velNorm * 16 + ground_norm * 16))
+	{
+		// check floor
+		Vec2f wall_surface = clampToCardinal(velNorm);
+		wall_surface.RotateBy(90);
+
+		if (!wasonground)
+		{
+			setTurningAtCorner(this, wall_surface);
+			this.setVelocity(this.getVelocity() + (fl ? -wall_surface.RotateBy(-45) : wall_surface.RotateBy(45) * 4));
 		}
 	}
 
@@ -175,12 +201,32 @@ void onTick(CBlob@ this)
 
 		BrainPath@ pather;
 		if (!this.get("brain_path", @pather)) return;
-
 		pather.Tick();
 		pather.SetSuggestedKeys();
 		pather.SetSuggestedAimPos();
 
-		if (this.getTickSinceCreated() >= idle_time)
+		u16 target_id = this.get_u16("target_id");
+		u32 following_time = this.get_u32("following_target");
+		bool has_target = target_id > 0 || following_time > getGameTime();
+
+		if (has_target)
+		{
+			CBlob@ found = getBlobByNetworkID(target_id);
+			if (found is null)
+			{
+				has_target = false;
+				
+				this.set_u16("target_id", 0);
+				this.set_u32("following_target", 0);
+			}
+			else
+			{
+				target = found.getPosition();
+				this.set_u32("following_target", getGameTime() + 90);
+			}
+		}
+
+		if (!has_target && this.getTickSinceCreated() >= idle_time)
 		{
 			for (u8 i = 0; i < getPlayersCount(); i++)
 			{
@@ -188,11 +234,14 @@ void onTick(CBlob@ this)
 				if (p !is null && p.getBlob() !is null)
 				{
 					CBlob@ b = p.getBlob();
-					if (b.getTeamNum() == this.getTeamNum()
-						|| b.getDistanceTo(this) > max_aggro_len)
+					if (b.getTeamNum() == this.getTeamNum())
 							continue;
 
-					if (map.rayCastSolidNoBlobs(pos, b.getPosition()))
+					if (b.getDistanceTo(this) > max_aggro_len_los)
+						continue;
+
+					bool raycast = map.rayCastSolidNoBlobs(pos, b.getPosition(), next_wall);
+					if (raycast && b.getDistanceTo(this) > max_aggro_len)
 						continue;
 
 					fl = b.getPosition().x < pos.x;
@@ -202,11 +251,11 @@ void onTick(CBlob@ this)
 			}
 		}
 
-		if (isClient() && isServer())
-		{
-			if (getControls().isKeyPressed(KEY_KEY_X))
-				target = getPlayerByUsername("NoahTheLegend").getBlob().getPosition();
-		}
+		//if (isClient() && isServer())
+		//{
+		//	if (getControls().isKeyPressed(KEY_KEY_X))
+		//		target = getPlayerByUsername("NoahTheLegend").getBlob().getPosition();
+		//}
 
 		bool found_ground = false;
 		if (!onground && wasonground)
@@ -263,6 +312,8 @@ void onTick(CBlob@ this)
 		this.AddForce(Vec2f(0, grav_const).RotateBy(this.getAngleDegrees()) * this.getMass() / 30);
 		if (target == Vec2f_zero)
 		{
+			if (idle_time < max_idle_time) this.add_u16("idle_time", 1);
+
 			pather.EndPath();
 			Vec2f rot_vel = vel;
 
@@ -271,6 +322,8 @@ void onTick(CBlob@ this)
 		}
 		else if (onground && vellen < max_vel)
 		{
+			this.set_u16("idle_time", 0);
+
 			if (!pather.isPathing()) pather.SetPath(pos, target);
 			Vec2f target_dir = pather.path.size() > 0 ? pather.path[0] - pos : target - pos;
 
@@ -284,7 +337,7 @@ void onTick(CBlob@ this)
 				accel *= base_accel_opposite;
 
 			Vec2f forward = Vec2f(1, 0).RotateBy(deg);
-			Vec2f force = forward * (target_dir.x < 0 ? -accel : target_dir.x > 0 ? accel : 0) * this.getMass();
+			Vec2f force = forward * stop_before_cliff * (target_dir.x < 0 ? -accel : target_dir.x > 0 ? accel : 0) * this.getMass();
 			this.AddForce(force);
 
 			if (vel.Length() > 0.1f) this.SetFacingLeft(target_dir.x < 0);
@@ -297,9 +350,16 @@ void onTick(CBlob@ this)
 	CSprite@ sprite = this.getSprite();
 	if (sprite is null) return;
 
-	if (false && turning_at_corner)
+	string anim_name = sprite.animation.name;
+	bool anim_ended = sprite.isAnimationEnded();
+
+	if (turning_at_corner || (anim_name.find("cl") != -1 && !anim_ended))
 	{
-		sprite.SetAnimation(this.get_bool("climbing_up") ? "climb_up" : "climb_down");
+		sprite.SetAnimation(this.get_bool("climbing_up") ? "climb_down" : "climb_up");
+	}
+	else if (idle_time == max_idle_time)
+	{
+		sprite.SetAnimation("sleep");
 	}
 	else if (onground)
 	{
@@ -426,7 +486,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	return 
 	( 
-		blob.hasTag("standingup")
+		blob.getName() == this.getName()
 		||
 		(
 			blob.hasTag("barrier") && blob.getTeamNum() != this.getTeamNum()
@@ -434,100 +494,95 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	);
 }
 
-void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if(this is null)
 	{return;}
 
 	bool blobDeath = false;
-	if (isClient() && ((solid && blob is null) || (blob !is null && this.doesCollideWithBlob(blob))))
-	{
-		CSprite@ sprite = this.getSprite();
-		if (sprite !is null)
-		{
-			//sprite.PlaySound("GumBounce"+XORRandom(3)+".ogg", 0.75f, 2.25f + XORRandom(16)*0.01f);
-		}
-	}
-
 	if (blob !is null && isEnemy(this, blob) && this.getTickSinceCreated() >= idle_time)
 	{
 		blobDeath = true;
 	}
 
 	if (blobDeath && isServer())
-	{this.Tag("mark_for_death");}
+	{
+		this.Tag("mark_for_death");
+
+		CBlob@[] bs;
+		getMap().getBlobsInRadius(this.getPosition(), explosion_radius, @bs);
+
+		for (int i = 0; i < bs.length; i++)
+		{
+			CBlob@ blob = bs[i];
+			if (blob !is null && isEnemy(this, blob))
+			{
+				Vec2f dir = blob.getPosition() - this.getPosition();
+				f32 dir_len = dir.Length();
+
+				dir.Normalize();
+				dir *= explosion_radius * 2 - dir_len;
+
+				this.server_Hit(blob, this.getPosition(), dir, damage, Hitters::explosion, true);
+			}
+		}
+	}
 }
 
 void onDie(CBlob@ this)
 {
+	if (this.hasTag("counterspelled")) return;
 	Vec2f pos = this.getPosition();
-
-	if (isClient())
+	u8 spores_count = 6 + XORRandom(7);
+	for (u8 i = 0; i < spores_count; i++)
 	{
-		makeSmokePuff(this);
-		smoke(this.getPosition(), 20);
-	}
-}
+		Vec2f vel(0, -1.0f - XORRandom(31) * 0.1f);
+		vel.RotateBy(this.getAngleDegrees() - 90 + XORRandom(180));
+		Vec2f rnd = Vec2f(XORRandom(16) - 8, XORRandom(16) - 8);
 
-void makeSmokePuff(CBlob@ this, const f32 velocity = 1.0f)
-{
-	Vec2f vel = Vec2f_zero;
-	makeSmokeParticle(this, vel);
-}
-
-void makeSmokeParticle(CBlob@ this, const Vec2f vel, const string filename = "Smoke")
-{
-	const f32 rad = 2.0f;
-	Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
-	{
-		CParticle@ p = ParticleAnimated("GenericBlast6.png", 
-										this.getPosition(), 
-										vel, 
-										float(XORRandom(360)), 
-										1.0f, 
-										2, 
-										0.0f, 
-										false);
-		if (p !is null)
+		CBlob@ spore = server_CreateBlob("sporeshot", this.getTeamNum(), pos + rnd);
+		if (spore !is null)
 		{
-			p.bounce = 0;
-			p.scale = 3.0f;
-    		p.fastcollision = true;
-			p.Z = 55.0f;
-			p.setRenderStyle(RenderStyle::additive);
+			spore.setVelocity(vel);
+			spore.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+			spore.set_f32("damage", 0.4f);
 		}
 	}
+	this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
+
+	u8 bees = 3+XORRandom(4);
+	for (u8 i = 0; i < bees; i++)
 	{
-		CParticle@ p = ParticleAnimated("GenericBlast5.png", 
-										this.getPosition(), 
-										vel, 
-										float(XORRandom(360)), 
-										1.0f, 
-										2, 
-										0.0f, 
-										false );
-		if (p !is null)
+		Vec2f vel(0, -2.0f - XORRandom(3));
+		vel.RotateBy(this.getAngleDegrees() - 90 + XORRandom(180));
+		Vec2f rnd = Vec2f(XORRandom(16) - 8, XORRandom(16) - 8);
+
+		CBlob@ bee = server_CreateBlob("bee", this.getTeamNum(), pos + rnd);
+		if (bee !is null)
 		{
-			p.bounce = 0;
-			p.scale = 2.0f;
-    		p.fastcollision = true;
-			p.Z = 20.0f;
+			bee.setVelocity(vel);
+			bee.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+
+			bee.set_f32("damage", 0.4f);
+			bee.set_f32("heal_amount", 0.1f);
 		}
 	}
+	this.getSprite().PlaySound("bee-0"+(XORRandom(3)+1), 0.4f, 0.9f + XORRandom(10) * 0.01f);
+	if (isClient()) smoke(this.getPosition(), 15);
 }
 
 Random _smoke_r(0x10001);
 void smoke(Vec2f pos, int amount)
 {
-	if ( !getNet().isClient() )
+	if (!getNet().isClient())
 		return;
 
 	for (int i = 0; i < amount; i++)
     {
-        Vec2f vel(5.0f + _smoke_r.NextFloat() * 5.0f, 0);
+        Vec2f vel(2.0f + _smoke_r.NextFloat() * 2.0f, 0);
         vel.RotateBy(_smoke_r.NextFloat() * 360.0f);
 
-        CParticle@ p = ParticleAnimated( CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+        CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
 									pos, 
 									vel, 
 									float(XORRandom(360)), 
@@ -543,6 +598,8 @@ void smoke(Vec2f pos, int amount)
         p.damping = 0.925f;
 		p.Z = 200.0f;
 		p.lighting = false;
+		p.colour = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+		p.forcecolor = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
 		p.setRenderStyle(RenderStyle::additive);
     }
 }

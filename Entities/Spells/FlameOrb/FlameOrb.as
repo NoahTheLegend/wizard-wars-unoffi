@@ -30,6 +30,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	this.setAngleDegrees(-this.getVelocity().Angle() - 90);
 	if (this.getTickSinceCreated() == 1)
 	{
 		this.getSprite().PlaySound("flame_slash_sound", 1.5f, 1.75f);

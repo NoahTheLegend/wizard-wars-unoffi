@@ -1,3 +1,6 @@
+#include "DruidCommon.as";
+#include "PlayerPrefsCommon.as";
+
 const u8 chance_flowers_default = 50;
 const u8 chance_spore = 10;
 const u16 slow_time = 60; // how long the slow effect lasts
@@ -6,6 +9,7 @@ const u16 haste_time = 60; // how long the hasten effect lasts
 const u32 flowers_time_base = 450; // how long the flowers last
 const u32 flowers_time_random = 150; // random time added to the flowers time
 const u32 chance_flowers_per_tick = 7500;
+const u8 mossy_golem_cooldown = 6; // in seconds
 
 void onInit(CBlob@ this)
 {
@@ -359,6 +363,9 @@ void Grow(CBlob@ this, int power)
 				moss.set_u8("grow_delay_increment", grow_delay_inc);
 				this.add_u8("grow_delay_increment", grow_delay_inc);
 
+				moss.set_u16("owner_id", this.get_u16("owner_id"));
+				moss.Tag("owner" + this.get_u16("owner_id"));
+
 				moss.server_SetTimeToDie(this.getTimeToDie());
 			}
 		}
@@ -449,6 +456,21 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 	if (blob.hasTag("flesh"))
 	{
+		if (isServer())
+		{
+			CBlob@[] mgs;
+			getBlobsByTag("mg_owner" + this.get_u16("owner_id"), @mgs);
+			for (u8 i = 0; i < mgs.length; i++)
+			{
+				CBlob@ mg = mgs[i];
+				if (mg !is null && mg.getTeamNum() == this.getTeamNum()
+					&& mg.getTeamNum() != blob.getTeamNum() && mg.getDistanceTo(blob) < 512.0f)
+				{
+					if (mg.get_u16("target_id") == 0)
+						mg.set_u16("target_id", blob.getNetworkID());
+				}
+			}
+		}
 		if (this.get_bool("has_flowers"))
 		{
 			// sound
@@ -480,9 +502,82 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 			}
 		}
 	}
-	else if (isServer() && blob.getName() == "sporeshot" && XORRandom(chance_spore) == 0)
+	else
 	{
-		server_SetFlowers(this);
+		if (blob.getName() == "mushroom" && !blob.hasTag("moss_collided")
+			&& blob.getTickSinceCreated() <= 5 && blob.getTeamNum() == this.getTeamNum())
+		{
+			blob.Tag("moss_collided");
+
+			CPlayer@ owner = blob.getDamageOwnerPlayer();
+			if (owner !is null && owner.getNetworkID() == this.get_u16("owner_id"))
+			{
+				if (isClient())
+				{
+					for (int i = 0; i < 8+XORRandom(5); i++)
+    				{
+    				    Vec2f vel(1.0f + XORRandom(10)*0.1f, 0);
+    				    vel.RotateBy(XORRandom(360));
+
+    				    CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+													this.getPosition(), 
+													vel, 
+													float(XORRandom(360)), 
+													1.0f, 
+													4 + XORRandom(8), 
+													0.0f, 
+													false );
+
+    				    if (p is null) return;
+
+    					p.fastcollision = true;
+    				    p.scale = 1.0f - XORRandom(51) * 0.01f;
+    				    p.damping = 0.925f;
+						p.Z = 750.0f;
+						p.colour = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+						p.forcecolor = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+						p.setRenderStyle(RenderStyle::additive);
+    				}
+
+					PlayerPrefsInfo@ playerPrefsInfo;
+					if (!owner.get("playerPrefsInfo", @playerPrefsInfo))
+					{
+						return;
+					}
+
+					playerPrefsInfo.spell_cooldowns[9] = mossy_golem_cooldown*30;
+				}
+
+				if (isServer())
+				{
+					CBlob@ mossy_golem = server_CreateBlob("mossygolem", this.getTeamNum(), blob.getPosition());
+					if (mossy_golem !is null)
+					{
+						mossy_golem.SetFacingLeft(XORRandom(2) == 0);
+						mossy_golem.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+						mossy_golem.server_SetTimeToDie(18+XORRandom(8)*0.1f);
+
+						mossy_golem.set_u16("owner_id", this.get_u16("owner_id"));
+						mossy_golem.Tag("mg_owner" + this.get_u16("owner_id"));
+					}
+
+					blob.server_Die();
+				}
+			}
+			else
+			{
+				// otherwise, capture the tile
+				bool[][]@ captured_tiles;
+				if (getRules().get("moss_captured_tiles", @captured_tiles))
+				{
+					SetTile(getMap(), blob.getPosition(), true, captured_tiles);
+				}
+			}
+		}
+		else if (isServer() && blob.getName() == "sporeshot" && XORRandom(chance_spore) == 0)
+		{
+			server_SetFlowers(this);
+		}
 	}
 }
 

@@ -10,6 +10,8 @@ void onInit(CBlob@ this)
 	this.Tag("kill other spells");
 	this.Tag("counterable");
 	this.Tag("poison projectile");
+
+	this.set_u32("sound_at", 0);
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
@@ -32,7 +34,7 @@ void onInit(CBlob@ this)
 			l.SetRelativeZ(-0.5f);
 		}
 	}
-
+	
 	this.getShape().SetGravityScale(0.0f);
 }
 
@@ -53,9 +55,10 @@ void onTick(CBlob@ this)
 
 	if (this.getTickSinceCreated() == 0)
 	{
-		// playsound
-		this.getSprite().SetZ(-1.0f);
-		this.getSprite().SetRelativeZ(-1.0f);
+		CSprite@ sprite = this.getSprite();
+		sprite.PlaySound("PoisonSurge"+XORRandom(3)+".ogg", 1.5f, 1.2f + XORRandom(11) * 0.01f);
+		sprite.SetZ(-1.0f);
+		sprite.SetRelativeZ(-1.0f);
 	}
 
 	if (!isClient()) return;
@@ -135,6 +138,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 			this.Tag("no_shrapnel");
 			this.Tag("mark_for_death");
 		}
+		else
+		{
+			if (this.get_u32("sound_at") + 5 > getGameTime()) return;
+			this.set_u32("sound_at", getGameTime());
+			this.getSprite().PlaySound("PoisonSurgeReflect.ogg", 0.5f, 0.9f + XORRandom(11) * 0.01f);
+		}
 	}
 	
 	if (blob !is null && doesCollideWithBlob(this, blob))
@@ -146,7 +155,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 void onDie(CBlob@ this)
 {
-	// playsound
+	this.getSprite().PlaySound("SplatExplosion.ogg", 1.5f, 1.0f+XORRandom(11) * 0.01f);
 	Boom(this);
 	sparks(this.getPosition(), 50);
 }

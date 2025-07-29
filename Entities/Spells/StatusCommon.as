@@ -225,6 +225,7 @@ shared class Status
         {
             tooltip.fade = Maths::Lerp(tooltip.fade, f32(tooltip_fade) / f32(max_fade), df * 2);
             tooltip.pos = pos;
+            tooltip.desc_seconds = Maths::Round(duration * 10.0f / 30.0f) / 10;
         }
         
         active_fade = Maths::Clamp(active_fade + (duration > 0 ? 1 : -1), 0, max_fade);
@@ -283,6 +284,7 @@ shared class Tooltip
     f32 fade;
     Vec2f text_dim;
     SColor tooltip_col;
+    int desc_seconds;
 
     Tooltip(u8 _type, string _text, Vec2f _pos, Vec2f _dim)
     {
@@ -292,6 +294,7 @@ shared class Tooltip
         dim = _dim;
         fade = 0.0f;
         tooltip_col = getTooltipColor(type);
+        desc_seconds = 0;
     }
 
     void render()
@@ -300,13 +303,19 @@ shared class Tooltip
             return;
 
         GUI::SetFont("menu");
+
+        string seconds = desc_seconds > 0 ? " " + desc_seconds + "s" : "";
+        Vec2f seconds_dim;
+        GUI::GetTextDimensions(seconds, seconds_dim);
+
         GUI::GetTextDimensions(text, text_dim);
+        text_dim.x += seconds_dim.x;
         
         Vec2f tooltip_pos = pos - Vec2f(text_dim.x / 2 - dim.x + 4, text_dim.y + 8);
         GUI::DrawPane(tooltip_pos, tooltip_pos + text_dim + Vec2f(8, 8), SColor(uint8(200 * fade), 55, 55, 55));
 
         tooltip_col.setAlpha(uint8(255 * fade));
-        GUI::DrawText(text, tooltip_pos + Vec2f(2, 2), tooltip_col);
+        GUI::DrawText(text + seconds, tooltip_pos + Vec2f(2, 2), tooltip_col);
         GUI::SetFont("default");
     }
 

@@ -53,7 +53,8 @@ namespace DruidParams
 				
 		Spell("healing_plant", "Nature's Remedy", 37, "This blessing from nature will seal your wounds. Despelling this may heal everyone inside, along with the enemy.",
 			SpellType::other, 35, 30, 5, 128.0f, true, true, array<int> = {SpellAttribute::SPELL_HEAL, SpellAttribute::SPELL_GROUNDED}),
-				
+
+		// keep it at 9th index
 		Spell("mushroom", "Dancing Shroom", 34, "A happy mushroom that will create it's own cloud of spores for you.",
 			SpellType::other, 12, 20, 0, 96.0f, true, true, array<int> = {SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_GROUNDED}),
 		
@@ -82,7 +83,7 @@ namespace DruidParams
 			SpellType::other, 32, 45, 6, 180.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
 		Spell("moss", "Mossy Veil", 144, "Grow spreading moss on the ground that decreases fall damage when you land on it. The flowers growing nearby will increase your speed and decrease for enemy. Spores might help the flowers to grow faster.",
-			SpellType::other, 18, 60, 0, 180.0f, true, true, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_GROUNDED, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT, SpellAttribute::SPELL_CONTROL}),
+			SpellType::other, 24, 60, 25, 180.0f, true, true, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_GROUNDED, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT, SpellAttribute::SPELL_CONTROL}),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellType::other, 1, 1, 0, 0.0f)

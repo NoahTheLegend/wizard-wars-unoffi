@@ -454,6 +454,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				b.Untag("exploding");
 				b.Tag("just_countered");
 				b.Tag("mark_for_death");
+				b.Tag("counterspelled");
 				if (b.getName() == "plant_aura")
 				{retribution = true;}
 					
@@ -589,7 +590,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				b.add_u8("despelled",1);
 				countered = true;
 			}
-			if ( retribution)
+			if (retribution)
 			{
 				/*ManaInfo@ manaInfo;
 				if (!caster.get( "manaInfo", @manaInfo )) {

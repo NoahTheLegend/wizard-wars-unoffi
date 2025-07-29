@@ -529,7 +529,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 			if (isClient())
 			{
-				this.getSprite().PlaySound("warp_teleport.ogg", 0.5f, 1.5f+XORRandom(21)*0.01f);
+				this.getSprite().PlaySound("warp_teleport.ogg", 1.0f, 1.5f+XORRandom(21)*0.01f);
 			}
 
 			ParticleAnimated("Flash3.png",

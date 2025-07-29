@@ -1,7 +1,7 @@
 // Gingerbeard @ January 16th, 2025
 // Edited by NoahTheLegend
 
-const bool render_paths = true;  // Dev rendering, set to true to see nodes + pathing
+const bool render_paths = false;  // Dev rendering, set to true to see nodes + pathing
 
 const u8 tilesize = 8;
 const u8 halfsize = tilesize / 2;
@@ -170,6 +170,8 @@ bool canNodesConnect(HighLevelNode@ node, HighLevelNode@ neighbor, CMap@ map)
 
 		for (u8 i = 0; i < 4; i++)
 		{
+			if (currentNode is null) continue;
+			
 			Vec2f neighborPos = currentNode.position + cardinalDirections[i];
 			if (closedList.exists(neighborPos.toString())) continue;
 

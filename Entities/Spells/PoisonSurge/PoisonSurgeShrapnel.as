@@ -81,15 +81,23 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 			}
 		}
 	}
-	
+
 	return (isEnemy(this, blob));
 }
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
+	bool playsound = false;
 	if ((solid && this.getShape().getElasticity() <= 0.1f)
 		|| (blob !is null && blob.hasTag("kill poison spells")))
-			this.Tag("mark_for_death");
+	{
+		this.Tag("mark_for_death");
+		playsound = true;
+	}
+	if (solid && blob is null && this.getShape().getElasticity() > 0.1f)
+	{
+		this.getSprite().PlaySound("PoisonSurgeReflect.ogg", 0.2f, 1.3f + XORRandom(11) * 0.01f);
+	}
 
 	if (blob !is null && doesCollideWithBlob(this, blob))
 	{
@@ -101,8 +109,14 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		    }
 		}
 
+		playsound = true;
 		this.Tag("mark_for_death");
-	} 
+	}
+
+	if (playsound)
+	{
+		this.getSprite().PlaySound("Splat0.ogg", 0.4f+XORRandom(21)*0.01f, 0.9f + XORRandom(31) * 0.01f);
+	}
 }
 
 void onDie(CBlob@ this)
