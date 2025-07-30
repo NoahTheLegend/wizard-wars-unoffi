@@ -43,7 +43,7 @@ namespace WarlockParams
 		Spell("tomeblood", "Tome of Blood", 127, "Consumes health instead of mana. A swarm of blood arrows to summon beneath the position.",
 				SpellType::healthcost, 2, 40, 3, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEALTHCOST}),
 
-		Spell("warp_field", "Warp Field", 140, "Open a warp-shroud on map that breaks the laws of physics for living creatures. Teleporting inside will open a portal at random location. Can be despelled by anyone.",
+		Spell("warp_field", "Sigil of Warp", 140, "Open a shroud on map that breaks the laws of physics for living creatures. Teleporting inside will open a portal at random location. Can be despelled by anyone.",
 				SpellType::other, 30, 50, 0, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT}),
 
 		Spell("chronomantic_teleport", "Chronomantic Teleport", 141, "Consumes health instead of mana. Teleports you to a random location on the map. When overcharged, teleports you to where you were at 5 seconds ago.",

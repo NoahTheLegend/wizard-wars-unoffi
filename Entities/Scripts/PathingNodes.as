@@ -1,14 +1,14 @@
 // Helper function to check if a position is a critical "corner" for navigation.
 bool isCorner(const bool[]@ solid_neighbors)
 {
-    // "Outer" corner: a path goes around a solid corner.
+    // "Outer" corner: a path goes around a solid corner
     const bool is_outer_corner =
         (solid_neighbors[1] && solid_neighbors[3] && !solid_neighbors[0]) || // Top-Left
         (solid_neighbors[1] && solid_neighbors[4] && !solid_neighbors[2]) || // Top-Right
         (solid_neighbors[3] && solid_neighbors[6] && !solid_neighbors[5]) || // Bottom-Left
         (solid_neighbors[4] && solid_neighbors[6] && !solid_neighbors[7]);   // Bottom-Right
 
-    // "Inner" corner: a path goes into a concave corner.
+    // "Inner" corner: a path goes into a concave corner
     const bool is_inner_corner =
         (!solid_neighbors[1] && !solid_neighbors[3] && solid_neighbors[0]) || // Top-Left
         (!solid_neighbors[1] && !solid_neighbors[4] && solid_neighbors[2]) || // Top-Right
@@ -18,7 +18,7 @@ bool isCorner(const bool[]@ solid_neighbors)
     return is_outer_corner || is_inner_corner;
 }
 
-// Helper function to check for adjacent solid ground.
+// Helper function to check for adjacent solid ground
 bool isAdjacentToSolid(Vec2f pos, CMap@ map)
 {
     const int tilesize = 8; 
@@ -35,7 +35,6 @@ bool isAdjacentToSolid(Vec2f pos, CMap@ map)
     return false;
 }
 
-// Main Corrected Function
 void InitializeNodeMap(CRules@ this)
 {
     HighLevelNode@[] nodeMap;
@@ -46,14 +45,14 @@ void InitializeNodeMap(CRules@ this)
     const int tilesize = 8; 
 
     const int flat_spacing = 3;
-    const int max_link_dist = 8 + Maths::Max(flat_spacing - 1, 0) * tilesize; // Maximum distance to link nodes
-    const int RESET_POS = -99999; // Default value to reset spacing trackers
+    const int max_link_dist = 8 + Maths::Max(flat_spacing - 1, 0) * tilesize;
+    const int RESET_POS = -99999;
 
     dictionary potential_nodes;
     dictionary last_node_in_row;
     dictionary last_node_in_col;
 
-    // --- PASS 1: NODE IDENTIFICATION ---
+    // node caching
     for (int y = 0; y < dim.y; y += tilesize)
     {
         for (int x = 0; x < dim.x; x += tilesize)
@@ -76,15 +75,15 @@ void InitializeNodeMap(CRules@ this)
 
             bool should_create_node = false;
 
-            // RULE 1: Always create a node at a corner.
+            // RULE 1: always create a node at a corner.
             if (isCorner(solid_neighbors))
             {
                 should_create_node = true;
             }
-            // RULE 2: If not a corner, check for spaced surfaces.
+            // RULE 2: when not a corner, check sparsed neighbors
             else 
             {
-                // -- Horizontal surface check (Floors and Ceilings) --
+                // horizontal sparsing
                 bool is_on_floor   = solid_neighbors[6] && !solid_neighbors[1];
                 bool is_on_ceiling = solid_neighbors[1] && !solid_neighbors[6];
                 
@@ -97,7 +96,7 @@ void InitializeNodeMap(CRules@ this)
                     }
                 }
                 
-                // -- Vertical surface check (Walls) --
+                // vertical sparsing
                 bool is_on_left_wall  = solid_neighbors[3] && !solid_neighbors[4];
                 bool is_on_right_wall = solid_neighbors[4] && !solid_neighbors[3];
 
@@ -111,7 +110,6 @@ void InitializeNodeMap(CRules@ this)
                 }
             }
 
-            // After deciding, create the node and update trackers
             if (should_create_node)
             {
                 string node_key = x + "," + y;
@@ -121,18 +119,16 @@ void InitializeNodeMap(CRules@ this)
                 last_node_in_col.set("" + x, y);
             }
             
-            // **THE FIX**: If the current tile is NOT a surface, reset the trackers.
-            // This prevents positions from old platforms affecting new ones after a gap.
-            if (!solid_neighbors[6] && !solid_neighbors[1]) { // Not a floor or ceiling
+            if (!solid_neighbors[6] && !solid_neighbors[1]) { // not a floor or ceiling
                  last_node_in_row.set("" + y, RESET_POS);
             }
-            if (!solid_neighbors[3] && !solid_neighbors[4]) { // Not a left or right wall
+            if (!solid_neighbors[3] && !solid_neighbors[4]) { // not a left or right wall
                  last_node_in_col.set("" + x, RESET_POS);
             }
         }
     }
 
-    // --- PASS 2 & 3: NODE CREATION & CONNECTION (No changes here) ---
+    // create the nodes and connect them
     string[] node_keys = potential_nodes.getKeys();
     for (uint i = 0; i < node_keys.length; i++) {
         string[] parts = node_keys[i].split(",");
@@ -173,7 +169,6 @@ void InitializeNodeMap(CRules@ this)
         }
     }
     
-    // --- PASS 4: MAKE CONNECTIONS BIDIRECTIONAL (No changes here) ---
     for(uint i=0; i < nodeMap.length; i++) {
         HighLevelNode@ node = nodeMap[i];
         for(uint k=0; k < node.connections.length; k++) {
@@ -319,14 +314,12 @@ void UpdateNodePosition(HighLevelNode@ node, CMap@ map)
 	node.position = node.original_position;
 	node.flags = 0;
 
-	// If the tile at the node's original position is no longer solid, disable the node
 	if (map.isTileSolid(node.original_position))
 	{
 		node.flags = Path::DISABLED;
 		return;
 	}
 
-	// Look for the nearest passable area in a small radius
 	Vec2f dim = map.getMapDimensions();
 	const u8 searchRadius = 4;
 	Vec2f closestPos = node.original_position;
@@ -351,7 +344,6 @@ void UpdateNodePosition(HighLevelNode@ node, CMap@ map)
 		}
 	}
 
-	// If no passable area is found, mark the node as disabled
 	if (closestDistance == 999999.0f)
 	{
 		node.flags = Path::DISABLED;

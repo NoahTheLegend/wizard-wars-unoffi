@@ -3203,6 +3203,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 1137221912://meteor_strike
 		case 1057572449://arrow_rain
 		case 1693590535://smite
+		case 1786253389://stellarcollapse
 		{
 			if (!isServer())
 			{

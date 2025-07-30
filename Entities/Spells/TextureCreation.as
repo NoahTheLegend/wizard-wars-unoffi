@@ -57,7 +57,7 @@ void Setup(SColor ImageColor, string test_name, bool is_fuzzy, bool override_tex
 	}
 }
 
-void SetupImage(string texture, SColor ImageColor, string test_name, bool is_fuzzy = false, bool override_tex = false)
+void SetupImage(string texture, SColor ImageColor, string test_name, bool is_fuzzy = false, bool override_tex = false, Vec2f framePos = Vec2f_zero, Vec2f frameSize = Vec2f_zero)
 {
 	CFileImage@ image = CFileImage(texture);
 	if (image is null)
@@ -73,7 +73,13 @@ void SetupImage(string texture, SColor ImageColor, string test_name, bool is_fuz
 		return;
 	}
 	
-	ImageData@ data = TransformImageToImageData(image, ImageColor);
+	// If frameSize is zero, use the entire image
+	if (frameSize == Vec2f_zero)
+	{
+		frameSize = Vec2f(image.getWidth(), image.getHeight());
+	}
+	
+	ImageData@ data = TransformImageToImageData(image, ImageColor, framePos, frameSize);
 	if (!Texture::createBySize(test_name, data.width(), data.height()))
 	{
 		warn("Failed to create texture for image data");
@@ -87,29 +93,50 @@ void SetupImage(string texture, SColor ImageColor, string test_name, bool is_fuz
 	}
 }
 
-ImageData@ TransformImageToImageData(CFileImage@ image, SColor color)
+ImageData@ TransformImageToImageData(CFileImage@ image, SColor color, Vec2f framePos = Vec2f_zero, Vec2f frameSize = Vec2f_zero)
 {
 	if (image is null)
 	{
 		warn("Image is null");
 		return null;
 	}
-
-	ImageData@ data = @ImageData(image.getWidth(), image.getHeight());
-	for (int x = 0; x < data.width() * data.height(); x++)
+	
+	// If frameSize is zero, use the entire image
+	if (frameSize == Vec2f_zero)
 	{
-		if (image.nextPixel())
-		{
-			int offset = image.getPixelOffset();
-			int x = offset % data.width();
-			int y = offset / data.width();
+		frameSize = Vec2f(image.getWidth(), image.getHeight());
+	}
 
+	// Create ImageData with the frame size
+	int frameWidth = int(frameSize.x);
+	int frameHeight = int(frameSize.y);
+	ImageData@ data = @ImageData(frameWidth, frameHeight);
+	
+	int frameX = int(framePos.x);
+	int frameY = int(framePos.y);
+	
+	// Process all pixels
+	while (image.nextPixel())
+	{
+		int offset = image.getPixelOffset();
+		int x = offset % image.getWidth();
+		int y = offset / image.getWidth();
+		
+		// Check if the pixel is within our frame
+		if (x >= frameX && x < frameX + frameWidth && 
+			y >= frameY && y < frameY + frameHeight)
+		{
 			SColor col = image.readPixel();
 			col.setAlpha(Maths::Min(color.getAlpha(), col.getAlpha()));
 			col.setRed(Maths::Min(color.getRed(), col.getRed()));
 			col.setGreen(Maths::Min(color.getGreen(), col.getGreen()));
 			col.setBlue(Maths::Min(color.getBlue(), col.getBlue()));
-			data.put(x, y, col);
+			
+			// Adjust coordinates to the frame
+			int frameRelativeX = x - frameX;
+			int frameRelativeY = y - frameY;
+			
+			data.put(frameRelativeX, frameRelativeY, col);
 		}
 	}
 
