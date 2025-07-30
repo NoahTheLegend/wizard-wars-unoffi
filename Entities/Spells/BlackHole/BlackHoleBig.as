@@ -28,7 +28,6 @@ void onInit(CSprite@ this)
 	this.SetEmitSound( "EnergyLoop1.ogg" );
 	this.SetEmitSoundSpeed(0.5f);
 	this.SetEmitSoundPaused( false );
-	this.ScaleBy(Vec2f(2,2));
 }
 
 void onTick(CSprite@ this)

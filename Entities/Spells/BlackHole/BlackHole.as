@@ -34,6 +34,7 @@ void onInit(CSprite@ this)
 	this.SetZ(-10.0f);
 	this.SetEmitSound( "EnergyLoop1.ogg" );
 	this.SetEmitSoundPaused( false );
+	this.ScaleBy(Vec2f(0.5f, 0.5f));
 }
 
 void onTick(CSprite@ this)
