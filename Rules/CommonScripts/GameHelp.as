@@ -10,11 +10,13 @@
 #include "Tutorial.as";
 
 bool showHelp = true;
+f32 active_time = 0;
 bool previous_showHelp = true;
 bool justJoined = true;
 bool page1 = true;
 const int slotsSize = 6;
 f32 boxMargin = 50.0f;
+
 //key names
 const string party_key = getControls().getActionKeyKeyName( AK_PARTY );
 const string inv_key = getControls().getActionKeyKeyName( AK_INVENTORY );
@@ -56,7 +58,7 @@ const string textInfo =
 		" * How do I use some of my spells? They get stuck in mid air or do nothing!\n"+
 		"Press your SHIFT key.\n";
 
-const Vec2f windowDimensions = Vec2f(1000,600); //temp
+const Vec2f windowDimensions = Vec2f(1000,600);
 
 //----KGUI ELEMENTS----\\
 	Window@ helpWindow;
@@ -75,6 +77,7 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
 	Button@ startCloseBtn;
     Button@ toggleSpellWheelBtn;
 	Button@ toggleSpellHealthConsumeScreenFlash;
+	Button@ resetShowClassDescriptions;
 	Button@ toggleHoverMessagesBtn;
 	Button@ oneDimensionalSpellbar;
 	ScrollBar@ resetSpell;
@@ -110,6 +113,7 @@ bool isGUINull()
 		|| startCloseBtn is null
         || toggleSpellWheelBtn is null
 		|| toggleSpellHealthConsumeScreenFlash is null
+		|| resetShowClassDescriptions is null
 		|| toggleHoverMessagesBtn is null
 		|| oneDimensionalSpellbar is null
 		|| resetSpellText is null
@@ -129,18 +133,16 @@ bool isGUINull()
 	return false;
 }
 	
-void onInit( CRules@ this )
+void onInit(CRules@ this)
 {
 	this.set_bool("GUI initialized", false);
 
 	this.addCommandID("join");
 	this.addCommandID("updateBAchieve");
-	
-	u_showtutorial = true;// for ShowTipOnDeath to work
-
+	u_showtutorial = true; // for ShowTipOnDeath to work
 
 	string configstr = "../Cache/WizardWars_KGUI.cfg";
-	ConfigFile cfg = ConfigFile( configstr );
+	ConfigFile cfg = ConfigFile(configstr);
 	if (!cfg.exists("Version"))
 	{
 		cfg.add_string("Version","KGUI 2.3");
@@ -246,11 +248,20 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
 			getRules().set_bool("spell_health_consume_screen_flash", false);
 		}
 	}
+	if (sender is resetShowClassDescriptions)
+	{
+		Sound::Play("MenuSelect2.ogg");
+		setCachedClassesSeen(false);
+		showClassDescription = false;
+		classDescriptionFade = 0;
+		classDescriptionOpenTimer = 0;
+		//print("debug: reset class descriptions");
+	}
 	if (sender is toggleHoverMessagesBtn)
     {
         toggleHoverMessagesBtn.toggled = !toggleHoverMessagesBtn.toggled;
 		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
-		toggleHoverMessagesBtn.saveBool("Hover Messages Active", toggleHoverMessagesBtn.toggled,"WizardWars");
+		toggleHoverMessagesBtn.saveBool("Hover Messages Active", toggleHoverMessagesBtn.toggled, "WizardWars");
         
         getRules().set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
     }
@@ -282,7 +293,7 @@ void SliderClickHandler(int dType ,Vec2f mPos, IGUIItem@ sender){
 void onTick( CRules@ this )
 {
 	bool initialized = this.get_bool("GUI initialized");
-	if ( !initialized || isGUINull() )		//this little trick is so that the GUI shows up on local host 
+	if (!initialized || isGUINull())		//this little trick is so that the GUI shows up on local host 
 	{
         ConfigFile cfg;
         
@@ -322,7 +333,7 @@ void onTick( CRules@ this )
 		@spellAssignHelpIcon = @Icon("SpellAssignHelp.png",Vec2f(270,40),Vec2f(500,430),0,0.5f);
 		spellAssignHelpIcon.isEnabled = false;
 
-		@helpWindow = @Window(Vec2f(200,-530),Vec2f(800,530));
+		@helpWindow = @Window(Vec2f(getDriver().getScreenWidth() / 2 - 420,-530),Vec2f(800,530));
 		helpWindow.name = "Help Window";
 
 		@infoText  = @Label(Vec2f(20,40),Vec2f(780,34),"",SColor(255,0,0,0),false);
@@ -355,6 +366,9 @@ void onTick( CRules@ this )
 
 		@toggleSpellHealthConsumeScreenFlash = @Button(Vec2f(10,375),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleSpellHealthConsumeScreenFlash.addClickListener(ButtonClickHandler);
+
+		@resetShowClassDescriptions = @Button(Vec2f(10,415),Vec2f(200,30),"Reset Class Descriptions",SColor(255,255,255,255));
+		resetShowClassDescriptions.addClickListener(ButtonClickHandler);
 
 		@toggleHoverMessagesBtn = @Button(Vec2f(10,240),Vec2f(200,30),"",SColor(255,255,255,255));
 		toggleHoverMessagesBtn.addClickListener(ButtonClickHandler);
@@ -407,6 +421,7 @@ void onTick( CRules@ this )
 		optionsFrame.addChild(barNumBtn);
         optionsFrame.addChild(toggleSpellWheelBtn);
 		optionsFrame.addChild(toggleSpellHealthConsumeScreenFlash);
+		optionsFrame.addChild(resetShowClassDescriptions);
 		optionsFrame.addChild(toggleHoverMessagesBtn);
 		optionsFrame.addChild(oneDimensionalSpellbar);
         optionsFrame.addChild(toggleHotkeyEmotesBtn);
@@ -435,6 +450,8 @@ void onTick( CRules@ this )
 		toggleSpellHealthConsumeScreenFlash.desc = (toggleSpellHealthConsumeScreenFlash.toggled) ? "HP consume red flash - ON" : "HP consume red flash - OFF";
 		this.set_bool("spell_health_consume_screen_flash", toggleSpellHealthConsumeScreenFlash.toggled);
 
+		resetShowClassDescriptions.desc = "Reset class descriptions";
+
 		toggleHoverMessagesBtn.toggled = toggleHoverMessagesBtn.getBool("Hover Messages Active","WizardWars");
 		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
         this.set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
@@ -461,7 +478,8 @@ void onTick( CRules@ this )
 		intitializeClasses();
 		helpWindow.addChild(playerClassButtons);
 
-        updateOptionSliderValues();//Takes slider values and sets other settings
+        updateOptionSliderValues(); // takes slider values and sets other settings
+		setCachedClassesSeen();
 		
 		this.set_bool("GUI initialized", true);
 		print("GUI has been initialized");
@@ -646,7 +664,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 void onRender( CRules@ this )
 {
 	CPlayer@ player = getLocalPlayer();
-	if ( player is null )
+	if (player is null)
 		return;
 
 	//renderTutorial(this);
@@ -683,20 +701,24 @@ void onRender( CRules@ this )
 	particleText.setText(temp);
 
 	int minHelpYPos = -530;
-	int maxHelpYPos = 48;
-	int scrollSpeed = 40;
-	
-	if ( helpWindow.position.y != minHelpYPos )
+	int maxHelpYPos = getDriver().getScreenHeight() / 2 - helpWindow.size.y / 2 - 80;
+
+	if (helpWindow.position.y != minHelpYPos)
 		helpWindow.draw();
 	
-	if (showHelp && helpWindow.position.y < maxHelpYPos) //controls opening and closing the gui
+	f32 df = 0.33f * getRenderDeltaTime() * 60.0f;
+	if (showHelp && helpWindow.position.y < maxHelpYPos) // controls opening and closing the gui
 	{
-		helpWindow.position = Vec2f( helpWindow.position.x,  Maths::Min(helpWindow.position.y + scrollSpeed, maxHelpYPos) );
+		helpWindow.position = Vec2f(helpWindow.position.x, Maths::Lerp(helpWindow.position.y, maxHelpYPos, df));
+		if (Maths::Abs(Maths::Abs(helpWindow.position.y) - Maths::Abs(maxHelpYPos)) <= 1) helpWindow.position = Vec2f(helpWindow.position.x, maxHelpYPos);
 	}
 	if (!showHelp && helpWindow.position.y > minHelpYPos)
 	{
-		helpWindow.position = Vec2f( helpWindow.position.x, Maths::Max( helpWindow.position.y - scrollSpeed, minHelpYPos) );
+		helpWindow.position = Vec2f(helpWindow.position.x, Maths::Lerp(helpWindow.position.y, minHelpYPos, df * 2));
 	}
+
+	f32 tick = f32(v_fpslimit) / 30.0f;
+	active_time = showHelp ? active_time + 1.0f / tick : 0;
 
 	bool initialized = this.get_bool("GUI initialized");
 	if (!initialized) return;

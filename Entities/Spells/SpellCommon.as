@@ -5712,6 +5712,53 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -1143515114: //shapeshift
+		{
+			if (isClient())
+			{
+				for (int i = 0; i < 6+XORRandom(6); i++)
+    			{
+						Vec2f vel(1.0f + XORRandom(100) * 0.01f * 2.0f, 0);
+						vel.RotateBy(XORRandom(100) * 0.01f * 360.0f);
+			
+    			    CParticle@ p = ParticleAnimated( CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+												this.getPosition(), 
+												vel, 
+												float(XORRandom(360)), 
+												1.0f, 
+												4 + XORRandom(8), 
+												0.0f, 
+												false );
+												
+    			    if (p is null) break;
+			
+    				p.fastcollision = true;
+    			    p.scale = 1.0f;
+    			    p.damping = 0.925f;
+					p.Z = 200.0f;
+					p.lighting = false;
+					p.setRenderStyle(RenderStyle::additive);
+    			}
+
+				this.getSprite().PlaySound("ObsessedSpellDie.ogg", 1.0f, 1.0f+XORRandom(11)*0.01f);
+			}
+			
+			if (!isServer()) return;
+
+			string[] classes = {"wizard", "druid", "necromancer", "swordcaster", "entropist", "priest", "shaman", "paladin", "warlock"};
+			CBlob@ random = server_CreateBlob(classes[XORRandom(classes.length)], this.getTeamNum(), this.getPosition());
+			if (random !is null)
+			{
+				random.server_SetHealth(this.getHealth());
+				random.server_SetPlayer(this.getPlayer());
+				if (this.hasTag("extra_damage"))
+				{
+					random.Tag("extra_damage");
+					random.Sync("extra_damage", true);
+				}
+				this.server_Die();
+			}
+		}
 		case -461020010: //airhorn jesterlogic.as
 		{
 			if (!isServer()){

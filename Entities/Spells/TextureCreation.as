@@ -69,11 +69,9 @@ void SetupImage(string texture, SColor ImageColor, string test_name, bool is_fuz
 	bool tex_exists = Texture::exists(test_name);
 	if (!override_tex && tex_exists)
 	{
-		//warn("Texture already exists: " + test_name);
 		return;
 	}
 	
-	// If frameSize is zero, use the entire image
 	if (frameSize == Vec2f_zero)
 	{
 		frameSize = Vec2f(image.getWidth(), image.getHeight());
@@ -101,13 +99,11 @@ ImageData@ TransformImageToImageData(CFileImage@ image, SColor color, Vec2f fram
 		return null;
 	}
 	
-	// If frameSize is zero, use the entire image
 	if (frameSize == Vec2f_zero)
 	{
 		frameSize = Vec2f(image.getWidth(), image.getHeight());
 	}
 
-	// Create ImageData with the frame size
 	int frameWidth = int(frameSize.x);
 	int frameHeight = int(frameSize.y);
 	ImageData@ data = @ImageData(frameWidth, frameHeight);
@@ -115,14 +111,12 @@ ImageData@ TransformImageToImageData(CFileImage@ image, SColor color, Vec2f fram
 	int frameX = int(framePos.x);
 	int frameY = int(framePos.y);
 	
-	// Process all pixels
 	while (image.nextPixel())
 	{
 		int offset = image.getPixelOffset();
 		int x = offset % image.getWidth();
 		int y = offset / image.getWidth();
 		
-		// Check if the pixel is within our frame
 		if (x >= frameX && x < frameX + frameWidth && 
 			y >= frameY && y < frameY + frameHeight)
 		{
@@ -132,7 +126,6 @@ ImageData@ TransformImageToImageData(CFileImage@ image, SColor color, Vec2f fram
 			col.setGreen(Maths::Min(color.getGreen(), col.getGreen()));
 			col.setBlue(Maths::Min(color.getBlue(), col.getBlue()));
 			
-			// Adjust coordinates to the frame
 			int frameRelativeX = x - frameX;
 			int frameRelativeY = y - frameY;
 			

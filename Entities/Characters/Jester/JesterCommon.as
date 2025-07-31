@@ -63,8 +63,8 @@ namespace JesterParams
 		Spell("haste", "Haste", 20, "Boost your friends with added speed, or overcharge for self, if you need.",
 			SpellType::other, 12, 20, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
 
-		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+		Spell("shapeshift", "Shape Shift", 132, "Become another random class with your current health and mana, once per game.",
+				SpellType::other, 85, 120, 60, 8.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),		
@@ -98,4 +98,4 @@ class JesterInfo
 		charge_state = 0;
 		spells_cancelling = false;
 	}
-}; 
+};

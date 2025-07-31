@@ -168,6 +168,7 @@ class GenericGUIItem : IGUIItem{
 		get { return _isLocked;} 
 		set { _isLocked = value;}
 	}
+
 	//backing fields
 	private Vec2f _size;
 	private Vec2f _localPosition;
@@ -232,6 +233,11 @@ class GenericGUIItem : IGUIItem{
 		position = localPosition;
 		size = v_size;
 		color = SColor(255,255,255,255);
+	}
+
+	void setPosition(Vec2f v_position){
+		position = v_position;
+		localPosition = position;
 	}
 
 	/* Children GUI elements controls */
@@ -673,20 +679,31 @@ class GenericGUIItem : IGUIItem{
 	string textWrap(const string text_in)
 	{
 		string temp = "";
-		const int letters = size.x/9;
+		const int letters = size.x / 9;
 		int counter = 0;
 		string[]@ tokens = text_in.split(" ");
-		for(int i = 0; i <tokens.length; i++){ //First pass based on spaces
-			counter += tokens[i].length();
-
+		for (int i = 0; i < tokens.length; i++)
+		{
 			string[]@ check = tokens[i].split("\n"); //Check for manual new lines
-			if (check.length() > 1){temp += tokens[i];counter = tokens[i].length();}
-			else if (counter <= letters){temp += tokens[i];}
-			else {temp += "\n" + tokens[i]; counter = tokens[i].length();}
+			for (int j = 0; j < check.length; j++)
+			{
+				if (counter + check[j].length() > letters)
+				{
+					temp += "\n";
+					counter = 0;
+				}
+				temp += check[j];
+				counter += check[j].length();
+
+				// If not last part, add explicit \n and reset counter
+				if (j < check.length - 1)
+				{
+					temp += "\n";
+					counter = 0;
+				}
+			}
 			temp += " ";
 		}
-
-
 		return temp;
 	}
 }
@@ -782,10 +799,12 @@ class Button : GenericGUIItem{
 	string desc;
 	bool selfLabeled = false;
 	bool toggled = false;
+	int _customData;
 
-	Button(Vec2f _position,Vec2f _size){
+	Button(Vec2f _position,Vec2f _size,int cd = 0){
 		super(_position,_size);
 		DebugColor = SColor(155,255,233,0);
+		_customData = cd;
 	}
 
 	//Use to automatically make a centered label on the button using text from _desc

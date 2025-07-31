@@ -52,13 +52,13 @@ namespace WarlockParams
 		Spell("poisonsurge", "Toxic Bolt", 137, "Unleash a bolt of toxic sludge that splits into smaller, non-poisoned spheres after a short delay.",
 				SpellType::other, 1, 30, 0, 256.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_POISON}),
 
-		Spell("", "Corruption Shard", 135, "Place a venomous shard that poisons enemies nearby. After a short while, the shard explodes, restoring some of warlock's health and mana.",
-				SpellType::other, 1, 1, 0, 0.0f),
-
 		Spell("", "Caustic Ray", 142, "Forward a beam of corrosive energy that poisons enemies and adds a cooldown to their spells.",
 				SpellType::other, 1, 1, 0, 0.0f),
 
-		Spell("", "", 0, "", // ?
+		Spell("", "Corruption Shard", 135, "Place a venomous shard that poisons enemies nearby. After a short while, the shard explodes, restoring some of warlock's health and mana.",
+				SpellType::other, 1, 1, 0, 0.0f),
+
+		Spell("", "Plague", 139, "You are permanently poisoned. Anyone who deals you damage will be poisoned as well. Cast again to disable the effect.",
 				SpellType::other, 1, 1, 0, 0.0f),
 
 		Spell("", "Shadow Spear", 0, "Throw a shadow spear which curses touched enemy and steals their mana. Anyone who deals damage to the cursed target will steal some of their mana.",
@@ -74,9 +74,6 @@ namespace WarlockParams
 				SpellType::healthcost, 1, 1, 0, 0.0f),
 
 		Spell("fear", "Fear", 145, "Curse nearby enemies with fear, causing them to run stoplessly",
-				SpellType::other, 1, 1, 0, 0.0f),
-		
-		Spell("", "Plague", 139, "You are permanently poisoned. Anyone who deals you damage will be poisoned as well. Cast again to disable the effect.",
 				SpellType::other, 1, 1, 0, 0.0f),
 
 		Spell("", "Silence", 146, "Silence an enemy, preventing them from casting spells, except teleport.",
