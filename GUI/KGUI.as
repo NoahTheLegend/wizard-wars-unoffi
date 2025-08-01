@@ -712,6 +712,7 @@ class GenericGUIItem : IGUIItem{
 
 class Window : GenericGUIItem{
 	int type;
+	bool nodraw;
 
 	//In constructor you can setup any additional inner UI elements
 	Window(Vec2f _position,Vec2f _size, int _type = 0, string _name = ""){
@@ -721,16 +722,15 @@ class Window : GenericGUIItem{
 		DebugColor = SColor(155,217,2,0);
 	}
 
-	Window(string _name, Vec2f _position,Vec2f _size){ //backwards compatiblity, will be removed soon
+	Window(string _name, Vec2f _position, Vec2f _size){ //backwards compatiblity, will be removed soon
 		super(_position,_size);
 		name = _name;
 		DebugColor = SColor(155,217,2,0);
 	}
 
-
-
 	//Override this method to draw object. You can rely on position and size here.
 	void drawSelf(){
+		if (nodraw) return;
 		switch (type){
 			case 1: {GUI::DrawSunkenPane(position, position+size); break;}
 			case 2: {GUI::DrawPane(position, position+size); break; }
@@ -739,7 +739,6 @@ class Window : GenericGUIItem{
 		}
 		GenericGUIItem::drawSelf();
 	}
-
 }
 
 class List : GenericGUIItem{
@@ -958,7 +957,7 @@ class TextureBar : GenericGUIItem{
 	int barStart, backStart;
 
 	TextureBar(Vec2f _position,float _Val,string _bar,Vec2f _barSize,int barFrame,string _back, Vec2f _backSize, int backFrame,float _scale = 1.0f,float _increment = 0.5f ){
-		super(_position,Vec2f((_backSize.x*_scale*2*(_Val/_increment)+(8*_scale)),(_backSize.y*_scale*2)));
+		super(_position,Vec2f((_backSize.x*_scale*(_Val/_increment)+(8*_scale)),(_backSize.y*_scale)));
 		max = _Val;
 		increment = _increment;
 		scale = _scale;
@@ -973,7 +972,7 @@ class TextureBar : GenericGUIItem{
 
 	void drawSelf(){
 		int frame1 = backStart+1,frame2,counter = 0;
-		float s =(backSize.x*scale)*2;
+		float s =(backSize.x*scale);
 		Vec2f offset = Vec2f(position.x+(8*scale),position.y);
 		GUI::DrawIcon(back,backStart,backSize,position,scale);
 		string dataDump = "Dump data:";
@@ -1107,16 +1106,20 @@ class Icon : GenericGUIItem
 {
 	string name;
 	float scale = 1;
+	Vec2f resizeScale;
+	bool resized;
 	int team = 0, index, animCurrent = 0;
 	bool animate = false;
 	Vec2f iSize;
 	Anim[] animList;
 
 	//Static Icon setup
-	Icon(string _name, Vec2f _position,Vec2f _size,int _index,float _scale){
-		super(_position,_size*_scale*2);
+	Icon(string _name, Vec2f _position, Vec2f _size, int _index, float _scale, bool resize_to_fit = false, Vec2f _fit = Vec2f_zero){
+		super(_position, _size * _scale);
 		name = _name;	
 		scale = _scale;
+		resizeScale = getResizedScale(_size, _fit);
+		resized = resize_to_fit;
 		iSize = _size;
 		index = _index;
 		DebugColor = SColor(155,13,0,158);
@@ -1148,20 +1151,29 @@ class Icon : GenericGUIItem
 
 	void setAnim(int a){
 		animCurrent = a;
-		size = animList[a].iDim*scale*2;
+		size = animList[a].iDim*scale;
 	}
 
 	void setFrame(int a){
 		animList[animCurrent].frame = a;
 	}
 
-	void drawSelf() override {
-		if (animate){
+	Vec2f getResizedScale(Vec2f _size, Vec2f _fitSize)
+	{
+		return Vec2f(_fitSize.x / _size.x, _fitSize.y / _size.y);
+	}
+
+	void drawSelf() override
+	{
+		if (animate)
+		{
 			//updateAnimationState();
 			animList[animCurrent].drawAnim(position,scale,team);
 		}
-		else {
-			GUI::DrawIcon(name,index,iSize,position,scale,scale,team,color);
+		else
+		{
+			if (resized) GUI::DrawIcon(name,index,iSize,position,resizeScale.x,resizeScale.y,team,color);
+			else GUI::DrawIcon(name,index,iSize,position,scale,scale,team,color);
 			GenericGUIItem::drawSelf();
 		}	
 	}

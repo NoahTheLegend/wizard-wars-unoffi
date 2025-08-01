@@ -87,6 +87,7 @@ const Vec2f windowDimensions = Vec2f(1000,600);
     Button@ toggleHotkeyEmotesBtn;
 	Rectangle@ optionsFrame;
 	Icon@ helpIcon;
+	Icon@ canvasIcon;
 	Icon@ spellHelpIcon;
 	Icon@ spellAssignHelpIcon;
 	ScrollBar@ particleCount;
@@ -121,6 +122,7 @@ bool isGUINull()
 		|| achievementBtn is null
 		|| optionsFrame is null
 		|| helpIcon is null
+		|| canvasIcon is null
 		|| spellHelpIcon is null
 		|| spellAssignHelpIcon is null
 		|| particleCount is null
@@ -150,74 +152,88 @@ void onInit(CRules@ this)
 	}
 }
 
-void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button click handler for KGUI
-	if(sender is infoBtn){
+void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender)
+{ //Button click handler for KGUI
+	if (sender is infoBtn)
+	{
 		changeText.isEnabled = false;
 		infoText.isEnabled = true;
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
+		canvasIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = false;
 		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
 	}
-	if(sender is introBtn){
+	if (sender is introBtn)
+	{
 		changeText.isEnabled = false;
 		infoText.isEnabled = false;
 		introText.isEnabled = true;
 		helpIcon.isEnabled = true;
+		canvasIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = false;
 		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
 	}
-	if(sender is optionsBtn){
+	if (sender is optionsBtn)
+	{
 		changeText.isEnabled = false;
 		infoText.isEnabled = false;
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
+		canvasIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = true;
 		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = true;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
 	}
-	if(sender is achievementBtn){
+	if (sender is achievementBtn)
+	{
 		changeText.isEnabled = false;
 		infoText.isEnabled = false;
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
+		canvasIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = false;
 		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = true;
 		playerClassButtons.isEnabled = false;
 	}
-	if(sender is classesBtn){
+	if (sender is classesBtn)
+	{
 		changeText.isEnabled = false;
 		infoText.isEnabled = false;
 		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
+		canvasIcon.isEnabled = false;
 		spellHelpIcon.isEnabled = false;
 		spellAssignHelpIcon.isEnabled = true;
 		optionsFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = true;
 	}
-    if(sender is togglemenuBtn){
+    if (sender is togglemenuBtn)
+	{
         showHelp = !showHelp;
     }
 
-	if (sender is barNumBtn){
+	if (sender is barNumBtn)
+	{
 		barNumBtn.toggled = !barNumBtn.toggled;
 		getRules().set_bool("spell_number_selection", barNumBtn.toggled);
 
 		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
 		barNumBtn.saveBool("Bar Numbers",barNumBtn.toggled,"WizardWars");
 	}
-	if (sender is startCloseBtn){
+	if (sender is startCloseBtn)
+	{
 		startCloseBtn.toggled = !startCloseBtn.toggled;
 		startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
 		startCloseBtn.saveBool("Start Closed",!startCloseBtn.toggled,"WizardWars");
@@ -290,7 +306,7 @@ void SliderClickHandler(int dType ,Vec2f mPos, IGUIItem@ sender){
 	//if (sender is test){test.slide();}
 }
 
-void onTick( CRules@ this )
+void onTick(CRules@ this)
 {
 	bool initialized = this.get_bool("GUI initialized");
 	if (!initialized || isGUINull())		//this little trick is so that the GUI shows up on local host 
@@ -301,15 +317,15 @@ void onTick( CRules@ this )
         u16 hoverDistance_value = 6;
 		u16 resetSpell_value = 0;
 
-        if(cfg.loadFile("../Cache/WW_OptionsMenu.cfg"))//Load file, if file exists
+        if (cfg.loadFile("../Cache/WW_OptionsMenu.cfg"))//Load file, if file exists
         {
             print("options loaded");
-            if(cfg.exists("item_distance"))//Value already set?
+            if (cfg.exists("item_distance"))//Value already set?
             {
                 print("default set");
                 itemDistance_value = cfg.read_u16("item_distance");//Set default
             }
-            if(cfg.exists("hover_distance"))//Value already set?
+            if (cfg.exists("hover_distance"))//Value already set?
             {
                 hoverDistance_value = cfg.read_u16("hover_distance");//Set default
             }
@@ -321,18 +337,29 @@ void onTick( CRules@ this )
 			this.set_u16("reset_spell_id", resetSpell_value);
         }
 
-		CFileImage@ image = CFileImage( "GameHelp.png" );
-		Vec2f imageSize = Vec2f( image.getWidth(), image.getHeight() );
-		AddIconToken( "$HELP$", "GameHelp.png", imageSize, 0 );
-	
-		//---KGUI setup---\\
-		@helpIcon = @Icon("GameHelp.png",Vec2f(40,40),imageSize,0,1.0f);
-		@spellHelpIcon = @Icon("SpellHelp.png",Vec2f(300,40),Vec2f(450,420),0,0.5f);
-		spellHelpIcon.isEnabled = false;
-		@spellAssignHelpIcon = @Icon("SpellAssignHelp.png",Vec2f(270,40),Vec2f(500,430),0,0.5f);
+		{
+			CFileImage@ image = CFileImage("GameHelp.png");
+			Vec2f imageSize = Vec2f(image.getWidth(), image.getHeight());
+
+			AddIconToken("$HELP$", "GameHelp.png", imageSize, 0);
+			@helpIcon = @Icon("GameHelp.png", Vec2f(40, 40), imageSize, 0, 1.0f, true);
+		}
+
+		{
+			CFileImage@ image = CFileImage("MenuCanvas.png");
+			Vec2f imageSize = Vec2f(image.getWidth(), image.getHeight());
+
+			AddIconToken("$CANVAS$", "MenuCanvas.png", imageSize, 0);
+			@canvasIcon = @Icon("MenuCanvas.png", Vec2f(0, 0), Vec2f(0, 0), 0, 1.0f, true);
+		}
+
+		@spellAssignHelpIcon = @Icon("SpellAssignHelp.png", Vec2f(270, 40), Vec2f(500, 430), 0, 0.5f);
 		spellAssignHelpIcon.isEnabled = false;
 
-		@helpWindow = @Window(Vec2f(getDriver().getScreenWidth() / 2 - 420,-530),Vec2f(800,530));
+		@spellHelpIcon = @Icon("SpellHelp.png", Vec2f(300, 40), Vec2f(450, 420), 0, 0.5f);
+		spellHelpIcon.isEnabled = false;
+
+		@helpWindow = @Window(Vec2f(getDriver().getScreenWidth() / 2 - 420, -530), Vec2f(800, 530));
 		helpWindow.name = "Help Window";
 
 		@infoText  = @Label(Vec2f(20,40),Vec2f(780,34),"",SColor(255,0,0,0),false);
@@ -408,6 +435,7 @@ void onTick( CRules@ this )
 		//---KGUI Parenting---\\
 		helpWindow.addChild(introText);
 		helpWindow.addChild(helpIcon);
+		helpWindow.addChild(canvasIcon);
 		helpWindow.addChild(infoText);
 		helpWindow.addChild(changeText);
 		helpWindow.addChild(introBtn);
@@ -424,6 +452,7 @@ void onTick( CRules@ this )
 		optionsFrame.addChild(toggleHoverMessagesBtn);
 		optionsFrame.addChild(oneDimensionalSpellbar);
         optionsFrame.addChild(toggleHotkeyEmotesBtn);
+
 		helpWindow.addChild(spellHelpIcon);
 		helpWindow.addChild(spellAssignHelpIcon);
         

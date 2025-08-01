@@ -220,7 +220,7 @@ class WizardRain
             }
             else if (type == WizardRainTypes::stellarcollapse)
             {
-                f32 gap = 48.0f;
+                f32 gap = 32.0f;
                 f32 area_width = initobjectsAmount * gap;
 
                 f32 explosion_radius = level == 5 ? 64.0f : 48.0f;
