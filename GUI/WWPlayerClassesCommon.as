@@ -113,11 +113,11 @@ const Vec2f descriptionButtonSizeExtra = Vec2f(0, 32);
 
 const string[] classDescriptions = {
 	"Wizards' history has proven them to be formidable opponents.\nYears spent studying obscure magic have granted them a wide range of powerful spells, though most still avoid focusing too deeply on any one school — unsure whether the power they unlock might destroy THEM first.",
-    "Necromancers have a habit of learning spells no one else wants to deal with.\nAfter enough time with rituals and curses, most stop pretending it's about knowledge and start calling it \"the willing.\" It works well enough — though keeping things under control is more of a hope than a plan.",
+    "Necromancers have a habit of learning spells no one else wants to deal with.\nAfter enough time with rituals and curses, most stop pretending it's about knowledge and start calling it \"the willing\". It works well enough — though keeping things under control is more of a hope than a plan.",
     "Druids trust nature more than people, and it usually pays off.\nWhile living in harmony with the world around them, they adjust to the flow of natural energies, allowing them to use the environment to their advantage, and if their magic isn't flashy, it's certainly persistent and reliable.",
     "Swordcasters don't fuss over complex magic — they turn raw force into blunt instruments and let physics do the rest.\n\nTheir spells are straightforward, built for impact and contact rather than finesse. It's not subtle, but it gets the job done.",
     "Entropists play with unstable forces, bending reality in ways that rarely follow the rules.\n\nWhatsoever, they are really willing to do so, as they often consume themselves into excitement of being overpowered.",
-    "Priests dedicate themselves to the divine, channeling holy energy to heal team and smite foes.\nThey wield slow, but impactful spells, but their true strength lies in exhorating allies — a beacon in the darkest battles.",
+    "Priests dedicate themselves to the divine, channeling holy energy to heal team and smite foes.\n\nThey wield slow, but impactful spells, but their true strength lies in exhorating allies — a beacon in the darkest battles.",
     "Shamans command totems and elemental forces through channels to nature's spirits and their ancestors.\n\nVersatile in both offense and defense, bound to the elements of earth, fire and water, they adapt fluidly to any situation.",
     "Paladins embody noble strength, standing as steadfast tanks and shining symbols of hope.\nTheir holy damage burns through darkness, while their protective auras bolster allies and their souls.\nThey are the shield of the team, and their presence is a rallying point for all.",
     "Jesters use misdirection and spectacle to control the battlefield in unconventional ways.\nTheir kind blends utility and offense through volatile spells, unpredictable movement and conjured constructs. What others call distraction, they refine into precision — forcing enemies to react on their terms.",
@@ -164,10 +164,6 @@ void setCachedClassesSeen(bool hide = true)
 
 bool canShowClassDescription(u8 id)
 {
-	if (id == 0)
-	{
-		print(""+classesSeen[id]);
-	}
 	return id < classesSeen.length && id >= 0 && !classesSeen[id];
 }
 

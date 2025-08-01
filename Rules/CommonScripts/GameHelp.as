@@ -308,7 +308,6 @@ void onTick( CRules@ this )
             {
                 print("default set");
                 itemDistance_value = cfg.read_u16("item_distance");//Set default
-                print(""+itemDistance_value);
             }
             if(cfg.exists("hover_distance"))//Value already set?
             {

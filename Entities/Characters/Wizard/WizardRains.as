@@ -113,7 +113,7 @@ class WizardRain
         {
             objectsAmount = 4;
             if (level == WizardParams::extra_ready)
-                objectsAmount += 1;
+                objectsAmount += 2;
             if (damagebuff)
             {
                 objectsAmount += 2;
@@ -220,35 +220,31 @@ class WizardRain
             }
             else if (type == WizardRainTypes::stellarcollapse)
             {
-                f32 area_width = initobjectsAmount * 16.0f;
-                int quantity = initobjectsAmount - objectsAmount + 1;
+                f32 gap = 48.0f;
+                f32 area_width = initobjectsAmount * gap;
 
-                f32[] offsets = {};
-                for (u8 i = 0; i < initobjectsAmount; i++)
+                f32 explosion_radius = level == 5 ? 64.0f : 48.0f;
+                f32 damage = 2.5f + XORRandom(11) * 0.1f;
+                u32 explosion_delay = damagebuff ? 3 : 4 + XORRandom(4);
+    
+                CBlob@ blob = server_CreateBlobNoInit("stellarcollapse");
+                if (blob !is null)
                 {
-                    f32 offset = -area_width / 2 + i * (area_width / (initobjectsAmount - 1));
-                    offsets.push_back(offset);
+                    blob.server_setTeamNum(team);
+
+                    Vec2f offset = Vec2f(XORRandom(area_width) - area_width/2, 0);
+                    blob.setPosition(Vec2f(position.x + offset.x, -32.0f));
+
+                    blob.Init();
+                    blob.setAngleDegrees(90);
+                    
+                    blob.set_f32("initial_offset", offset.x);
+                    blob.set_f32("explosion_radius", explosion_radius);
+                    blob.set_f32("explosion_damage", damage);
+                    blob.set_u32("explosion_delay", explosion_delay);
                 }
 
-                offsets = shuffle(offsets);
-                for (u8 i = 0; i < quantity; i++)
-                {
-                    CBlob@ blob = server_CreateBlobNoInit("stellarcollapse");
-                    if (blob !is null)
-                    {
-                        blob.server_setTeamNum(team);
-
-                        u8 id = XORRandom(offsets.length);
-                        Vec2f offset = Vec2f(offsets[id], 0);
-                        blob.setPosition(Vec2f(position.x + offset.x, -32.0f));
-
-                        blob.Init();
-                        blob.setAngleDegrees(90);
-                        blob.set_f32("initial_offset", offset.x);
-                    }
-                }
-
-                time = 1;
+                time = damagebuff ? 1 : 2;
             }
 
             objectsAmount -= 1;

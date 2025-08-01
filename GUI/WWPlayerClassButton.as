@@ -238,10 +238,12 @@ class WWPlayerClassButton
 	
 	void draw(Vec2f pos)
 	{
-		if (classButton.toggled) renderClassDescriptions();
+		if (classButton.toggled || classButton.render_one_more_time) renderClassDescriptions();
 
 		classButton.position = pos;
 		classButton.draw();
+
+		classButton.render_one_more_time = false;
 	}
 }
 
@@ -566,7 +568,7 @@ void UnlockButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button 
 */
 
 void ClassButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
-{ 
+{
 	// toggle buttons accordingly
 	for (int i = 0; i < playerClassButtons.list.length; i++)
 	{
@@ -576,21 +578,27 @@ void ClassButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 			if (iButton.toggled == false)
 				Sound::Play("MenuSelect2.ogg");
 
-			classDescriptionFade = 0;
-			classDescriptionOpenTimer = 0;
-			
-			iButton.toggled = true;
-			playerClassButtons.list[i].classFrame.isEnabled = true;
+			if (!playerClassButtons.list[i].classFrame.isEnabled)
+			{
+				classDescriptionFade = 0;
+				classDescriptionOpenTimer = 0;
 
-			int c = playerClassButtons.list[i].classID;
-			showClassDescription = canShowClassDescription(c);
-			playerClassButtons.list[i].classDescriptionButton.isEnabled = showClassDescription;
-			playerClassButtons.list[i].classDescriptionButton._customData = c;
-			playerClassButtons.list[i].classDescriptionText.setText(playerClassButtons.list[i].classDescriptionText.textWrap(classDescriptions[c]));
+				int c = playerClassButtons.list[i].classID;
+				showClassDescription = canShowClassDescription(c);
+				
+				playerClassButtons.list[i].classDescriptionButton.isEnabled = showClassDescription;
+				playerClassButtons.list[i].classDescriptionButton._customData = c;
+				playerClassButtons.list[i].classDescriptionText.setText(playerClassButtons.list[i].classDescriptionText.textWrap(classDescriptions[c]));
+			}
+
+			playerClassButtons.list[i].classFrame.isEnabled = true;
+			iButton.toggled = true;
 		}
 		else
 		{
 			iButton.toggled = false;
+			iButton.render_one_more_time = true;
+
 			playerClassButtons.list[i].classFrame.isEnabled = false;
 			playerClassButtons.list[i].classDescriptionButton.isEnabled = false;
 			playerClassButtons.list[i].classDescriptionText.setText("");

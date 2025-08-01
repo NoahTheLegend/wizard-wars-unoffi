@@ -72,8 +72,8 @@ namespace EntropistParams
 		Spell("polarityfield", "Polarity Breaker", 90, "Summon a massive sphere that summons explosive projectiles to orbit around.\nOvercharge changes rotation side for each second level.",
 				SpellType::other, 70, 105, 25, 256.0f, true),
 							
-		Spell("", "Stellar Collapse", 149, "Summon several celestial bodies to fall from the sky, dealing massive damage to enemies. When cast with damage boost, creates moving white and purple remnants. To avoid being damaged, stop near white and move through purple ones.",
-				SpellType::other, 1, 15, 0, 312.0f),
+		Spell("stellarcollapse", "Stellar Collapse", 149, "Summon several celestial bodies to fall from the sky, dealing massive damage to enemies.",
+				SpellType::other, 60, 60, 18, 312.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellType::other, 1, 1, 0, 0.0f),	

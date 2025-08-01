@@ -3209,6 +3209,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				return;
 			}
+
 			CBitStream params;
 			params.write_string(spellName);
 			params.write_u8(charge_state);

@@ -118,6 +118,7 @@ class GenericGUIItem : IGUIItem{
 	private bool Debug = false;
 	SColor DebugColor;
 	SColor color;
+	bool render_one_more_time;
 
 	//config properties
 	Vec2f position {
@@ -233,6 +234,7 @@ class GenericGUIItem : IGUIItem{
 		position = localPosition;
 		size = v_size;
 		color = SColor(255,255,255,255);
+		render_one_more_time = false;
 	}
 
 	void setPosition(Vec2f v_position){
