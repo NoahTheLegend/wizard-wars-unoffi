@@ -17,11 +17,10 @@ enum DragEventType
    DragFinished
 }
 
-//  here is how you can add handlers for events on UI elements.
-//  Your handler should be a function (you specify it's name here)
+//  here is how you can add handlers for events on UI elements
+//  your handler should be a function (you specify it's name here)
 //  defined in the same file or in the class (prolly)
-
-//	It must have the same signature as mentioned in the top part of KGUI.as
+//	it must have the same signature as mentioned in the top part of KGUI.as
 
 //	button.addClickListener(OnButtonClicked);
 //	button.addPressStateListener(OnButtonPressed);
@@ -58,11 +57,16 @@ enum DragEventType
 
 	funcdef void SLIDE_EVENT_CALLBACK(int, Vec2f,IGUIItem@);
 
-
+enum ContainerLevel
+{
+	WINDOW, // main window
+	PAGE, // stored in window's buttons
+	PAGE_FRAME, // stored in page as slider frame
+	DEFAULT,
+	BACKGROUND
+};
 
 interface IGUIItem{
-
-
 	//Properties
 	Vec2f position {get; set;}
 	Vec2f localPosition {get; set;} 
@@ -76,6 +80,9 @@ interface IGUIItem{
 	bool isClickedWithRButton{get; set;}
 	bool isClickedWithLButton{get; set;}
 	bool locked{get; set;}
+	int level{get; set;}
+	int _customData{get; set;}
+
 	//Methods
 	void draw();
 
@@ -110,7 +117,6 @@ interface IGUIItem{
 	void addSlideEventListener(SLIDE_EVENT_CALLBACK@ listener);
 	void removeSlideEventListener(SLIDE_EVENT_CALLBACK@ listener);
 	void clearSlideEventListeners();
-
 }
 
 class GenericGUIItem : IGUIItem{
@@ -119,6 +125,7 @@ class GenericGUIItem : IGUIItem{
 	SColor DebugColor;
 	SColor color;
 	bool render_one_more_time;
+	int _customData;
 
 	//config properties
 	Vec2f position {
@@ -169,6 +176,14 @@ class GenericGUIItem : IGUIItem{
 		get { return _isLocked;} 
 		set { _isLocked = value;}
 	}
+	int level {
+		get { return level;} 
+		set { level = value;}
+	}
+	int _customData {
+		get { return _customData;} 
+		set { _customData = value;}
+	}
 
 	//backing fields
 	private Vec2f _size;
@@ -180,6 +195,7 @@ class GenericGUIItem : IGUIItem{
 	private bool _isDragable = false;
 	private int _dragThresold = 2;
 	private bool _isLocked = false;
+	private int level = ContainerLevel::DEFAULT;
 
 	//Animation
 	private int[] _frameIndex;
@@ -235,6 +251,8 @@ class GenericGUIItem : IGUIItem{
 		size = v_size;
 		color = SColor(255,255,255,255);
 		render_one_more_time = false;
+		level = ContainerLevel::DEFAULT;
+		_customData = 0;
 	}
 
 	void setPosition(Vec2f v_position){
@@ -258,6 +276,10 @@ class GenericGUIItem : IGUIItem{
 		for(int i = 0; i < children.length; i++){
 			children.removeAt(i);
 		}	
+	}
+
+	void setLevel(ContainerLevel level){
+		this.level = level;
 	}
 
 	/* Listener controls */
@@ -404,11 +426,13 @@ class GenericGUIItem : IGUIItem{
 
 		drawSelf();
 		if(Debug) GUI::DrawRectangle(position, position+size,DebugColor);
+
 		//draw children
 		for(int i = 0; i < children.length; i++)
 		{
 			if(children[i] is null) continue;
 			if(!children[i].isEnabled) continue;
+			
 			children[i].position = position+children[i].localPosition;
 			children[i].draw();
 		}
@@ -710,12 +734,12 @@ class GenericGUIItem : IGUIItem{
 	}
 }
 
-class Window : GenericGUIItem{
+class Window : GenericGUIItem {
 	int type;
 	bool nodraw;
 
 	//In constructor you can setup any additional inner UI elements
-	Window(Vec2f _position,Vec2f _size, int _type = 0, string _name = ""){
+	Window(Vec2f _position, Vec2f _size, int _type = 0, string _name = ""){
 		super(_position,_size);
 		name = _name;
 		type = _type;
@@ -723,7 +747,7 @@ class Window : GenericGUIItem{
 	}
 
 	Window(string _name, Vec2f _position, Vec2f _size){ //backwards compatiblity, will be removed soon
-		super(_position,_size);
+		super(_position, _size);
 		name = _name;
 		DebugColor = SColor(155,217,2,0);
 	}
@@ -800,9 +824,8 @@ class Button : GenericGUIItem{
 	string desc;
 	bool selfLabeled = false;
 	bool toggled = false;
-	int _customData;
 
-	Button(Vec2f _position,Vec2f _size,int cd = 0){
+	Button(Vec2f _position,Vec2f _size, int cd = 0){
 		super(_position,_size);
 		DebugColor = SColor(155,255,233,0);
 		_customData = cd;
@@ -839,7 +862,6 @@ class ScrollBar : GenericGUIItem{
 	float secSize, offset;
 	int sections, value;
 	bool horizontal;
-	
 
 	ScrollBar(Vec2f _position, int _length, int _sections, bool _hort = false, int _val = 0){
 		if (_hort){
@@ -1078,7 +1100,6 @@ class Label : GenericGUIItem
 {
 	string label;
 	bool centered;
-	int _customData;
 	string font;
 
 	Label(Vec2f _position,Vec2f _size,string _label,SColor _color, bool _centered, string _font = "hud", int _cd = 0){
@@ -1124,11 +1145,18 @@ class Icon : GenericGUIItem
 		index = _index;
 		DebugColor = SColor(155,13,0,158);
 		color = SColor(255,255,255,255);
+
+		if (size.x == 0 || size.y == 0 || _fit.x == 0 || _fit.y == 0)
+		{
+			// reset everything
+			size = Vec2f(16,16);
+			resizeScale = Vec2f(16,16);
+		}
 	}
 
 	//Animated Icon setup
 	Icon(Vec2f _position,string _name, float _scale){
-		super(_position,Vec2f(0,0));
+		super(_position, Vec2f(0,0));
 		/*_frame = 0;
 		_animFreq = animFreq;
 		_iDimension = iDimension;

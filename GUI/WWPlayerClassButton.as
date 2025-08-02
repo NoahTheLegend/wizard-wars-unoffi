@@ -17,10 +17,11 @@
 
 string classesVersion = "1";
 u32 lastHotbarPressTime = 0;
-const u8 max_classes_on_page = 8;
 
 string tooltip = "";
 Tooltip@[] tooltips_fetcher;
+
+const Vec2f iconSize = Vec2f(64, 64);
 
 //----KGUI ELEMENTS----\\
 WWPlayerClassButtonList playerClassButtons;
@@ -47,7 +48,7 @@ class WWPlayerClassButton
 	Button@ classDescriptionButton = @Button(descriptionButtonOffset, descriptionButtonSize, "", SColor(255, 255, 255, 255));
 	Label@ classDescriptionText = @Label(classDescriptionButton.position, classDescriptionButton.size, "", SColor(255, 0, 0, 0), false);
 	
-	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, int _size, u8[] _specialties, u8[] _stats)
+	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, Vec2f _size, u8[] _specialties, u8[] _stats)
 	{
 		name = _name;
 		modName = _modName;
@@ -56,23 +57,18 @@ class WWPlayerClassButton
 		classID = _classID;
 		classCost = _cost;
 
-		@classButton = @Button(_pos,Vec2f(200,46),"",SColor(255,255,255,255));
-		@desc = @Label(Vec2f(44,5),Vec2f(114,38),_name,SColor(255,0,0,0),false);
+		@classButton = @Button(_pos, _size, "", SColor(255, 255, 255, 255));
+		@desc = @Label(Vec2f(44,5),  _size, _name, SColor(255, 0, 0, 0), false);
+
 		classButton.addChild(desc);
-		switch(_size)
-		{
-			case 1: {@display = @Icon(_imageName,Vec2f(9,9),Vec2f(32,32),_icon,0.44f);break;}
-			case 2: {@display = @Icon(_imageName,Vec2f(9,9),Vec2f(114,114),_icon,0.13f);break;}
-			default: {@display = @Icon(_imageName,Vec2f(9,9),Vec2f(16,16),_icon,0.87f);}
-		}
+		@display = @Icon(_imageName, Vec2f_zero, Vec2f(32, 32), classID, 1.0f);
+
 		classButton.addChild(display);
 		@rarity = @Icon("GUI/Rarity.png",Vec2f(5,5),Vec2f(18,18),_rarity,1.0f);
 		
 		specialties = _specialties;
 		stats = _stats;
 		tickrate = 0;
-		
-		//gained = checkUnlocked();
 		
 		classButton.name = _configFilename;
 		classButton.addClickListener(ClassButtonHandler);
@@ -125,8 +121,8 @@ class WWPlayerClassButton
 				offset = Vec2f(gridSize*i,0);
 			else
 				offset = Vec2f(gridSize*(i-10),gridSize);
-			
-			spellButtons.push_back( @Button(Vec2f(0,100) + offset, Vec2f(gridSize,gridSize), "", SColor(255,255,255,255)) );
+
+			spellButtons.push_back(@Button(Vec2f(0,100) + offset, Vec2f(gridSize,gridSize), "", SColor(255,255,255,255)));
 			spellButtons[i].name = spells[i].name;
 			
 			Icon@ spellIcon = @Icon("SpellIcons.png", Vec2f(8,8), Vec2f(16,16) , spells[i].iconFrame, 1.0f);
@@ -229,13 +225,13 @@ class WWPlayerClassButton
 
 		Vec2f lerped_offset = !start && showClassDescription ? Vec2f(0, descriptionButtonOffsetOut.y * fade) : Vec2f(0, descriptionButtonOffset.y);
 		classDescriptionButton.setPosition(Vec2f(descriptionButtonOffset.x, lerped_offset.y));
-		classDescriptionText.setPosition(classDescriptionButton.position + Vec2f(2,2));
+		classDescriptionText.setPosition(classDescriptionButton.position + Vec2f(2, 2));
 
 		Vec2f lerped_size = !start && showClassDescription ? Vec2f(descriptionButtonSize.x, descriptionButtonSize.y + descriptionButtonSizeExtra.y * fade) : descriptionButtonSize;
 		classDescriptionButton.size = lerped_size;
 		classDescriptionText.size = lerped_size;
 	}
-	
+
 	void draw(Vec2f pos)
 	{
 		if (classButton.toggled || classButton.render_one_more_time) renderClassDescriptions();
@@ -250,154 +246,78 @@ class WWPlayerClassButton
 class WWPlayerClassButtonList : GenericGUIItem
 {
 	WWPlayerClassButton@[] list;
-	int style, timer = 0, page = 1, ApP, totalPages;
-	GUIContainer@ tipAnchor = @GUIContainer(Vec2f(0,0),Vec2f(200,46)), pageAnchor = @GUIContainer(Vec2f(0,0),Vec2f(110,30));
-	Window@ dropDownW = @Window(Vec2f(getScreenWidth()-400,-150),Vec2f(250,200),3);
-	Button@ nextP = @Button(Vec2f(-540,-20),Vec2f(100,40),"->",SColor(255,255,255,255)), prevP = @Button(Vec2f(-640,-20),Vec2f(100,40),"<-",SColor(255,255,255,255));
-	Label@ pageNum = @Label(Vec2f(-568,28),Vec2f(30,10),"PAGE 1",SColor(255,0,0,0),false);
-	Label dropDownL;
-	Icon dropDownD,dropDownR;
-	Icon@ dropDownT = @Icon("GUI/achievement_get.png",Vec2f(45,3),Vec2f(157,25),0,0.5f);
-	List@ playerChooser = @List(Vec2f(0,0),Vec2f(300,30));
-	Button@ playerChooserArrow = @Button(Vec2f(-322,-430),Vec2f(30,30),"V",SColor(255,255,255,255));
-	bool displaying = false, needsUpdate = false, hoverDet = false;
+
+	int style;
+	int timer = 0;
+	bool displaying = false;
+	bool needsUpdate = false;
 	u8[] specialties;
 	
 	//Styles: 0 = mini|1= small\\
-	WWPlayerClassButtonList(Vec2f _position,Vec2f _size,int _style){
+	WWPlayerClassButtonList(Vec2f _position,Vec2f _size, int _style){
 
-		super(_position,_size);
+		super(_position, _size);
 		style = _style;
+
 		DebugColor = SColor(155,0,0,0);
 		CRules@ rules = getRules();
-		pageAnchor.addChild(nextP);
-		nextP.locked = true;
-		pageAnchor.addChild(pageNum);
-		pageAnchor.addChild(prevP);
-		prevP.locked = true;
-		playerChooserArrow.locked = true;
-		ApP = max_classes_on_page;
-		//rules.addCommandID("announce class unlock");
-		rules.addCommandID("requestClasses");
-		rules.addCommandID("sendClasses");
-		playerChooser.setCurrentItem("Your Classes");
 	}
 
-	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0,string _modName = "Default", 
-		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>, string _imageName = "GUI/ClassIcons.png", int _size = 1)
+	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0, string _modName = "Default", 
+		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>(), string _imageName = "GUI/ClassIcons.png", Vec2f _size = iconSize)
 	{
 		WWPlayerClassButton@ classButton = @WWPlayerClassButton(_name, _desc, _configFilename, _classID, _cost, _imageName, _icon, _rarity, _modName, position, _size, _specialties, _stats);
 		list.push_back(classButton);
-		totalPages = (list.length / ApP)+1;
-		if (totalPages > 1)nextP.locked = false;
-		pageNum.setText("PAGE "+page);
-		this.specialties = _specialties;
-	}
 
+		specialties = _specialties;
+	}
+	
 	void startDisplay(WWPlayerClassButton@ classButton)
 	{
 		Icon rarity  = classButton.rarity; // required for a linux fix (on staging build) caused by .rarity and others being const
 		Icon display = classButton.display; // ^
 		Label desc   = classButton.desc; // ^
 
-		dropDownR = rarity;
-		dropDownR.localPosition = classButton.rarity.localPosition + Vec2f(0,30);
-		
-		dropDownD = display;
-		dropDownD.localPosition = classButton.display.localPosition + Vec2f(0,30);
-
-		dropDownL = desc;
-		dropDownL.localPosition = classButton.desc.localPosition + Vec2f(0,30);
-
-		dropDownL.size = classButton.desc.size + Vec2f(110,0);
-		dropDownL.setText(dropDownL.label + "\n"+ dropDownL.textWrap(classButton.description));
-
-		dropDownW.clearChildren();
-		dropDownW.addChild(dropDownD);
-		dropDownW.addChild(dropDownR);
-		dropDownW.addChild(dropDownL);
-		dropDownW.addChild(dropDownT);
-
 		displaying = true;
 	}
-
-	void display()
-	{
-		if(dropDownW.position.y < 0 && timer < 10){ dropDownW.position = dropDownW.position + Vec2f(0,10);}
-		else{ timer++;}
-		if (timer > 80 && dropDownW.position.y > -150){ dropDownW.position = dropDownW.position - Vec2f(0,10);}
-		else if (timer > 80){ displaying = false; timer = 0;}
-		dropDownW.draw();
-	}
+	void display(){}
 
 	void drawSelf()
 	{
-		hoverDet = false;
-
-		if (nextP.isClickedWithLButton)clickerHandle(nextP);
-		if (prevP.isClickedWithLButton)clickerHandle(prevP);
-
 		if (style == 1) renderSmall();
-		if (playerChooser.isClickedWithLButton) clickerHandle(playerChooser);
-
-		if (playerChooser.anchor.isClickedWithLButton) {needsUpdate = true;playerChooser.anchor.isClickedWithLButton=false;}
-		pageAnchor.position = position + Vec2f(size.x-60,size.y);
-
-		pageAnchor.draw();
-		if (hoverDet && !playerChooser.open) tipAnchor.draw();
-
 		GenericGUIItem::drawSelf();
 	}
 
 	void renderSmall()
 	{
 		needsUpdate = false;
-		int counterH = 0, counterV = 0, i = ApP * (page-1);
 
-		for(i; i < list.length; i++){
-			if (50*counterV+46 > size.y) {counterH++;counterV= 0;}
-			if (204*counterH+200 > size.x) break;
-			if (i>=page*ApP) break;
+		int classesPerRow = 12;
+		int spacingX = iconSize.x;
+		int spacingY = iconSize.y;
+		int startY = -32;
 
-			list[i].draw(position+Vec2f((204*counterH),(50*counterV)-20));
-			GUI::DrawRectangle(list[i].classButton.position, list[i].classButton.position+list[i].classButton.size,SColor(0,150,150,150));
-			counterV++;
-		}
-	}
+		for (int i = 0; i < list.length; i++)
+		{
+			int row = i / classesPerRow;
+			int col = i % classesPerRow;
 
-	void clickerHandle(IGUIItem@ sender){ //Internal click handler to operate playerchooser, and page buttons
-		if(sender is nextP){
-			page +=1;
-			if (page == totalPages) sender.locked = true;
-			if (prevP.locked) prevP.locked = false;
-			pageNum.setText("PAGE "+page);
-		}
-		if (sender is prevP){
-			page -=1;
-			if (page == 1) sender.locked = true;
-			if (nextP.locked ) nextP.locked = false;
-			pageNum.setText("PAGE "+page);
-		}
-		if (sender is playerChooser){
-			playerChooser.resetList();
-			int count = getPlayerCount();
-			for(int i = 0; i < count; i++){
-				CPlayer@ player = getPlayer(i);
-				if (player.isMyPlayer()){playerChooser.addItem("Your Classes");}
-				else {playerChooser.addItem(player.getUsername()+"'s Classes");}
-			}
-			playerChooser.open = true;
+			f32 offset = i >= 5 ? 128.0f : 32.0f;
+			Vec2f classPos = position + Vec2f(col * spacingX + offset, row * spacingY + startY);
+			list[i].draw(classPos);
 		}
 	}
 }
 
-void intitializeClasses()
+void initClasses()
 {
 	string configstr = "../Cache/WizardWars_Classes"+classesVersion+".cfg";
 	ConfigFile cfg = ConfigFile(configstr);
+
 	if (!cfg.exists("Version")){cfg.add_string("Version","Classes 1.2");
 		cfg.saveFile("WizardWars_Classes"+classesVersion+".cfg");}
-	playerClassButtons = WWPlayerClassButtonList(Vec2f(50,40),Vec2f(700,400),1);
+
+	playerClassButtons = WWPlayerClassButtonList(Vec2f(0, -32), menuSize, 1);
 	playerClassButtons.isEnabled = false;
 	
 	playerClassButtons.registerWWPlayerClassButton("Wizard", 
