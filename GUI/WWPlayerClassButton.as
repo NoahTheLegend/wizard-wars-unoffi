@@ -117,9 +117,9 @@ class WWPlayerClassButton
 			f32 gridSize = 48.0f;
 			Vec2f offset;
 			if (i < 10)
-				offset = Vec2f(gridSize*i,0);
+				offset = Vec2f(gridSize*i, 0);
 			else
-				offset = Vec2f(gridSize*(i-10),gridSize);
+				offset = Vec2f(gridSize*(i-10), gridSize);
 
 			spellButtons.push_back(@Button(Vec2f(0,100) + offset, Vec2f(gridSize,gridSize), "", SColor(255,255,255,255)));
 			spellButtons[i].name = spells[i].name;
@@ -435,10 +435,10 @@ void iconHover(bool hover, IGUIItem@ item)
 	}
 }
 
-void SwapButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
+void SwapButtonHandler(int x, int y, int button, IGUIItem@ sender) //Button click handler for KGUI
 { 
 	CPlayer@ localPlayer = getLocalPlayer();
-	if ( localPlayer is null )
+	if (localPlayer is null)
 		return;
 		
 	string playerName = localPlayer.getUsername();
@@ -448,7 +448,7 @@ void SwapButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button cl
 
 	CBitStream params;
 	params.write_u16(callerID);
-	params.write_string(sender.name);
+	params.write_string(selectedClass);
 	
 	CRules@ rules = getRules();
 	rules.SendCommand(rules.getCommandID("swap classes"), params);

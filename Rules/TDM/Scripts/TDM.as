@@ -3,6 +3,7 @@
 
 #define SERVER_ONLY
 
+#include "MagicCommon.as";
 #include "TDM_Structs.as";
 #include "RulesCore.as";
 #include "RespawnSystem.as";
@@ -157,7 +158,13 @@ shared class TDMSpawns : RespawnSystem
 					}
 				}
 			}
-				
+			
+			string[] s_classes = {"wizard", "necromancer", "druid", "swordcaster", "entropist", "priest", "shaman", "paladin", "jester", "warlock"};
+			if (s_classes.find(p_info.blob_name) == -1)
+			{
+				warn("TDM LOGIC: Player " + p_info.username + " has an invalid class: " + p_info.blob_name);
+				p_info.blob_name = "wizard"; //default to wizard
+			}
 			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 
 			if (playerBlob !is null)

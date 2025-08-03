@@ -5746,7 +5746,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			
 			if (!isServer()) return;
 
-			string[] classes = {"wizard", "druid", "necromancer", "swordcaster", "entropist", "priest", "shaman", "paladin", "warlock"};
 			CBlob@ random = server_CreateBlob(classes[XORRandom(classes.length)], this.getTeamNum(), this.getPosition());
 			if (random !is null)
 			{

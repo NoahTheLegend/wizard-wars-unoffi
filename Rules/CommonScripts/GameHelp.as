@@ -9,6 +9,7 @@
 #include "WWPlayerClassButton.as";
 #include "WheelMenuCommon.as";
 #include "Tutorial.as";
+#include "MagicCommon.as";
 
 const Vec2f menuSize = Vec2f(800, 538);
 const string classIconsImage = "GUI/ClassIcons.png";
@@ -22,6 +23,7 @@ bool page1 = true;
 
 const int slotsSize = 6;
 f32 boxMargin = 50.0f;
+string selectedClass = classes[0];
 
 //key names
 const string party_key = getControls().getActionKeyKeyName( AK_PARTY );
@@ -41,9 +43,6 @@ const Vec2f windowDimensions = Vec2f(1000,600);
 
 //----KGUI ELEMENTS----\\
 	Window@ helpWindow;
-	Label@ introText;
-	Label@ helpText;
-	Label@ changeText;
 	Label@ resetSpellText;
     Label@ itemDistanceText;
     Label@ hoverDistanceText;
@@ -75,9 +74,6 @@ const Vec2f windowDimensions = Vec2f(1000,600);
 bool isGUINull()
 {
 	if (helpWindow is null) { warn("debug: helpWindow is null"); return true; }
-	if (introText is null) { warn("debug: introText is null"); return true; }
-	if (helpText is null) { warn("debug: helpText is null"); return true; }
-	if (changeText is null) { warn("debug: changeText is null"); return true; }
 	if (itemDistanceText is null) { warn("debug: itemDistanceText is null"); return true; }
 	if (hoverDistanceText is null) { warn("debug: hoverDistanceText is null"); return true; }
 	if (infoBtn is null) { warn("debug: infoBtn is null"); return true; }
@@ -133,13 +129,21 @@ void PlayFlipSound()
 void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 {
 	if (sender is null || playerClassButtons is null) return;
-
+	
 	if (sender._customData > 100)
 	{
 		int classIndex = sender._customData - 101; // 0 is empty, 1 is wizard and so on
+		int copyId = classIndex - 1;
+		if (copyId >= 0 && copyId < classes.size())
+		{
+			selectedClass = classes[copyId];
+		}
 
 		Rectangle@ leftPage = cast<Rectangle>(classesFrame.getChild("classFrameLeftPage"));
 		if (leftPage is null) return;
+
+		Rectangle@ rightPage = cast<Rectangle>(classesFrame.getChild("classFrameRightPage"));
+		if (rightPage is null) return;
 
 		Label@ title0 = cast<Label@>(leftPage.getChild("classFrameLeftPageTitle0"));
 		if (title0 is null) return;
@@ -150,6 +154,9 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		Label@ description = cast<Label@>(leftPage.getChild("classFrameLeftPageDescription"));
 		if (description is null) return;
 
+		Button@ swapButton = cast<Button@>(rightPage.getChild("classFrameSwapButton"));
+		if (swapButton is null) return;
+
 		PlayFlipSound();
 
 		title0.font = "DragonFire_56";
@@ -159,7 +166,7 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		if (classIndex == 0)
 		{
 			title0.font = "DragonFire_32";
-			title1.font = "DragonFire_24";
+			title1.font = "DragonFire_20";
 			description.font = "DragonFire_12";
 			
 			title0.setText("Hey!");
@@ -191,6 +198,34 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 	}
 }
 
+void iconClickHandler(int x, int y, int button, IGUIItem@ sender)
+{
+	if (sender is null) return;
+
+	Button@ buttonSender = cast<Button@>(sender);
+	if (buttonSender is null) return;
+
+	Icon@ icon = cast<Icon@>(buttonSender.getChild("iconback"));
+	if (icon is null) return;
+
+	int cd = buttonSender._customData;
+	icon.index = cd + 2;
+}
+
+void iconHoverHandler(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Button@ button = cast<Button@>(item);
+	if (button is null) return;
+
+	Icon@ icon = cast<Icon@>(button.getChild("iconback"));
+	if (icon is null) return;
+
+	int cd = icon._customData;
+	icon.index = (hover) ? cd + 1 : cd;
+}
+
 void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 {
 	//Button click handler for KGUI
@@ -201,8 +236,6 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 	{
 		canvasIcon.isEnabled = false;
 
-		changeText.isEnabled = false;
-		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		classesFrame.isEnabled = false;
@@ -214,8 +247,6 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 	{
 		canvasIcon.isEnabled = false;
 
-		changeText.isEnabled = false;
-		introText.isEnabled = true;
 		helpIcon.isEnabled = true;
 		optionsFrame.isEnabled = false;
 		classesFrame.isEnabled = false;
@@ -225,8 +256,6 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 	if (sender is optionsBtn)
 	{
-		changeText.isEnabled = false;
-		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
 		optionsFrame.isEnabled = true;
 		classesFrame.isEnabled = false;
@@ -236,8 +265,6 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 	if (sender is classesBtn)
 	{
-		changeText.isEnabled = false;
-		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		classesFrame.isEnabled = true;
@@ -247,8 +274,6 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 	if (sender._customData == 100) // class frame button
 	{
-		changeText.isEnabled = false;
-		introText.isEnabled = false;
 		helpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		classesFrame.isEnabled = false;
@@ -258,8 +283,6 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 	//if (sender is achievementBtn)
 	//{
-	//	changeText.isEnabled = false;
-	//	introText.isEnabled = false;
 	//	helpIcon.isEnabled = false;
 	//	spellAssignHelpIcon.isEnabled = false;
 	//	optionsFrame.isEnabled = false;
@@ -410,8 +433,38 @@ void updateOptionsScroller()
     }
 }
 
-void SliderClickHandler(int dType ,Vec2f mPos, IGUIItem@ sender){
-	//if (sender is test){test.slide();}
+void SliderClickHandler(int dType ,Vec2f mPos, IGUIItem@ sender)
+{
+	
+}
+
+void BookMarkHoverStateHandler(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Button@ sender = cast<Button@>(item);
+	if (sender is null) return;
+	
+	Icon@ icon = cast<Icon@>(item.getChild("iconback"));
+	if (icon is null) return;
+
+	int cd = icon._customData;
+	Vec2f pos = icon.localPosition;
+
+	f32 drop = sender._customData;
+	Vec2f offset = Vec2f(0, cd >= 0 ? cd + drop : cd - drop);
+
+	Label@ label = cast<Label@>(icon.getChild("label"));
+	if (hover)
+	{
+		icon.localPosition = pos + offset;
+		if (label !is null) label.isEnabled = true;
+	}
+	else
+	{
+		icon.localPosition = pos - offset;
+		if (label !is null) label.isEnabled = false;
+	}
 }
 
 void onTick(CRules@ this)
@@ -468,6 +521,7 @@ void onTick(CRules@ this)
 
 			AddIconToken("$CANVAS$", "MenuCanvas.png", imageSize, 0);
 			@canvasIcon = @Icon("MenuCanvas.png", Vec2f(0, 0), Vec2f(imageSize.x, imageSize.y), 0, 0.5f);
+
 			canvasIcon.isEnabled = false;
 			canvasIcon.setLevel(ContainerLevel::BACKGROUND);
 		}
@@ -475,52 +529,135 @@ void onTick(CRules@ this)
 		//---KGUI Parenting---\\
 		// helpWindow
 		{
-			@infoBtn = @Button(Vec2f(0,495),Vec2f(100,30),"How to Play",SColor(255,255,255,255));
+			// disabled for now
+			@infoBtn = @Button(Vec2f(0,495),Vec2f(100,30),"How to Play",SColor(0,0,0,0));
+			infoBtn.nodraw = true;
 			infoBtn.setLevel(ContainerLevel::PAGE);
 			infoBtn.addClickListener(ButtonClickHandler);
+			infoBtn.isEnabled = false;
 
-			@changeText  = @Label(Vec2f(20,40),Vec2f(780,34),"",SColor(255,0,0,0),false);
-			changeText.setText(changeText.textWrap(lastChangesInfo));
+			// page icons
+			{
+				// layers
+				Icon@ bottom0 = @Icon( "MenuCanvasBookmarkLayerBottom0.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
+				Icon@ bottom1 = @Icon( "MenuCanvasBookmarkLayerBottom1.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
+				Icon@ bottom2 = @Icon( "MenuCanvasBookmarkLayerBottom2.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
+				Icon@ top0    = @Icon( "MenuCanvasBookmarkLayerTop0.png", 	 Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
 
-			@introText  = @Label(Vec2f(280,10),Vec2f(780,15),"",SColor(255,0,0,0),false);
-			introText.setText(introText.textWrap("    Welcome to Wizard Wars!\n(Press F1 to close this window)"));
+				bottom0.setLevel(ContainerLevel::BACKGROUND);
+				bottom1.setLevel(ContainerLevel::BACKGROUND);
+				bottom2.setLevel(ContainerLevel::BACKGROUND);
+				top0.   setLevel(ContainerLevel::BACKGROUND);
 
-			@introBtn = @Button(Vec2f(160,495),Vec2f(100,30),"Home Page",SColor(255,255,255,255));
-			introBtn.setLevel(ContainerLevel::PAGE);
-			introBtn.addClickListener(ButtonClickHandler);
+				Vec2f buttonSize = Vec2f(104, 52);
+				Vec2f iconSize = Vec2f(96, 32);
 
-			@helpText  = @Label(Vec2f(6,10),Vec2f(100,34),"",SColor(255,0,0,0),false);
-			helpText.setText(helpText.textWrap(lastChangesInfo));
+				Vec2f posHome = Vec2f(78, 492);
+				Vec2f posSettings = Vec2f(215, 488);
+				Vec2f posClasses = Vec2f(610, 486);
+				Vec2f posClose = Vec2f(661, -12);
 
-			@optionsBtn = @Button(Vec2f(265,495),Vec2f(100,30),"Options",SColor(255,255,255,255));
-			optionsBtn.setLevel(ContainerLevel::PAGE);
-			optionsBtn.addClickListener(ButtonClickHandler);
+				int dropIntro = 13;
+				int dropSettings = 7;
+				int dropClasses = 14;
+				int dropClose = 9;
 
-			@classesBtn = @Button(Vec2f(495,495),Vec2f(120,30),"Classes Menu",SColor(255,255,255,255));
-			classesBtn.setLevel(ContainerLevel::PAGE);
-			classesBtn.addClickListener(ButtonClickHandler);
+				@introBtn = @Button(posHome, buttonSize, "Home", SColor(0,0,0,0));
+				introBtn.nodraw = true;
+				introBtn._customData = dropIntro;
+				introBtn.setLevel(ContainerLevel::PAGE);
+				introBtn.addClickListener(ButtonClickHandler);
 
-			@achievementBtn = @Button(Vec2f(370,495),Vec2f(120,30),"Achievements",SColor(255,255,255,255));
-			achievementBtn.setLevel(ContainerLevel::PAGE);
-			achievementBtn.addClickListener(ButtonClickHandler);
-			achievementBtn.isEnabled = false; // disabled for now
+				Icon@ introBtnBackground = @Icon("BookMarks.png", Vec2f_zero, iconSize, 2, 0.5f);
+				introBtnBackground.name = "iconback";
+				introBtn.addHoverStateListener(BookMarkHoverStateHandler);
 
-        	@togglemenuBtn = @Button(Vec2f(702,6),Vec2f(90,30),"Exit Menu",SColor(255,255,255,255));//How do close menu? durp. The pain i have gone through has warrented this.
-			togglemenuBtn.addClickListener(ButtonClickHandler);
-		
-			helpWindow.addChild(introText);
-			helpWindow.addChild(helpIcon);
-			helpWindow.addChild(canvasIcon);
-			helpWindow.addChild(changeText);
-			helpWindow.addChild(introBtn);
-			helpWindow.addChild(optionsBtn);
-			helpWindow.addChild(achievementBtn);
-       		helpWindow.addChild(togglemenuBtn);
+				Label@ introBtnLabel = @Label(Vec2f(iconSize.x/2-1, 7), iconSize, "Home", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				introBtnLabel.name = "label";
+				introBtnLabel.isEnabled = false;
+				introBtnBackground.addChild(introBtnLabel);
+				introBtn.addChild(introBtnBackground);
+
+				@optionsBtn = @Button(posSettings, buttonSize, "Options", SColor(0,0,0,0));
+				optionsBtn.nodraw = true;
+				optionsBtn._customData = dropSettings;
+				optionsBtn.setLevel(ContainerLevel::PAGE);
+				optionsBtn.addClickListener(ButtonClickHandler);
+				
+				Icon@ optionsBtnBackground = @Icon("BookMarks.png", Vec2f_zero, iconSize, 3, 0.5f);
+				optionsBtnBackground.name = "iconback";
+				optionsBtn.addHoverStateListener(BookMarkHoverStateHandler);
+				optionsBtn.addChild(optionsBtnBackground);
+
+				Label@ optionsBtnLabel = @Label(Vec2f(iconSize.x/2-1, 6), iconSize, "Options", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				optionsBtnLabel.name = "label";
+				optionsBtnLabel.isEnabled = false;
+				optionsBtnBackground.addChild(optionsBtnLabel);
+				optionsBtn.addChild(optionsBtnBackground);
+
+				@classesBtn = @Button(posClasses, buttonSize, "Classes", SColor(0,0,0,0));
+				classesBtn.nodraw = true;
+				classesBtn._customData = dropClasses;
+				classesBtn.setLevel(ContainerLevel::PAGE);
+				classesBtn.addClickListener(ButtonClickHandler);
+
+				Icon@ classesBtnBackground = @Icon("BookMarks.png", Vec2f_zero, iconSize, 1, 0.5f);
+				classesBtnBackground.name = "iconback";
+				classesBtn.addHoverStateListener(BookMarkHoverStateHandler);
+				classesBtn.addChild(classesBtnBackground);
+
+				Label@ classesBtnLabel = @Label(Vec2f(iconSize.x/2-2, 7), iconSize, "Classes", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				classesBtnLabel.name = "label";
+				classesBtnLabel.isEnabled = false;
+				classesBtnBackground.addChild(classesBtnLabel);
+				classesBtn.addChild(classesBtnBackground);
+
+				@togglemenuBtn = @Button(posClose, buttonSize, "Exit F1", SColor(0,0,0,0));
+				togglemenuBtn.nodraw = true;
+				togglemenuBtn._customData = dropClose;
+				togglemenuBtn.addClickListener(ButtonClickHandler);
+				togglemenuBtn.setLevel(ContainerLevel::PAGE);
+
+				Icon@ togglemenuBtnBackground = @Icon("BookMarks.png", Vec2f_zero, iconSize, 4, 0.5f);
+				togglemenuBtnBackground.name = "iconback";
+				togglemenuBtnBackground._customData = -1;
+				togglemenuBtn.addHoverStateListener(BookMarkHoverStateHandler);
+				togglemenuBtn.addChild(togglemenuBtnBackground);
+
+				Label@ togglemenuBtnLabel = @Label(Vec2f(iconSize.x/2-2, 18), iconSize, "Exit F1", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				togglemenuBtnLabel.name = "label";
+				togglemenuBtnLabel.isEnabled = false;
+				togglemenuBtnBackground.addChild(togglemenuBtnLabel);
+				togglemenuBtn.addChild(togglemenuBtnBackground);
+
+				@achievementBtn = @Button(Vec2f(370, 495), buttonSize, "Achievements", SColor(0,0,0,0));
+				achievementBtn.nodraw = true;
+				achievementBtn.setLevel(ContainerLevel::PAGE);
+				achievementBtn.addClickListener(ButtonClickHandler);
+				achievementBtn.isEnabled = false; // disabled for now
+
+				// init classes menu
+				initClasses();
+
+				helpWindow.addChild(helpIcon);
+				helpWindow.addChild(canvasIcon);
+
+				helpWindow.addChild(introBtn);
+				helpWindow.addChild(bottom2);
+
+				helpWindow.addChild(playerClassButtons);
+				helpWindow.addChild(classesBtn);
+				helpWindow.addChild(bottom1);
+				
+				helpWindow.addChild(optionsBtn);
+				helpWindow.addChild(bottom0);
+
+				helpWindow.addChild(togglemenuBtn);
+				helpWindow.addChild(top0);
+				
+				//helpWindow.addChild(achievementBtn);
+			}
 		}
-
-		// init classes menu
-		initClasses();
-		helpWindow.addChild(playerClassButtons);
 
 		// class selection page
 		@classesFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
@@ -533,15 +670,15 @@ void onTick(CRules@ this)
 			leftPage.name = "classFrameLeftPage";
 			leftPage.setLevel(ContainerLevel::PAGE_FRAME);
 
-			Label@ title0 = @Label(Vec2f(page_size.x / 2 + 5, 50), Vec2f(100, 32), "Wizard Wars", SColor(255, 0, 0, 0), true, "DragonFire_48");
-			Label@ title1 = @Label(Vec2f(page_size.x / 2 + 5, 95), Vec2f(100, 32), "Bestiary", SColor(255, 0, 0, 0), true, "DragonFire_32");
+			Label@ title0 = @Label(Vec2f(page_size.x / 2 + 5, 50), Vec2f(100, 32), "Wizard Wars", SColor(255, 91, 45, 18), true, "DragonFire_48");
+			Label@ title1 = @Label(Vec2f(page_size.x / 2 + 5, 90), Vec2f(100, 32), "Bestiary", SColor(255, 91, 45, 18), true, "DragonFire_32");
 			
 			title0.name = "classFrameLeftPageTitle0";
 			title1.name = "classFrameLeftPageTitle1";
 
 			string leftPageDesc = "Hello!\n\n This is the place where you can see info about the classes.\nSelect one and press the \"Choose\" button on the right page.\n\n You might also want to rebind your hotbar spells - check out the \"Binds\" section and follow the tips there.\n\n There is also a very useful \"Guides\" section for new players, so just in case, i would advise you to join the spectator team and read, that will help a lot!\n                     (press ESC -> Change Team)";
 			Label@ description = @Label(Vec2f(30, 112), Vec2f(page_size.x - 60, page_size.y - 150),
-				leftPageDesc, SColor(255, 0, 0, 0), false, "KingThingsPetrockLight_22");
+				leftPageDesc, SColor(255, 91, 45, 18), false, "KingThingsPetrockLight_22");
 			description.name = "classFrameLeftPageDescription";
 			description.setText(description.textWrap(description.label));
 
@@ -558,6 +695,8 @@ void onTick(CRules@ this)
 			Vec2f grid = Vec2f(4, 4);
 
 			Vec2f last_icon_size = Vec2f(0, 0);
+			u8 rnd_seed = XORRandom(10);
+
 			for (u8 i = 0; i < grid.x * grid.y; i++)
 			{
 				Button@ reference;
@@ -586,24 +725,34 @@ void onTick(CRules@ this)
 					(i % int(grid.x)) * (classList.size.x / grid.x),
 					(i / int(grid.x)) * (classList.size.y / grid.y)
 				));
+
+				if (i >= playerClassButtons.list.length)
+				{
+					Icon@ icon = @Icon("Paper"+((rnd_seed+i) % 4 + 4)+".png", Vec2f(0, 0), Vec2f(120, 112), 0, 1.0f, true, reference.size);
+					reference.nodraw = true;
+					reference.addChild(icon);
+				}
 				classList.addChild(reference);
-
-				Button@ swapButton = @Button(Vec2f(32, page_size.y - 64), Vec2f(100,32), "", SColor(0, 0, 0, 0));
-				swapButton.nodraw = true;
-				swapButton.addClickListener(SwapButtonHandler);
-
-				Icon@ swapIcon = @Icon("Paper0.png", Vec2f(0, 0), Vec2f(240, 96), 0, 1.0f, true, Vec2f(100, 32));
-				swapButton.addChild(swapIcon);
-
-				rightPage.addChild(swapButton);
 			}
 			rightPage.addChild(classList);
+
+			Button@ swapButton = @Button(Vec2f(32, page_size.y - 92), Vec2f(128, 64), "", SColor(0, 0, 0, 0));
+			swapButton.nodraw = true;
+			swapButton._customData = 0; // icon idle index
+			swapButton.name = "classFrameSwapButton";
+			swapButton.addClickListener(iconClickHandler);
+			swapButton.addHoverStateListener(iconHoverHandler);
+			swapButton.addClickListener(SwapButtonHandler);
+
+			Icon@ swapIcon = @Icon("BookButtons.png", Vec2f(0, swapButton.size.y / 2 - 32), Vec2f(112, 48), 0, 1.0f, true, Vec2f(112, 64));
+			swapIcon.name = "iconback";
+			swapButton.addChild(swapIcon);
+			rightPage.addChild(swapButton);
 
 			classesFrame.addChild(leftPage);
 			classesFrame.addChild(rightPage);
 		}
 		helpWindow.addChild(classesFrame);
-		helpWindow.addChild(classesBtn);
 
 		// options
 		@optionsFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
@@ -768,7 +917,6 @@ void onTick(CRules@ this)
 		
 		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
 		optionsFrame.isEnabled = false;
-		changeText.isEnabled = false;
 		
 		// disabled for now
 		intitializeAchieves();

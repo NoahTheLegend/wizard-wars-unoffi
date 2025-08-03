@@ -67,7 +67,10 @@ void renderHPBar( CBlob@ blob, Vec2f origin)
 const string[] font_names = {
     "Wizardry_12",
     "Wizardry_14",
+    "Wizardry_16",
     "Wizardry_18",
+    "Wizardry_20",
+    "Wizardry_22",
     "Wizardry_24",
 	"Wizardry_32",
 

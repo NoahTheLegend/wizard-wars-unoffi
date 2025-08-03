@@ -251,12 +251,12 @@ const string[][] symbol_lines = {
 	// C
 	{
 		"   CCCCCCC   ",
-		" CC            CC",
+		" CC             CC",
 		" CC          ",
 		" CC          ",
 		" CC          ",
 		" CC          ",
-		" CC            CC",
+		" CC             CC",
 		"   CCCCCCC   "
 	},
 
@@ -299,12 +299,12 @@ const string[][] symbol_lines = {
 	// G
 	{
 		"   GGGGGGG   ",
-		" GG               GG ",
+		" GG                GG ",
 		" GG          ",
 		" GG   GGGGG  ",
-		" GG              GG  ",
-		" GG              GG  ",
-		" GG            GG   ",
+		" GG               GG  ",
+		" GG               GG  ",
+		" GG             GG   ",
 		"   GGGGGG    "
 	},
 
@@ -445,12 +445,12 @@ const string[][] symbol_lines = {
 	// T
 	{
 		" TTTTTTTT     ",
-		"       TT       ",
-		"       TT       ",
-		"       TT       ",
-		"       TT       ",
-		"       TT       ",
-		"       TT       "
+		"         TT       ",
+		"         TT       ",
+		"         TT       ",
+		"         TT       ",
+		"         TT       ",
+		"         TT       "
 	},
 
 	// U

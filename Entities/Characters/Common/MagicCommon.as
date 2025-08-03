@@ -4,6 +4,7 @@
 
 const u8 MIN_FOCUS_TIME = 5; //in seconds
 const u16 wet_renew_time = 5*30;
+const string[] classes = {"wizard", "necromancer", "druid", "swordcaster", "entropist", "priest", "shaman", "paladin", "jester", "warlock"};
 
 namespace SpellType
 {

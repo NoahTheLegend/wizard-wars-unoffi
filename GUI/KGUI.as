@@ -87,7 +87,7 @@ interface IGUIItem{
 	void draw();
 
 	void addChild(IGUIItem@ child);
-	IGUIItem@ getChild(string name);
+	IGUIItem@ getChild(string _name);
 	void removeChild(IGUIItem@ child);
 	void clearChildren();
 
@@ -127,6 +127,7 @@ class GenericGUIItem : IGUIItem{
 	SColor color;
 	bool render_one_more_time;
 	int _customData;
+	string name;
 
 	//config properties
 	Vec2f position {
@@ -142,8 +143,8 @@ class GenericGUIItem : IGUIItem{
 		set { _size = value;}
 	}
 	string name {
-		get { return _name;} 
-		set { _name = value;}
+		get { return name;} 
+		set { name = value;}
 	}
 	string mod {
 		get { return _mod;} 
@@ -190,7 +191,6 @@ class GenericGUIItem : IGUIItem{
 	private Vec2f _size;
 	private Vec2f _localPosition;
 	private bool _enabled = true;
-	private string _name;
 	private string _mod;
 	private Vec2f _position;
 	private bool _isDragable = false;
@@ -245,7 +245,6 @@ class GenericGUIItem : IGUIItem{
 	private DRAG_EVENT_CALLBACK@[] _dragEventListeners;
 	private SLIDE_EVENT_CALLBACK@[] _slideEventListeners;
 
-
 	GenericGUIItem(Vec2f v_localPosition, Vec2f v_size){
 		localPosition = v_localPosition;
 		position = localPosition;
@@ -254,6 +253,7 @@ class GenericGUIItem : IGUIItem{
 		render_one_more_time = false;
 		level = ContainerLevel::DEFAULT;
 		_customData = 0;
+		name = "";
 	}
 
 	void setPosition(Vec2f v_position){
@@ -267,9 +267,9 @@ class GenericGUIItem : IGUIItem{
 		children.push_back(child);
 	}
 
-	IGUIItem@ getChild(string name){
+	IGUIItem@ getChild(string _name){
 		for(int i = 0; i < children.length; i++){
-			if(children[i].name == name)
+			if(children[i].name == _name)
 				return children[i];
 		}
 		return null;
@@ -748,16 +748,16 @@ class Window : GenericGUIItem {
 	bool nodraw;
 
 	//In constructor you can setup any additional inner UI elements
-	Window(Vec2f _position, Vec2f _size, int _type = 0, string _name = ""){
+	Window(Vec2f _position, Vec2f _size, int _type = 0, string name = ""){
 		super(_position,_size);
-		name = _name;
+		name = name;
 		type = _type;
 		DebugColor = SColor(155,217,2,0);
 	}
 
-	Window(string _name, Vec2f _position, Vec2f _size){ //backwards compatiblity, will be removed soon
+	Window(string name, Vec2f _position, Vec2f _size){ //backwards compatiblity, will be removed soon
 		super(_position, _size);
-		name = _name;
+		name = name;
 		DebugColor = SColor(155,217,2,0);
 	}
 
@@ -781,9 +781,9 @@ class List : GenericGUIItem{
 	bool open = false;
 	int timeOut;
 
-	List(Vec2f _position,Vec2f _size, string _name = ""){
+	List(Vec2f _position,Vec2f _size, string name = ""){
 		super(_position,_size);
-		name = _name;
+		name = name;
 		DebugColor = SColor(155,23,162,23);
 		addChild(current);
 	}
@@ -833,7 +833,6 @@ class Button : GenericGUIItem{
 	string desc;
 	bool selfLabeled = false;
 	bool toggled = false;
-	string name;
 	bool nodraw;
 
 	Button(Vec2f _position,Vec2f _size, int cd = 0){
@@ -988,7 +987,7 @@ class ProgressBar : GenericGUIItem{
 class TextureBar : GenericGUIItem{
 	
 	float val = 10.0f,max,increment,scale,team = 0;
-	string name, bar, back;
+	string bar, back;
 	Vec2f barSize, backSize;
 	int barStart, backStart;
 
@@ -1140,7 +1139,7 @@ class Label : GenericGUIItem
 
 class Icon : GenericGUIItem
 {
-	string name;
+	string iconName;
 	float scale = 1;
 	Vec2f resizeScale;
 	bool resized;
@@ -1150,9 +1149,9 @@ class Icon : GenericGUIItem
 	Anim[] animList;
 
 	//Static Icon setup
-	Icon(string _name, Vec2f _position, Vec2f _size, int _index, float _scale, bool resize_to_fit = false, Vec2f _fit = Vec2f_zero){
+	Icon(string _iconName, Vec2f _position, Vec2f _size, int _index, float _scale, bool resize_to_fit = false, Vec2f _fit = Vec2f_zero){
 		super(_position, _size * _scale);
-		name = _name;	
+		iconName = _iconName;	
 		scale = _scale;
 		resizeScale = getResizedScale(_size, _fit) * 0.5f;
 		resized = resize_to_fit;
@@ -1170,13 +1169,13 @@ class Icon : GenericGUIItem
 	}
 
 	//Animated Icon setup
-	Icon(Vec2f _position,string _name, float _scale){
+	Icon(Vec2f _position, string _name, float _scale){
 		super(_position, Vec2f(0,0));
 		/*_frame = 0;
 		_animFreq = animFreq;
 		_iDimension = iDimension;
 		_image = image;*/
-		name = _name;	
+		iconName = _name;	
 		scale = _scale;
 		animate = true;
 		DebugColor = SColor(155,31,105,158);
@@ -1215,8 +1214,8 @@ class Icon : GenericGUIItem
 		}
 		else
 		{
-			if (resized) GUI::DrawIcon(name,index,iSize,position,resizeScale.x,resizeScale.y,team,color);
-			else GUI::DrawIcon(name,index,iSize,position,scale,scale,team,color);
+			if (resized) GUI::DrawIcon(iconName,index,iSize,position,resizeScale.x,resizeScale.y,team,color);
+			else GUI::DrawIcon(iconName,index,iSize,position,scale,scale,team,color);
 			GenericGUIItem::drawSelf();
 		}	
 	}
@@ -1225,11 +1224,11 @@ class Icon : GenericGUIItem
 class Anim{
 	int[] index;
 	int frame,freq;
-	string name, image;
+	string iconName, image;
 	Vec2f iDim;
 
-	Anim(string _name, string _image,Vec2f _iDim, int f){
-		name = _name;
+	Anim(string _iconName, string _image,Vec2f _iDim, int f){
+		iconName = _iconName;
 		image = _image;
 		freq = f;
 		iDim = _iDim;
