@@ -30,14 +30,15 @@ class WWPlayerClassButton
 	int classID;
 	string name, modName, description, configFilename;
 	Icon@ rarity, display;
+
 	Button@ classButton, swapButton;
 	ProgressBar@ condition;
 	
 	Rectangle@ classFrame;
 	Button@[] spellButtons;
+	
 	Label@ desc, conLbl, spellDescText;
 	u32 classCost;
-	bool gained, hasCon = false;
 
 	u8[] specialties;
 	u8[] stats;
@@ -58,9 +59,6 @@ class WWPlayerClassButton
 		classCost = _cost;
 
 		@classButton = @Button(_pos, _size, "", SColor(255, 255, 255, 255));
-		@desc = @Label(Vec2f(44,5),  _size, _name, SColor(255, 0, 0, 0), false);
-
-		classButton.addChild(desc);
 		@display = @Icon(_imageName, Vec2f_zero, Vec2f(32, 32), classID, 1.0f);
 
 		classButton.addChild(display);
@@ -78,6 +76,7 @@ class WWPlayerClassButton
 
 		classDescriptionButton._customData = classID;
 		classDescriptionButton.addClickListener(ClassDescriptionButtonHandler);
+
 		classFrame.addChild(classDescriptionButton);
 		classFrame.addChild(classDescriptionText);
 		
@@ -117,7 +116,7 @@ class WWPlayerClassButton
 		{
 			f32 gridSize = 48.0f;
 			Vec2f offset;
-			if ( i < 10 )
+			if (i < 10)
 				offset = Vec2f(gridSize*i,0);
 			else
 				offset = Vec2f(gridSize*(i-10),gridSize);
@@ -264,7 +263,7 @@ class WWPlayerClassButtonList : GenericGUIItem
 	}
 
 	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0, string _modName = "Default", 
-		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>(), string _imageName = "GUI/ClassIcons.png", Vec2f _size = iconSize)
+		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>(), string _imageName = classIconsImage, Vec2f _size = iconSize)
 	{
 		WWPlayerClassButton@ classButton = @WWPlayerClassButton(_name, _desc, _configFilename, _classID, _cost, _imageName, _icon, _rarity, _modName, position, _size, _specialties, _stats);
 		list.push_back(classButton);
@@ -276,7 +275,6 @@ class WWPlayerClassButtonList : GenericGUIItem
 	{
 		Icon rarity  = classButton.rarity; // required for a linux fix (on staging build) caused by .rarity and others being const
 		Icon display = classButton.display; // ^
-		Label desc   = classButton.desc; // ^
 
 		displaying = true;
 	}

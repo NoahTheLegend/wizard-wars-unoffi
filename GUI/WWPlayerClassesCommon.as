@@ -111,17 +111,43 @@ const Vec2f descriptionButtonOffsetOut = Vec2f(0, -128);
 const Vec2f descriptionButtonSize = Vec2f(510, 54);
 const Vec2f descriptionButtonSizeExtra = Vec2f(0, 32);
 
+const string[] classTitles = {
+	"Wizard",
+	"Necromancer",
+	"Druid",
+	"Swordcaster",
+	"Entropist",
+	"Priest",
+	"Shaman",
+	"Paladin",
+	"Jester",
+	"Warlock"
+};
+
+const string[] classSubtitles = {
+	"Master of the Knowledge",
+	"Dark Lord",
+	"The Nature's Guardian",
+	"Grand Duelist",
+	"Exiled Renegade",
+	"Divine Inquisitor",
+	"Ancestors Oracle",
+	"Fateful Templar",
+	"Deft Trickster",
+	"Emissary of the Forbidden"
+};
+
 const string[] classDescriptions = {
-	"Wizards' history has proven them to be formidable opponents.\nYears spent studying obscure magic have granted them a wide range of powerful spells, though most still avoid focusing too deeply on any one school — unsure whether the power they unlock might destroy THEM first.",
-    "Necromancers have a habit of learning spells no one else wants to deal with.\nAfter enough time with rituals and curses, most stop pretending it's about knowledge and start calling it \"the willing\". It works well enough — though keeping things under control is more of a hope than a plan.",
-    "Druids trust nature more than people, and it usually pays off.\nWhile living in harmony with the world around them, they adjust to the flow of natural energies, allowing them to use the environment to their advantage, and if their magic isn't flashy, it's certainly persistent and reliable.",
-    "Swordcasters don't fuss over complex magic — they turn raw force into blunt instruments and let physics do the rest.\n\nTheir spells are straightforward, built for impact and contact rather than finesse. It's not subtle, but it gets the job done.",
-    "Entropists play with unstable forces, bending reality in ways that rarely follow the rules.\n\nWhatsoever, they are really willing to do so, as they often consume themselves into excitement of being overpowered.",
-    "Priests dedicate themselves to the divine, channeling holy energy to heal team and smite foes.\n\nThey wield slow, but impactful spells, but their true strength lies in exhorating allies — a beacon in the darkest battles.",
-    "Shamans command totems and elemental forces through channels to nature's spirits and their ancestors.\n\nVersatile in both offense and defense, bound to the elements of earth, fire and water, they adapt fluidly to any situation.",
-    "Paladins embody noble strength, standing as steadfast tanks and shining symbols of hope.\nTheir holy damage burns through darkness, while their protective auras bolster allies and their souls.\nThey are the shield of the team, and their presence is a rallying point for all.",
-    "Jesters use misdirection and spectacle to control the battlefield in unconventional ways.\nTheir kind blends utility and offense through volatile spells, unpredictable movement and conjured constructs. What others call distraction, they refine into precision — forcing enemies to react on their terms.",
-    "Warlocks pursue forbidden paths, accepting the cost to wield destructive to their health forces.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts, others reshape the flow of battle with their life force."
+	" Wizards' history has proven them to be formidable opponents.\nYears spent studying obscure magic have granted them a wide range of powerful spells, though most still avoid focusing too deeply on any one school — unsure whether the power they unlock might destroy THEM first.",
+    " Necromancers have a habit of learning spells no one else wants to deal with.\nAfter enough time with rituals and curses, most stop pretending it's about knowledge and start calling it \"the willing\". It works well enough — though keeping things under control is more of a hope than a plan.",
+    " Druids trust nature more than people, and it usually pays off.\nWhile living in harmony with the world around them, they adjust to the flow of natural energies, allowing them to use the environment to their advantage, and if their magic isn't flashy, it's certainly persistent and reliable.",
+    " Swordcasters don't fuss over complex magic — they turn raw force into blunt instruments and let physics do the rest.\n\n Their spells are straightforward, built for impact and contact rather than finesse. It's not subtle, but it gets the job done.",
+    " Entropists play with unstable forces, bending reality in ways that rarely follow the rules.\n\n Whatsoever, they are really willing to do so, as they often consume themselves into excitement of being overpowered.",
+    " Priests dedicate themselves to the divine, channeling holy energy to heal team and smite foes.\n\n They wield slow, but impactful spells, but their true strength lies in exhorating allies — a beacon in the darkest battles.",
+    " Shamans command totems and elemental forces through channels to nature's spirits and their ancestors.\n\n Versatile in both offense and defense, bound to the elements of earth, fire and water, they adapt fluidly to any situation.",
+    " Paladins embody noble strength, standing as steadfast tanks and shining symbols of hope.\nTheir holy damage burns through darkness, while their protective auras bolster allies and their souls.\nThey are the shield of the team, and their presence is a rallying point for all.",
+    " Jesters use misdirection and spectacle to control the battlefield in unconventional ways.\nTheir kind blends utility and offense through volatile spells, unpredictable movement and conjured constructs. What others call distraction, they refine into precision — forcing enemies to react on their terms.",
+    " Warlocks pursue forbidden paths, accepting the cost to wield destructive to their health forces.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts, others reshape the flow of battle with their life force."
 };
 
 bool[] classesSeen = {false, false, false, false, false, false, false, false, false, false};
@@ -191,4 +217,330 @@ void ClassDescriptionButtonHandler(int x, int y, int button, IGUIItem@ item)
 	showClassDescription = false;
 	classDescriptionFade = 0;
 	classDescriptionOpenTimer = 0;
+}
+
+const string[][] symbol_lines = {
+	// A
+	{
+		"     AAAA     ",
+		"    AA  AA    ",
+		"   AA    AA   ",
+		"  AA      AA  ",
+		" AAAAAA      ",
+		" AA        AA ",
+		" AA        AA ",
+		" AA        AA ",
+		" AA        AA ",
+		" AA        AA "
+	},
+
+	// B
+	{
+		" BBBBB       ",
+		" BB       BB  ",
+		" BB       BB  ",
+		" BB      BB  ",
+		" BBBBB       ",
+		" BB      BB  ",
+		" BB       BB  ",
+		" BB       BB  ",
+		" BB      BB  ",
+		" BBBBB       "
+	},
+
+	// C
+	{
+		"   CCCCCCC   ",
+		" CC            CC",
+		" CC          ",
+		" CC          ",
+		" CC          ",
+		" CC          ",
+		" CC            CC",
+		"   CCCCCCC   "
+	},
+
+	// D
+	{
+		" DDDDD       ",
+		" DD     DD   ",
+		" DD      DD  ",
+		" DD      DD  ",
+		" DD      DD  ",
+		" DD      DD  ",
+		" DD      DD  ",
+		" DD     DD   ",
+		" DDDDD       "
+	},
+
+	// E
+	{
+		" EEEEEEEE    ",
+		" EE          ",
+		" EE          ",
+		" EEEEEE      ",
+		" EE          ",
+		" EE          ",
+		" EE          ",
+		" EEEEEEEE    "
+	},
+
+	// F
+	{
+		" FFFFFFFF    ",
+		" FF          ",
+		" FF          ",
+		" FFFFFF      ",
+		" FF          ",
+		" FF          ",
+		" FF          "
+	},
+
+	// G
+	{
+		"   GGGGGGG   ",
+		" GG               GG ",
+		" GG          ",
+		" GG   GGGGG  ",
+		" GG              GG  ",
+		" GG              GG  ",
+		" GG            GG   ",
+		"   GGGGGG    "
+	},
+
+	// H
+	{
+		" HH      HH  ",
+		" HH      HH  ",
+		" HH      HH  ",
+		" HHHHHH  ",
+		" HH      HH  ",
+		" HH      HH  ",
+		" HH      HH  "
+	},
+
+	// I
+	{
+		" IIIIIIII   ",
+		"    II      ",
+		"    II      ",
+		"    II      ",
+		"    II      ",
+		"    II      ",
+		" IIIIIIII   "
+	},
+
+	// J
+	{
+		" JJJJJJJJJ   ",
+		"           JJ     ",
+		"           JJ     ",
+		"           JJ     ",
+		"           JJ     ",
+		" JJ   JJ     ",
+		"  JJJJ       "
+	},
+
+	// K
+	{
+		" KK      KK   ",
+		" KK    KK     ",
+		" KK  KK       ",
+		" KKKK        ",
+		" KK  KK       ",
+		" KK    KK     ",
+		" KK      KK   "
+	},
+
+	// L
+	{
+		" LL          ",
+		" LL          ",
+		" LL          ",
+		" LL          ",
+		" LL          ",
+		" LL          ",
+		" LLLLLLL     "
+	},
+
+	// M
+	{
+		" MM                    MM  ",
+		" MMM                MM  ",
+		" MMMM    MMMM  ",
+		" MM    MMM    MM   ",
+		" MM       M         MM   ",
+		" MM                    MM  ",
+		" MM                    MM  "
+	},
+
+	// N
+	{
+		" NN               NN  ",
+		" NNN            NN  ",
+		" NNNN         NN  ",
+		" NN   NN      NN  ",
+		" NN     NN    NN  ",
+		" NN       NN  NN  ",
+		" NN         NNNN  ",
+		" NN            NNN  ",
+		" NN               NN  "
+	},
+
+	// O
+	{
+		"   OOOOOO    ",
+		" OO            OO    ",
+		" OO            OO    ",
+		" OO            OO    ",
+		" OO            OO    ",
+		" OO            OO    ",
+		"   OOOOOO    "
+	},
+
+	// P
+	{
+		" PPPPPP      ",
+		" PP        PP    ",
+		" PP        PP    ",
+		" PPPPPP      ",
+		" PP          ",
+		" PP          ",
+		" PP          "
+	},
+
+	// Q
+	{
+		"  QQQQQQ     ",
+		" QQ            QQ    ",
+		" QQ            QQ    ",
+		" QQ            QQ    ",
+		" QQ   Q      QQ    ",
+		" QQ    Q    QQ     ",
+		"  QQQQQ Q    "
+	},
+
+	// R
+	{
+		" RRRRRR      ",
+		" RR        RR    ",
+		" RR        RR    ",
+		" RRRRRR      ",
+		" RR   RR      ",
+		" RR      RR     ",
+		" RR         RR    "
+	},
+
+	// S
+	{
+		"  SSSSSS     ",
+		" SS          SS    ",
+		" SS          ",
+		"  SSSSSS     ",
+		"                SS     ",
+		" SS         SS    ",
+		"  SSSSSS     "
+	},
+
+	// T
+	{
+		" TTTTTTTT     ",
+		"       TT       ",
+		"       TT       ",
+		"       TT       ",
+		"       TT       ",
+		"       TT       ",
+		"       TT       "
+	},
+
+	// U
+	{
+		" UU      UU    ",
+		" UU      UU    ",
+		" UU      UU    ",
+		" UU      UU    ",
+		" UU      UU    ",
+		" UU      UU    ",
+		"   UUUUU     "
+	},
+
+	// V
+	{
+		" VV    VV    ",
+		" VV    VV    ",
+		" VV    VV    ",
+		" VV    VV    ",
+		"  VV  VV     ",
+		"   VVVV      ",
+		"      VV       "
+	},
+
+	// W
+	{
+		" WW                    WW  ",
+		" WW                    WW  ",
+		" WW       W       WW   ",
+		" WW    WW    WW   ",
+		" WWW        WWW  ",
+		" WW                   WW  ",
+		" WW                    WW  "
+	},
+
+	// X
+	{
+		" XX    XX    ",
+		"  XX  XX     ",
+		"   XXXX      ",
+		"      XX       ",
+		"   XXXX      ",
+		"  XX  XX     ",
+		" XX    XX    "
+	},
+
+	// Y
+	{
+		" YY     YY    ",
+		" YY     YY    ",
+		"  YY   YY     ",
+		"   YYYY      ",
+		"      YY       ",
+		"      YY       ",
+		"      YY       "
+	},
+
+	// Z
+	{
+		" ZZZZZZ     ",
+		"           ZZ     ",
+		"         ZZ      ",
+		"       ZZ       ",
+		"     ZZ        ",
+		"   ZZ         ",
+		" ZZZZZZ     "
+	}
+};
+
+string CombineSymbols(const u8[] symbol_indices, const u8[] offsets)
+{
+	string result = "";
+
+	for (u8 i = 0; i < symbol_indices.length; i++)
+	{
+		u8 idx = symbol_indices[i];
+		u8 left_offset = offsets.length > i ? offsets[i] : 0;
+		if (idx < symbol_lines.length)
+		{
+			for (u8 line = 0; line < symbol_lines[idx].length; line++)
+			{
+				for (u8 s = 0; s < left_offset; s++)
+				{
+					result += " ";
+				}
+				result += symbol_lines[idx][line] + "\n";
+			}
+			result += "\n";
+		}
+	}
+
+	return result;
 }

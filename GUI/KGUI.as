@@ -87,6 +87,7 @@ interface IGUIItem{
 	void draw();
 
 	void addChild(IGUIItem@ child);
+	IGUIItem@ getChild(string name);
 	void removeChild(IGUIItem@ child);
 	void clearChildren();
 
@@ -264,6 +265,14 @@ class GenericGUIItem : IGUIItem{
 
 	void addChild(IGUIItem@ child){
 		children.push_back(child);
+	}
+
+	IGUIItem@ getChild(string name){
+		for(int i = 0; i < children.length; i++){
+			if(children[i].name == name)
+				return children[i];
+		}
+		return null;
 	}
 
 	void removeChild(IGUIItem@ child){
@@ -824,6 +833,8 @@ class Button : GenericGUIItem{
 	string desc;
 	bool selfLabeled = false;
 	bool toggled = false;
+	string name;
+	bool nodraw;
 
 	Button(Vec2f _position,Vec2f _size, int cd = 0){
 		super(_position,_size);
@@ -838,13 +849,16 @@ class Button : GenericGUIItem{
 		color = _color;
 		selfLabeled = true;
 		DebugColor = SColor(155,255,233,0);
+		nodraw = false;
 	}
 
 	void drawSelf(){
+		if (nodraw) return;
+
 		//Logic to change button based on state
-		if(isClickedWithLButton || isClickedWithRButton || toggled){
+		if (isClickedWithLButton || isClickedWithRButton || toggled){
 			GUI::DrawButtonPressed(position, position+size);	
-		} else if(isHovered && !_isLocked){
+		} else if (isHovered && !_isLocked){
 			GUI::DrawButtonHover(position, position+size);
 		} else {
 			GUI::DrawButton(position, position+size);	
@@ -1102,7 +1116,7 @@ class Label : GenericGUIItem
 	bool centered;
 	string font;
 
-	Label(Vec2f _position,Vec2f _size,string _label,SColor _color, bool _centered, string _font = "hud", int _cd = 0){
+	Label(Vec2f _position,Vec2f _size,string _label, SColor _color, bool _centered, string _font = "hud", int _cd = 0){
 		super(_position,_size);
 		label = _label;
 		color = _color;
@@ -1114,7 +1128,8 @@ class Label : GenericGUIItem
 
 	void drawSelf(){
 		GUI::SetFont(font);
-		GUI::DrawText(label, position, color);
+		if (centered) GUI::DrawTextCentered(label, position, color);
+		else GUI::DrawText(label, position, color);
 		GenericGUIItem::drawSelf();
 	}
 
@@ -1139,7 +1154,7 @@ class Icon : GenericGUIItem
 		super(_position, _size * _scale);
 		name = _name;	
 		scale = _scale;
-		resizeScale = getResizedScale(_size, _fit);
+		resizeScale = getResizedScale(_size, _fit) * 0.5f;
 		resized = resize_to_fit;
 		iSize = _size;
 		index = _index;
