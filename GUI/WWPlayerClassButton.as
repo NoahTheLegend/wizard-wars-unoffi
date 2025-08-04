@@ -120,9 +120,9 @@ class WWPlayerClassButton
 			string iconTexture = getRules().get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
 
 			// position empty frame
-			@selectedSpellIcon = @Icon(iconTexture, Vec2f(page_size.x / 2 - 32, 48), Vec2f(16, 16), 0, 2.0f);
+			@selectedSpellIcon = @Icon(iconTexture, Vec2f(page_size.x / 2 - 32, 54), Vec2f(16, 16), 0, 2.0f);
 			@selectedSpellName = @Label(Vec2f(page_size.x / 2, 30), Vec2f(page_size.x, 32), "Select a spell", col_text, true, "KingThingsPetrockLight_32");
-			@selectedSpellDescription = @Label(Vec2f(10, 120), Vec2f(page_size.x, 32), "Description", col_text, false, "DragonFire_18");
+			@selectedSpellDescription = @Label(Vec2f(10, 124), Vec2f(page_size.x, 32), "Description", col_text, false, "DragonFire_18");
 			@selectedSpellStats = @Label(Vec2f(10, 256), Vec2f(page_size.x, 32), "Stats", col_text, false, "DragonFire_18");
 
 			selectedSpellIcon.isEnabled = false;
@@ -130,7 +130,7 @@ class WWPlayerClassButton
 			selectedSpellStats.isEnabled = false;
 
 			@classDescriptionButton = @Button(descriptionButtonOffset, descriptionButtonSize, "", SColor(255, 255, 255, 255));
-			@classDescriptionBackground = @Icon("Paper"+XORRandom(2)+".png", Vec2f_zero, Vec2f(240, 96), 0, 1.0f, true, Vec2f(descriptionButtonSize.x, descriptionButtonSize.y * (classID == 8 ? 1.775f : 1.5f)));
+			@classDescriptionBackground = @Icon("Paper"+XORRandom(2)+".png", Vec2f_zero, Vec2f(240, 96), 0, 1.0f, true, Vec2f(descriptionButtonSize.x, descriptionButtonSize.y * (classID == 8 ? 1.75f : 1.5f)));
 			@classDescriptionText = @Label(Vec2f(24, 32), Vec2f(descriptionButtonSize.x - 24, descriptionButtonSize.y), "", col_text, false, "KingThingsPetrockLight_18");
 
 			classDescriptionBackground._customData = classID;
@@ -650,7 +650,7 @@ void SwapButtonHandler(int x, int y, int button, IGUIItem@ sender) //Button clic
 	CRules@ rules = getRules();
 	rules.SendCommand(rules.getCommandID("swap classes"), params);
 
-	PlayFlipSound();
+	Sound::Play2D("MenuSelect5.ogg", 0.75f, 0);
 }
 
 void ClassButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button click handler for KGUI

@@ -133,15 +133,15 @@ const string[] classSubtitles = {
 };
 
 const string[] classDescriptions = {
-	" Wizards' history has proven them to be formidable opponents.\nYears spent studying obscure magic have granted them a wide range of powerful spells, though most still avoid focusing too deeply on any one school — unsure whether the power they unlock might destroy THEM first.",
-    " Necromancers have a habit of learning spells no one else wants to deal with.\nAfter enough time with rituals and curses, most stop pretending it's about knowledge and start calling it \"the willing\". It works well enough — though keeping things under control is more of a hope than a plan.",
+	" Wizards' history has proven them to be formidable opponents.\nYears spent studying obscure magic have granted them a wide range of powerful spells, though most still avoid focusing too deeply on any one school - unsure whether the power they unlock might destroy THEM first.",
+    " Necromancers have a habit of learning spells no one else wants to deal with.\nAfter enough time with rituals and curses, most stop pretending it's about knowledge and start calling it \"the willing\". It works well enough - though keeping things under control is more of a hope than a plan.",
     " Druids trust nature more than people, and it usually pays off.\nWhile living in harmony with the world around them, they adjust to the flow of natural energies, allowing them to use the environment to their advantage, and if their magic isn't flashy, it's certainly persistent and reliable.",
-    " Swordcasters don't fuss over complex magic — they turn raw force into blunt instruments and let physics do the rest.\n\n Their spells are straightforward, built for impact and contact rather than finesse. It's not subtle, but it gets the job done.",
+    " Swordcasters don't fuss over complex magic - they turn raw force into blunt instruments and let physics do the rest.\n\n Their spells are straightforward, built for impact and contact rather than finesse. It's not subtle, but it gets the job done.",
     " Entropists play with unstable forces, bending reality in ways that rarely follow the rules.\n\n Whatsoever, they are really willing to do so, as they often consume themselves into excitement of being overpowered.",
-    " Priests dedicate themselves to the divine, channeling holy energy to heal team and smite foes.\n\n They wield slow, but impactful spells, but their true strength lies in exhorating allies — a beacon in the darkest battles.",
+    " Priests dedicate themselves to the divine, channeling holy energy to heal team and smite foes.\n\n They wield slow, but impactful spells, but their true strength lies in exhorating allies - a beacon in the darkest battles.",
     " Shamans command totems and elemental forces through channels to nature's spirits and their ancestors.\n\n Versatile in both offense and defense, bound to the elements of earth, fire and water, they adapt fluidly to any situation.",
     " Paladins embody noble strength, standing as steadfast tanks and shining symbols of hope.\nTheir holy damage burns through darkness, while their protective auras bolster allies and their souls.\nThey are the shield of the team, and their presence is a rallying point for all.",
-    " Jesters use misdirection and spectacle to control the battlefield in unconventional ways.\nTheir kind blends utility and offense through volatile spells, unpredictable movement and conjured constructs. What others call distraction, they refine into precision — forcing enemies to react on their terms.",
+    " Jesters use misdirection and spectacle to control the battlefield in unconventional ways.\nTheir kind blends utility and offense through volatile spells, unpredictable movement and conjured constructs. What others call distraction, they refine into precision - forcing enemies to react on their terms.",
     " Warlocks pursue forbidden paths, accepting the cost to wield destructive to their health forces.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts, other reshape the flow of battle with their life force."
 };
 
@@ -149,13 +149,13 @@ const string[] classTips = {
 	"Wizards specialize on a wide range of spells, but most of them are way too specific to be useful during the whole battle.\nFocus on saving mana while using cheap spells and defense until the most important moments!",
 	"Necromancers are one of the most mana-efficient classes and their spells are focused on AoE.\nFill areas with creeps to deny enemy from getting close. You should also try to block them from fleeing before preparing a combo.",
 	"Druids' spells deal miserable damage, however most of them are cheap and charge up quickly.\nCombine them to cover tunnels and passages, while keeping tempo at dealing direct damage and healing yourself or allies.",
-	"Swordcasters specialize on fast movement and doing impact damage.\nKeep the pressure on your enemies, then strike them when they are vulnerable.\nNote that Bladed Shell spell is easily countered with Wizard's and Druid's barriers!",
-	"Entropists require lots of mana to keep their tempo. You should keep more mana stored than you usually need to perform attacks.\nUse movement spells and Shards to steal mana or flee and reflect projectiles in their reversed mode.",
-	"Priests are good at healing and grouping with your team, however expensive spells can leave you vulnerable quickly.\nFocus either on healing or dealing damage, in case when mana obelisks are not available.",
+	"Swordcasters are very agile and deal impactful damage.\nKeep oppressing the enemies, then strike them when they are vulnerable.\nNote that Bladed Shell spell is easily countered with Wizard's and Druid's barriers!",
+	"Entropists require lots of mana to keep their tempo. You should keep more of it stored than you usually need to perform attacks.\nUse movement spells and Shards to steal mana or flee and reflect projectiles in their defensive mode.",
+	"Priests are good at healing and grouping with allies, however expensive spells deplete their mana quickly.\nFocus either on healing or dealing damage, in case when mana obelisks are not available.",
 	"Shamans' spells are quite versatile. The way you utilize them depends on your playstyle, although you might need to think where you place totems, as they usually make enemies come closer to despell.",
-	"Paladins are the most tough class, but their spells mostly focused on close battles.\nPlay steadily against opponents and strike them when nearby.\nPaladin's auras can be outplayed easily, so switch them periodically.",
-	"'A Jester spell — a circus act — no real mage would dare such tact'\n— the elder wizards love to say:\n'With smoke and bombs, sleight and jest they trick, but never learn the shtick'.\n And yet, beneath that painted grin\nLies cunning made to twist and win.\nJester's spells confuse, bash, and swap\n— unravel foes and trip them up!",
-	"Warlocks are great damage dealers.\nWhen mana is depleted, your spells will consume health, that is indicated with red cursor and cost behind.\nUse this when necessary and trade health with enemies at your advantage!"
+	"Paladins are the most tough class, but their spells are designed for close battles.\nPlay steadily against opponents and strike them when nearby.\nPaladin's auras can be outplayed easily, so switch them periodically.",
+	"'A Jester spell - a circus act - no real mage would dare such a tact'\n- the Elder wizards love to say:\n 'With smoke and bombs, twit and jest they trick, never get the shtick!'\n And yet, beneath that painted grin\nLies cunning made to twist and win.\n Jester spells confuse, bash and swap -\nUnravel foes and trip them up!",
+	"Warlocks are great damage dealers. \nWhen mana is depleted, your spells will consume health, that's indicated with red cursor and cost behind. Dealing damage will restore you some mana.\nUse this when necessary and trade health with enemies at your advantage!"
 };
 
 bool[] classesSeen = {false, false, false, false, false, false, false, false, false, false};
