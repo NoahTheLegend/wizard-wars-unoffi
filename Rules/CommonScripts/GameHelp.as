@@ -126,6 +126,7 @@ void PlayFlipSound()
 	Sound::Play2D("PageFlip"+XORRandom(6)+".ogg", 0.15f, 0.0f);
 }
 
+// todo: bind this handler with spells menu handler in the inner frame
 void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 {
 	if (sender is null || playerClassButtons is null) return;
@@ -185,6 +186,9 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 				added.push_back(XORRandom(symbol_lines.length));
 				random_offsets.push_back(XORRandom(110));
 			}
+
+			ornament.isEnabled = false;
+			bottomOrnament.isEnabled = false;
 
 			string text = CombineSymbols(added, random_offsets);
 			description.setText(text);
@@ -284,12 +288,36 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 	if (sender.name == "spellsMenu") // class frame button
 	{
+		// disable all other buttons
+		for (int i = 0; i < playerClassButtons.list.length; i++)
+		{
+			playerClassButtons.list[i].classFrame.isEnabled = false;
+			playerClassButtons.list[i].classButton.toggled = false;
+			playerClassButtons.list[i].classDescriptionButton.isEnabled = false;
+			playerClassButtons.list[i].classDescriptionText.setText("");
+		}
+
+		playerClassButtons.isEnabled = true;
+		int id = classes.find(selectedClass);
+
+		if (id != -1)
+		{
+			classDescriptionFade = 0;
+			classDescriptionOpenTimer = 0;
+
+			showClassDescription = canShowClassDescription(id);
+			playerClassButtons.list[id].classDescriptionButton.isEnabled = showClassDescription;
+			playerClassButtons.list[id].classDescriptionButton._customData = id;
+			playerClassButtons.list[id].classDescriptionText.setText(playerClassButtons.list[id].classDescriptionText.textWrap(classDescriptions[id]));
+
+			playerClassButtons.list[id].classFrame.isEnabled = true;
+			playerClassButtons.list[id].classButton.toggled = true;
+		}
+
 		helpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
-		playerClassButtons.isEnabled = true;
-		playerClassButtons.list[classes.find(selectedClass)].classFrame.isEnabled = true; // enable the selected class button
 	}
 
 	//if (sender is achievementBtn)
@@ -623,7 +651,7 @@ void onTick(CRules@ this)
 				classesBtnBackground.addChild(classesBtnLabel);
 				classesBtn.addChild(classesBtnBackground);
 
-				@togglemenuBtn = @Button(posClose, buttonSize, "Exit F1", SColor(0,0,0,0));
+				@togglemenuBtn = @Button(posClose, buttonSize, "Exit (F1)", SColor(0,0,0,0));
 				togglemenuBtn.nodraw = true;
 				togglemenuBtn._customData = dropClose;
 				togglemenuBtn.addClickListener(ButtonClickHandler);
@@ -635,7 +663,7 @@ void onTick(CRules@ this)
 				togglemenuBtn.addHoverStateListener(BookMarkHoverStateHandler);
 				togglemenuBtn.addChild(togglemenuBtnBackground);
 
-				Label@ togglemenuBtnLabel = @Label(Vec2f(iconSize.x/2-2, 18), iconSize, "Exit F1", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				Label@ togglemenuBtnLabel = @Label(Vec2f(iconSize.x/2-2, 18), iconSize, "Exit (F1)", SColor(235, 255, 255, 255), true, "Wizardry_18");
 				togglemenuBtnLabel.name = "label";
 				togglemenuBtnLabel.isEnabled = false;
 				togglemenuBtnBackground.addChild(togglemenuBtnLabel);
@@ -685,7 +713,7 @@ void onTick(CRules@ this)
 			title0.name = "classFrameLeftPageTitle0";
 			title1.name = "classFrameLeftPageTitle1";
 
-			string leftPageDesc = "Hello!\n\n This is the place where you can see info about the classes.\nSelect one and press the \"Choose\" button on the right page.\n\n You might also want to rebind your hotbar spells - check out the \"Spells\" section and follow the tips there.\n\n There is also a very useful \"Guides\" section for new players, so just in case, i would advise you to join the spectator team and read, that will help a lot!\n                     (press ESC -> Change Team)";
+			string leftPageDesc = "Hello!\n\n This is the place where you can see info about the classes.\nSelect one and press the \"Select\" button on the right page.\n\n You might also want to rebind your hotbar spells - check out the \"Spells\" section and follow the tips there.\n\n There is also a very useful \"Guides\" section for new players, so just in case, i would advise you to join the spectator team and read, that will help a lot!\n                     (press ESC -> Change Team)";
 			Label@ description = @Label(Vec2f(30, 112), Vec2f(page_size.x - 60, page_size.y - 150),
 				leftPageDesc, SColor(255, 91, 45, 18), false, "KingThingsPetrockLight_22");
 			description.name = "classFrameLeftPageDescription";

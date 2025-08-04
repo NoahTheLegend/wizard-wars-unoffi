@@ -415,9 +415,9 @@ const string[][] symbol_lines = {
 		" QQ            QQ    ",
 		" QQ            QQ    ",
 		" QQ            QQ    ",
-		" QQ   Q      QQ    ",
-		" QQ    Q    QQ     ",
-		"  QQQQQ Q    "
+		" QQ     Q   QQ    ",
+		" QQ      Q QQ     ",
+		"  QQQQQ    Q    "
 	},
 
 	// R

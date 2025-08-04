@@ -157,12 +157,7 @@ class WWPlayerClassButton
 			}
 			for (uint i = 0; i < spellsLength; i++)
 			{
-				if (spells[i].category == SpellCategory::utility)
-					utilitySpells.push_back(i);
-			}
-			for (uint i = 0; i < spellsLength; i++)
-			{
-				if (spells[i].category == SpellCategory::defensive)
+				if (spells[i].category == SpellCategory::heal)
 					utilitySpells.push_back(i);
 			}
 			for (uint i = 0; i < spellsLength; i++)
@@ -172,7 +167,12 @@ class WWPlayerClassButton
 			}
 			for (uint i = 0; i < spellsLength; i++)
 			{
-				if (spells[i].category == SpellCategory::heal)
+				if (spells[i].category == SpellCategory::defensive)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::utility)
 					utilitySpells.push_back(i);
 			}
 
@@ -185,32 +185,43 @@ class WWPlayerClassButton
 
 		//setSpecialties();
 
-		@spellDescText = @Label(Vec2f(0,400), Vec2f(480,34), "Select a spell above to see its description.", SColor(255,0,0,0), false);
+		@spellDescText = @Label(Vec2f(32, 450), Vec2f(480, 32), "Select a spell and click on this ^ hotbar.", SColor(255,0,0,0), false);
 		classFrame.addChild(spellDescText);
-		
-		Label@ hotbarHelpText = @Label(Vec2f(0,408), Vec2f(480,34), "", SColor(255,0,0,0), false);
-		hotbarHelpText.setText(hotbarHelpText.textWrap("HOW TO ASSIGN HOTKEYS: Select a spell at the top of the page and click a location in the hotbar directly above this hint")); 
-		classFrame.addChild(hotbarHelpText);
 		
 		classFrame.isEnabled = false;
 	}
 
 	void addSpellSection(array<uint>@ spellIndices, Vec2f sectionOffset, Spell[] &in spells, f32 gridSize)
 	{
-		for (uint idx = 0; idx < spellIndices.length; idx++)
+		uint numRows = Maths::Ceil(spellIndices.length / 6.0f);
+		for (uint row = 0; row < numRows; row++)
 		{
-			uint i = spellIndices[idx];
-			Vec2f offset = sectionOffset + Vec2f(idx % 6 * gridSize, Maths::Floor(idx / 6) * gridSize);
+			uint startIdx = row * 6;
+			uint endIdx = Maths::Min(startIdx + 6, spellIndices.length);
+			uint rowCount = endIdx - startIdx;
 
-			spellButtons.push_back(@Button(offset, Vec2f(gridSize, gridSize), "", SColor(255,234,205,163)));
-			spellButtons[spellButtons.length - 1].name = spells[i].name;
+			f32 rowOffsetX = 0;
+			if (rowCount < 6)
+			{
+				rowOffsetX = ((6 - rowCount) * gridSize) * 0.5f;
+			}
 
-			Icon@ spellIcon = @Icon("SpellIcons.png", Vec2f(8, 8), Vec2f(16, 16), spells[i].iconFrame, 1.0f);
-			spellButtons[spellButtons.length - 1].addChild(spellIcon);
-			spellButtons[spellButtons.length - 1].addClickListener(SpellButtonHandler);
+			for (uint col = 0; col < rowCount; col++)
+			{
+				uint idx = startIdx + col;
+				uint i = spellIndices[idx];
+				Vec2f offset = sectionOffset + Vec2f(rowOffsetX + col * gridSize, row * gridSize);
 
-			spellButtons[spellButtons.length - 1]._customData = i;
-			classFrame.addChild(spellButtons[spellButtons.length - 1]);
+				spellButtons.push_back(@Button(offset, Vec2f(gridSize, gridSize), "", SColor(255,234,205,163)));
+				spellButtons[spellButtons.length - 1].name = spells[i].name;
+
+				Icon@ spellIcon = @Icon("SpellIcons.png", Vec2f(8, 8), Vec2f(16, 16), spells[i].iconFrame, 1.0f);
+				spellButtons[spellButtons.length - 1].addChild(spellIcon);
+				spellButtons[spellButtons.length - 1].addClickListener(SpellButtonHandler);
+
+				spellButtons[spellButtons.length - 1]._customData = i;
+				classFrame.addChild(spellButtons[spellButtons.length - 1]);
+			}
 		}
 	}
 
@@ -585,6 +596,7 @@ void ClassButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 
 			playerClassButtons.list[i].classFrame.isEnabled = true;
 			iButton.toggled = true;
+			selectedClass = iButton.name;
 		}
 		else
 		{
@@ -723,7 +735,7 @@ void RenderClassMenus()
 			}
 
 			spellAssignHelpIcon.isEnabled = false;
-			const string buttonName = selectedClass;
+			const string buttonName = iButton.name;
 
 			if (buttonName == "wizard") {
 				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Wizard, WizardParams::spells);
@@ -760,7 +772,7 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 	CControls@ controls = localPlayer.getControls();
 	Vec2f mouseScreenPos = controls.getMouseScreenPos();
 
-	Vec2f offset = Vec2f(264.0f, 350.0f);
+	Vec2f offset = Vec2f(50.0f, 350.0f);
 	bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
 	bool hotbarClicked = false;
 	int spellsLength = classSpells.length;
@@ -803,7 +815,6 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 			}
 		}
 	}
-	GUI::DrawText("Primary - " + controls.getActionKeyKeyName(AK_ACTION1), primaryPos + Vec2f(0, -32), color_white);
 
 	Vec2f secondaryPos = helpWindow.position + Vec2f(192.0f, 0.0f) + offset;
 	u8 secondarySpellID = Maths::Min(hotbarAssignments[spells_maxcount], spellsLength - 1);
@@ -816,7 +827,7 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 		hotbarClicked = true;
 	}
 	GUI::SetFont("default");
-	GUI::DrawText("Secondary - " + controls.getActionKeyKeyName(AK_ACTION2), secondaryPos + Vec2f(32, 8), color_white);
+	GUI::DrawText("" + controls.getActionKeyKeyName(AK_ACTION2), secondaryPos + Vec2f(32, 8), color_white);
 
 	Vec2f aux1Pos = helpWindow.position + Vec2f(192.0f, 64.0f) + offset;
 	u8 aux1SpellID = Maths::Min(hotbarAssignments[16], spellsLength - 1);
@@ -828,9 +839,9 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 		assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, className);
 		hotbarClicked = true;
 	}
-	GUI::DrawText("Auxiliary1 - " + controls.getActionKeyKeyName(AK_ACTION3), aux1Pos + Vec2f(32, 8), color_white);
+	GUI::DrawText("" + controls.getActionKeyKeyName(AK_ACTION3), aux1Pos + Vec2f(32, 8), color_white);
 
-	Vec2f aux2Pos = helpWindow.position + Vec2f(364.0f, 0.0f) + offset;
+	Vec2f aux2Pos = helpWindow.position + Vec2f(258.0f + 32.0f, 64.0f) + offset;
 	u8 aux2SpellID = Maths::Min(hotbarAssignments[17], spellsLength - 1);
 	Spell aux2Spell = classSpells[aux2SpellID];
 	GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32, 32));
@@ -840,7 +851,7 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 		assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, className);
 		hotbarClicked = true;
 	}
-	GUI::DrawText("Auxiliary2 - " + controls.getActionKeyKeyName(AK_TAUNTS), aux2Pos + Vec2f(32, 8), color_white);
+	GUI::DrawText("" + controls.getActionKeyKeyName(AK_TAUNTS), aux2Pos + Vec2f(32, 8), color_white);
 	
 	if (canCustomizeHotbar && hotbarClicked)
 	{
