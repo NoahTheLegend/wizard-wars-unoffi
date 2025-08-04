@@ -157,6 +157,12 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		Button@ swapButton = cast<Button@>(rightPage.getChild("classFrameSwapButton"));
 		if (swapButton is null) return;
 
+		Icon@ ornament = cast<Icon@>(leftPage.getChild("classFrameLeftPageOrnament"));
+		if (ornament is null) return;
+
+		Icon@ bottomOrnament = cast<Icon@>(leftPage.getChild("classFrameLeftPageBottomOrnament"));
+		if (bottomOrnament is null) return;
+
 		PlayFlipSound();
 
 		title0.font = "DragonFire_56";
@@ -166,7 +172,7 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		if (classIndex == 0)
 		{
 			title0.font = "DragonFire_32";
-			title1.font = "DragonFire_20";
+			title1.font = "DragonFire_18";
 			description.font = "DragonFire_12";
 			
 			title0.setText("Hey!");
@@ -186,6 +192,10 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		else if (classIndex < classTitles.size() + 1)
 		{
 			classIndex--;
+
+			description.setPosition(Vec2f(description.localPosition.x, 178));
+			ornament.isEnabled = true;
+			bottomOrnament.isEnabled = true;
 
 			title0.setText(classTitles[classIndex]);
 			title1.setText(classSubtitles[classIndex]);
@@ -272,13 +282,14 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 		playerClassButtons.isEnabled = false;
 	}
 
-	if (sender._customData == 100) // class frame button
+	if (sender.name == "spellsMenu") // class frame button
 	{
 		helpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
 		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = true;
+		playerClassButtons.list[classes.find(selectedClass)].classFrame.isEnabled = true; // enable the selected class button
 	}
 
 	//if (sender is achievementBtn)
@@ -559,7 +570,7 @@ void onTick(CRules@ this)
 
 				int dropIntro = 13;
 				int dropSettings = 7;
-				int dropClasses = 14;
+				int dropClasses = 15;
 				int dropClose = 9;
 
 				@introBtn = @Button(posHome, buttonSize, "Home", SColor(0,0,0,0));
@@ -636,9 +647,6 @@ void onTick(CRules@ this)
 				achievementBtn.addClickListener(ButtonClickHandler);
 				achievementBtn.isEnabled = false; // disabled for now
 
-				// init classes menu
-				initClasses();
-
 				helpWindow.addChild(helpIcon);
 				helpWindow.addChild(canvasIcon);
 
@@ -664,6 +672,7 @@ void onTick(CRules@ this)
 		classesFrame.isEnabled = false; 
 		classesFrame.setLevel(ContainerLevel::PAGE);
 		{
+			initClasses();
 			Vec2f page_size = Vec2f(menuSize.x / 2 - 40, menuSize.y - 40);
 
 			Rectangle@ leftPage = @Rectangle(Vec2f(0, 0), page_size - Vec2f(20, 0), SColor(0, 0, 0, 0));
@@ -676,15 +685,25 @@ void onTick(CRules@ this)
 			title0.name = "classFrameLeftPageTitle0";
 			title1.name = "classFrameLeftPageTitle1";
 
-			string leftPageDesc = "Hello!\n\n This is the place where you can see info about the classes.\nSelect one and press the \"Choose\" button on the right page.\n\n You might also want to rebind your hotbar spells - check out the \"Binds\" section and follow the tips there.\n\n There is also a very useful \"Guides\" section for new players, so just in case, i would advise you to join the spectator team and read, that will help a lot!\n                     (press ESC -> Change Team)";
+			string leftPageDesc = "Hello!\n\n This is the place where you can see info about the classes.\nSelect one and press the \"Choose\" button on the right page.\n\n You might also want to rebind your hotbar spells - check out the \"Spells\" section and follow the tips there.\n\n There is also a very useful \"Guides\" section for new players, so just in case, i would advise you to join the spectator team and read, that will help a lot!\n                     (press ESC -> Change Team)";
 			Label@ description = @Label(Vec2f(30, 112), Vec2f(page_size.x - 60, page_size.y - 150),
 				leftPageDesc, SColor(255, 91, 45, 18), false, "KingThingsPetrockLight_22");
 			description.name = "classFrameLeftPageDescription";
 			description.setText(description.textWrap(description.label));
 
+			Icon@ leftPageDescOrnament = @Icon("OrnamentMid.png", Vec2f(page_size.x / 2 - 64, 120), Vec2f(128, 48), 0, 0.5f, false);
+			leftPageDescOrnament.name = "classFrameLeftPageOrnament";
+			leftPageDescOrnament.isEnabled = false;
+
+			Icon@ leftPageBottomOrnament = @Icon("OrnamentStraightWide.png", Vec2f(24, page_size.y - 64), Vec2f(336, 32), 0, 0.5f, false);
+			leftPageBottomOrnament.name = "classFrameLeftPageBottomOrnament";
+			leftPageBottomOrnament.isEnabled = false;
+
 			leftPage.addChild(title0);
 			leftPage.addChild(title1);
 			leftPage.addChild(description);
+			leftPage.addChild(leftPageDescOrnament);
+			leftPage.addChild(leftPageBottomOrnament);
 
 			Rectangle@ rightPage = @Rectangle(Vec2f(menuSize.x / 2, 0), page_size, SColor(0, 0, 0, 0));
 			rightPage.name = "classFrameRightPage";
@@ -736,7 +755,8 @@ void onTick(CRules@ this)
 			}
 			rightPage.addChild(classList);
 
-			Button@ swapButton = @Button(Vec2f(32, page_size.y - 92), Vec2f(128, 64), "", SColor(0, 0, 0, 0));
+			Vec2f buttonSize = Vec2f(92, 64);
+			Button@ swapButton = @Button(Vec2f(32, page_size.y - 92), buttonSize, "", SColor(0, 0, 0, 0));
 			swapButton.nodraw = true;
 			swapButton._customData = 0; // icon idle index
 			swapButton.name = "classFrameSwapButton";
@@ -744,10 +764,34 @@ void onTick(CRules@ this)
 			swapButton.addHoverStateListener(iconHoverHandler);
 			swapButton.addClickListener(SwapButtonHandler);
 
-			Icon@ swapIcon = @Icon("BookButtons.png", Vec2f(0, swapButton.size.y / 2 - 32), Vec2f(112, 48), 0, 1.0f, true, Vec2f(112, 64));
+			Icon@ swapIcon = @Icon("BookButtons.png", Vec2f(0, swapButton.size.y / 2 - 32), Vec2f(112, 48), 0, 1.0f, true, buttonSize);
 			swapIcon.name = "iconback";
 			swapButton.addChild(swapIcon);
 			rightPage.addChild(swapButton);
+
+			Label@ swapLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "Select", SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
+			swapLabel.name = "swapLabel";
+			swapLabel.localPosition = Vec2f(swapButton.size.x / 2 - 3, swapButton.size.y / 2 - 4);
+			swapButton.addChild(swapLabel);
+
+			Button@ spellsMenu = @Button(Vec2f(swapButton.localPosition.x + swapButton.size.x + 8, page_size.y - 92), buttonSize, "Spells", SColor(0, 0, 0, 0));
+			spellsMenu.setLevel(ContainerLevel::PAGE);
+			spellsMenu.nodraw = true;
+			spellsMenu._customData = 0;
+			spellsMenu.name = "spellsMenu";
+			spellsMenu.addClickListener(iconClickHandler);
+			spellsMenu.addHoverStateListener(iconHoverHandler);
+			spellsMenu.addClickListener(ButtonClickHandler);
+
+			Icon@ spellsMenuIcon = @Icon("BookButtons.png", Vec2f(0, spellsMenu.size.y / 2 - 32), Vec2f(112, 48), 0, 1.0f, true, buttonSize);
+			spellsMenuIcon.name = "iconback";
+			spellsMenu.addChild(spellsMenuIcon);
+			rightPage.addChild(spellsMenu);
+
+			Label@ spellsMenuLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "Spells", SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
+			spellsMenuLabel.name = "spellsMenuLabel";
+			spellsMenuLabel.localPosition = Vec2f(spellsMenu.size.x / 2 - 3, spellsMenu.size.y / 2 - 4);
+			spellsMenu.addChild(spellsMenuLabel);
 
 			classesFrame.addChild(leftPage);
 			classesFrame.addChild(rightPage);

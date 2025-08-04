@@ -14,6 +14,7 @@
 #include "JesterCommon.as";
 #include "WarlockCommon.as";
 #include "WWPlayerClassesCommon.as";
+#include "MagicCommon.as";
 
 string classesVersion = "1";
 u32 lastHotbarPressTime = 0;
@@ -29,9 +30,9 @@ class WWPlayerClassButton
 {
 	int classID;
 	string name, modName, description, configFilename;
-	Icon@ rarity, display;
+	Icon@ display;
 
-	Button@ classButton, swapButton;
+	Button@ classButton;
 	ProgressBar@ condition;
 	
 	Rectangle@ classFrame;
@@ -58,78 +59,165 @@ class WWPlayerClassButton
 		classID = _classID;
 		classCost = _cost;
 
-		@classButton = @Button(_pos, _size, "", SColor(255, 255, 255, 255));
-		@display = @Icon(_imageName, Vec2f_zero, Vec2f(32, 32), classID, 1.0f);
-
-		classButton.addChild(display);
-		@rarity = @Icon("GUI/Rarity.png",Vec2f(5,5),Vec2f(18,18),_rarity,1.0f);
-		
 		specialties = _specialties;
 		stats = _stats;
 		tickrate = 0;
-		
-		classButton.name = _configFilename;
-		classButton.addClickListener(ClassButtonHandler);
-		
-		@classFrame = @Rectangle(Vec2f(232,0),Vec2f(760,490), SColor(0,0,0,0));
-		playerClassButtons.addChild(classFrame);
 
-		classDescriptionButton._customData = classID;
-		classDescriptionButton.addClickListener(ClassDescriptionButtonHandler);
-
-		classFrame.addChild(classDescriptionButton);
-		classFrame.addChild(classDescriptionText);
-		
-		@swapButton = @Button(Vec2f(0,-28), Vec2f(200,24), "Respawn as "+_name, SColor(255,255,255,255));
-		swapButton.name = _configFilename;
-		classFrame.addChild(swapButton);
-		swapButton.addClickListener(SwapButtonHandler);
-		
-		Label@ classDescText = @Label(Vec2f(0,16), Vec2f(480,34), "", SColor(255,0,0,0), false);
-		classDescText.setText(classDescText.textWrap(_desc));
-		classFrame.addChild(classDescText);
-		
-		Spell[] spells;
-		if ( _configFilename == "wizard" )
-			spells = WizardParams::spells;
-		else if ( _configFilename == "druid" )
-			spells = DruidParams::spells;
-		else if ( _configFilename == "necromancer" )
-			spells = NecromancerParams::spells;
-		else if ( _configFilename == "swordcaster" )
-			spells = SwordCasterParams::spells;
-		else if ( _configFilename == "entropist" )
-			spells = EntropistParams::spells;
-		else if ( _configFilename == "priest" )
-			spells = PriestParams::spells;
-		else if ( _configFilename == "shaman" )
-			spells = ShamanParams::spells;
-		else if ( _configFilename == "paladin" )
-			spells = PaladinParams::spells;
-		else if ( _configFilename == "jester" )
-			spells = JesterParams::spells;
-		else if ( _configFilename == "warlock" )
-			spells = WarlockParams::spells;
-
-		int spellsLength = spells.length;
-		for (uint i = 0; i < spellsLength; i++)
+		// class button and its frame (view)
+		Vec2f page_size = Vec2f(menuSize.x / 2 - 40, menuSize.y - 40);
 		{
-			f32 gridSize = 48.0f;
-			Vec2f offset;
-			if (i < 10)
-				offset = Vec2f(gridSize*i, 0);
-			else
-				offset = Vec2f(gridSize*(i-10), gridSize);
+			@classButton = @Button(_pos, _size, "", SColor(255, 255, 255, 255));
+			@display = @Icon(_imageName, Vec2f_zero, Vec2f(32, 32), classID, 1.0f);
 
-			spellButtons.push_back(@Button(Vec2f(0,100) + offset, Vec2f(gridSize,gridSize), "", SColor(255,255,255,255)));
-			spellButtons[i].name = spells[i].name;
-			
-			Icon@ spellIcon = @Icon("SpellIcons.png", Vec2f(8,8), Vec2f(16,16) , spells[i].iconFrame, 1.0f);
-			spellButtons[i].addChild(spellIcon);
-			spellButtons[i].addClickListener(SpellButtonHandler);
-			
-			classFrame.addChild(spellButtons[i]);
+			classButton.addChild(display);
+			classButton.name = _configFilename;
+			classButton.addClickListener(ClassButtonHandler);
+
+			@classFrame = @Rectangle(Vec2f(40, 40), page_size, SColor(50,255,0,0));
+			playerClassButtons.addChild(classFrame);
+
+			classDescriptionButton._customData = classID;
+			classDescriptionButton.addClickListener(ClassDescriptionButtonHandler);
+			classDescriptionButton.isEnabled = false;
+
+			classFrame.addChild(classDescriptionButton);
+			classFrame.addChild(classDescriptionText);
 		}
+
+		// class spells
+		Spell[] spells;
+		{
+			int classIndex = classes.find(_configFilename);
+			switch(classIndex)
+			{
+				case 0:
+					spells = WizardParams::spells;
+					break;
+				case 1:
+					spells = NecromancerParams::spells;
+					break;
+				case 2:
+					spells = DruidParams::spells;
+					break;
+				case 3:
+					spells = SwordCasterParams::spells;
+					break;
+				case 4:
+					spells = EntropistParams::spells;
+					break;
+				case 5:
+					spells = PriestParams::spells;
+					break;
+				case 6:
+					spells = ShamanParams::spells;
+					break;
+				case 7:
+					spells = PaladinParams::spells;
+					break;
+				case 8:
+					spells = JesterParams::spells;
+					break;
+				case 9:
+					spells = WarlockParams::spells;
+					break;
+				default:
+					break;
+			}
+
+			// spells selection grid divided by sections:
+			array<uint> offensiveSpells, utilitySpells;
+			
+			int spellsLength = spells.length;
+			const f32 gridSize = 48.0f;
+			const f32 sectionGap = 48.0f;
+			Vec2f offset = Vec2f(24, 80);
+
+			// offensive, summoning, debuff
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::offensive)
+					offensiveSpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::summoning)
+					offensiveSpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::debuff)
+					offensiveSpells.push_back(i);
+			}
+
+			// special > utility > defensive > support > heal
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::special)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::utility)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::defensive)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::support)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::heal)
+					utilitySpells.push_back(i);
+			}
+
+			Vec2f offensiveOffset = offset;
+			Vec2f utilityOffset = offensiveOffset + Vec2f(0, (Maths::Ceil(offensiveSpells.length / 6.0f) * gridSize) + (utilitySpells.size() > 0 ? sectionGap : 0));
+
+			addSpellSection(offensiveSpells, offensiveOffset, spells, gridSize);
+			addSpellSection(utilitySpells, utilityOffset, spells, gridSize);
+		}
+
+		//setSpecialties();
+
+		@spellDescText = @Label(Vec2f(0,400), Vec2f(480,34), "Select a spell above to see its description.", SColor(255,0,0,0), false);
+		classFrame.addChild(spellDescText);
+		
+		Label@ hotbarHelpText = @Label(Vec2f(0,408), Vec2f(480,34), "", SColor(255,0,0,0), false);
+		hotbarHelpText.setText(hotbarHelpText.textWrap("HOW TO ASSIGN HOTKEYS: Select a spell at the top of the page and click a location in the hotbar directly above this hint")); 
+		classFrame.addChild(hotbarHelpText);
+		
+		classFrame.isEnabled = false;
+	}
+
+	void addSpellSection(array<uint>@ spellIndices, Vec2f sectionOffset, Spell[] &in spells, f32 gridSize)
+	{
+		for (uint idx = 0; idx < spellIndices.length; idx++)
+		{
+			uint i = spellIndices[idx];
+			Vec2f offset = sectionOffset + Vec2f(idx % 6 * gridSize, Maths::Floor(idx / 6) * gridSize);
+
+			spellButtons.push_back(@Button(offset, Vec2f(gridSize, gridSize), "", SColor(255,234,205,163)));
+			spellButtons[spellButtons.length - 1].name = spells[i].name;
+
+			Icon@ spellIcon = @Icon("SpellIcons.png", Vec2f(8, 8), Vec2f(16, 16), spells[i].iconFrame, 1.0f);
+			spellButtons[spellButtons.length - 1].addChild(spellIcon);
+			spellButtons[spellButtons.length - 1].addClickListener(SpellButtonHandler);
+
+			spellButtons[spellButtons.length - 1]._customData = i;
+			classFrame.addChild(spellButtons[spellButtons.length - 1]);
+		}
+	}
+
+	void setSpecialties()
+	{
+		Label@ specialtiesText = @Label(Vec2f(8, 26), Vec2f(160, 33.5f), "Specialties: ", SColor(255, 255, 255, 255), false);
+		classFrame.addChild(specialtiesText);
 
 		Vec2f firstIconPos = Vec2f(6 + (0 == 0 ? 0 : 12), 12) + (0 == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-6, -6);
 		Vec2f lastIconPos = Vec2f(494, 42);
@@ -137,7 +225,7 @@ class WWPlayerClassButton
 		classFrame.addChild(@Rectangle(firstIconPos, lastIconPos + Vec2f(16,16), SColor(255,66,72,75)));
 		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(2,2), lastIconPos + Vec2f(12,12), SColor(255,151,167,146)));
 		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(4,4), lastIconPos + Vec2f(8,8), SColor(255,108,119,110)));
-		
+
 		for (u8 i = 0; i < stats.size(); i++)
 		{
 			Vec2f pos = Vec2f(98 + 40 * i + 11, 10);
@@ -175,18 +263,6 @@ class WWPlayerClassButton
 			temp.addHoverStateListener(iconHover);
 			classFrame.addChild(temp);
 		}
-
-		Label@ specialtiesText = @Label(Vec2f(8, 26), Vec2f(160, 33.5f), "Specialties: ", SColor(255, 255, 255, 255), false);
-		classFrame.addChild(specialtiesText);
-
-		@spellDescText = @Label(Vec2f(0,200), Vec2f(480,34), "Select a spell above to see its description.", SColor(255,0,0,0), false);
-		classFrame.addChild(spellDescText);
-		
-		Label@ hotbarHelpText = @Label(Vec2f(0,408), Vec2f(480,34), "", SColor(255,0,0,0), false);
-		hotbarHelpText.setText(hotbarHelpText.textWrap("HOW TO ASSIGN HOTKEYS: Select a spell at the top of the page and click a location in the hotbar directly above this hint")); 
-		classFrame.addChild(hotbarHelpText);
-		
-		classFrame.isEnabled = false;
 	}
 
 	void update()
@@ -273,7 +349,6 @@ class WWPlayerClassButtonList : GenericGUIItem
 	
 	void startDisplay(WWPlayerClassButton@ classButton)
 	{
-		Icon rarity  = classButton.rarity; // required for a linux fix (on staging build) caused by .rarity and others being const
 		Icon display = classButton.display; // ^
 
 		displaying = true;
@@ -453,7 +528,7 @@ void SwapButtonHandler(int x, int y, int button, IGUIItem@ sender) //Button clic
 	CRules@ rules = getRules();
 	rules.SendCommand(rules.getCommandID("swap classes"), params);
 
-	Sound::Play("MenuSelect2.ogg");	
+	Sound::Play("MenuSelect2.ogg");
 }
 /*
 void UnlockButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
@@ -490,11 +565,10 @@ void ClassButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 	// toggle buttons accordingly
 	for (int i = 0; i < playerClassButtons.list.length; i++)
 	{
-		Button@ iButton = playerClassButtons.list[i].classButton;	
+		Button@ iButton = playerClassButtons.list[i].classButton;
 		if (iButton.name == sender.name)
 		{
-			if (iButton.toggled == false)
-				Sound::Play("MenuSelect2.ogg");
+			PlayFlipSound();
 
 			if (!playerClassButtons.list[i].classFrame.isEnabled)
 			{
@@ -540,46 +614,48 @@ void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button cli
 
 	// toggle buttons accordingly
 	bool buttonToggled = false;
+	int cd = sender._customData;
+
 	for (int c = 0; c < playerClassButtons.list.length; c++)
 	{
 		playerClassButtons.list[c].attributes.clear();
 
-		Button@ cButton = playerClassButtons.list[c].classButton;	
+		Button@ cButton = playerClassButtons.list[c].classButton;
 		for (int s = 0; s < playerClassButtons.list[c].spellButtons.length; s++)
 		{
 			Button@ sButton = playerClassButtons.list[c].spellButtons[s];
 			if (sButton.name == sender.name && playerClassButtons.list[c].classFrame.isEnabled)
 			{
-				SetCustomSpell(localPlayer, s);
-			
-				if (sButton.toggled == false && sender.name != "") 
+				SetCustomSpell(localPlayer, cd);
+
+				if (sButton.toggled == false && sender.name != "")
 					Sound::Play("MenuSelect2.ogg");
-				
+
 				sButton.toggled = true;
 				Spell sSpell;
-				if ( cButton.name == "wizard" )
-					sSpell = WizardParams::spells[Maths::Min( s,(WizardParams::spells.length-1) )];
-				else if ( cButton.name == "druid" )
-					sSpell = DruidParams::spells[Maths::Min( s,(DruidParams::spells.length-1) )];
-				else if ( cButton.name == "necromancer" )
-					sSpell = NecromancerParams::spells[Maths::Min( s,(NecromancerParams::spells.length-1) )];
-				else if ( cButton.name == "swordcaster" )
-					sSpell = SwordCasterParams::spells[Maths::Min( s,(SwordCasterParams::spells.length-1) )];
-				else if ( cButton.name == "entropist" )
-					sSpell = EntropistParams::spells[Maths::Min( s,(EntropistParams::spells.length-1) )];
-				else if ( cButton.name == "priest" )
-					sSpell = PriestParams::spells[Maths::Min( s,(PriestParams::spells.length-1) )];
-				else if ( cButton.name == "shaman" )
-					sSpell = ShamanParams::spells[Maths::Min( s,(ShamanParams::spells.length-1) )];
-				else if ( cButton.name == "paladin" )
-					sSpell = PaladinParams::spells[Maths::Min( s,(PaladinParams::spells.length-1) )];
-				else if ( cButton.name == "jester" )
-					sSpell = JesterParams::spells[Maths::Min( s,(JesterParams::spells.length-1) )];
-				else if ( cButton.name == "warlock" )
-					sSpell = WarlockParams::spells[Maths::Min( s,(WarlockParams::spells.length-1) )];
+				if (cButton.name == "wizard")
+					sSpell = WizardParams::spells[Maths::Min(cd, WizardParams::spells.length - 1)];
+				else if (cButton.name == "druid")
+					sSpell = DruidParams::spells[Maths::Min(cd, DruidParams::spells.length - 1)];
+				else if (cButton.name == "necromancer")
+					sSpell = NecromancerParams::spells[Maths::Min(cd, NecromancerParams::spells.length - 1)];
+				else if (cButton.name == "swordcaster")
+					sSpell = SwordCasterParams::spells[Maths::Min(cd, SwordCasterParams::spells.length - 1)];
+				else if (cButton.name == "entropist")
+					sSpell = EntropistParams::spells[Maths::Min(cd, EntropistParams::spells.length - 1)];
+				else if (cButton.name == "priest")
+					sSpell = PriestParams::spells[Maths::Min(cd, PriestParams::spells.length - 1)];
+				else if (cButton.name == "shaman")
+					sSpell = ShamanParams::spells[Maths::Min(cd, ShamanParams::spells.length - 1)];
+				else if (cButton.name == "paladin")
+					sSpell = PaladinParams::spells[Maths::Min(cd, PaladinParams::spells.length - 1)];
+				else if (cButton.name == "jester")
+					sSpell = JesterParams::spells[Maths::Min(cd, JesterParams::spells.length - 1)];
+				else if (cButton.name == "warlock")
+					sSpell = WarlockParams::spells[Maths::Min(cd, WarlockParams::spells.length - 1)];
 
-				playerClassButtons.list[c].spellDescText.setText(playerClassButtons.list[c].spellDescText.textWrap("-- " + sSpell.name + " --" + 
-																													"\n     " + sSpell.spellDesc + 
+				playerClassButtons.list[c].spellDescText.setText(playerClassButtons.list[c].spellDescText.textWrap("-- " + sSpell.name + " --" +
+																													"\n     " + sSpell.spellDesc +
 																													"\n " + (sSpell.type == SpellType::healthcost ? "Health cost: " : "Mana cost: ") + sSpell.mana));
 				playerClassButtons.list[c].attributes = sSpell.attributes;
 			}
@@ -588,7 +664,7 @@ void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button cli
 				sButton.toggled = false;
 			}
 		}
-	}	
+	}
 }
 
 void RenderClassMenus()
@@ -647,7 +723,7 @@ void RenderClassMenus()
 			}
 
 			spellAssignHelpIcon.isEnabled = false;
-			const string buttonName = iButton.name;
+			const string buttonName = selectedClass;
 
 			if (buttonName == "wizard") {
 				RenderClassHotbar(localPlayer, playerPrefsInfo, buttonName, playerPrefsInfo.hotbarAssignments_Wizard, WizardParams::spells);

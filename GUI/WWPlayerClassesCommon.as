@@ -147,7 +147,7 @@ const string[] classDescriptions = {
     " Shamans command totems and elemental forces through channels to nature's spirits and their ancestors.\n\n Versatile in both offense and defense, bound to the elements of earth, fire and water, they adapt fluidly to any situation.",
     " Paladins embody noble strength, standing as steadfast tanks and shining symbols of hope.\nTheir holy damage burns through darkness, while their protective auras bolster allies and their souls.\nThey are the shield of the team, and their presence is a rallying point for all.",
     " Jesters use misdirection and spectacle to control the battlefield in unconventional ways.\nTheir kind blends utility and offense through volatile spells, unpredictable movement and conjured constructs. What others call distraction, they refine into precision — forcing enemies to react on their terms.",
-    " Warlocks pursue forbidden paths, accepting the cost to wield destructive to their health forces.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts, others reshape the flow of battle with their life force."
+    " Warlocks pursue forbidden paths, accepting the cost to wield destructive to their health forces.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts, other reshape the flow of battle with their life force."
 };
 
 bool[] classesSeen = {false, false, false, false, false, false, false, false, false, false};
@@ -210,7 +210,7 @@ void ClassDescriptionButtonHandler(int x, int y, int button, IGUIItem@ item)
 	if (sender is null) return;
     if (sender.color.getAlpha() != 255) return; // inactive
 
-	Sound::Play("MenuSelect2.ogg");	
+	Sound::Play("MenuSelect2.ogg");
 	int customData = sender._customData;
 	setCachedClassSeen(customData, true);
 

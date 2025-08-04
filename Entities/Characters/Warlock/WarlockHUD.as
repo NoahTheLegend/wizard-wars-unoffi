@@ -122,7 +122,7 @@ void onTick( CSprite@ this )
 		else if (pr_ts)
 				charging_spell = WarlockParams::spells[auxiliary2SpellID];
 		else
-				charging_spell = Spell("", "", 0, "", SpellType::other, 0, 0, 0, 0); // Reset to empty spell if no key is pressed
+				charging_spell = Spell("", "", 0, "", SpellType::other, 0, 0, 0, 0, 0); // Reset to empty spell if no key is pressed
 
 		if (hotbarAssignments.size() > 0)
 		{

@@ -17,6 +17,22 @@ namespace SpellType
 	};
 }
 
+namespace SpellCategory
+{
+	enum type
+	{
+		other,
+		special,
+		offensive,
+		defensive,
+		debuff,
+		support,
+		summoning,
+		utility,
+		heal
+	};
+}
+
 shared class Spell
 {
 	string typeName;
@@ -24,6 +40,7 @@ shared class Spell
 	string icon;
 	u16 iconFrame;
 	string spellDesc;
+	u8 category;
 	u8 type;
 	f32 mana;
 
@@ -45,7 +62,7 @@ shared class Spell
 	int[] effect_types;
 	Attribute@[] attributes;
 
-	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_type,
+	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_category, u8 i_type,
 		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range,
 		bool fully_loaded = false, bool is_grounded = false, int[] _effect_types = -1)
 	{
@@ -53,6 +70,7 @@ shared class Spell
 		name = i_name;
 		iconFrame = i_iconFrame;
 		spellDesc = i_spellDesc;
+		category = i_category;
 		type = i_type;
 		mana = i_mana;
 		cooldownTime = i_cooldownTime;

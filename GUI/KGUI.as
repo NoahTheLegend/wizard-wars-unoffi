@@ -865,7 +865,7 @@ class Button : GenericGUIItem{
 		if (selfLabeled){
 			drawRulesFont(desc,color,position + Vec2f(.5,.5),position + size - Vec2f(.5,.5),true,true);
 		}
-		if(_isLocked)GUI::DrawRectangle(position, position+size,SColor(200,64,64,64));
+		if(_isLocked) GUI::DrawRectangle(position, position+size, SColor(200,64,64,64));
 		GenericGUIItem::drawSelf();
 	}
 
@@ -1142,6 +1142,7 @@ class Icon : GenericGUIItem
 	string iconName;
 	float scale = 1;
 	Vec2f resizeScale;
+	Vec2f resizedSize;
 	bool resized;
 	int team = 0, index, animCurrent = 0;
 	bool animate = false;
@@ -1154,6 +1155,7 @@ class Icon : GenericGUIItem
 		iconName = _iconName;	
 		scale = _scale;
 		resizeScale = getResizedScale(_size, _fit) * 0.5f;
+		resizedSize = Vec2f(_size.x * resizeScale.x, _size.y * resizeScale.y);
 		resized = resize_to_fit;
 		iSize = _size;
 		index = _index;
