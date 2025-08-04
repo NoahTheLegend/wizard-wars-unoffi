@@ -334,8 +334,8 @@ void onTick(CRules@ rules)
                 else if(blob_name == "warlock") {keybinds = playerPrefsInfo.hotbarAssignments_Warlock;}
                 else return;
 
-                //playerPrefsInfo.primaryHotkeyID = ???;//currently selected spell in spell selector bottom left
-                playerPrefsInfo.primarySpellID = keybinds[selected.object_id];//currently selected spell
+                //playerPrefsInfo.primaryHotkeyID = ???; //currently selected spell in spell selector bottom left
+                playerPrefsInfo.primarySpellID = selected.object_id; //currently selected spell
                 playerPrefsInfo.primaryHotkeyID = keybinds[selected.object_id];
 			    blob.set_bool("spell selected", false);
             }

@@ -106,11 +106,6 @@ const f32 classDescriptionFadeFactor = 0.25f;
 f32 classDescriptionFade = 0;
 bool showClassDescription = false;
 
-const Vec2f descriptionButtonOffset = Vec2f(0, 8);
-const Vec2f descriptionButtonOffsetOut = Vec2f(0, -128);
-const Vec2f descriptionButtonSize = Vec2f(510, 54);
-const Vec2f descriptionButtonSizeExtra = Vec2f(0, 32);
-
 const string[] classTitles = {
 	"Wizard",
 	"Necromancer",
@@ -148,6 +143,19 @@ const string[] classDescriptions = {
     " Paladins embody noble strength, standing as steadfast tanks and shining symbols of hope.\nTheir holy damage burns through darkness, while their protective auras bolster allies and their souls.\nThey are the shield of the team, and their presence is a rallying point for all.",
     " Jesters use misdirection and spectacle to control the battlefield in unconventional ways.\nTheir kind blends utility and offense through volatile spells, unpredictable movement and conjured constructs. What others call distraction, they refine into precision — forcing enemies to react on their terms.",
     " Warlocks pursue forbidden paths, accepting the cost to wield destructive to their health forces.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts, other reshape the flow of battle with their life force."
+};
+
+const string[] classTips = {
+	"Wizards specialize on a wide range of spells, but most of them are way too specific to be useful during the whole battle.\nFocus on saving mana while using cheap spells and defense until the most important moments!",
+	"Necromancers are one of the most mana-efficient classes and their spells are focused on AoE.\nFill areas with creeps to deny enemy from getting close. You should also try to block them from fleeing before preparing a combo.",
+	"Druids' spells deal miserable damage, however most of them are cheap and charge up quickly.\nCombine them to cover tunnels and passages, while keeping tempo at dealing direct damage and healing yourself or allies.",
+	"Swordcasters specialize on fast movement and doing impact damage.\nKeep the pressure on your enemies, then strike them when they are vulnerable.\nNote that Bladed Shell spell is easily countered with Wizard's and Druid's barriers!",
+	"Entropists require lots of mana to keep their tempo. You should keep more mana stored than you usually need to perform attacks.\nUse movement spells and Shards to steal mana or flee and reflect projectiles in their reversed mode.",
+	"Priests are good at healing and grouping with your team, however expensive spells can leave you vulnerable quickly.\nFocus either on healing or dealing damage, in case when mana obelisks are not available.",
+	"Shamans' spells are quite versatile. The way you utilize them depends on your playstyle, although you might need to think where you place totems, as they usually make enemies come closer to despell.",
+	"Paladins are the most tough class, but their spells mostly focused on close battles.\nPlay steadily against opponents and strike them when nearby.\nPaladin's auras can be outplayed easily, so switch them periodically.",
+	"'A Jester spell — a circus act — no real mage would dare such tact'\n— the elder wizards love to say:\n'With smoke and bombs, sleight and jest they trick, but never learn the shtick'.\n And yet, beneath that painted grin\nLies cunning made to twist and win.\nJester's spells confuse, bash, and swap\n— unravel foes and trip them up!",
+	"Warlocks are great damage dealers.\nWhen mana is depleted, your spells will consume health, that is indicated with red cursor and cost behind.\nUse this when necessary and trade health with enemies at your advantage!"
 };
 
 bool[] classesSeen = {false, false, false, false, false, false, false, false, false, false};
@@ -193,7 +201,7 @@ bool canShowClassDescription(u8 id)
 	return id < classesSeen.length && id >= 0 && !classesSeen[id];
 }
 
-void setCachedClassSeen(int id, bool seen)
+void setClassSeen(int id, bool seen)
 {
 	if (id < classesSeen.length && id >= 0)
 	{
@@ -208,11 +216,13 @@ void ClassDescriptionButtonHandler(int x, int y, int button, IGUIItem@ item)
 
 	Button@ sender = cast<Button>(item);
 	if (sender is null) return;
-    if (sender.color.getAlpha() != 255) return; // inactive
 
-	Sound::Play("MenuSelect2.ogg");
+	Label@ classDescriptionText = cast<Label>(sender.getChild("classDescriptionText"));
+	if (classDescriptionText is null || classDescriptionText.color.getAlpha() < 254) return;
+
+	Sound::Play2D("MenuSelect3.ogg", 0.75f, 0);
 	int customData = sender._customData;
-	setCachedClassSeen(customData, true);
+	setClassSeen(customData, true);
 
 	showClassDescription = false;
 	classDescriptionFade = 0;

@@ -23,6 +23,13 @@ string tooltip = "";
 Tooltip@[] tooltips_fetcher;
 
 const Vec2f iconSize = Vec2f(64, 64);
+const f32 gridSize = 40.0f;
+const f32 sectionGap = 12.0f;
+
+const Vec2f descriptionButtonOffset = Vec2f(menuSize.x / 2 - 154, 256); // offset from parent
+const Vec2f descriptionButtonOffsetOut = Vec2f(0, 280); // offset added
+const Vec2f descriptionButtonSize = Vec2f(menuSize.x / 2 - 72, 128);
+const Vec2f descriptionButtonSizeExtra = Vec2f(0, 32);
 
 //----KGUI ELEMENTS----\\
 WWPlayerClassButtonList playerClassButtons;
@@ -30,15 +37,15 @@ class WWPlayerClassButton
 {
 	int classID;
 	string name, modName, description, configFilename;
-	Icon@ display;
+	Icon@ display, selectedSpellIcon;
 
 	Button@ classButton;
 	ProgressBar@ condition;
 	
-	Rectangle@ classFrame;
+	Rectangle@ classFrame, leftPage, rightPage;
 	Button@[] spellButtons;
 	
-	Label@ desc, conLbl, spellDescText;
+	Label@ desc, conLbl, spellDescText, selectedSpellName, selectedSpellDescription, selectedSpellStats;
 	u32 classCost;
 
 	u8[] specialties;
@@ -47,8 +54,9 @@ class WWPlayerClassButton
 	uint tickrate;
 	Attribute@[] attributes;
 
-	Button@ classDescriptionButton = @Button(descriptionButtonOffset, descriptionButtonSize, "", SColor(255, 255, 255, 255));
-	Label@ classDescriptionText = @Label(classDescriptionButton.position, classDescriptionButton.size, "", SColor(255, 0, 0, 0), false);
+	Button@ classDescriptionButton;
+	Icon@ classDescriptionBackground;
+	Label@ classDescriptionText;
 	
 	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, Vec2f _size, u8[] _specialties, u8[] _stats)
 	{
@@ -63,8 +71,9 @@ class WWPlayerClassButton
 		stats = _stats;
 		tickrate = 0;
 
+		// top side
 		// class button and its frame (view)
-		Vec2f page_size = Vec2f(menuSize.x / 2 - 40, menuSize.y - 40);
+		Vec2f page_size = Vec2f(menuSize.x / 2 - 140, menuSize.y - 80);
 		{
 			@classButton = @Button(_pos, _size, "", SColor(255, 255, 255, 255));
 			@display = @Icon(_imageName, Vec2f_zero, Vec2f(32, 32), classID, 1.0f);
@@ -73,17 +82,82 @@ class WWPlayerClassButton
 			classButton.name = _configFilename;
 			classButton.addClickListener(ClassButtonHandler);
 
-			@classFrame = @Rectangle(Vec2f(40, 40), page_size, SColor(50,255,0,0));
+			@classFrame = @Rectangle(Vec2f(0, 0), page_size + Vec2f(page_size.x, 0), SColor(0,0,0,0));
 			playerClassButtons.addChild(classFrame);
 
-			classDescriptionButton._customData = classID;
+			Icon@ ornamentPage = @Icon("OrnamentPageLight.png", Vec2f(6, 36), Vec2f(800, 538), 0, 0.5f);
+			classFrame.addChild(ornamentPage);
+			
+			@leftPage = @Rectangle(Vec2f(85, 58), page_size, SColor(0, 0, 0, 0));
+			leftPage.name = _configFilename + "_leftPage";
+			leftPage.setLevel(ContainerLevel::PAGE_FRAME);
+
+			@spellDescText = @Label(Vec2f(10, 402), Vec2f(480, 32), "Select a spell and click on the hotbar above", col_text, false, "DragonFire_14");
+			leftPage.addChild(spellDescText);
+
+			Label@ offensiveTitle = @Label(Vec2f(page_size.x / 2, 30), Vec2f(480, 32), classTitles[classID]+" Spells", col_text, true, "KingThingsPetrockLight_32");
+			leftPage.addChild(offensiveTitle);
+
+			Icon@ ornamentLine0 = @Icon("OrnamentLine0.png", Vec2f(4, offensiveTitle.localPosition.y + 18), Vec2f(336, 32), 0, 1.0f, true, Vec2f(272, 32));
+			leftPage.addChild(ornamentLine0);
+
+			Label@ hotbarTitle = @Label(Vec2f(page_size.x / 2, 52 + sectionGap * 4 + gridSize * 4), Vec2f(480, 32), "Hotbar", col_text, true, "KingThingsPetrockLight_32");
+			leftPage.addChild(hotbarTitle);
+
+			Icon@ ornamentLine1 = @Icon("OrnamentLine1.png", Vec2f(4, hotbarTitle.localPosition.y + 14), Vec2f(336, 32), 0, 1.0f, true, Vec2f(272, 32));
+			leftPage.addChild(ornamentLine1);
+
+			//Icon@ ornamentSun = @Icon("OrnamentSun.png", Vec2f(page_size.x - 72, hotbarTitle.localPosition.y - 64 + 8), Vec2f(64, 64), 0, 0.5f, false);
+			//leftPage.addChild(ornamentSun);
+
+			//Icon@ ornamentMoon = @Icon("OrnamentMoon.png", Vec2f(0, hotbarTitle.localPosition.y - 64 - 4), Vec2f(92, 92), 0, 0.5f, false);
+			//leftPage.addChild(ornamentMoon);
+
+			@rightPage = @Rectangle(Vec2f(leftPage.localPosition.x + 112 + page_size.x, leftPage.localPosition.y), page_size, SColor(0, 0, 0, 0));
+			rightPage.name = _configFilename + "_rightPage";
+			rightPage.setLevel(ContainerLevel::PAGE_FRAME);
+
+			string iconTexture = getRules().get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
+
+			// position empty frame
+			@selectedSpellIcon = @Icon(iconTexture, Vec2f(page_size.x / 2 - 32, 48), Vec2f(16, 16), 0, 2.0f);
+			@selectedSpellName = @Label(Vec2f(page_size.x / 2, 30), Vec2f(page_size.x, 32), "Select a spell", col_text, true, "KingThingsPetrockLight_32");
+			@selectedSpellDescription = @Label(Vec2f(10, 120), Vec2f(page_size.x, 32), "Description", col_text, false, "DragonFire_18");
+			@selectedSpellStats = @Label(Vec2f(10, 256), Vec2f(page_size.x, 32), "Stats", col_text, false, "DragonFire_18");
+
+			selectedSpellIcon.isEnabled = false;
+			selectedSpellDescription.isEnabled = false;
+			selectedSpellStats.isEnabled = false;
+
+			@classDescriptionButton = @Button(descriptionButtonOffset, descriptionButtonSize, "", SColor(255, 255, 255, 255));
+			@classDescriptionBackground = @Icon("Paper"+XORRandom(2)+".png", Vec2f_zero, Vec2f(240, 96), 0, 1.0f, true, Vec2f(descriptionButtonSize.x, descriptionButtonSize.y * (classID == 8 ? 1.775f : 1.5f)));
+			@classDescriptionText = @Label(Vec2f(24, 32), Vec2f(descriptionButtonSize.x - 24, descriptionButtonSize.y), "", col_text, false, "KingThingsPetrockLight_18");
+
+			classDescriptionBackground._customData = classID;
 			classDescriptionButton.addClickListener(ClassDescriptionButtonHandler);
 			classDescriptionButton.isEnabled = false;
+			classDescriptionButton.nodraw = true;
+			//classDescriptionBackground.isEnabled = false;
 
-			classFrame.addChild(classDescriptionButton);
-			classFrame.addChild(classDescriptionText);
+			helpWindow.pushToFirst(classDescriptionButton);
+			classDescriptionButton.addChild(classDescriptionBackground);
+			classDescriptionButton.addChild(classDescriptionText);
+			classDescriptionText.name = "classDescriptionText";
+
+			rightPage.addChild(selectedSpellIcon);
+			rightPage.addChild(selectedSpellName);
+			rightPage.addChild(selectedSpellDescription);
+			rightPage.addChild(selectedSpellStats);
+
+			classFrame.isEnabled = false;
+			leftPage.isEnabled = false;
+			rightPage.isEnabled = false;
+
+			classFrame.addChild(leftPage);
+			classFrame.addChild(rightPage);
 		}
-
+		
+		// left page
 		// class spells
 		Spell[] spells;
 		{
@@ -128,9 +202,7 @@ class WWPlayerClassButton
 			array<uint> offensiveSpells, utilitySpells;
 			
 			int spellsLength = spells.length;
-			const f32 gridSize = 48.0f;
-			const f32 sectionGap = 48.0f;
-			Vec2f offset = Vec2f(24, 80);
+			Vec2f offset = Vec2f(page_size.x/2 - (gridSize * 3), 72);
 
 			// offensive, summoning, debuff
 			for (uint i = 0; i < spellsLength; i++)
@@ -184,11 +256,6 @@ class WWPlayerClassButton
 		}
 
 		//setSpecialties();
-
-		@spellDescText = @Label(Vec2f(32, 450), Vec2f(480, 32), "Select a spell and click on this ^ hotbar.", SColor(255,0,0,0), false);
-		classFrame.addChild(spellDescText);
-		
-		classFrame.isEnabled = false;
 	}
 
 	void addSpellSection(array<uint>@ spellIndices, Vec2f sectionOffset, Spell[] &in spells, f32 gridSize)
@@ -200,42 +267,78 @@ class WWPlayerClassButton
 			uint endIdx = Maths::Min(startIdx + 6, spellIndices.length);
 			uint rowCount = endIdx - startIdx;
 
+			f32 rowGap = 2.0f;
+			f32 colGap = 2.0f;
+
 			f32 rowOffsetX = 0;
 			if (rowCount < 6)
 			{
-				rowOffsetX = ((6 - rowCount) * gridSize) * 0.5f;
+				rowOffsetX = ((6 - rowCount) * (gridSize + colGap)) * 0.5f;
 			}
+
+			f32 iconScale = 1.0f;
+			Vec2f iSize = Vec2f(16, 16);
+			Vec2f bSize = Vec2f(24, 24);
+
+			Vec2f iconOffset = getIconOffset(iSize);
+			Vec2f iconOffsetBackground = getIconOffset(bSize);
+			if (gridSize >= iconOffsetBackground.x)
+				iconOffsetBackground.x = 0;
+			if (gridSize >= iconOffsetBackground.y)
+				iconOffsetBackground.y = 0;
+
+			const string iconTexture = getRules().get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
 
 			for (uint col = 0; col < rowCount; col++)
 			{
 				uint idx = startIdx + col;
 				uint i = spellIndices[idx];
-				Vec2f offset = sectionOffset + Vec2f(rowOffsetX + col * gridSize, row * gridSize);
+				Vec2f offset = sectionOffset
+					+ Vec2f(rowOffsetX + col * (gridSize + colGap), row * (gridSize + rowGap));
 
-				spellButtons.push_back(@Button(offset, Vec2f(gridSize, gridSize), "", SColor(255,234,205,163)));
+				Button@ button = @Button(offset, Vec2f(gridSize, gridSize), "", SColor(255,234,205,163));
+				button.nodraw = true;
+				button.addHoverStateListener(paperButtonHover);
+
+				Icon@ background = @Icon("PaperButton.png", iconOffsetBackground, bSize, 0, 1.0f, true, Vec2f(gridSize, gridSize));
+				background.name = "background";
+				button.addChild(background);
+
+				spellButtons.push_back(button);
 				spellButtons[spellButtons.length - 1].name = spells[i].name;
 
-				Icon@ spellIcon = @Icon("SpellIcons.png", Vec2f(8, 8), Vec2f(16, 16), spells[i].iconFrame, 1.0f);
+				Icon@ spellIcon = @Icon(iconTexture, iconOffset, iSize, spells[i].iconFrame, iconScale);
 				spellButtons[spellButtons.length - 1].addChild(spellIcon);
 				spellButtons[spellButtons.length - 1].addClickListener(SpellButtonHandler);
 
 				spellButtons[spellButtons.length - 1]._customData = i;
-				classFrame.addChild(spellButtons[spellButtons.length - 1]);
+				leftPage.addChild(spellButtons[spellButtons.length - 1]);
 			}
 		}
+	}
+
+	Vec2f getIconOffset(Vec2f iSize)
+	{
+		f32 iconScale = 1.0f;
+		Vec2f iOffset = Vec2f(
+			(gridSize - iSize.x * iconScale) * 0.5f - iSize.x / 2,
+			(gridSize - iSize.y * iconScale) * 0.5f - iSize.y / 2
+		);
+
+		return iOffset;
 	}
 
 	void setSpecialties()
 	{
 		Label@ specialtiesText = @Label(Vec2f(8, 26), Vec2f(160, 33.5f), "Specialties: ", SColor(255, 255, 255, 255), false);
-		classFrame.addChild(specialtiesText);
+		rightPage.addChild(specialtiesText);
 
 		Vec2f firstIconPos = Vec2f(6 + (0 == 0 ? 0 : 12), 12) + (0 == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-6, -6);
 		Vec2f lastIconPos = Vec2f(494, 42);
 		
-		classFrame.addChild(@Rectangle(firstIconPos, lastIconPos + Vec2f(16,16), SColor(255,66,72,75)));
-		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(2,2), lastIconPos + Vec2f(12,12), SColor(255,151,167,146)));
-		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(4,4), lastIconPos + Vec2f(8,8), SColor(255,108,119,110)));
+		rightPage.addChild(@Rectangle(firstIconPos, lastIconPos + Vec2f(16,16), SColor(255,66,72,75)));
+		rightPage.addChild(@Rectangle(firstIconPos + Vec2f(2,2), lastIconPos + Vec2f(12,12), SColor(255,151,167,146)));
+		rightPage.addChild(@Rectangle(firstIconPos + Vec2f(4,4), lastIconPos + Vec2f(8,8), SColor(255,108,119,110)));
 
 		for (u8 i = 0; i < stats.size(); i++)
 		{
@@ -251,7 +354,7 @@ class WWPlayerClassButton
 			Icon@ temp = @Icon("Specializations.png", Vec2f(104, 11), Vec2f(16,16), frame, 1.5f);
 			temp.color = col;
 
-			classFrame.addChild(temp);
+			rightPage.addChild(temp);
 		}
 
 		for (u8 i = 0; i < stats.size(); i++)
@@ -264,7 +367,7 @@ class WWPlayerClassButton
 
 			Label@ statLabel = @Label(pos + stat_labels_offsets[i] - centering, Vec2f(16,16), stats_labels[i], SColor(255,255,255,255), true, "default", seed);
 			statLabel.addHoverStateListener(statHover);
-			classFrame.addChild(statLabel);
+			rightPage.addChild(statLabel);
 		}
 
 		for (u8 i = 1; i < specialties.size() + 1; i++)
@@ -272,7 +375,7 @@ class WWPlayerClassButton
 			Vec2f pos = Vec2f(104 + 40 * i + 12, 11);
 			Icon@ temp = @Icon("Specializations.png", pos + Vec2f(8,8), Vec2f(16, 16), specialties[i - 1], 1.0f);
 			temp.addHoverStateListener(iconHover);
-			classFrame.addChild(temp);
+			rightPage.addChild(temp);
 		}
 	}
 
@@ -299,23 +402,31 @@ class WWPlayerClassButton
 
 	void renderClassDescriptions()
 	{
+		if (!classFrame.isEnabled)
+		{
+			classDescriptionFade = 0;
+			classDescriptionOpenTimer = 0;
+
+			return;
+		}
+
 		f32 factor = f32(v_fpslimit) / 60.0f;
 		f32 df = classDescriptionFadeFactor * getRenderDeltaTime() * 60.0f;
 
-		bool start = classDescriptionOpenTimer < 30;
+		bool start = classDescriptionOpenTimer < 90;
 		f32 fade = start ? 0 : Maths::Lerp(classDescriptionFade, showClassDescription ? 1.0f : 0.0f, df);
 		classDescriptionOpenTimer += 1.0f / factor;
 
 		classDescriptionFade = fade;
-		classDescriptionText.color = SColor(255 * fade, 255, 255, 255);
+		classDescriptionText.color = SColor(255 * fade, col_text.getRed(), col_text.getGreen(), col_text.getBlue());
 
-		Vec2f lerped_offset = !start && showClassDescription ? Vec2f(0, descriptionButtonOffsetOut.y * fade) : Vec2f(0, descriptionButtonOffset.y);
-		classDescriptionButton.setPosition(Vec2f(descriptionButtonOffset.x, lerped_offset.y));
-		classDescriptionText.setPosition(classDescriptionButton.position + Vec2f(2, 2));
+		Vec2f thisOffset = descriptionButtonOffset;
+		Vec2f bottomOffset = descriptionButtonOffsetOut;
+		Vec2f lerped_offset = !start && showClassDescription
+			? bottomOffset * fade + thisOffset
+			: thisOffset;
 
-		Vec2f lerped_size = !start && showClassDescription ? Vec2f(descriptionButtonSize.x, descriptionButtonSize.y + descriptionButtonSizeExtra.y * fade) : descriptionButtonSize;
-		classDescriptionButton.size = lerped_size;
-		classDescriptionText.size = lerped_size;
+		classDescriptionButton.setPosition(Vec2f(lerped_offset.x, lerped_offset.y));
 	}
 
 	void draw(Vec2f pos)
@@ -539,39 +650,10 @@ void SwapButtonHandler(int x, int y, int button, IGUIItem@ sender) //Button clic
 	CRules@ rules = getRules();
 	rules.SendCommand(rules.getCommandID("swap classes"), params);
 
-	Sound::Play("MenuSelect2.ogg");
+	PlayFlipSound();
 }
-/*
-void UnlockButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
-{ 
-	CPlayer@ localPlayer = getLocalPlayer();
-	if ( localPlayer is null )
-		return;
-	
-	string playerName = localPlayer.getUsername();
-	for(int i = 0; i < playerClassButtons.list.length; i++)
-	{
-		Button@ iButton = playerClassButtons.list[i].classButton;
-		if ( iButton.toggled == true )
-		{
-			CBitStream params;
-			params.write_string(playerName);
-			params.write_u16(i);
-			
-			CRules@ rules = getRules();
-			rules.SendCommand(rules.getCommandID("buy unlock"), params);
-			
-			u32 clientPlatinum = client_getPlayerPlatinum(playerName);
-			if ( clientPlatinum >= playerClassButtons.list[i].classCost )
-				playerClassButtons.list[i].gained = true;
-		}
-	}
 
-	Sound::Play( "MenuSelect2.ogg" );	
-}
-*/
-
-void ClassButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
+void ClassButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button click handler for KGUI
 {
 	// toggle buttons accordingly
 	for (int i = 0; i < playerClassButtons.list.length; i++)
@@ -591,10 +673,12 @@ void ClassButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 				
 				playerClassButtons.list[i].classDescriptionButton.isEnabled = showClassDescription;
 				playerClassButtons.list[i].classDescriptionButton._customData = c;
-				playerClassButtons.list[i].classDescriptionText.setText(playerClassButtons.list[i].classDescriptionText.textWrap(classDescriptions[c]));
+				playerClassButtons.list[i].classDescriptionText.setText(playerClassButtons.list[i].classDescriptionText.textWrap(classTips[c]));
 			}
 
 			playerClassButtons.list[i].classFrame.isEnabled = true;
+			playerClassButtons.list[i].leftPage.isEnabled = true;
+			playerClassButtons.list[i].rightPage.isEnabled = true;
 			iButton.toggled = true;
 			selectedClass = iButton.name;
 		}
@@ -604,22 +688,34 @@ void ClassButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button c
 			iButton.render_one_more_time = true;
 
 			playerClassButtons.list[i].classFrame.isEnabled = false;
+			playerClassButtons.list[i].leftPage.isEnabled = false;
+			playerClassButtons.list[i].rightPage.isEnabled = false;
 			playerClassButtons.list[i].classDescriptionButton.isEnabled = false;
 			playerClassButtons.list[i].classDescriptionText.setText("");
 		}
 	}	
 }
 
+void paperButtonHover(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Icon@ sender = cast<Icon>(item.getChild("background"));
+	if (sender is null) return;
+
+	sender.index = hover ? 1 : 0;
+}
+
 void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button click handler for KGUI
 { 
 	CPlayer@ localPlayer = getLocalPlayer();
-	if (localPlayer is null )
+	if (localPlayer is null)
 	{
 		return;
 	}
 	
 	PlayerPrefsInfo@ playerPrefsInfo;
-	if (!localPlayer.get( "playerPrefsInfo", @playerPrefsInfo )) 
+	if (!localPlayer.get("playerPrefsInfo", @playerPrefsInfo)) 
 	{
 		return;
 	}
@@ -641,7 +737,7 @@ void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button cli
 				SetCustomSpell(localPlayer, cd);
 
 				if (sButton.toggled == false && sender.name != "")
-					Sound::Play("MenuSelect2.ogg");
+					PlayFlipSound();
 
 				sButton.toggled = true;
 				Spell sSpell;
@@ -665,11 +761,18 @@ void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button cli
 					sSpell = JesterParams::spells[Maths::Min(cd, JesterParams::spells.length - 1)];
 				else if (cButton.name == "warlock")
 					sSpell = WarlockParams::spells[Maths::Min(cd, WarlockParams::spells.length - 1)];
+				
+				playerClassButtons.list[c].selectedSpellIcon.index = sSpell.iconFrame;
+				playerClassButtons.list[c].selectedSpellName.setText(sSpell.name);
+				playerClassButtons.list[c].selectedSpellDescription.setText(playerClassButtons.list[c].selectedSpellDescription.textWrap(sSpell.spellDesc));
 
-				playerClassButtons.list[c].spellDescText.setText(playerClassButtons.list[c].spellDescText.textWrap("-- " + sSpell.name + " --" +
-																													"\n     " + sSpell.spellDesc +
-																													"\n " + (sSpell.type == SpellType::healthcost ? "Health cost: " : "Mana cost: ") + sSpell.mana));
-				playerClassButtons.list[c].attributes = sSpell.attributes;
+				playerClassButtons.list[c].selectedSpellIcon.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellName.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellDescription.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellStats.isEnabled = true;
+
+				string statsText = (sSpell.type == SpellType::healthcost ? "Health cost: " : "Mana cost: ") + sSpell.mana;
+				playerClassButtons.list[c].selectedSpellStats.setText(statsText);
 			}
 			else
 			{
@@ -690,9 +793,9 @@ void RenderClassMenus()
 		return;
 	}
 
+	GUI::SetFont("hud");
 	if (tooltip != "")
 	{
-		GUI::SetFont("hud");
 		Vec2f mouseScreenPos = getControls().getInterpMouseScreenPos();
 		Vec2f dim;
 		GUI::GetTextDimensions(tooltip, dim);
@@ -766,16 +869,25 @@ void RenderClassMenus()
 	}
 }
 
+bool was_click = false;
+void UpdateClassHotbar()
+{
+	CControls@ controls = getControls();
+	was_click = controls.isKeyJustPressed(KEY_LBUTTON);
+}
+
 const u8 spells_maxcount = 15;
 void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, string className, u8[] hotbarAssignments, Spell[] classSpells)
 {
 	CControls@ controls = localPlayer.getControls();
 	Vec2f mouseScreenPos = controls.getMouseScreenPos();
 
-	Vec2f offset = Vec2f(50.0f, 350.0f);
-	bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
+	Vec2f offset = Vec2f(120, 330);
+	bool canCustomizeHotbar = was_click;
 	bool hotbarClicked = false;
 	int spellsLength = classSpells.length;
+
+	const string iconTexture = getRules().get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
 
 	Vec2f primaryPos = helpWindow.position + Vec2f(16.0f, 0.0f) + offset;
 	for (uint i = 0; i < spells_maxcount; i++)
@@ -786,7 +898,7 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 		if (i < 5)
 		{
 			GUI::DrawFramedPane(primaryPos + Vec2f(0, 64) + Vec2f(32, 0) * i, primaryPos + Vec2f(32, 96) + Vec2f(32, 0) * i);
-			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 64) + Vec2f(32, 0) * i);
+			GUI::DrawIcon(iconTexture, spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 64) + Vec2f(32, 0) * i);
 			GUI::DrawText("" + ((i + 1) % 10), primaryPos + Vec2f(8, -16) + Vec2f(32, 0) * i, color_white);
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 80) + Vec2f(32, 0) * i)).Length() < 16.0f)
 			{
@@ -797,7 +909,7 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 		else if (i < 10)
 		{
 			GUI::DrawFramedPane(primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5), primaryPos + Vec2f(32, 64) + Vec2f(32, 0) * (i - 5));
-			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5));
+			GUI::DrawIcon(iconTexture, spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5));
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 48) + Vec2f(32, 0) * (i - 5))).Length() < 16.0f)
 			{
 				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
@@ -807,7 +919,7 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 		else
 		{
 			GUI::DrawFramedPane(primaryPos + Vec2f(32, 0) * (i - 10), primaryPos + Vec2f(32, 32) + Vec2f(32, 0) * (i - 10));
-			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(32, 0) * (i - 10));
+			GUI::DrawIcon(iconTexture, spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(32, 0) * (i - 10));
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 16) + Vec2f(32, 0) * (i - 10))).Length() < 16.0f)
 			{
 				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
@@ -820,42 +932,43 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 	u8 secondarySpellID = Maths::Min(hotbarAssignments[spells_maxcount], spellsLength - 1);
 	Spell secondarySpell = classSpells[secondarySpellID];
 	GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32, 32));
-	GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16, 16), secondaryPos);
+	GUI::DrawIcon(iconTexture, secondarySpell.iconFrame, Vec2f(16, 16), secondaryPos);
 	if (canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16, 16))).Length() < 16.0f)
 	{
 		assignHotkey(localPlayer, spells_maxcount, playerPrefsInfo.customSpellID, className);
 		hotbarClicked = true;
 	}
 	GUI::SetFont("default");
-	GUI::DrawText("" + controls.getActionKeyKeyName(AK_ACTION2), secondaryPos + Vec2f(32, 8), color_white);
+	GUI::DrawText("A1", secondaryPos + Vec2f(32, 8), color_white);
 
 	Vec2f aux1Pos = helpWindow.position + Vec2f(192.0f, 64.0f) + offset;
 	u8 aux1SpellID = Maths::Min(hotbarAssignments[16], spellsLength - 1);
 	Spell aux1Spell = classSpells[aux1SpellID];
 	GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32, 32));
-	GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16, 16), aux1Pos);
+	GUI::DrawIcon(iconTexture, aux1Spell.iconFrame, Vec2f(16, 16), aux1Pos);
 	if (canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16, 16))).Length() < 16.0f)
 	{
 		assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, className);
 		hotbarClicked = true;
 	}
-	GUI::DrawText("" + controls.getActionKeyKeyName(AK_ACTION3), aux1Pos + Vec2f(32, 8), color_white);
+	GUI::DrawText("A2", aux1Pos + Vec2f(32, 8), color_white);
 
-	Vec2f aux2Pos = helpWindow.position + Vec2f(258.0f + 32.0f, 64.0f) + offset;
+	Vec2f aux2Pos = helpWindow.position + Vec2f(224.0f, 32.0f) + offset;
 	u8 aux2SpellID = Maths::Min(hotbarAssignments[17], spellsLength - 1);
 	Spell aux2Spell = classSpells[aux2SpellID];
 	GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32, 32));
-	GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16, 16), aux2Pos);
+	GUI::DrawIcon(iconTexture, aux2Spell.iconFrame, Vec2f(16, 16), aux2Pos);
 	if (canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16, 16))).Length() < 16.0f)
 	{
 		assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, className);
 		hotbarClicked = true;
 	}
-	GUI::DrawText("" + controls.getActionKeyKeyName(AK_TAUNTS), aux2Pos + Vec2f(32, 8), color_white);
+	GUI::DrawText("A3", aux2Pos + Vec2f(-20, 8), color_white);
 	
 	if (canCustomizeHotbar && hotbarClicked)
 	{
+		if (controls.lastKeyPressTime != lastHotbarPressTime) Sound::Play2D("MenuSelect5.ogg", 0.5f, 0.0f);
 		lastHotbarPressTime = controls.lastKeyPressTime;
-		Sound::Play("MenuSelect1.ogg");
+		was_click = false;
 	}
 }

@@ -92,6 +92,9 @@ const string[] font_names = {
     
     "DragonFire_12",
     "DragonFire_14",
+    "DragonFire_15",
+    "DragonFire_16",
+    "DragonFire_17",
     "DragonFire_18",
 	"DragonFire_24",
 	"DragonFire_32",

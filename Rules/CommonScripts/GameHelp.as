@@ -25,6 +25,8 @@ const int slotsSize = 6;
 f32 boxMargin = 50.0f;
 string selectedClass = classes[0];
 
+const SColor col_text = SColor(255, 91, 45, 18);
+
 //key names
 const string party_key = getControls().getActionKeyKeyName( AK_PARTY );
 const string inv_key = getControls().getActionKeyKeyName( AK_INVENTORY );
@@ -37,9 +39,6 @@ const string action3_key = getControls().getActionKeyKeyName( AK_ACTION3 );
 const string map_key = getControls().getActionKeyKeyName( AK_MAP );
 const string zoomIn_key = getControls().getActionKeyKeyName( AK_ZOOMIN );
 const string zoomOut_key = getControls().getActionKeyKeyName( AK_ZOOMOUT );
-
-const string lastChangesInfo = "";
-const Vec2f windowDimensions = Vec2f(1000,600);
 
 //----KGUI ELEMENTS----\\
 	Window@ helpWindow;
@@ -56,6 +55,7 @@ const Vec2f windowDimensions = Vec2f(1000,600);
 	Button@ resetShowClassDescriptions;
 	Button@ toggleHoverMessagesBtn;
 	Button@ oneDimensionalSpellbar;
+	Button@ bookSpellIcons;
 	ScrollBar@ resetSpell;
 	Button@ achievementBtn;
 	Button@ classesBtn;
@@ -89,6 +89,7 @@ bool isGUINull()
 	if (resetShowClassDescriptions is null) { warn("debug: resetShowClassDescriptions is null"); return true; }
 	if (toggleHoverMessagesBtn is null) { warn("debug: toggleHoverMessagesBtn is null"); return true; }
 	if (oneDimensionalSpellbar is null) { warn("debug: oneDimensionalSpellbar is null"); return true; }
+	if (bookSpellIcons is null) { warn("debug: bookSpellIcons is null"); return true; }
 	if (resetSpellText is null) { warn("debug: resetSpellText is null"); return true; }
 	if (resetSpell is null) { warn("debug: resetSpell is null"); return true; }
 	if (achievementBtn is null) { warn("debug: achievementBtn is null"); return true; }
@@ -164,6 +165,21 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		Icon@ bottomOrnament = cast<Icon@>(leftPage.getChild("classFrameLeftPageBottomOrnament"));
 		if (bottomOrnament is null) return;
 
+		Icon@ ornamentLeftPageIntro0 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament0"));
+		if (ornamentLeftPageIntro0 is null) return;
+
+		Icon@ ornamentLeftPageIntro1 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament1"));
+		if (ornamentLeftPageIntro1 is null) return;
+
+		Icon@ ornamentLeftPageIntro2 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament2"));
+		if (ornamentLeftPageIntro2 is null) return;
+
+		Icon@ ornamentLeftPageIntro3 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament3"));
+		if (ornamentLeftPageIntro3 is null) return;
+
+		Icon@ ornamentLeftPageIntro4 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament4"));
+		if (ornamentLeftPageIntro4 is null) return;
+
 		PlayFlipSound();
 
 		title0.font = "DragonFire_56";
@@ -189,9 +205,15 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 			ornament.isEnabled = false;
 			bottomOrnament.isEnabled = false;
+			ornamentLeftPageIntro0.isEnabled = false;
+			ornamentLeftPageIntro1.isEnabled = false;
+			ornamentLeftPageIntro2.isEnabled = false;
+			ornamentLeftPageIntro3.isEnabled = false;
+			ornamentLeftPageIntro4.isEnabled = false;
 
 			string text = CombineSymbols(added, random_offsets);
 			description.setText(text);
+			description.setPosition(Vec2f(description.localPosition.x, 120));
 		}
 		else if (classIndex < classTitles.size() + 1)
 		{
@@ -200,6 +222,12 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 			description.setPosition(Vec2f(description.localPosition.x, 178));
 			ornament.isEnabled = true;
 			bottomOrnament.isEnabled = true;
+
+			ornamentLeftPageIntro0.isEnabled = false;
+			ornamentLeftPageIntro1.isEnabled = false;
+			ornamentLeftPageIntro2.isEnabled = false;
+			ornamentLeftPageIntro3.isEnabled = false;
+			ornamentLeftPageIntro4.isEnabled = false;
 
 			title0.setText(classTitles[classIndex]);
 			title1.setText(classSubtitles[classIndex]);
@@ -242,9 +270,13 @@ void iconHoverHandler(bool hover, IGUIItem@ item)
 
 void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 {
-	//Button click handler for KGUI
 	canvasIcon.isEnabled = true;
 	if (sender.level == ContainerLevel::PAGE) PlayFlipSound();
+
+	ResetClassesFrame();
+
+	togglemenuBtn.isEnabled = true;
+	togglemenuBtn.toggled = true;
 
 	if (sender is infoBtn)
 	{
@@ -288,15 +320,6 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 	if (sender.name == "spellsMenu") // class frame button
 	{
-		// disable all other buttons
-		for (int i = 0; i < playerClassButtons.list.length; i++)
-		{
-			playerClassButtons.list[i].classFrame.isEnabled = false;
-			playerClassButtons.list[i].classButton.toggled = false;
-			playerClassButtons.list[i].classDescriptionButton.isEnabled = false;
-			playerClassButtons.list[i].classDescriptionText.setText("");
-		}
-
 		playerClassButtons.isEnabled = true;
 		int id = classes.find(selectedClass);
 
@@ -308,9 +331,11 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 			showClassDescription = canShowClassDescription(id);
 			playerClassButtons.list[id].classDescriptionButton.isEnabled = showClassDescription;
 			playerClassButtons.list[id].classDescriptionButton._customData = id;
-			playerClassButtons.list[id].classDescriptionText.setText(playerClassButtons.list[id].classDescriptionText.textWrap(classDescriptions[id]));
+			playerClassButtons.list[id].classDescriptionText.setText(playerClassButtons.list[id].classDescriptionText.textWrap(classTips[id]));
 
 			playerClassButtons.list[id].classFrame.isEnabled = true;
+			playerClassButtons.list[id].leftPage.isEnabled = true;
+			playerClassButtons.list[id].rightPage.isEnabled = true;
 			playerClassButtons.list[id].classButton.toggled = true;
 		}
 
@@ -318,6 +343,9 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 		optionsFrame.isEnabled = false;
 		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
+		
+		togglemenuBtn.isEnabled = false;
+		togglemenuBtn.toggled = false;
 	}
 
 	//if (sender is achievementBtn)
@@ -407,6 +435,16 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
         getRules().set_bool("one_row_spellbar", oneDimensionalSpellbar.toggled);
     }
 
+	if (sender is bookSpellIcons)
+	{
+		bookSpellIcons.toggled = !bookSpellIcons.toggled;
+		bookSpellIcons.desc = (bookSpellIcons.toggled) ? "Low contrast spell icons - ON" : "Low contrast spell icons - OFF";
+		bookSpellIcons.saveBool("Book Spell Icons", bookSpellIcons.toggled, "WizardWars");
+
+		getRules().set_bool("book_old_spell_icons", bookSpellIcons.toggled);
+		initClasses();
+	}
+
     if (sender is toggleHotkeyEmotesBtn)
     {
         toggleHotkeyEmotesBtn.toggled = !toggleHotkeyEmotesBtn.toggled;
@@ -415,6 +453,20 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
         
         getRules().set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
     }
+}
+
+void ResetClassesFrame()
+{
+	for (int i = 0; i < playerClassButtons.list.length; i++)
+	{
+		playerClassButtons.list[i].classFrame.isEnabled = false;
+		playerClassButtons.list[i].leftPage.isEnabled = false;
+		playerClassButtons.list[i].rightPage.isEnabled = false;
+		playerClassButtons.list[i].classButton.toggled = false;
+		playerClassButtons.list[i].classButton.render_one_more_time = true;
+		playerClassButtons.list[i].classDescriptionButton.isEnabled = false;
+		playerClassButtons.list[i].classDescriptionText.setText("");
+	}
 }
 
 const int OPTIONS_SCROLLER_ITEMS_PER_GROUP = 2;
@@ -681,7 +733,6 @@ void onTick(CRules@ this)
 				helpWindow.addChild(introBtn);
 				helpWindow.addChild(bottom2);
 
-				helpWindow.addChild(playerClassButtons);
 				helpWindow.addChild(classesBtn);
 				helpWindow.addChild(bottom1);
 				
@@ -692,34 +743,163 @@ void onTick(CRules@ this)
 				helpWindow.addChild(top0);
 				
 				//helpWindow.addChild(achievementBtn);
+				helpWindow.addChild(playerClassButtons);
 			}
 		}
+
+		// options
+		@optionsFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
+		optionsFrame._customData = 0; // page index
+		optionsFrame.setLevel(ContainerLevel::PAGE);
+		{
+			f32 button_width = 250.0f;
+			f32 left_margin = 45.0f;
+			f32 top_margin = 20.0f;
+
+			f32 bottom_margin_button = 40.0f;
+			f32 bottom_margin_text = 20.0f;
+			f32 bottom_margin_slider = 30.0f;
+
+			Vec2f page_size = Vec2f(menuSize.x / 2 - 40, menuSize.y - 40);
+			Rectangle@ optionsFramePage0 = @Rectangle(Vec2f(0, 0), page_size, SColor(0, 0, 0, 0));
+			
+			if (optionsFramePage0 !is null)
+			{
+				f32 current_y = top_margin;
+
+				@barNumBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				barNumBtn.addClickListener(ButtonClickHandler);
+
+				@startCloseBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				startCloseBtn.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@toggleHotkeyEmotesBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				toggleHotkeyEmotesBtn.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@toggleSpellWheelBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				toggleSpellWheelBtn.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@itemDistanceText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Wheel radius:", SColor(255,0,0,0), false);
+				current_y += bottom_margin_text;
+
+				@itemDistance = @ScrollBar(Vec2f(left_margin, current_y), 160, 10, true, itemDistance_value);
+				itemDistance.addSlideEventListener(SliderClickHandler);
+				current_y += bottom_margin_slider;
+
+				@hoverDistanceText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Wheel deselect radius:", SColor(255,0,0,0), false);
+				current_y += bottom_margin_text;
+
+				@hoverDistance = @ScrollBar(Vec2f(left_margin, current_y), 160, 10, true, hoverDistance_value);
+				hoverDistance.addSlideEventListener(SliderClickHandler);
+				current_y += bottom_margin_slider;
+
+				@toggleHoverMessagesBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				toggleHoverMessagesBtn.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@oneDimensionalSpellbar = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				oneDimensionalSpellbar.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@resetSpellText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Reset spell on restart: ", SColor(255,0,0,0), false);
+				current_y += bottom_margin_text;
+
+				@resetSpell = @ScrollBar(Vec2f(left_margin, current_y), 160, 16, true, resetSpell_value);
+				resetSpell.addSlideEventListener(SliderClickHandler);
+				current_y += bottom_margin_slider;
+
+				@toggleSpellHealthConsumeScreenFlash = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				toggleSpellHealthConsumeScreenFlash.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@resetShowClassDescriptions = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "Reset Class Descriptions", SColor(255,255,255,255));
+				resetShowClassDescriptions.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				optionsFramePage0.addChild(barNumBtn);
+        		optionsFramePage0.addChild(toggleSpellWheelBtn);
+				optionsFramePage0.addChild(toggleSpellHealthConsumeScreenFlash);
+				optionsFramePage0.addChild(resetShowClassDescriptions);
+				optionsFramePage0.addChild(toggleHoverMessagesBtn);
+				optionsFramePage0.addChild(oneDimensionalSpellbar);
+        		optionsFramePage0.addChild(toggleHotkeyEmotesBtn);
+        		optionsFramePage0.addChild(itemDistance);
+				optionsFramePage0.addChild(itemDistanceText);
+        		optionsFramePage0.addChild(hoverDistance);
+				optionsFramePage0.addChild(hoverDistanceText);
+				optionsFramePage0.addChild(resetSpellText);
+				optionsFramePage0.addChild(resetSpell);
+			}
+
+			Rectangle@ optionsFramePage1 = @Rectangle(Vec2f(page_size.x + 20, 0), page_size, SColor(0, 0, 0, 0));
+			if (optionsFramePage1 !is null)
+			{
+				f32 current_y = top_margin;
+				
+				@bookSpellIcons = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				bookSpellIcons.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				optionsFramePage1.addChild(bookSpellIcons);
+			}
+
+			optionsFrame.addChild(optionsFramePage0);
+			optionsFrame.addChild(optionsFramePage1);
+			optionsFramePages.push_back(optionsFramePage0);
+			optionsFramePages.push_back(optionsFramePage1);
+
+			//Rectangle@ test1 = @Rectangle(Vec2f(0, 0), page_size, SColor(125, 0, 255, 255));
+			//test1.setLevel(ContainerLevel::PAGE_FRAME);
+			//optionsFrame.addChild(test1);
+			//optionsFramePages.push_back(test1);
+
+			if (optionsFramePages.length > OPTIONS_SCROLLER_ITEMS_PER_GROUP)
+			{
+				Button@ scroller_left = @Button(Vec2f(-90, 255), Vec2f(40, 20), "Previous", SColor(255, 255, 255, 255));
+				scroller_left._customData = 0;
+				scroller_left.addClickListener(OptionsScrollerClickHandler);
+
+				Button@ scroller_right = @Button(Vec2f(menuSize.x, 255), Vec2f(40, 20), "Next", SColor(255, 255, 255, 255));
+				scroller_right._customData = 1;
+				scroller_right.addClickListener(OptionsScrollerClickHandler);
+
+				optionsFrame.addChild(scroller_left);
+				optionsFrame.addChild(scroller_right);
+			}
+		}
+		updateOptionsScroller();
+		helpWindow.addChild(optionsFrame);
+
+		setCachedStates(this);
+		initClasses();
 
 		// class selection page
 		@classesFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
 		classesFrame.isEnabled = false; 
 		classesFrame.setLevel(ContainerLevel::PAGE);
 		{
-			initClasses();
 			Vec2f page_size = Vec2f(menuSize.x / 2 - 40, menuSize.y - 40);
 
 			Rectangle@ leftPage = @Rectangle(Vec2f(0, 0), page_size - Vec2f(20, 0), SColor(0, 0, 0, 0));
 			leftPage.name = "classFrameLeftPage";
 			leftPage.setLevel(ContainerLevel::PAGE_FRAME);
 
-			Label@ title0 = @Label(Vec2f(page_size.x / 2 + 5, 50), Vec2f(100, 32), "Wizard Wars", SColor(255, 91, 45, 18), true, "DragonFire_48");
-			Label@ title1 = @Label(Vec2f(page_size.x / 2 + 5, 90), Vec2f(100, 32), "Bestiary", SColor(255, 91, 45, 18), true, "DragonFire_32");
+			Label@ title0 = @Label(Vec2f(page_size.x / 2 + 2, 50), Vec2f(100, 32), "Wizard Wars", col_text, true, "DragonFire_40");
+			Label@ title1 = @Label(Vec2f(page_size.x / 2 + 4, 90), Vec2f(100, 32), "Bestiary", col_text, true, "DragonFire_32");
 			
 			title0.name = "classFrameLeftPageTitle0";
 			title1.name = "classFrameLeftPageTitle1";
 
-			string leftPageDesc = "Hello!\n\n This is the place where you can see info about the classes.\nSelect one and press the \"Select\" button on the right page.\n\n You might also want to rebind your hotbar spells - check out the \"Spells\" section and follow the tips there.\n\n There is also a very useful \"Guides\" section for new players, so just in case, i would advise you to join the spectator team and read, that will help a lot!\n                     (press ESC -> Change Team)";
-			Label@ description = @Label(Vec2f(30, 112), Vec2f(page_size.x - 60, page_size.y - 150),
-				leftPageDesc, SColor(255, 91, 45, 18), false, "KingThingsPetrockLight_22");
+			string leftPageDesc = " This is the place where you can see info about the classes.\nSelect one and press the \"Select\" button on the right page.\n\n You might also want to rebind your hotbar spells - check out the \"Spells\" section and follow the tips there.\n\n There is also a very useful \"Guides\" section for new players, so just in case, i would advise you to join the spectator team and read, that will help a lot!\n                     (press ESC -> Change Team)";
+			Label@ description = @Label(Vec2f(30, 150), Vec2f(page_size.x - 60, page_size.y - 150),
+				leftPageDesc, col_text, false, "KingThingsPetrockLight_22");
 			description.name = "classFrameLeftPageDescription";
 			description.setText(description.textWrap(description.label));
 
-			Icon@ leftPageDescOrnament = @Icon("OrnamentMid.png", Vec2f(page_size.x / 2 - 64, 120), Vec2f(128, 48), 0, 0.5f, false);
+			Icon@ leftPageDescOrnament = @Icon("OrnamentMid.png", Vec2f(page_size.x / 2 - 66, 120), Vec2f(128, 48), 0, 0.5f, false);
 			leftPageDescOrnament.name = "classFrameLeftPageOrnament";
 			leftPageDescOrnament.isEnabled = false;
 
@@ -727,11 +907,36 @@ void onTick(CRules@ this)
 			leftPageBottomOrnament.name = "classFrameLeftPageBottomOrnament";
 			leftPageBottomOrnament.isEnabled = false;
 
+			Icon@ leftPageIntroOrnament0 = @Icon("Ornaments48x48.png", Vec2f(page_size.x / 2 - 15, 102), Vec2f(48, 48), 0, 0.5f, false);
+			leftPageIntroOrnament0.name = "classFrameLeftPageIntroOrnament0";
+			leftPageIntroOrnament0.isEnabled = true;
+
+			Icon@ leftPageIntroOrnament1 = @Icon("Ornaments48x48.png", Vec2f(page_size.x - 65, 24), Vec2f(48, 48), 4, 0.5f, false);
+			leftPageIntroOrnament1.name = "classFrameLeftPageIntroOrnament1";
+			leftPageIntroOrnament1.isEnabled = false; // disabled
+
+			Icon@ leftPageIntroOrnament2 = @Icon("Ornaments48x48.png", Vec2f(24, 24), Vec2f(48, 48), 4, 0.5f, false);
+			leftPageIntroOrnament2.name = "classFrameLeftPageIntroOrnament2";
+			leftPageIntroOrnament2.isEnabled = false; // disabled
+
+			Icon@ leftPageIntroOrnament3 = @Icon("OrnamentLine0.png", Vec2f(32, 122), Vec2f(336, 32), 0, 1.0f, true, Vec2f(128, 16));
+			leftPageIntroOrnament3.name = "classFrameLeftPageIntroOrnament3";
+			leftPage.addChild(leftPageIntroOrnament3);
+
+			Icon@ leftPageIntroOrnament4 = @Icon("OrnamentLine1.png", Vec2f(219, 122), Vec2f(336, 32), 0, 1.0f, true, Vec2f(128, 16));
+			leftPageIntroOrnament4.name = "classFrameLeftPageIntroOrnament4";
+			leftPage.addChild(leftPageIntroOrnament4);
+
+			Icon@ leftPageOrnamentStatSeparator = @Icon("Ornaments48x48.png", Vec2f(page_size.x / 2 - 16, 150), Vec2f(48, 48), 0, 0.5f, false);
+
 			leftPage.addChild(title0);
 			leftPage.addChild(title1);
 			leftPage.addChild(description);
 			leftPage.addChild(leftPageDescOrnament);
 			leftPage.addChild(leftPageBottomOrnament);
+			leftPage.addChild(leftPageIntroOrnament0);
+			leftPage.addChild(leftPageIntroOrnament1);
+			leftPage.addChild(leftPageIntroOrnament2);
 
 			Rectangle@ rightPage = @Rectangle(Vec2f(menuSize.x / 2, 0), page_size, SColor(0, 0, 0, 0));
 			rightPage.name = "classFrameRightPage";
@@ -826,123 +1031,6 @@ void onTick(CRules@ this)
 		}
 		helpWindow.addChild(classesFrame);
 
-		// options
-		@optionsFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
-		optionsFrame._customData = 0; // page index
-		optionsFrame.setLevel(ContainerLevel::PAGE);
-		{
-			f32 button_width = 250.0f;
-			f32 left_margin = 45.0f;
-			f32 top_margin = 20.0f;
-
-			f32 bottom_margin_button = 40.0f;
-			f32 bottom_margin_text = 20.0f;
-			f32 bottom_margin_slider = 30.0f;
-
-			Vec2f page_size = Vec2f(menuSize.x / 2 - 40, menuSize.y - 40);
-			Rectangle@ optionsFramePage0 = @Rectangle(Vec2f(0, 0), page_size, SColor(0, 0, 0, 0));
-			
-			if (optionsFramePage0 !is null)
-			{
-				f32 current_y = top_margin;
-
-				@barNumBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
-				barNumBtn.addClickListener(ButtonClickHandler);
-
-				@startCloseBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
-				startCloseBtn.addClickListener(ButtonClickHandler);
-				current_y += bottom_margin_button;
-
-				@toggleHotkeyEmotesBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
-				toggleHotkeyEmotesBtn.addClickListener(ButtonClickHandler);
-				current_y += bottom_margin_button;
-
-				@toggleSpellWheelBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
-				toggleSpellWheelBtn.addClickListener(ButtonClickHandler);
-				current_y += bottom_margin_button;
-
-				@itemDistanceText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Wheel radius:", SColor(255,0,0,0), false);
-				current_y += bottom_margin_text;
-
-				@itemDistance = @ScrollBar(Vec2f(left_margin, current_y), 160, 10, true, itemDistance_value);
-				itemDistance.addSlideEventListener(SliderClickHandler);
-				current_y += bottom_margin_slider;
-
-				@hoverDistanceText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Wheel deselect radius:", SColor(255,0,0,0), false);
-				current_y += bottom_margin_text;
-
-				@hoverDistance = @ScrollBar(Vec2f(left_margin, current_y), 160, 10, true, hoverDistance_value);
-				hoverDistance.addSlideEventListener(SliderClickHandler);
-				current_y += bottom_margin_slider;
-
-				@toggleHoverMessagesBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
-				toggleHoverMessagesBtn.addClickListener(ButtonClickHandler);
-				current_y += bottom_margin_button;
-
-				@oneDimensionalSpellbar = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
-				oneDimensionalSpellbar.addClickListener(ButtonClickHandler);
-				current_y += bottom_margin_button;
-
-				@resetSpellText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Reset spell on restart: ", SColor(255,0,0,0), false);
-				current_y += bottom_margin_text;
-
-				@resetSpell = @ScrollBar(Vec2f(left_margin, current_y), 160, 16, true, resetSpell_value);
-				resetSpell.addSlideEventListener(SliderClickHandler);
-				current_y += bottom_margin_slider;
-
-				@toggleSpellHealthConsumeScreenFlash = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
-				toggleSpellHealthConsumeScreenFlash.addClickListener(ButtonClickHandler);
-				current_y += bottom_margin_button;
-
-				@resetShowClassDescriptions = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "Reset Class Descriptions", SColor(255,255,255,255));
-				resetShowClassDescriptions.addClickListener(ButtonClickHandler);
-				current_y += bottom_margin_button;
-
-				optionsFramePage0.addChild(barNumBtn);
-        		optionsFramePage0.addChild(toggleSpellWheelBtn);
-				optionsFramePage0.addChild(toggleSpellHealthConsumeScreenFlash);
-				optionsFramePage0.addChild(resetShowClassDescriptions);
-				optionsFramePage0.addChild(toggleHoverMessagesBtn);
-				optionsFramePage0.addChild(oneDimensionalSpellbar);
-        		optionsFramePage0.addChild(toggleHotkeyEmotesBtn);
-        		optionsFramePage0.addChild(itemDistance);
-				optionsFramePage0.addChild(itemDistanceText);
-        		optionsFramePage0.addChild(hoverDistance);
-				optionsFramePage0.addChild(hoverDistanceText);
-				optionsFramePage0.addChild(resetSpellText);
-				optionsFramePage0.addChild(resetSpell);
-			}
-
-			optionsFrame.addChild(optionsFramePage0);
-			optionsFramePages.push_back(optionsFramePage0);
-
-			//Rectangle@ test0 = @Rectangle(Vec2f(menuSize.x / 2, 0), page_size, SColor(125, 255, 0, 0));
-			//test0.setLevel(ContainerLevel::PAGE_FRAME);
-			//optionsFrame.addChild(test0);
-			//optionsFramePages.push_back(test0);
-
-			//Rectangle@ test1 = @Rectangle(Vec2f(0, 0), page_size, SColor(125, 0, 255, 255));
-			//test1.setLevel(ContainerLevel::PAGE_FRAME);
-			//optionsFrame.addChild(test1);
-			//optionsFramePages.push_back(test1);
-
-			if (optionsFramePages.length > OPTIONS_SCROLLER_ITEMS_PER_GROUP)
-			{
-				Button@ scroller_left = @Button(Vec2f(-90, 255), Vec2f(40, 20), "Previous", SColor(255, 255, 255, 255));
-				scroller_left._customData = 0;
-				scroller_left.addClickListener(OptionsScrollerClickHandler);
-
-				Button@ scroller_right = @Button(Vec2f(menuSize.x, 255), Vec2f(40, 20), "Next", SColor(255, 255, 255, 255));
-				scroller_right._customData = 1;
-				scroller_right.addClickListener(OptionsScrollerClickHandler);
-
-				optionsFrame.addChild(scroller_left);
-				optionsFrame.addChild(scroller_right);
-			}
-		}
-		updateOptionsScroller();
-		helpWindow.addChild(optionsFrame);
-
 		// rework this, keeping as leftover for now
 		@spellAssignHelpIcon = @Icon("SpellAssignHelp.png", Vec2f(270, 40), Vec2f(500, 430), 0, 0.5f);
 		spellAssignHelpIcon.isEnabled = false;
@@ -952,45 +1040,7 @@ void onTick(CRules@ this)
 		
 		helpWindow.addChild(spellHelpIcon); // rework both
 		helpWindow.addChild(spellAssignHelpIcon);
-		
-		// set toggled states
-		showHelp = startCloseBtn.getBool("Start Closed", "WizardWars");
-		startCloseBtn.toggled = !startCloseBtn.getBool("Start Closed","WizardWars");
-		startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
-        
-		toggleSpellWheelBtn.toggled = toggleSpellWheelBtn.getBool("Spell Wheel Active","WizardWars");
-		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - ON" : "Spell Wheel - OFF";
 
-        WheelMenu@ menu = get_wheel_menu("spells");
-        if (menu != null){
-            this.set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
-        }
-
-		toggleSpellHealthConsumeScreenFlash.toggled = toggleSpellHealthConsumeScreenFlash.getBool("Spell health consume screen flash","WizardWars");
-		toggleSpellHealthConsumeScreenFlash.desc = (toggleSpellHealthConsumeScreenFlash.toggled) ? "HP consume red flash - ON" : "HP consume red flash - OFF";
-		this.set_bool("spell_health_consume_screen_flash", toggleSpellHealthConsumeScreenFlash.toggled);
-
-		resetShowClassDescriptions.desc = "Reset class descriptions";
-
-		toggleHoverMessagesBtn.toggled = toggleHoverMessagesBtn.getBool("Hover Messages Active","WizardWars");
-		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
-        this.set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
-
-		oneDimensionalSpellbar.toggled = oneDimensionalSpellbar.getBool("Spell bar in 1 row","WizardWars");
-		oneDimensionalSpellbar.desc = (oneDimensionalSpellbar.toggled) ? "Spell bar in 1 row - ON" : "Spell bar in 1 row - OFF";
-        this.set_bool("one_row_spellbar", oneDimensionalSpellbar.toggled);
-
-        toggleHotkeyEmotesBtn.toggled = toggleHotkeyEmotesBtn.getBool("Hotkey Emotes","WizardWars");
-		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - ON" : "Emotes - OFF";
-        this.set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
-
-		barNumBtn.toggled = barNumBtn.getBool("Bar Numbers","WizardWars");
-		this.set_bool("spell_number_selection", barNumBtn.toggled);
-		
-		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
-		optionsFrame.isEnabled = false;
-		
-		// disabled for now
 		intitializeAchieves();
 		//helpWindow.addChild(shipAchievements);	
 
@@ -1006,6 +1056,8 @@ void onTick(CRules@ this)
 	
 	CPlayer@ player = getLocalPlayer();  
 	if (player is null) return;
+
+	UpdateClassHotbar();
 
 	string name = player.getUsername();
     if (previous_showHelp != showHelp)
@@ -1031,6 +1083,49 @@ void onTick(CRules@ this)
     }
 
     bool previous_showHelp = showHelp;//Must be last
+}
+
+void setCachedStates(CRules@ this)
+{
+	showHelp = startCloseBtn.getBool("Start Closed", "WizardWars");
+	startCloseBtn.toggled = !startCloseBtn.getBool("Start Closed","WizardWars");
+	startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
+    
+	toggleSpellWheelBtn.toggled = toggleSpellWheelBtn.getBool("Spell Wheel Active","WizardWars");
+	toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - ON" : "Spell Wheel - OFF";
+
+    WheelMenu@ menu = get_wheel_menu("spells");
+    if (menu != null){
+        this.set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
+    }
+
+	toggleSpellHealthConsumeScreenFlash.toggled = toggleSpellHealthConsumeScreenFlash.getBool("Spell health consume screen flash","WizardWars");
+	toggleSpellHealthConsumeScreenFlash.desc = (toggleSpellHealthConsumeScreenFlash.toggled) ? "HP consume red flash - ON" : "HP consume red flash - OFF";
+	this.set_bool("spell_health_consume_screen_flash", toggleSpellHealthConsumeScreenFlash.toggled);
+
+	resetShowClassDescriptions.desc = "Reset class descriptions";
+
+	toggleHoverMessagesBtn.toggled = toggleHoverMessagesBtn.getBool("Hover Messages Active","WizardWars");
+	toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
+    this.set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
+
+	oneDimensionalSpellbar.toggled = oneDimensionalSpellbar.getBool("Spell bar in 1 row","WizardWars");
+	oneDimensionalSpellbar.desc = (oneDimensionalSpellbar.toggled) ? "Spell bar in 1 row - ON" : "Spell bar in 1 row - OFF";
+    this.set_bool("one_row_spellbar", oneDimensionalSpellbar.toggled);
+
+	bookSpellIcons.toggled = bookSpellIcons.getBool("Book Spell Icons", "WizardWars");
+	bookSpellIcons.desc = (bookSpellIcons.toggled) ? "Low contrast spell icons - ON" : "Low contrast spell icons - OFF";
+    this.set_bool("book_old_spell_icons", bookSpellIcons.toggled);
+
+    toggleHotkeyEmotesBtn.toggled = toggleHotkeyEmotesBtn.getBool("Hotkey Emotes","WizardWars");
+	toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - ON" : "Emotes - OFF";
+    this.set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
+
+	barNumBtn.toggled = barNumBtn.getBool("Bar Numbers","WizardWars");
+	this.set_bool("spell_number_selection", barNumBtn.toggled);
+	
+	barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
+	optionsFrame.isEnabled = false;
 }
 
 void updateOptionSliderValues()
@@ -1142,6 +1237,7 @@ void onRender(CRules@ this)
 
 	Driver@ driver = getDriver();
 	if (driver is null) return;
+	if (helpWindow is null) return;
 
 	f32 screen_height = driver.getScreenHeight();
 	int minHelpYPos = -menuSize.y - 1;

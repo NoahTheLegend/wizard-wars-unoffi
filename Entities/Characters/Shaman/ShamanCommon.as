@@ -55,7 +55,7 @@ namespace ShamanParams
 			SpellCategory::summoning, SpellType::other, 50, 75, 10, 224.0f, true, true, array<int> = {SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_GROUNDED, SpellAttribute::SPELL_CONTROL}),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freeze everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
-			SpellCategory::debuff, SpellType::other, 40, 75, 25, 0.0f, true, false, array<int> = {SpellAttribute::SPELL_FREEZING, SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
+			SpellCategory::utility, SpellType::other, 40, 75, 25, 0.0f, true, false, array<int> = {SpellAttribute::SPELL_FREEZING, SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
 		
 		Spell("lavashot", "Lava Shot", 80, "Throw a ball of lava. Periodically drops a bit of lava while moving. Overcharge increases the rate of dropping lava and amount from impact.",
 			SpellCategory::offensive, SpellType::other, 40, 50, 3, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_FIRE}),

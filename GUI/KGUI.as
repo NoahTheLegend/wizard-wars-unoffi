@@ -267,6 +267,10 @@ class GenericGUIItem : IGUIItem{
 		children.push_back(child);
 	}
 
+	void pushToFirst(IGUIItem@ child){
+		children.insertAt(0, child);
+	}
+
 	IGUIItem@ getChild(string _name){
 		for(int i = 0; i < children.length; i++){
 			if(children[i].name == _name)
@@ -1280,5 +1284,4 @@ class Anim{
 	void setFrame(int _frame){
 		frame = _frame;
 	}
-
 }
