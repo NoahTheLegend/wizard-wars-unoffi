@@ -1,3 +1,16 @@
+const int[] classesHealth = {
+	75, // wizard
+	100, // necromancer
+	70, // druid
+	90, // swordcaster
+	75, // entropist
+	80, // priest
+	80, // shaman
+	100, // paladin
+	80, // jester
+	70  // warlock
+};
+
 const string[] specialties_names = {
 	"Fire - might ignite enemies","Water - extinguishes fire","Earth - physical damage","Air - high knockback","Nature - organic spells","Electricity - deals more damage to wet enemies",
 	"Ice - might freeze or deal more damage to wet enemies","Holy - holy spells","Unholy - unholy spells","Poison - poisonous spells","","",
@@ -141,7 +154,7 @@ const string[] classDescriptions = {
     " Priests dedicate themselves to the divine, channeling holy energy to heal team and smite foes.\n\n They wield slow, but impactful spells, but their true strength lies in exhorating allies - a beacon in the darkest battles.",
     " Shamans command totems and elemental forces through channels to nature's spirits and their ancestors.\n\n Versatile in both offense and defense, bound to the elements of earth, fire and water, they adapt fluidly to any situation.",
     " Paladins embody noble strength, standing as steadfast tanks and shining symbols of hope.\nTheir holy damage burns through darkness, while their protective auras bolster allies and their souls.\nThey are the shield of the team, and their presence is a rallying point for all.",
-    " Jesters use misdirection and spectacle to control the battlefield in unconventional ways.\nTheir kind blends utility and offense through volatile spells, unpredictable movement and conjured constructs. What others call distraction, they refine into precision - forcing enemies to react on their terms.",
+    " Jesters strike with sleight and show, twisting fights with every blow; spells erupt and vanish fast, forcing foes to fail or gasp; what seems like chaos, wild and sly, becomes a plan to bleed you dry; they dance through danger, bold and bright, and turn confusion into might.",
     " Warlocks pursue forbidden paths, accepting the cost to wield destructive to their health forces.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts, other reshape the flow of battle with their life force."
 };
 

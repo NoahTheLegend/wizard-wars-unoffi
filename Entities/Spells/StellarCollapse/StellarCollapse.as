@@ -5,7 +5,7 @@ const Vec2f frameSize = Vec2f(24, 32);
 void onInit(CBlob@ this)
 {
 	this.Tag("projectile");
-	this.Tag("medium weight");
+	this.Tag("counterable");
 	this.Tag("cantmove");
 	this.Tag("die_in_divine_shield");
 	this.Tag("no trampoline collision");
@@ -158,7 +158,7 @@ void laserEffects(CBlob@ this, int id)
 
 void onTick(CBlob@ this)
 {
-	this.AddForce(Vec2f(0, this.getMass()));
+	this.AddForce(Vec2f(0, this.getMass() * 0.5f));
 
 	if (this.getTickSinceCreated() == 0)
 	{

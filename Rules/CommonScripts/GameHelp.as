@@ -24,7 +24,6 @@ bool page1 = true;
 const int slotsSize = 6;
 f32 boxMargin = 50.0f;
 string selectedClass = classes[0];
-
 const SColor col_text = SColor(255, 91, 45, 18);
 
 //key names
@@ -180,6 +179,18 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		Icon@ ornamentLeftPageIntro4 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament4"));
 		if (ornamentLeftPageIntro4 is null) return;
 
+		Label@ stat0 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat0"));
+		if (stat0 is null) return;
+
+		Label@ stat1 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat1"));
+		if (stat1 is null) return;
+
+		Label@ stat2 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat2"));
+		if (stat2 is null) return;
+
+		Label@ stat3 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat3"));
+		if (stat3 is null) return;
+
 		PlayFlipSound();
 
 		title0.font = "DragonFire_56";
@@ -211,6 +222,11 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 			ornamentLeftPageIntro3.isEnabled = false;
 			ornamentLeftPageIntro4.isEnabled = false;
 
+			stat0.isEnabled = false;
+			stat1.isEnabled = false;
+			stat2.isEnabled = false;
+			stat3.isEnabled = false;
+
 			string text = CombineSymbols(added, random_offsets);
 			description.setText(text);
 			description.setPosition(Vec2f(description.localPosition.x, 120));
@@ -225,9 +241,11 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 			ornamentLeftPageIntro0.isEnabled = false;
 			ornamentLeftPageIntro1.isEnabled = false;
-			ornamentLeftPageIntro2.isEnabled = false;
 			ornamentLeftPageIntro3.isEnabled = false;
 			ornamentLeftPageIntro4.isEnabled = false;
+
+			ornamentLeftPageIntro2.isEnabled = true;
+			setPageStats(classIndex, stat0, stat1, stat2, stat3);
 
 			title0.setText(classTitles[classIndex]);
 			title1.setText(classSubtitles[classIndex]);
@@ -238,6 +256,99 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 	{
 		Sound::Play("MenuSelect2.ogg");
 	}
+}
+
+void setPageStats(int classIndex, Label@ leftPageStat0, Label@ leftPageStat1, Label@ leftPageStat2, Label@ leftPageStat3)
+{
+	string hp = "Health: " + classesHealth[classIndex];
+	string mana = "Mana: ";
+	string extra = "";
+	string manaregen = "Regen: ";
+	string per_second = " / second";
+
+	switch (classIndex)
+	{
+		case 0: // wizard
+		{
+			mana += WizardParams::MAX_MANA;
+			manaregen += WizardParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 1: // necromancer
+		{
+			mana += NecromancerParams::MAX_MANA;
+			manaregen += NecromancerParams::MANA_REGEN + per_second;
+		}
+		break;
+		
+		case 2: // druid
+		{
+			mana += DruidParams::MAX_MANA;
+			manaregen += DruidParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 3: // swordcaster
+		{
+			mana += SwordCasterParams::MAX_MANA;
+			manaregen += SwordCasterParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 4: // entropist
+		{
+			mana += EntropistParams::MAX_MANA;
+			manaregen += EntropistParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 5: // priest
+		{
+			mana += PriestParams::MAX_MANA;
+			manaregen += PriestParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 6: // shaman
+		{
+			mana += ShamanParams::MAX_MANA;
+			manaregen += ShamanParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 7: // paladin
+		{
+			mana += PaladinParams::MAX_MANA;
+			manaregen += PaladinParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 8: // jester
+		{
+			mana += JesterParams::MAX_MANA;
+			manaregen += JesterParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 9: // warlock
+		{
+			mana += WarlockParams::MAX_MANA;
+			manaregen = "Mana steal: " + WarlockParams::MANA_PER_1_DAMAGE+" / 1 DMG";
+			extra = "Life cast: " + (WarlockParams::HEALTH_COST_PER_1_MANA * 10 * 5 / 2) + " HP / 5 Mana";
+		}
+		break;
+	}
+
+	leftPageStat0.setText(hp);
+	leftPageStat1.setText(mana);
+	leftPageStat2.setText(extra);
+	leftPageStat3.setText(manaregen);
+
+	leftPageStat0.isEnabled = true;
+	leftPageStat1.isEnabled = true;
+	leftPageStat2.isEnabled = true;
+	leftPageStat3.isEnabled = true;
 }
 
 void iconClickHandler(int x, int y, int button, IGUIItem@ sender)
@@ -907,7 +1018,7 @@ void onTick(CRules@ this)
 			leftPageBottomOrnament.name = "classFrameLeftPageBottomOrnament";
 			leftPageBottomOrnament.isEnabled = false;
 
-			Icon@ leftPageIntroOrnament0 = @Icon("Ornaments48x48.png", Vec2f(page_size.x / 2 - 15, 102), Vec2f(48, 48), 0, 0.5f, false);
+			Icon@ leftPageIntroOrnament0 = @Icon("Ornaments48x48.png", Vec2f(page_size.x / 2 - 15.5f, 102), Vec2f(48, 48), 0, 0.5f, false);
 			leftPageIntroOrnament0.name = "classFrameLeftPageIntroOrnament0";
 			leftPageIntroOrnament0.isEnabled = true;
 
@@ -915,9 +1026,20 @@ void onTick(CRules@ this)
 			leftPageIntroOrnament1.name = "classFrameLeftPageIntroOrnament1";
 			leftPageIntroOrnament1.isEnabled = false; // disabled
 
-			Icon@ leftPageIntroOrnament2 = @Icon("Ornaments48x48.png", Vec2f(24, 24), Vec2f(48, 48), 4, 0.5f, false);
+			Icon@ leftPageIntroOrnament2 = @Icon("Ornaments48x48.png", Vec2f(leftPageIntroOrnament0.localPosition.x - 28, 360), Vec2f(48, 48), 8, 1.0f, false);
 			leftPageIntroOrnament2.name = "classFrameLeftPageIntroOrnament2";
-			leftPageIntroOrnament2.isEnabled = false; // disabled
+			leftPageIntroOrnament2.isEnabled = false;
+
+			Vec2f leftPageStat0Pos = Vec2f(96, leftPageIntroOrnament2.localPosition.y + 32);
+			Label@ leftPageStat0 = @Label(leftPageStat0Pos, Vec2f(100, 10), "", col_text, true, "KingThingsPetrockLight_18");
+			Label@ leftPageStat1 = @Label(leftPageStat0Pos + Vec2f(0, 24), Vec2f(100, 10), "", col_text, true, "KingThingsPetrockLight_18");
+			Label@ leftPageStat2 = @Label(leftPageStat0Pos + Vec2f(180, 0), Vec2f(100, 10), "", col_text, true, "KingThingsPetrockLight_18");
+			Label@ leftPageStat3 = @Label(leftPageStat0Pos + Vec2f(180, 24), Vec2f(100, 10), "", col_text, true, "KingThingsPetrockLight_18");
+
+			leftPageStat0.name = "classFrameLeftPageStat0";
+			leftPageStat1.name = "classFrameLeftPageStat1";
+			leftPageStat2.name = "classFrameLeftPageStat2";
+			leftPageStat3.name = "classFrameLeftPageStat3";
 
 			Icon@ leftPageIntroOrnament3 = @Icon("OrnamentLine0.png", Vec2f(32, 122), Vec2f(336, 32), 0, 1.0f, true, Vec2f(128, 16));
 			leftPageIntroOrnament3.name = "classFrameLeftPageIntroOrnament3";
@@ -932,6 +1054,10 @@ void onTick(CRules@ this)
 			leftPage.addChild(title0);
 			leftPage.addChild(title1);
 			leftPage.addChild(description);
+			leftPage.addChild(leftPageStat0);
+			leftPage.addChild(leftPageStat1);
+			leftPage.addChild(leftPageStat2);
+			leftPage.addChild(leftPageStat3);
 			leftPage.addChild(leftPageDescOrnament);
 			leftPage.addChild(leftPageBottomOrnament);
 			leftPage.addChild(leftPageIntroOrnament0);
@@ -1251,10 +1377,13 @@ void onRender(CRules@ this)
 	{
 		helpWindow.position = Vec2f(helpWindow.position.x, Maths::Lerp(helpWindow.position.y, maxHelpYPos, df));
 		if (Maths::Abs(Maths::Abs(helpWindow.position.y) - Maths::Abs(maxHelpYPos)) <= 1) helpWindow.position = Vec2f(helpWindow.position.x, maxHelpYPos);
+		
+		helpWindow.localPosition = helpWindow.position;
 	}
 	else if (!showHelp && helpWindow.position.y > minHelpYPos)
 	{
 		helpWindow.position = Vec2f(helpWindow.position.x, Maths::Lerp(helpWindow.position.y, minHelpYPos, df * 2));
+		helpWindow.localPosition = helpWindow.position;
 	}
 
 	f32 tick = f32(v_fpslimit) / 30.0f;

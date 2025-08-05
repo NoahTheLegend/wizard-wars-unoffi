@@ -220,31 +220,61 @@ class WizardRain
             }
             else if (type == WizardRainTypes::stellarcollapse)
             {
-                f32 gap = 32.0f;
+                f32 gap = damagebuff ? 48.0f : 32.0f;
                 f32 area_width = initobjectsAmount * gap;
 
-                f32 explosion_radius = level == 5 ? 64.0f : 48.0f;
+                f32 explosion_radius = level == 5 ? 32.0f : 48.0f;
                 f32 damage = 2.5f + XORRandom(11) * 0.1f;
-                u32 explosion_delay = damagebuff ? 3 : 4 + XORRandom(4);
-    
-                CBlob@ blob = server_CreateBlobNoInit("stellarcollapse");
-                if (blob !is null)
+                u32 explosion_delay = damagebuff ? 8 : 4 + XORRandom(4);
+
+                if (damagebuff)
                 {
-                    blob.server_setTeamNum(team);
+                    for (u32 i = 0; i < objectsAmount; i++)
+                    {
+                        CBlob@ blob = server_CreateBlobNoInit("stellarcollapse");
+                        if (blob !is null)
+                        {
+                            blob.server_setTeamNum(team);
 
-                    Vec2f offset = Vec2f(XORRandom(area_width) - area_width/2, 0);
-                    blob.setPosition(Vec2f(position.x + offset.x, -32.0f));
+                            f32 offset_x = -area_width/2 + gap/2 + i * gap;
+                            blob.setPosition(Vec2f(position.x + offset_x, -32.0f));
 
-                    blob.Init();
-                    blob.setAngleDegrees(90);
-                    
-                    blob.set_f32("initial_offset", offset.x);
-                    blob.set_f32("explosion_radius", explosion_radius);
-                    blob.set_f32("explosion_damage", damage);
-                    blob.set_u32("explosion_delay", explosion_delay);
+                            blob.Init();
+                            blob.setAngleDegrees(90);
+
+                            blob.set_f32("initial_offset", offset_x);
+                            blob.set_f32("explosion_radius", explosion_radius);
+                            blob.set_f32("explosion_damage", damage);
+                            blob.set_u32("explosion_delay", explosion_delay);
+
+                            blob.getShape().SetGravityScale(-0.5f);
+                        }
+                    }
+
+                    objectsAmount = 0;
                 }
+                else
+                {
+                    // Cast one at a time, random offset
+                    CBlob@ blob = server_CreateBlobNoInit("stellarcollapse");
+                    if (blob !is null)
+                    {
+                        blob.server_setTeamNum(team);
 
-                time = damagebuff ? 1 : 2;
+                        Vec2f offset = Vec2f(XORRandom(area_width) - area_width/2, 0);
+                        blob.setPosition(Vec2f(position.x + offset.x, -32.0f));
+
+                        blob.Init();
+                        blob.setAngleDegrees(90);
+
+                        blob.set_f32("initial_offset", offset.x);
+                        blob.set_f32("explosion_radius", explosion_radius);
+                        blob.set_f32("explosion_damage", damage);
+                        blob.set_u32("explosion_delay", explosion_delay);
+                    }
+
+                    time = 2;
+                }
             }
 
             objectsAmount -= 1;

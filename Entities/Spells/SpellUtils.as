@@ -444,17 +444,17 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			}
 
 			bool sameTeam = b.getTeamNum() == caster.getTeamNum();
-			
 			bool countered = false;
 			bool retribution = false;
-			
+
 			// spells
-			if ( b.hasTag("counterable") && (!sameTeam || b.hasTag("alwayscounter")) )
+			if (b.hasTag("counterable") && (!sameTeam || b.hasTag("alwayscounter")))
 			{
 				b.Untag("exploding");
 				b.Tag("just_countered");
 				b.Tag("mark_for_death");
 				b.Tag("counterspelled");
+
 				if (b.getName() == "plant_aura")
 				{retribution = true;}
 					

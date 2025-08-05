@@ -3,6 +3,9 @@
 #include "PlatinumCommon.as";
 #include "StatusCommon.as";
 #include "AttributeCommon.as";
+#include "WWPlayerClassesCommon.as";
+#include "MagicCommon.as";
+
 #include "WizardCommon.as";
 #include "NecromancerCommon.as";
 #include "DruidCommon.as";
@@ -13,8 +16,6 @@
 #include "PaladinCommon.as";
 #include "JesterCommon.as";
 #include "WarlockCommon.as";
-#include "WWPlayerClassesCommon.as";
-#include "MagicCommon.as";
 
 string classesVersion = "1";
 u32 lastHotbarPressTime = 0;
@@ -37,7 +38,7 @@ class WWPlayerClassButton
 {
 	int classID;
 	string name, modName, description, configFilename;
-	Icon@ display, selectedSpellIcon;
+	Icon@ display, selectedSpellIcon, selectedSpellSketch;
 
 	Button@ classButton;
 	ProgressBar@ condition;
@@ -45,7 +46,7 @@ class WWPlayerClassButton
 	Rectangle@ classFrame, leftPage, rightPage;
 	Button@[] spellButtons;
 	
-	Label@ desc, conLbl, spellDescText, selectedSpellName, selectedSpellDescription, selectedSpellStats;
+	Label@ desc, conLbl, spellDescText, selectedSpellName, selectedSpellDescription;
 	u32 classCost;
 
 	u8[] specialties;
@@ -53,10 +54,13 @@ class WWPlayerClassButton
 
 	uint tickrate;
 	Attribute@[] attributes;
+	Rectangle@ attributesContainer;
 
 	Button@ classDescriptionButton;
 	Icon@ classDescriptionBackground;
 	Label@ classDescriptionText;
+
+	int iconCount;
 	
 	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, Vec2f _size, u8[] _specialties, u8[] _stats)
 	{
@@ -70,6 +74,8 @@ class WWPlayerClassButton
 		specialties = _specialties;
 		stats = _stats;
 		tickrate = 0;
+
+		iconCount = 0;
 
 		// top side
 		// class button and its frame (view)
@@ -99,19 +105,15 @@ class WWPlayerClassButton
 			leftPage.addChild(offensiveTitle);
 
 			Icon@ ornamentLine0 = @Icon("OrnamentLine0.png", Vec2f(4, offensiveTitle.localPosition.y + 18), Vec2f(336, 32), 0, 1.0f, true, Vec2f(272, 32));
+			ornamentLine0.name = "ornamentLine0";
 			leftPage.addChild(ornamentLine0);
 
 			Label@ hotbarTitle = @Label(Vec2f(page_size.x / 2, 52 + sectionGap * 4 + gridSize * 4), Vec2f(480, 32), "Hotbar", col_text, true, "KingThingsPetrockLight_32");
 			leftPage.addChild(hotbarTitle);
 
 			Icon@ ornamentLine1 = @Icon("OrnamentLine1.png", Vec2f(4, hotbarTitle.localPosition.y + 14), Vec2f(336, 32), 0, 1.0f, true, Vec2f(272, 32));
+			ornamentLine1.name = "ornamentLine1";
 			leftPage.addChild(ornamentLine1);
-
-			//Icon@ ornamentSun = @Icon("OrnamentSun.png", Vec2f(page_size.x - 72, hotbarTitle.localPosition.y - 64 + 8), Vec2f(64, 64), 0, 0.5f, false);
-			//leftPage.addChild(ornamentSun);
-
-			//Icon@ ornamentMoon = @Icon("OrnamentMoon.png", Vec2f(0, hotbarTitle.localPosition.y - 64 - 4), Vec2f(92, 92), 0, 0.5f, false);
-			//leftPage.addChild(ornamentMoon);
 
 			@rightPage = @Rectangle(Vec2f(leftPage.localPosition.x + 112 + page_size.x, leftPage.localPosition.y), page_size, SColor(0, 0, 0, 0));
 			rightPage.name = _configFilename + "_rightPage";
@@ -122,12 +124,36 @@ class WWPlayerClassButton
 			// position empty frame
 			@selectedSpellIcon = @Icon(iconTexture, Vec2f(page_size.x / 2 - 32, 54), Vec2f(16, 16), 0, 2.0f);
 			@selectedSpellName = @Label(Vec2f(page_size.x / 2, 30), Vec2f(page_size.x, 32), "Select a spell", col_text, true, "KingThingsPetrockLight_32");
-			@selectedSpellDescription = @Label(Vec2f(10, 124), Vec2f(page_size.x, 32), "Description", col_text, false, "DragonFire_18");
-			@selectedSpellStats = @Label(Vec2f(10, 256), Vec2f(page_size.x, 32), "Stats", col_text, false, "DragonFire_18");
+			@selectedSpellDescription = @Label(Vec2f(10, 124), Vec2f(page_size.x, 32), "Description", col_text, false, "DragonFire_16");
+
+			Icon@ ornamentLine2 = @Icon("OrnamentCurvyWide.png", Vec2f(-6, hotbarTitle.localPosition.y + 0), Vec2f(336, 48), 0, 1.0f, true, Vec2f(272, 48));
+			ornamentLine2.name = "ornamentLine2";
+			ornamentLine2.isEnabled = false;
+			rightPage.addChild(ornamentLine2);
+
+			@selectedSpellSketch = @Icon("SpellSketch6.png", Vec2f(0, ornamentLine2.localPosition.y + 48), Vec2f(128, 64), 0, 1.0f);
+			selectedSpellSketch.isEnabled = false;
+			rightPage.addChild(selectedSpellSketch);
 
 			selectedSpellIcon.isEnabled = false;
 			selectedSpellDescription.isEnabled = false;
-			selectedSpellStats.isEnabled = false;
+
+			if (classID == 0 || classID == 2 || classID == 4 || classID == 5 || classID == 7)
+			{
+				string tex = "OrnamentSun.png";
+				Icon@ placeholder = @Icon(tex, Vec2f(page_size.x / 2 - 64, page_size.y / 2 - 64 - 20), Vec2f(64, 64), 0, 1.0f);
+				placeholder.name = "placeholder_" + iconCount;
+				iconCount++;
+				rightPage.addChild(placeholder);
+			}
+			else
+			{
+				string text = "OrnamentMoon.png";
+				Icon@ placeholder = @Icon(text, Vec2f(page_size.x / 2 - 92, page_size.y / 2 - 92 - 12), Vec2f(92, 92), 0, 1.0f);
+				placeholder.name = "placeholder_" + iconCount;
+				iconCount++;
+				rightPage.addChild(placeholder); 
+			}
 
 			@classDescriptionButton = @Button(descriptionButtonOffset, descriptionButtonSize, "", SColor(255, 255, 255, 255));
 			@classDescriptionBackground = @Icon("Paper"+XORRandom(2)+".png", Vec2f_zero, Vec2f(240, 96), 0, 1.0f, true, Vec2f(descriptionButtonSize.x, descriptionButtonSize.y * (classID == 8 ? 1.75f : 1.5f)));
@@ -144,10 +170,14 @@ class WWPlayerClassButton
 			classDescriptionButton.addChild(classDescriptionText);
 			classDescriptionText.name = "classDescriptionText";
 
+			Rectangle@ container = @Rectangle(Vec2f(8, page_size.y - 208), Vec2f(page_size.x - 16, 32), SColor(0, 0, 0, 0));
+			container.name = "attributesContainer";
+			container.isEnabled = false;
+			rightPage.addChild(container);
+
 			rightPage.addChild(selectedSpellIcon);
 			rightPage.addChild(selectedSpellName);
 			rightPage.addChild(selectedSpellDescription);
-			rightPage.addChild(selectedSpellStats);
 
 			classFrame.isEnabled = false;
 			leftPage.isEnabled = false;
@@ -156,7 +186,7 @@ class WWPlayerClassButton
 			classFrame.addChild(leftPage);
 			classFrame.addChild(rightPage);
 		}
-		
+
 		// left page
 		// class spells
 		Spell[] spells;
@@ -726,8 +756,6 @@ void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button cli
 
 	for (int c = 0; c < playerClassButtons.list.length; c++)
 	{
-		playerClassButtons.list[c].attributes.clear();
-
 		Button@ cButton = playerClassButtons.list[c].classButton;
 		for (int s = 0; s < playerClassButtons.list[c].spellButtons.length; s++)
 		{
@@ -762,17 +790,42 @@ void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button cli
 				else if (cButton.name == "warlock")
 					sSpell = WarlockParams::spells[Maths::Min(cd, WarlockParams::spells.length - 1)];
 				
+				playerClassButtons.list[c].selectedSpellSketch.iconName = "SpellSketch"+sSpell.iconFrame+".png";
 				playerClassButtons.list[c].selectedSpellIcon.index = sSpell.iconFrame;
 				playerClassButtons.list[c].selectedSpellName.setText(sSpell.name);
-				playerClassButtons.list[c].selectedSpellDescription.setText(playerClassButtons.list[c].selectedSpellDescription.textWrap(sSpell.spellDesc));
-
-				playerClassButtons.list[c].selectedSpellIcon.isEnabled = true;
-				playerClassButtons.list[c].selectedSpellName.isEnabled = true;
-				playerClassButtons.list[c].selectedSpellDescription.isEnabled = true;
-				playerClassButtons.list[c].selectedSpellStats.isEnabled = true;
 
 				string statsText = (sSpell.type == SpellType::healthcost ? "Health cost: " : "Mana cost: ") + sSpell.mana;
-				playerClassButtons.list[c].selectedSpellStats.setText(statsText);
+				playerClassButtons.list[c].selectedSpellDescription.setText(playerClassButtons.list[c].selectedSpellDescription.textWrap(sSpell.spellDesc + "\n\n" + statsText));
+
+				playerClassButtons.list[c].selectedSpellIcon.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellSketch.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellName.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellDescription.isEnabled = true;
+
+				//set attributes
+				playerClassButtons.list[c].attributes.clear();
+				playerClassButtons.list[c].attributes = sSpell.attributes;
+
+				string attributesTexture = getRules().get_bool("book_old_spell_icons") ? "SpellAttributeIconsHud.png" : "SpellAttributeIcons.png";
+				for (u8 i = 0; i < playerClassButtons.list[c].attributes.size(); i++)
+				{
+					playerClassButtons.list[c].attributes[i].icon = attributesTexture;
+				}
+				
+				for (u8 i = 0; i < playerClassButtons.list[c].iconCount; i++)
+				{
+					Icon@ icon = cast<Icon>(playerClassButtons.list[c].rightPage.getChild("placeholder_" + i));
+					if (icon !is null)
+					{
+						icon.isEnabled = false;
+					}
+				}
+
+				Icon@ ornamentLine2 = cast<Icon>(playerClassButtons.list[c].rightPage.getChild("ornamentLine2"));
+				if (ornamentLine2 !is null) ornamentLine2.isEnabled = true;
+
+				Rectangle@ attributesContainer = cast<Rectangle>(playerClassButtons.list[c].rightPage.getChild("attributesContainer"));
+				if (attributesContainer !is null) attributesContainer.isEnabled = true;
 			}
 			else
 			{
@@ -821,17 +874,29 @@ void RenderClassMenus()
 		Button@ iButton = s.classButton;
 		if (iButton.toggled == true)
 		{
+			Rectangle@ container = cast<Rectangle>(s.rightPage.getChild("attributesContainer"));
+			if (container is null) continue;
+
 			s.update();
 			if (s.attributes.size() > 0)
 			{
-				// draw attributes
-				Vec2f start_pos = s.spellButtons[s.spellButtons.size() - 1].position + Vec2f(8, 131);
-				Vec2f attributesPos = start_pos;
+				Vec2f attributesPos = container.position;
+				f32 gap = 4;
+				f32 totalWidth = 0.0f;
 
+				gap += s.attributes[i].dim.x / 2 + 4;
 				for (u8 i = 0; i < s.attributes.size(); i++)
 				{
-					s.attributes[i].pos = attributesPos - Vec2f((s.attributes[i].dim.x + 12) * i, 16);
-					s.attributes[i].render(s.attributes[i].pos, 1.0f, tooltips_fetcher);
+					totalWidth += s.attributes[i].dim.x;
+					if (i > 0) totalWidth += gap;
+				}
+				f32 startX = attributesPos.x + (container.size.x - totalWidth) * 0.5f;
+				for (u8 i = 0; i < s.attributes.size(); i++)
+				{
+					Vec2f attrPos = Vec2f(startX, attributesPos.y + 16);
+					s.attributes[i].pos = attrPos;
+					s.attributes[i].render(attrPos, 1.0f, tooltips_fetcher);
+					startX += s.attributes[i].dim.x + gap;
 				}
 
 				GUI::SetFont("hud");

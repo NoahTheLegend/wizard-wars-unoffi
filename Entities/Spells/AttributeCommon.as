@@ -122,7 +122,7 @@ shared class Attribute : Status
         Vec2f tl = pos;
         Vec2f br = tl + dim * scale;
 
-        GUI::DrawIcon("StatusSlot.png", 1, Vec2f(32, 32), tl - dim / 2, scale, scale, SColor(255, 255, 255, 255));
+        GUI::DrawIcon("StatusSlotHud.png", 1, Vec2f(32, 32), tl - dim / 2, scale, scale, SColor(255, 255, 255, 255));
         GUI::DrawIcon(icon, type, dim, tl, scale / 2, SColor(255, 255, 255, 255));
         
         if (tooltip !is null)

@@ -5,7 +5,6 @@ void onInit(CBlob@ this)
 {
 	this.Tag("counterable");
 	this.Tag("projectile");
-	this.Tag("counterable");
 	this.Tag("phase through spells");
 
 	this.addCommandID("shoot_sfx");

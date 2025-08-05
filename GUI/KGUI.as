@@ -68,6 +68,7 @@ enum ContainerLevel
 
 interface IGUIItem{
 	//Properties
+	IGUIItem@ parent {get; set;}
 	Vec2f position {get; set;}
 	Vec2f localPosition {get; set;} 
 	Vec2f size {get; set;}
@@ -90,6 +91,7 @@ interface IGUIItem{
 	IGUIItem@ getChild(string _name);
 	void removeChild(IGUIItem@ child);
 	void clearChildren();
+	Vec2f getAbsolutePosition();
 
 	//Saving GUI Props to CFG:
 	//By default only local position and size are (de)serialized. Override those to (de)serialize custom things.
@@ -130,6 +132,10 @@ class GenericGUIItem : IGUIItem{
 	string name;
 
 	//config properties
+	IGUIItem@ parent {
+		get { return @parent;} 
+		set { @parent = @value; }
+	}
 	Vec2f position {
 		get { return _position;} 
 		set { _position = value;}
@@ -238,6 +244,7 @@ class GenericGUIItem : IGUIItem{
 	private Vec2f _startSlidePos;
 
 	//Children and listeners
+	private IGUIItem@ parent;
 	private IGUIItem@[] children;
 	private CLICK_CALLBACK@[] _clickListeners;
 	private HOVER_STATE_CHANGED_CALLBACK@[] _hoverStateListeners;
@@ -265,6 +272,7 @@ class GenericGUIItem : IGUIItem{
 
 	void addChild(IGUIItem@ child){
 		children.push_back(child);
+		@child.parent = @this;
 	}
 
 	void pushToFirst(IGUIItem@ child){
@@ -293,6 +301,15 @@ class GenericGUIItem : IGUIItem{
 
 	void setLevel(ContainerLevel level){
 		this.level = level;
+	}
+
+	Vec2f getAbsolutePosition() {
+		Vec2f absolutePosition = localPosition;
+		if (parent !is null)
+		{
+			absolutePosition += parent.getAbsolutePosition();
+		}
+		return absolutePosition;
 	}
 
 	/* Listener controls */
@@ -767,6 +784,7 @@ class Window : GenericGUIItem {
 
 	//Override this method to draw object. You can rely on position and size here.
 	void drawSelf(){
+		this.localPosition = position;
 		if (nodraw) return;
 		switch (type){
 			case 1: {GUI::DrawSunkenPane(position, position+size); break;}
@@ -774,6 +792,7 @@ class Window : GenericGUIItem {
 			case 3: {GUI::DrawFramedPane(position, position+size); break;}
 			default: {GUI::DrawWindow(position, position+size); break;}
 		}
+		
 		GenericGUIItem::drawSelf();
 	}
 }
