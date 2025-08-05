@@ -164,20 +164,20 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		Icon@ bottomOrnament = cast<Icon@>(leftPage.getChild("classFrameLeftPageBottomOrnament"));
 		if (bottomOrnament is null) return;
 
-		Icon@ ornamentLeftPageIntro0 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament0"));
-		if (ornamentLeftPageIntro0 is null) return;
+		Icon@ leftPageIntroOrnament0 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament0"));
+		if (leftPageIntroOrnament0 is null) return;
 
-		Icon@ ornamentLeftPageIntro1 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament1"));
-		if (ornamentLeftPageIntro1 is null) return;
+		Icon@ leftPageIntroOrnament1 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament1"));
+		if (leftPageIntroOrnament1 is null) return;
 
-		Icon@ ornamentLeftPageIntro2 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament2"));
-		if (ornamentLeftPageIntro2 is null) return;
+		Icon@ leftPageIntroOrnament2 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament2"));
+		if (leftPageIntroOrnament2 is null) return;
 
-		Icon@ ornamentLeftPageIntro3 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament3"));
-		if (ornamentLeftPageIntro3 is null) return;
+		Icon@ leftPageIntroOrnament3 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament3"));
+		if (leftPageIntroOrnament3 is null) return;
 
-		Icon@ ornamentLeftPageIntro4 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament4"));
-		if (ornamentLeftPageIntro4 is null) return;
+		Icon@ leftPageIntroOrnament4 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament4"));
+		if (leftPageIntroOrnament4 is null) return;
 
 		Label@ stat0 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat0"));
 		if (stat0 is null) return;
@@ -216,11 +216,12 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 			ornament.isEnabled = false;
 			bottomOrnament.isEnabled = false;
-			ornamentLeftPageIntro0.isEnabled = false;
-			ornamentLeftPageIntro1.isEnabled = false;
-			ornamentLeftPageIntro2.isEnabled = false;
-			ornamentLeftPageIntro3.isEnabled = false;
-			ornamentLeftPageIntro4.isEnabled = false;
+
+			leftPageIntroOrnament0.isEnabled = false;
+			leftPageIntroOrnament1.isEnabled = false;
+			leftPageIntroOrnament2.isEnabled = false;
+			leftPageIntroOrnament3.isEnabled = false;
+			leftPageIntroOrnament4.isEnabled = false;
 
 			stat0.isEnabled = false;
 			stat1.isEnabled = false;
@@ -239,13 +240,17 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 			ornament.isEnabled = true;
 			bottomOrnament.isEnabled = true;
 
-			ornamentLeftPageIntro0.isEnabled = false;
-			ornamentLeftPageIntro1.isEnabled = false;
-			ornamentLeftPageIntro3.isEnabled = false;
-			ornamentLeftPageIntro4.isEnabled = false;
+			leftPageIntroOrnament0.isEnabled = false;
+			leftPageIntroOrnament1.isEnabled = false;
+			leftPageIntroOrnament3.isEnabled = false;
+			leftPageIntroOrnament4.isEnabled = false;
 
-			ornamentLeftPageIntro2.isEnabled = true;
+			leftPageIntroOrnament2.isEnabled = true;
 			setPageStats(classIndex, stat0, stat1, stat2, stat3);
+
+			leftPageIntroOrnament2.localPosition = Vec2f(classIndex == 9
+													? leftPageIntroOrnament0.localPosition.x - 44
+													: leftPageIntroOrnament0.localPosition.x - 28, 360);
 
 			title0.setText(classTitles[classIndex]);
 			title1.setText(classSubtitles[classIndex]);

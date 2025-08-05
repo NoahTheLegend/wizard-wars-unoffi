@@ -168,7 +168,7 @@ const string[] classTips = {
 	"Shamans' spells are quite versatile. The way you utilize them depends on your playstyle, although you might need to think where you place totems, as they usually make enemies come closer to despell.",
 	"Paladins are the most tough class, but their spells are designed for close battles.\nPlay steadily against opponents and strike them when nearby.\nPaladin's auras can be outplayed easily, so switch them periodically.",
 	"'A Jester spell - a circus act - no real mage would dare such a tact'\n- the Elder wizards love to say:\n 'With smoke and bombs, twit and jest they trick, never get the shtick!'\n And yet, beneath that painted grin\nLies cunning made to twist and win.\n Jester spells confuse, bash and swap -\nUnravel foes and trip them up!",
-	"Warlocks are great damage dealers. \nWhen mana is depleted, your spells will consume health, that's indicated with red cursor and cost behind. Dealing damage will restore you some mana.\nUse this when necessary and trade health with enemies at your advantage!"
+	"Warlocks are great damage dealers. \nWhen mana is depleted, your spells will consume health, that's indicated with red cursor and cost behind. Dealing damage will restore you some mana.\nRemember that and trade health with enemies at your advantage!"
 };
 
 bool[] classesSeen = {false, false, false, false, false, false, false, false, false, false};
