@@ -5,15 +5,14 @@ const u32 plague_delay = 5 * 30;
 void onInit(CBlob@ this)
 {
     this.Tag("counterable");
-    this.Tag("alwayscounter");
     this.Tag("phase through spells");
     this.Tag("no trampoline collision");
 
     this.getShape().SetGravityScale(0.0f);
     this.getShape().getConsts().mapCollisions = false;
     this.getShape().SetRotationsAllowed(false);
-    this.getShape().getConsts().bullet = true;
-
+    this.getShape().getConsts().net_threshold_multiplier = 4.0f;
+    
     this.set_Vec2f("smashtoparticles_grav", Vec2f_zero);
     this.getSprite().SetZ(580.0f);
     this.getSprite().SetRelativeZ(580.0f);
@@ -67,7 +66,13 @@ void onInit(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-    return blob.exists("plague_follower") && blob.get_u16("plague_follower") == this.getNetworkID()
+    CPlayer@ damageOwner = this.getDamageOwnerPlayer();
+    if (damageOwner is null) return false;
+
+    CBlob@ ownerBlob = damageOwner.getBlob();
+    if (ownerBlob is null) return false;
+    
+    return blob is ownerBlob
             && !blob.isKeyPressed(key_down) && blob.getPosition().y < this.getPosition().y - 4;
 }
 

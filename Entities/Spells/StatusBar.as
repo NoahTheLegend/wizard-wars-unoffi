@@ -320,6 +320,7 @@ class StatusBar
         u16 majesty_timer = blob.get_u16("cdreduction");
         u16 wisdom_timer = blob.get_u16("antidebuff");
         u16 confused_timer = blob.get_u16("confused");
+        u16 plague_timer = blob.get_bool("plague") ? 1 : 0;
 
         handleStatus(StatusType::IGNITED,                   burn_timer);
         handleStatus(StatusType::WET,                       wet_timer);
@@ -336,13 +337,14 @@ class StatusBar
         handleStatus(StatusType::ENTROPIST_SIDEWIND,        entropist_sidewind);
         handleStatus(StatusType::ENTROPIST_BURN,            burn_state_count);
         handleStatus(StatusType::PALADIN_TAU,               paladin_tau_timer);
-        handleStatus(StatusType::PALADIN_SIGMA,            paladin_sigma_timer);
+        handleStatus(StatusType::PALADIN_SIGMA,             paladin_sigma_timer);
         handleStatus(StatusType::PALADIN_OMEGA,             paladin_omega_timer);
         handleStatus(StatusType::PALADIN_HOLY_BARRIER,      paladin_barriers_timer);
         handleStatus(StatusType::PALADIN_HUMILITY,          humility_timer);
         handleStatus(StatusType::PALADIN_MAJESTY,           majesty_timer);
         handleStatus(StatusType::PALADIN_WISDOM,            wisdom_timer);
         handleStatus(StatusType::CONFUSED,                  confused_timer);
+        handleStatus(StatusType::PLAGUE,                    plague_timer);
     }
 
     u8 getHoveredStatus()

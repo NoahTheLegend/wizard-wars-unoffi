@@ -157,7 +157,7 @@ shared string[] TOOLTIPS()
         "Majesty: decreased spells cooldown",
         "Wisdom: wipe some of negative effects",
         "Confused: reversed controls",
-        "Plague: receiving damage returns poison debuff to the attackers, permanently poisoned"
+        "Plague: permanently poisoned, taking damage poisons the enemy"
     };
     
     return arr;

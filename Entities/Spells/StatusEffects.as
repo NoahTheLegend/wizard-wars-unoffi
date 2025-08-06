@@ -1066,6 +1066,12 @@ void onTick(CBlob@ this)
 	    if (!plague && this.hasScript("PlagueWard.as"))
 		{
 			this.RemoveScript("PlagueWard.as");
+			CBlob@ plagueBlob = getBlobByNetworkID(this.get_u16("plague_follower"));
+			if (plagueBlob !is null)
+			{
+				plagueBlob.server_Die();
+				this.set_u16("plague_follower", 0);
+			}
 		}
 	}
 

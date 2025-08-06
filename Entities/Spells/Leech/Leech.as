@@ -36,7 +36,7 @@ void onInit( CBlob@ this )
 	this.server_SetTimeToDie(LIFETIME);
 
 	if (!isClient()) return;
-	string rendname = "rend3";
+	string rendname = "rend_l";
 
 	SColor col = SColor(220, 237, 20, 20);
 	bool green = this.getName().find("_g") != -1;
@@ -44,7 +44,7 @@ void onInit( CBlob@ this )
 	if (green)
 	{
 		col = SColor(220, 40, 225, 55);
-		rendname = "rend3_g";
+		rendname = "rend_lg";
 	}
 
 	this.set_string("rendname", rendname);
@@ -202,7 +202,7 @@ void createNextSequence(CBlob@ this)
 		next_leech.set_Vec2f("aim pos", caster.getAimPos());
 		next_leech.IgnoreCollisionWhileOverlapped(caster);
 		next_leech.SetDamageOwnerPlayer(caster.getPlayer());
-		next_leech.set_u8("remaining_casts", this.get_s8("remaining_casts") - 1);
+		next_leech.set_s8("remaining_casts", this.get_s8("remaining_casts") - 1);
 	}
 
 	return;

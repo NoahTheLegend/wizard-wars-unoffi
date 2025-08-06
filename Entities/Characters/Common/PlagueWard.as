@@ -3,13 +3,16 @@
 
 const f32 follow_distance = 48.0f;
 const f32 deceleration_distance = follow_distance * 2;
-const f32 circle_distance = follow_distance * 0.5f;
+const f32 circle_distance = 32.0f;
 const f32 acceleration = 0.025f;
 const f32 deceleration = 0.01f;
 const f32 max_speed = 8.0f;
 
 void onTick(CBlob@ this)
 {
+    if (!isServer()) return;
+    if (!this.get_bool("plague")) return;
+    
     u16 plague_follow_id;
     CBlob@ plague = null;
 
@@ -103,7 +106,7 @@ void onTick(CBlob@ this)
         plague.setVelocity(vel);
     }
 
-    plague.server_SetTimeToDie(0.1f);
+    plague.server_SetTimeToDie(1);
     plague.set_f32("acceleration", plag_accel);
     plague.set_f32("last_angle_diff", angle_diff);
     this.set_u16("plague_follower", plague.getNetworkID());
@@ -120,6 +123,7 @@ CBlob@ createPlagueBlob(CBlob@ this)
     if (blob !is null)
     {
         blob.set_u16("plague_owner", this.getNetworkID());
+        blob.SetDamageOwnerPlayer(this.getPlayer());
     }
     
     return blob;

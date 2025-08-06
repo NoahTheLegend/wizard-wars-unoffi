@@ -670,7 +670,11 @@ void Shapeshift(CBlob@ this, CBlob@ blob, u16 time)
 		params.write_bool(false);
 		params.write_u16(this.getNetworkID());
 		params.write_u16(blob.getNetworkID());
-		getRules().SendCommand(getRules().getCommandID("shapeshift_gatherstats"), params);
+
+		CRules@ rules = getRules();
+		if (rules is null) return;
+
+		rules.SendCommand(rules.getCommandID("shapeshift_gatherstats"), params);
 	}
 }
 
