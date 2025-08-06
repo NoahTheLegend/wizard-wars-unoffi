@@ -231,7 +231,55 @@ void onTick(CBlob@ this)
 			}
 		}
 		
-		if (silenced % 2 == 0)
+		if (silenced % 3 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{
+				if (getNet().isClient())
+				{
+					const f32 rad = 6.0f;
+					Vec2f random = Vec2f(XORRandom(16) + 16, 0).RotateBy(XORRandom(360));
+					Vec2f rNorm = random;
+					rNorm.Normalize();
+					Vec2f ppos = this.getPosition() + this.getVelocity() + random;
+					CParticle@ p = ParticleAnimated(XORRandom(5) == 0 ? "Track1.png" : "Swirl1.png", ppos, -rNorm * random.Length() * 0.06f, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.01f, true);
+					if (p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+						if ( XORRandom(2) == 0 )
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+
+						p.colour = SColor(155, 200+XORRandom(55), 25+XORRandom(125), 200+XORRandom(55));
+						p.forcecolor = SColor(155, 200+XORRandom(55), 25+XORRandom(125), 200+XORRandom(55));
+					}
+				}
+			}
+		}
+		
+		if (silenced == 0)
+		{
+			thisSprite.PlaySound("SilenceOff.ogg", 0.75f, 1.0f + XORRandom(11) * 0.01f);
+			this.Sync("silenced", true);
+		}
+	}
+
+	//FEAR
+	u16 feared = this.get_u16("feared");
+	if (feared > 0)
+	{
+		feared--;
+		this.set_u16("feared", feared);
+
+		this.setKeyPressed(this.isFacingLeft() ? key_left : key_right, true);
+		if (has_prefs && XORRandom(100) == 0)
+		{
+			thisSprite.PlaySound("/MigrantScream", 1.0f, 1.0f + XORRandom(11) * 0.01f);
+		}
+
+		if (feared % 2 == 0)
 		{
 			for (int i = 0; i < 1; i++)
 			{
@@ -252,11 +300,11 @@ void onTick(CBlob@ this)
 				}
 			}
 		}
-		
-		if (silenced == 0)
+
+		if (feared == 0)
 		{
-			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
-			this.Sync("silenced", true);
+			thisSprite.PlaySound("FearOff.ogg", 0.8f, 1.35f + XORRandom(16) * 0.01f);
+			this.Sync("feared", true);
 		}
 	}
 

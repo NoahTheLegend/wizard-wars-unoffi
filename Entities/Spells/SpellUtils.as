@@ -666,7 +666,7 @@ void Silence(CBlob@ blob, u16 silenceTime)
 {
 	if (blob.get_u16("silenced") == 0)
 	{
-		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
+		blob.getSprite().PlaySound("SilenceOn.ogg", 0.7f, 1.0f + XORRandom(11) * 0.01f);
 	}
 	
 	blob.set_u16("silenced", silenceTime);
@@ -677,7 +677,7 @@ void Fear(CBlob@ blob, u16 fearTime)
 {
 	if (blob.get_u16("feared") == 0)
 	{
-		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
+		blob.getSprite().PlaySound("FearOn.ogg", 0.8f, 1.0f + XORRandom(11) * 0.01f);
 	}
 	
 	blob.set_u16("feared", fearTime);

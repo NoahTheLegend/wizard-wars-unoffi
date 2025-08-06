@@ -6233,7 +6233,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -1217162868: // silence
 		{
 			f32 orbspeed = 4.2f;
-			u16 effectTime = 600;
+			u16 effectTime = 360;
 
 			switch(charge_state)
 			{
@@ -6245,7 +6245,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					orbspeed *= 1.6f;
-					effectTime *= 1.2f;
+					effectTime += 90;
 				}
 				break;
 				

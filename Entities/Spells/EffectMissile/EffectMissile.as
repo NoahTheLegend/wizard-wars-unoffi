@@ -78,9 +78,6 @@ void onTick( CBlob@ this)
 
 			case slow_effect_missile:
 			case healblock_effect_missile:
-			case shapeshift_effect_missile:
-			case silence_effect_missile:
-			case fear_effect_missile:
 			{
 				targetType = 2;
 				this.Tag("projectile");
@@ -88,13 +85,17 @@ void onTick( CBlob@ this)
 			break;
 
 			case manaburn_effect_missile:
+			case shapeshift_effect_missile:
+			case silence_effect_missile:
+			case fear_effect_missile:
 			{
 				targetType = 2;
-				this.Tag("manaburn");
 				this.Tag("projectile");
+
+				this.Tag("purple_trail");
 			}
 			break;
-				
+	
 			default: targetType = 3;
 		}
 
@@ -501,9 +502,9 @@ void sparks(CBlob@ this, Vec2f pos, int amount)
 		
 			case 2: //enemies
 			{
-				bool is_manaburn = this.hasTag("manaburn");
+				bool purple_trail = this.hasTag("purple_trail");
 				SColor color = SColor( 255, colorShade, colorShade, 0 );
-				if (is_manaburn) {color = SColor(255, 180, 75, 255);}
+				if (purple_trail) {color = SColor(255, 180, 75, 255);}
 				CParticle@ p = ParticlePixelUnlimited(pos, vel, color, true);
     		    if(p !is null)
 		        {
@@ -547,8 +548,8 @@ void selectedTargetIndicator( CBlob@ this , Vec2f pos )
 
 		case 2: //enemies
 		{
-			bool is_manaburn = this.hasTag("manaburn");
-			if (is_manaburn)
+			bool purple_trail = this.hasTag("purple_trail");
+			if (purple_trail)
 				color = SColor(255, 225, 125, 255);
 			else
 				color = SColor( 255, 255, 165, 0 );

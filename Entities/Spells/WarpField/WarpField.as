@@ -1,6 +1,22 @@
 #include "Hitters.as";
 #include "WarpCommon.as";
 
+const int effectRadiusBase = 128.0f;
+const f32 lifetimeBase = 30.0f;
+const f32 lifetimePortal = 5.0f;
+
+const u32 cd_warp = 15; // time before you can warp again
+const u32 cd_retry = 10; // time before you can retry warping
+const u32 particle_spin = 90;
+
+const f32 boundary_offset = 16.0f; // offset from the edge of the circle to prevent warping inside
+const u32 lifetime = 60;
+const u32 lifetime_rnd = 30; 
+
+const float rotateSpeed = 4;
+const u8 max_symbols = 25;
+const u8 symbol_appearance_thresh = 3;
+
 void onInit(CBlob@ this)
 {
     this.addCommandID("warp");
@@ -65,27 +81,15 @@ void onInit(CBlob@ this)
     }
 }
 
-const int effectRadiusBase = 128.0f;
-const f32 lifetimeBase = 30.0f;
-const f32 lifetimePortal = 5.0f;
-
-const u32 cd_warp = 30; // time before you can warp again
-const u32 cd_retry = 15; // time before you can retry warping
-const u32 particle_spin = 90;
-
-const f32 boundary_offset = 16.0f; // offset from the edge of the circle to prevent warping inside
-const u32 lifetime = 60;
-const u32 lifetime_rnd = 30; 
-
-const float rotateSpeed = 4;
-const u8 max_symbols = 25;
-const u8 symbol_appearance_thresh = 3;
-
 void onTick(CBlob@ this)
 {
     if (this.get_u8("despelled") >= 1) this.server_Die();
     u8 type = this.get_u8("type");
-    
+
+    f32 lifetime_factor = Maths::Clamp((int(this.getTickSinceCreated() - 30) / 90.0f), 0.0f, 1.0f);
+    f32 rot = rotateSpeed * lifetime_factor;
+    this.setAngleDegrees(this.getAngleDegrees() + rot);
+
     if (this.getTickSinceCreated() == 0)
     {
         int seed = this.getPosition().x * this.getPosition().y;
@@ -362,12 +366,8 @@ void onTick(CSprite@ this)
 
     f32 scale = b.get_f32("scale");
     int effectRadius = b.get_s32("effectRadius");
-    
-    f32 lifetime_factor = Maths::Clamp((int(b.getTickSinceCreated() - 30) / 90.0f), 0.0f, 1.0f);
-    f32 rot = rotateSpeed * lifetime_factor;
 
-    if (this.isAnimationEnded()) b.setAngleDegrees(b.getAngleDegrees() + rot);
-    else
+    if (!this.isAnimationEnded())
     {
         CSpriteLayer@ inner = this.getSpriteLayer("inner");
         if (inner !is null)

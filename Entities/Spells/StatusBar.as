@@ -46,6 +46,9 @@ void onInit(CSprite@ this)
     blob.set_u16("cdreduction", 0);
     blob.set_u16("antidebuff", 0);
     blob.set_u16("confused", 0);
+    blob.set_bool("plague", false);
+    blob.set_u16("silenced", 0);
+    blob.set_u16("feared", 0);
 
     setBar(blob);
 }
@@ -192,7 +195,10 @@ enum SPELL_INDEX
     HUMILITY,
     MAJESTY,
     WISDOM,
-    CONFUSED
+    CONFUSED,
+    PLAGUE,
+    SILENCED,
+    FEAR
 };
 
 u8[][] disabled_for_classes =
@@ -321,6 +327,8 @@ class StatusBar
         u16 wisdom_timer = blob.get_u16("antidebuff");
         u16 confused_timer = blob.get_u16("confused");
         u16 plague_timer = blob.get_bool("plague") ? 1 : 0;
+        u16 silenced_timer = blob.get_u16("silenced");
+        u16 feared_timer = blob.get_u16("feared");
 
         handleStatus(StatusType::IGNITED,                   burn_timer);
         handleStatus(StatusType::WET,                       wet_timer);
@@ -345,6 +353,8 @@ class StatusBar
         handleStatus(StatusType::PALADIN_WISDOM,            wisdom_timer);
         handleStatus(StatusType::CONFUSED,                  confused_timer);
         handleStatus(StatusType::PLAGUE,                    plague_timer);
+        handleStatus(StatusType::SILENCED,                  silenced_timer);
+        handleStatus(StatusType::FEAR,                      feared_timer);
     }
 
     u8 getHoveredStatus()

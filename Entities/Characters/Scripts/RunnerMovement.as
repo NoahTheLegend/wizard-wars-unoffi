@@ -27,8 +27,24 @@ void onTick(CMovement@ this)
 		HandleStuckAtTop(blob);
 	}
 
+	bool fear = blob.get_u16("feared") > 0;
+
 	bool left		= blob.isKeyPressed(key_left);
 	bool right		= blob.isKeyPressed(key_right);
+
+	if (fear)
+	{
+		if (blob.isFacingLeft())
+		{
+			left = true;
+			right = false;
+		}
+		else
+		{
+			left = false;
+			right = true;
+		}
+	}
 
 	if (blob.exists("confused") && blob.get_u16("confused") > 0)
 	{
