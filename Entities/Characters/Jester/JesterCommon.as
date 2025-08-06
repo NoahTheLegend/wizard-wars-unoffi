@@ -46,7 +46,7 @@ namespace JesterParams
 			SpellCategory::offensive, SpellType::other, 15, 20, 0, 32.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
 		Spell("carddeck", "Jester Deck", 114, "Six cards of magic in the air, overcharge sends them spinning near.",
-			SpellCategory::offensive, SpellType::other, 20, 30, 10, 180.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_HEAL, SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_CASTEREFFECT}),
+			SpellCategory::offensive, SpellType::other, 20, 30, 10, 180.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_HEAL, SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("airhorn", "Air Horn", 115, "A gusty blast, foes feel the strain, soon will none remain.",
 			SpellCategory::utility, SpellType::other, 10, 25, 0, 64.0f, true, false, array<int> = {SpellAttribute::SPELL_KNOCKBACK}),
@@ -63,8 +63,8 @@ namespace JesterParams
 		Spell("haste", "Haste", 20, "Boost your friends with added speed, or overcharge for self, if you need.",
 			SpellCategory::support, SpellType::other, 12, 20, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
 
-		Spell("shapeshift", "Shape Shift", 132, "Become another random class with your current health and mana, once per game.",
-			SpellCategory::utility, SpellType::other, 85, 120, 60, 8.0f),
+		Spell("shapeshift", "Shape Shift", 132, "Once per game, your form shall shift, your health and mana, none shall drift. Cast with a boost - a fateful clash, and you and foe shall swap in flash.",
+			SpellCategory::utility, SpellType::other, 85, 120, 60, 8.0f, true, false, array<int> = {SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f),		

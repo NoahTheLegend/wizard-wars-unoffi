@@ -7,11 +7,10 @@ const int LIFETIME = 4;
 const int EXTENDED_LIFETIME = 6;
 const f32 SEARCH_RADIUS = 64.0f;
 const f32 HOMING_FACTOR = 6.0f;
-const int HOMING_DELAY = 15;	
+const int HOMING_DELAY = 15;
+const int INIT_DELAY = 2;
 
-const int INIT_DELAY = 2;	//prevents initial seg pos to be at (0,0)
-
-void onInit( CBlob @ this )
+void onInit(CBlob@ this)
 {
 	this.Tag("phase through spells");
 	this.Tag("counterable");
@@ -79,6 +78,7 @@ void onTick( CBlob@ this)
 
 			case slow_effect_missile:
 			case healblock_effect_missile:
+			case shapeshift_effect_missile:
 			{
 				targetType = 2;
 				this.Tag("projectile");
@@ -315,6 +315,10 @@ void setEffect(CBlob@ this, CBlob@ blob)
 			else if (effectType == healblock_effect_missile)
 			{
 				HealBlock(blob, this.get_u16("effect_time"));
+			}
+			else if (effectType == shapeshift_effect_missile && this.getDamageOwnerPlayer() !is null)
+			{
+				Shapeshift(this.getDamageOwnerPlayer().getBlob(), blob, this.get_u16("effect_time"));
 			}
 
 			this.Tag("set");

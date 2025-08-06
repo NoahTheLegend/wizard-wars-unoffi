@@ -86,6 +86,7 @@ shared enum StatusType
     PALADIN_MAJESTY =           19,
     PALADIN_WISDOM =            20,
     CONFUSED =                  21,
+    PLAGUE =                    22,
 
     TOTAL
 };
@@ -124,7 +125,8 @@ shared u8[] TOOLTIPS_SPECIFIC()
         StatusSpecific::DEBUFF, // PALADIN_HUMILITY
         StatusSpecific::BUFF, // PALADIN_MAJESTY
         StatusSpecific::BUFF, // PALADIN_WISDOM
-        StatusSpecific::CONTROL // CONFUSED
+        StatusSpecific::CONTROL, // CONFUSED
+        StatusSpecific::OTHER // PLAGUE
     };
     
     return arr;
@@ -154,7 +156,8 @@ shared string[] TOOLTIPS()
         "Humility: disable healing",
         "Majesty: decreased spells cooldown",
         "Wisdom: wipe some of negative effects",
-        "Confused: reversed controls"
+        "Confused: reversed controls",
+        "Plague: receiving damage returns poison debuff to the attackers, permanently poisoned"
     };
     
     return arr;

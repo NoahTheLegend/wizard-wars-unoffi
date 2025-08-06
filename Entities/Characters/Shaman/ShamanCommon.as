@@ -66,13 +66,13 @@ namespace ShamanParams
 		Spell("iciclerain", "Magic Icicles", 82, "Materialize icicles to throw at the aim position. Overcharge fully to control aim position meanwhile icicles are being released.",
 			SpellCategory::offensive, SpellType::other, 25, 30, 6, 512.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
-		Spell("waterbarrier", "Water Barrier", 83, "Covers yourself in a bubble of water, which slows down the enemies and some of their spells, acts as Fire Protection. While under this effect, you are unable to use fire spells and receive more damage from electricity and ice.",
-			SpellCategory::defensive, SpellType::other, 15, 35, 0, 0.0f, false, false, array<int> = {SpellAttribute::SPELL_WATER, SpellAttribute::SPELL_BARRIER, SpellAttribute::SPELL_CASTEREFFECT}),
+		Spell("waterbarrier", "Water Barrier", 83, "Cover yourself in a bubble of water, slowing down the enemies and spells. You are unable to use fire spells and receive more damage from electricity and ice while under the effect.",
+			SpellCategory::defensive, SpellType::other, 15, 35, 0, 0.0f, true, false, array<int> = {SpellAttribute::SPELL_WATER, SpellAttribute::SPELL_BARRIER, SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("frost_spirit", "Glacial Spirit", 107, "Summon a homing spirit of frost to freeze your foes.",
 			SpellCategory::offensive, SpellType::other, 25, 60, 6, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_FREEZING}),
 
-		Spell("meteor_rain", "Volcano", 121, "Forces a nearby volcano rain with hot magma over the area.",
+		Spell("meteor_rain", "Volcano", 121, "Force a nearby volcano to rain hot magma over the area.",
 			SpellCategory::offensive, SpellType::other, 65, 75, 10, 256.0f, true, false, array<int> = {SpellAttribute::SPELL_RAIN}),
 		
 		Spell("balllightning", "Lightning Ball", 123, "Creates an electrified and moving ball of pure lightning.",

@@ -15,6 +15,7 @@ void onInit(CBlob@ this)
 	this.getShape().SetGravityScale(0.0);
 	this.Tag("counterable");
 	this.Tag("black hole");
+	this.Tag("no trampoline collision");
 	
 	if( !CustomEmitEffectExists( "blackHoleEmit" ) )
 	{
@@ -22,7 +23,6 @@ void onInit(CBlob@ this)
 		//SetupCustomEmitEffect( STRING name, STRING scriptfile, STRING scriptfunction, u8 hard_freq, u8 chance_freq, u16 timeout )
 	}
 
-	this.Tag("no trampoline collision");
 	this.set_f32("mod", 1.0f);
 	this.set_f32("old_mod", 1.0f);
 	this.set_f32("base_mass", 500.0f);

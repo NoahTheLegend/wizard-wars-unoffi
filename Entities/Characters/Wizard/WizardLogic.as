@@ -354,7 +354,7 @@ void ManageSpell( CBlob@ this, WizardInfo@ wizard, PlayerPrefsInfo@ playerPrefsI
 		this.set_bool("spell selected", true);
 }
 
-void onTick( CBlob@ this )
+void onTick(CBlob@ this)
 {
 	if(getNet().isServer())
 	{

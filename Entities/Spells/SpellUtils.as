@@ -469,7 +469,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
-			if ( b.get_u16("poisoned") > 0 && sameTeam )
+			if ( b.get_u16("poisoned") > 0 && (!b.exists("plague") || !b.get_bool("plague")) && sameTeam )
 			{
 				b.set_u16("poisoned", 1);
 				b.Sync("poisoned", true);
@@ -647,9 +647,9 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 	
 }
 
-void Slow( CBlob@ blob, u16 slowTime )
-{	
-	if ( blob.get_u16("hastened") > 0 )
+void Slow(CBlob@ blob, u16 slowTime)
+{
+	if (blob.get_u16("hastened") > 0)
 	{
 		blob.set_u16("hastened", 1);
 		blob.Sync("hastened", true);
@@ -658,16 +658,31 @@ void Slow( CBlob@ blob, u16 slowTime )
 	{
 		blob.set_u16("slowed", slowTime);
 		blob.Sync("slowed", true);
-		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
+		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
 	}
 }
 
-void Poison( CBlob@ blob, u16 poisonTime = defaultPoisonTime, CBlob@ hitter = null)
+void Shapeshift(CBlob@ this, CBlob@ blob, u16 time)
+{	
+	if (isServer())
+	{
+		CBitStream params;
+		params.write_bool(false);
+		params.write_u16(this.getNetworkID());
+		params.write_u16(blob.getNetworkID());
+		getRules().SendCommand(getRules().getCommandID("shapeshift_gatherstats"), params);
+	}
+}
+
+void Poison(CBlob@ blob, u16 poisonTime = defaultPoisonTime, CBlob@ hitter = null, f32 sound_volume = 1.0f)
 {
 	if (hitter !is null)
+	{
 		blob.set_u16("last_poison_owner_id", hitter.getNetworkID());
+		blob.Sync("last_poison_owner_id", true);
+	}
 
-	if (blob.get_u16("poisoned") == 0) blob.getSprite().PlaySound("SlowOn.ogg", 0.6f, 0.75f + XORRandom(1)/10.0f);
+	if (blob.get_u16("poisoned") == 0) blob.getSprite().PlaySound("SlowOn.ogg", 0.6f * sound_volume, 0.75f + XORRandom(1)/10.0f);
 	blob.set_u16("poisoned", poisonTime);
 	blob.Sync("poisoned", true);
 }
@@ -676,7 +691,7 @@ void Confuse( CBlob@ blob, u16 confuseTime )
 {	
 	blob.set_u16("confused", confuseTime);
 	blob.Sync("confused", true);
-	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
+	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
 }
 
 void ManaBurn( CBlob@ blob, u16 burnTime )
@@ -850,6 +865,15 @@ void WaterBarrier(CBlob@ blob, bool enable)
 	blob.set_u32("originwaterbarrier", getGameTime());
 	blob.set_bool("waterbarrier", enable);
 	blob.Sync("waterbarrier", true);
+}
+
+void Plague(CBlob@ blob, bool enable)
+{
+	blob.set_u32("plaguetiming", getGameTime());
+	blob.set_u32("originplaguetiming", getGameTime());
+
+	blob.set_bool("plague", enable);
+	blob.Sync("plague", true);
 }
 
 void StoneSkin( CBlob@ blob, u16 stoneskinTime )

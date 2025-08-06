@@ -233,7 +233,7 @@ void ClassDescriptionButtonHandler(int x, int y, int button, IGUIItem@ item)
 	Label@ classDescriptionText = cast<Label>(sender.getChild("classDescriptionText"));
 	if (classDescriptionText is null || classDescriptionText.color.getAlpha() < 254) return;
 
-	Sound::Play2D("MenuSelect3.ogg", 0.75f, 0);
+	Sound::Play2D("MenuSelect3.ogg", 0.5f, 0);
 	int customData = sender._customData;
 	setClassSeen(customData, true);
 

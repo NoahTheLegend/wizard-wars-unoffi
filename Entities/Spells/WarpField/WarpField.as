@@ -20,6 +20,11 @@ void onInit(CBlob@ this)
     f32 radius = effectRadiusBase * (this.get_f32("scale") / 2);
     this.set_s32("effectRadius", radius);
 
+    if (getMap().isTileSolid(getMap().getTile(this.getPosition() + Vec2f(0, 8))))
+    {
+        this.setPosition(this.getPosition() - Vec2f(0, 6));
+    }
+
     CBlob@[] ps;
     if (isServer() && getBlobsByTag("push_warp_portal", @ps))
     {

@@ -10,7 +10,7 @@ shared string[] SPELL_TOOLTIPS()
         "Might apply wet effect",
         "Might apply freezing effect or deal more damage to wet targets",
         "Might deal more damage to wet targets",
-        "Might apply poisont",
+        "Might apply poison",
         "High knockback",
         "Creates a barrier",
         "Creates a sentry",

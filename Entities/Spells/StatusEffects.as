@@ -94,7 +94,7 @@ void onTick(CBlob@ this)
 		{				
 			this.set_u16("healblock", 0);
 		}
-		else if (this.get_u16("poisoned") > 0)
+		else if (this.get_u16("poisoned") > 0 && (!this.exists("plague") || !this.get_bool("plague")))
 		{
 			this.set_u16("poisoned", 0);
 		}
@@ -149,13 +149,13 @@ void onTick(CBlob@ this)
 
 	//POISON
 	u16 poisoned = this.get_u16("poisoned");
-
 	if (poisoned > 0)
 	{
 		poisoned--;
 		this.set_u16("poisoned", poisoned);
 
-		if (isServer() && this.getTickSinceCreated() % poisonThreshold == 0)
+		int threshold = this.exists("plague") && this.get_bool("plague") ? poisonThreshold * 2 : poisonThreshold;
+		if (isServer() && this.getTickSinceCreated() % threshold == 0)
 		{
 			u16 last_id = this.exists("last_poison_owner_id") ? this.get_u16("last_poison_owner_id") : 0;
 			CBlob@ hitter = last_id > 0 ? getBlobByNetworkID(last_id) : this;
@@ -1041,6 +1041,31 @@ void onTick(CBlob@ this)
 
 			thisSprite.RemoveSpriteLayer("water_ward"); //Ward sprite removal
 			this.RemoveScript("WaterBarrierWard.as");
+		}
+	}
+
+	//PLAGUE
+	{
+		bool plague = this.get_bool("plague");
+		u32 originplaguetiming = this.get_u32("originplaguetiming");
+		u32 plaguetiming = this.get_u32("plagueiming");
+		u32 disableplaguetiming = this.get_u32("disableplaguetiming");
+		u8 ticks_for_disable = 1;
+
+		if (plague && this.getTickSinceCreated() % 5 == 0)
+		{
+			if (!this.hasScript("PlagueWard.as"))
+			{
+				this.AddScript("PlagueWard.as");
+			}
+
+			Poison(this, 10, this, 0);
+		}
+
+		//disable
+	    if (!plague && this.hasScript("PlagueWard.as"))
+		{
+			this.RemoveScript("PlagueWard.as");
 		}
 	}
 

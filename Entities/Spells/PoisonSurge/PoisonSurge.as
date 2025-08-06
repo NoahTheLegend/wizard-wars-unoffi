@@ -128,7 +128,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return (isEnemy(this, blob));
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1)
 {
 	if (solid || (blob !is null && blob.hasTag("kill poison spells")))
 	{
@@ -183,7 +183,7 @@ void Boom(CBlob@ this)
 			dir *= explosion_radius * 2 - dir_len;
 			
 			this.server_Hit(blob, this.getPosition(), dir, this.get_f32("damage"), Hitters::explosion, true);
-			Poison(blob, defaultPoisonTime * 2, hitter);
+			Poison(blob, this.get_u32("poison_time"), hitter);
 		}
 	}
 

@@ -11,6 +11,7 @@
 #include "Help.as";
 #include "BombCommon.as";
 #include "SpellCommon.as";
+#include "SpellUtils.as";
 
 void onInit( CBlob@ this )
 {
@@ -41,6 +42,8 @@ void onInit( CBlob@ this )
 	
 	this.push("names to activate", "keg");
 	this.push("names to activate", "nuke");
+
+	this.set_bool("plague", false);
 
 	//centered on arrows
 	//this.set_Vec2f("inventory offset", Vec2f(0.0f, 122.0f));
@@ -598,7 +601,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 	}
 }
 
-f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
     if (( hitterBlob.getName() == "wraith" || hitterBlob.getName() == "orb" ) && hitterBlob.getTeamNum() == this.getTeamNum())
         return 0;
