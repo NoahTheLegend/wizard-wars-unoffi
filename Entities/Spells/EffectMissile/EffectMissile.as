@@ -79,6 +79,8 @@ void onTick( CBlob@ this)
 			case slow_effect_missile:
 			case healblock_effect_missile:
 			case shapeshift_effect_missile:
+			case silence_effect_missile:
+			case fear_effect_missile:
 			{
 				targetType = 2;
 				this.Tag("projectile");
@@ -320,7 +322,15 @@ void setEffect(CBlob@ this, CBlob@ blob)
 			{
 				Shapeshift(this.getDamageOwnerPlayer().getBlob(), blob, this.get_u16("effect_time"));
 			}
-
+			else if (effectType == silence_effect_missile)
+			{
+				Silence(blob, this.get_u16("effect_time"));
+			}
+			else if (effectType == fear_effect_missile)
+			{
+				Fear(blob, this.get_u16("effect_time"));
+			}
+			
 			this.Tag("set");
 			this.Tag("mark_for_death");
 			return;

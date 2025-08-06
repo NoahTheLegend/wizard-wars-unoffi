@@ -38,8 +38,9 @@ shared class Spell
 	string typeName;
 	string name;
 	string icon;
-	u16 iconFrame;
 	string spellDesc;
+	
+	u16 iconFrame;
 	u8 category;
 	u8 type;
 	f32 mana;

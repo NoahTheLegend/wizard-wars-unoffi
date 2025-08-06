@@ -662,6 +662,28 @@ void Slow(CBlob@ blob, u16 slowTime)
 	}
 }
 
+void Silence(CBlob@ blob, u16 silenceTime)
+{
+	if (blob.get_u16("silenced") == 0)
+	{
+		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
+	}
+	
+	blob.set_u16("silenced", silenceTime);
+	blob.Sync("silenced", true);
+}
+
+void Fear(CBlob@ blob, u16 fearTime)
+{
+	if (blob.get_u16("feared") == 0)
+	{
+		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
+	}
+	
+	blob.set_u16("feared", fearTime);
+	blob.Sync("feared", true);
+}
+
 void Shapeshift(CBlob@ this, CBlob@ blob, u16 time)
 {	
 	if (isServer())

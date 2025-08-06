@@ -9,9 +9,9 @@
 #include "SpellUtils.as";
 #include "EffectsCollection.as";
 #include "PaladinCommon.as";
+#include "PlayerPrefsCommon.as";
 
 Random _r(94712);
-
 void onTick(CBlob@ this)
 {
 	if (getGameTime() < 30) return;
@@ -28,15 +28,22 @@ void onTick(CBlob@ this)
 	}
 	else this.Untag("extra_damage");
 
+	bool has_prefs = false;
+	PlayerPrefsInfo@ playerPrefs;
+	if (this.getPlayer() !is null && this.getPlayer().get("playerPrefsInfo", @playerPrefs))
+	{
+		has_prefs = true;
+	}
+
 	CSprite@ thisSprite = this.getSprite();
 
 	//FREEZE
 	bool isFrozen = this.get_bool("frozen");
 	bool isInIce = this.isAttachedToPoint("PICKUP2");
 
-	if ( isFrozen && !isInIce )
+	if (isFrozen && !isInIce)
 		this.set_bool("frozen", false);	
-	else if ( isInIce )
+	else if (isInIce)
 	{
 		this.set_bool("frozen", true);
 	
@@ -98,7 +105,15 @@ void onTick(CBlob@ this)
 		{
 			this.set_u16("poisoned", 0);
 		}
-		
+		else if (this.get_u16("silenced") > 0)
+		{
+			this.set_u16("silenced", 0);
+		}
+		else if (this.get_u16("feared") > 0)
+		{
+			this.set_u16("feared", 0);
+		}
+
 		if (antidebuff == 0)
 		{
 			thisSprite.PlaySound("HasteOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
@@ -195,6 +210,53 @@ void onTick(CBlob@ this)
 			this.set_u16("last_poison_owner_id", 0);
 			this.Sync("last_poison_owner_id", true);
 			this.Sync("poisoned", true);
+		}
+	}
+
+	//SILENCE
+	u16 silenced = this.get_u16("silenced");
+	if (silenced > 0)
+	{
+		silenced--;
+		this.set_u16("silenced", silenced);
+
+		if (has_prefs && getGameTime() % 5 == 0)
+		{
+			for (u8 i = 0; i < playerPrefs.spell_cooldowns.size(); i++)
+			{
+				if (i != 1)
+				{
+					playerPrefs.spell_cooldowns[i] = 10;
+				}
+			}
+		}
+		
+		if (silenced % 2 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{
+				if (getNet().isClient())
+				{
+					const f32 rad = 6.0f;
+					Vec2f random = Vec2f(XORRandom(128)-64, XORRandom(128)-64) * 0.015625f * rad;
+					CParticle@ p = ParticleAnimated("MissileFire1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
+					if (p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+						if ( XORRandom(2) == 0 )
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+					}
+				}
+			}
+		}
+		
+		if (silenced == 0)
+		{
+			thisSprite.PlaySound("SlowOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
+			this.Sync("silenced", true);
 		}
 	}
 

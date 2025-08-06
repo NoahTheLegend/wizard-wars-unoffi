@@ -6230,6 +6230,95 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 		
+		case -1217162868: // silence
+		{
+			f32 orbspeed = 4.2f;
+			u16 effectTime = 600;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.6f;
+					effectTime *= 1.2f;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", silence_effect_missile);
+					orb.set_u8("override_sprite_frame", 13);
+					orb.set_u16("effect_time", effectTime);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		case -851536377: // fear
+		{
+			f32 orbspeed = 4.2f;
+			u16 effectTime = 600;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.6f;
+					effectTime *= 1.2f;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", fear_effect_missile);
+					orb.set_u8("override_sprite_frame", 12); // fear sprite frame
+					orb.set_u16("effect_time", effectTime);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+//477345426 darkritual
 
 		default:
 		{

@@ -53,34 +53,34 @@ namespace WarlockParams
 				SpellCategory::offensive, SpellType::other, 1, 30, 0, 256.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_POISON}),
 
 		Spell("causticray", "Caustic Ray", 142, "Forward a beam of corrosive energy that poisons enemies and adds a cooldown to their spells.",
-				SpellCategory::offensive, SpellType::other, 1, 1, 0, 0.0f),
+				SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("corruptionshard", "Corruption Shard", 135, "Place a venomous shard that poisons enemies nearby. After a short while, the shard explodes, restoring some of warlock's health and mana.",
-				SpellCategory::summoning, SpellType::other, 1, 1, 0, 0.0f),
+				SpellCategory::summoning, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("plague", "Plague", 139, "Permanent poison. Poison damage period is twice longer. Poisons enemies that damaged you, as long as the spirit exists. Cast again to disable the effect.",
 				SpellCategory::debuff, SpellType::other, 1, 30, 1, 16.0f, true, false, array<int> = {SpellAttribute::SPELL_POISON, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("shadowspear", "Shadow Spear", 0, "Throw a shadow spear which curses touched enemy and steals their mana. Anyone who deals damage to the cursed target will steal some of their mana.",
-				SpellCategory::offensive, SpellType::other, 1, 1, 0, 0.0f),
+				SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("hellfiresummon", "Hellfire Summon", 134, "Summon a hell spirit to absorb enemy spells. Press [SHIFT] to make it breath fire.",
-				SpellCategory::summoning, SpellType::other, 1, 1, 0, 0.0f),
+				SpellCategory::summoning, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("darkritual", "Dark Ritual", 133, "For the next 5 seconds the spells that cost health will restore it instead of consuming. You take 5 damage in the end of the effect.",
-				SpellCategory::utility, SpellType::other, 1, 1, 0, 0.0f),
+				SpellCategory::utility, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("demonicpact", "Demonic Pact", 138, "Consumes health instead of mana. Resurrect one of your allies into a demon. The demon will restore health to its master when killed, although not when despelled.",
-				SpellCategory::support, SpellType::healthcost, 1, 1, 0, 0.0f),
+				SpellCategory::support, SpellType::healthcost, 1, 15, 0, 16.0f),
 
 		Spell("fear", "Fear", 145, "Curse nearby enemies with fear, causing them to run stoplessly",
-				SpellCategory::debuff, SpellType::other, 1, 1, 0, 0.0f),
+				SpellCategory::debuff, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("silence", "Silence", 146, "Silence an enemy, preventing them from casting spells, except teleport.",
-				SpellCategory::debuff, SpellType::other, 1, 1, 0, 0.0f),
+				SpellCategory::debuff, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("shadowrealm", "Shadow Realm", 0, "set warlock and target to another dimension where no one else can affect them? if its possible in code",
-				SpellCategory::utility, SpellType::other, 1, 1, 0, 0.0f),
+				SpellCategory::utility, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f),

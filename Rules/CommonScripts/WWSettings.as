@@ -47,7 +47,7 @@ void onTick(CRules@ this)
 			print("Shapeshift timeout reached, removing buffered data");
 			eraseBuffers();
 		}
-		
+
 		return;
 	}
 
@@ -78,11 +78,14 @@ void onTick(CRules@ this)
 		u8 targetTeam = target.getTeamNum();
 		u8 casterTeam = caster.getTeamNum();
 
-		targetPlayer.server_setTeamNum(casterTeam);
-		casterPlayer.server_setTeamNum(targetTeam);
+		//targetPlayer.server_setTeamNum(casterTeam);
+		//casterPlayer.server_setTeamNum(targetTeam);
 
 		target.server_SetPlayer(casterPlayer);
 		caster.server_SetPlayer(targetPlayer);
+
+		target.server_setTeamNum(casterTeam);
+		caster.server_setTeamNum(targetTeam);
 
 		u16 currentTargetID = target.getNetworkID();
 		u16 currentCasterID = caster.getNetworkID();

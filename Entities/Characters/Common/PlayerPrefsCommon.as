@@ -12,7 +12,6 @@
 #include "MagicCommon.as";
 
 const u8 MAX_SPELLS = 20;
-
 const u8 WIZARD_TOTAL_HOTKEYS = 18;
 const u8 DRUID_TOTAL_HOTKEYS = 18;
 const u8 NECROMANCER_TOTAL_HOTKEYS = 18;
@@ -27,12 +26,12 @@ const u8 WARLOCK_TOTAL_HOTKEYS = 18;
 shared class PlayerPrefsInfo
 {
 	bool infoLoaded;
-	
 	string classConfig;
 
 	u8 primarySpellID;
 	u8 primaryHotkeyID;
 	u8 customSpellID;
+
 	u8[] hotbarAssignments_Wizard;
 	u8[] hotbarAssignments_Druid;
 	u8[] hotbarAssignments_Necromancer;
@@ -43,12 +42,12 @@ shared class PlayerPrefsInfo
 	u8[] hotbarAssignments_Paladin;
 	u8[] hotbarAssignments_Jester;
 	u8[] hotbarAssignments_Warlock;
+
 	s32[] spell_cooldowns;
 
 	PlayerPrefsInfo()
 	{
 		infoLoaded = false;
-		
 		classConfig = "wizard";
 
 		//if (isClient())
