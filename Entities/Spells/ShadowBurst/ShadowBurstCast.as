@@ -2,6 +2,7 @@
 void onTick(CBlob@ this)
 {
     CSprite@ sprite = this.getSprite();
+    f32 pitch = 0.55f;
 
     u32 gt = getGameTime();
     u32 cast_time = this.get_u32("shadowburst_cast_time");
@@ -9,10 +10,12 @@ void onTick(CBlob@ this)
 
     int diff = gt - cast_time;
     bool cast_blob = diff % period == 0;
+    if (diff == period / 2) sprite.PlaySound("ShadowBurstCast.ogg", 1.0f, pitch + XORRandom(11) * 0.01f);
 
     u8 max_count = this.get_u8("shadowburst_count");
     u8 count = this.get_u8("shadowburst_current_count");
     f32 level = float(count) / float(max_count);
+    if (cast_blob) this.set_u8("shadowburst_current_count", count + 1);
 
     CSpriteLayer@ castFront = sprite.getSpriteLayer("shadowburst_front");
     CSpriteLayer@ castBack = sprite.getSpriteLayer("shadowburst_back");
@@ -27,7 +30,9 @@ void onTick(CBlob@ this)
             int[] frames = {0, 1, 2, 3, 3, 4, 5, 6, 7, 8, 9};
             anim.AddFrames(frames);
             castFront.SetAnimation(anim);
+            castFront.SetRelativeZ(55.0f);
         }
+        
         if (castBack is null)
         {
             @castBack = @sprite.addSpriteLayer("shadowburst_back", "ShadowBurstBackLayer.png", 64, 48);
@@ -40,6 +45,14 @@ void onTick(CBlob@ this)
 
         if (castFront !is null && castBack !is null)
         {
+            if (this.hasTag("shadowburst_cast"))
+            {
+                castFront.animation.frame = 0;
+                castBack.animation.frame = 0;
+
+                this.Untag("shadowburst_cast");
+            }
+            
             Vec2f pos = this.getPosition();
             Vec2f aimpos = this.getAimPos();
             Vec2f dir = aimpos - pos;
@@ -52,7 +65,7 @@ void onTick(CBlob@ this)
             castFront.SetFacingLeft(fl);
             castBack.SetFacingLeft(fl);
 
-            Vec2f offset = Vec2f(-16, 0);
+            Vec2f offset = Vec2f(-12, 0);
             if (fl)
             {
                 angle += 180;
@@ -69,11 +82,10 @@ void onTick(CBlob@ this)
             {
                 if (count < max_count)
                 {
-                    castFront.animation.frame = 0;
-                    castBack.animation.frame = 0;
+                    this.Tag("shadowburst_cast");
                 }
 
-                sprite.PlaySound("ShadowBurstCast.ogg", 1.0f, 1.0f + XORRandom(11) * 0.01f);
+                sprite.PlaySound("ShadowBurstShoot.ogg", 1.0f, pitch + XORRandom(11) * 0.01f);
             }
         }
     }
@@ -91,12 +103,11 @@ void onTick(CBlob@ this)
                 orb.SetDamageOwnerPlayer(this.getPlayer());
                 orb.setVelocity(dir * this.get_f32("shadowburst_speed"));
                 orb.set_f32("damage", this.get_f32("shadowburst_damage"));
-                orb.server_SetTimeToDie(1);
+                orb.server_SetTimeToDie(1.5f + XORRandom(25) * 0.01f);
             }
         }
     }
 
-    if (cast_blob) this.set_u8("shadowburst_current_count", count + 1);
     if ((isServer() && level >= 1.0f) || (isClient() && level >= 1.0f && (castFront is null || castFront.isAnimationEnded())))
     {
         this.RemoveScript("ShadowBurstCast.as");

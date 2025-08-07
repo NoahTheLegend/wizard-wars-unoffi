@@ -98,7 +98,7 @@ class WWPlayerClassButton
 			leftPage.name = _configFilename + "_leftPage";
 			leftPage.setLevel(ContainerLevel::PAGE_FRAME);
 
-			@spellDescText = @Label(Vec2f(10, 402), Vec2f(480, 32), "Select a spell and click on the hotbar above", col_text, false, "DragonFire_14");
+			@spellDescText = @Label(Vec2f(4, 402), Vec2f(480, 32), "Select a spell and click on the hotbar. Right click to clear.", col_text, false, "DragonFire_12");
 			leftPage.addChild(spellDescText);
 
 			Label@ offensiveTitle = @Label(Vec2f(page_size.x / 2, 30), Vec2f(480, 32), classTitles[classID]+" Spells", col_text, true, "KingThingsPetrockLight_32");
@@ -934,12 +934,17 @@ void RenderClassMenus()
 	}
 }
 
-bool was_click = false;
+bool was_left_click = false;
+bool was_right_click = false;
 void UpdateClassHotbar()
 {
 	CControls@ controls = getControls();
-	was_click = controls.isKeyJustPressed(KEY_LBUTTON);
+	was_left_click = controls.isKeyJustPressed(KEY_LBUTTON);
+	was_right_click = controls.isKeyJustPressed(KEY_RBUTTON);
 }
+
+const Spell emptySpell = Spell("", "", 0, "Empty spell.",
+				SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f);
 
 const u8 spells_maxcount = 15;
 void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, string className, u8[] hotbarAssignments, Spell[] classSpells)
@@ -948,13 +953,13 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 	Vec2f mouseScreenPos = controls.getMouseScreenPos();
 
 	Vec2f offset = Vec2f(120, 330);
-	bool canCustomizeHotbar = was_click;
+	bool canCustomizeHotbar = was_left_click || was_right_click;
 	bool hotbarClicked = false;
 	int spellsLength = classSpells.length;
 
 	const string iconTexture = getRules().get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
-
 	Vec2f primaryPos = helpWindow.position + Vec2f(16.0f, 0.0f) + offset;
+
 	for (uint i = 0; i < spells_maxcount; i++)
 	{
 		u8 primarySpellID = Maths::Min(hotbarAssignments[i], spellsLength - 1);
@@ -967,7 +972,10 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 			GUI::DrawText("" + ((i + 1) % 10), primaryPos + Vec2f(8, -16) + Vec2f(32, 0) * i, color_white);
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 80) + Vec2f(32, 0) * i)).Length() < 16.0f)
 			{
-				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				if (was_left_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				else if (was_right_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.spell_cooldowns.size() - 1, className); // 255 = empty spell
 				hotbarClicked = true;
 			}
 		}
@@ -977,7 +985,10 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 			GUI::DrawIcon(iconTexture, spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5));
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 48) + Vec2f(32, 0) * (i - 5))).Length() < 16.0f)
 			{
-				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				if (was_left_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				else if (was_right_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 				hotbarClicked = true;
 			}
 		}
@@ -987,7 +998,10 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 			GUI::DrawIcon(iconTexture, spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(32, 0) * (i - 10));
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 16) + Vec2f(32, 0) * (i - 10))).Length() < 16.0f)
 			{
-				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				if (was_left_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				else if (was_right_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 				hotbarClicked = true;
 			}
 		}
@@ -1000,7 +1014,10 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 	GUI::DrawIcon(iconTexture, secondarySpell.iconFrame, Vec2f(16, 16), secondaryPos);
 	if (canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16, 16))).Length() < 16.0f)
 	{
-		assignHotkey(localPlayer, spells_maxcount, playerPrefsInfo.customSpellID, className);
+		if (was_left_click)
+			assignHotkey(localPlayer, spells_maxcount, playerPrefsInfo.customSpellID, className);
+		else if (was_right_click)
+			assignHotkey(localPlayer, spells_maxcount, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 		hotbarClicked = true;
 	}
 	GUI::SetFont("default");
@@ -1013,7 +1030,10 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 	GUI::DrawIcon(iconTexture, aux1Spell.iconFrame, Vec2f(16, 16), aux1Pos);
 	if (canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16, 16))).Length() < 16.0f)
 	{
-		assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, className);
+		if (was_left_click)
+			assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, className);
+		else if (was_right_click)
+			assignHotkey(localPlayer, 16, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 		hotbarClicked = true;
 	}
 	GUI::DrawText("A2", aux1Pos + Vec2f(32, 8), color_white);
@@ -1025,7 +1045,10 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 	GUI::DrawIcon(iconTexture, aux2Spell.iconFrame, Vec2f(16, 16), aux2Pos);
 	if (canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16, 16))).Length() < 16.0f)
 	{
-		assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, className);
+		if (was_left_click)
+			assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, className);
+		else if (was_right_click)
+			assignHotkey(localPlayer, 17, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 		hotbarClicked = true;
 	}
 	GUI::DrawText("A3", aux2Pos + Vec2f(-20, 8), color_white);
@@ -1034,6 +1057,7 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 	{
 		if (controls.lastKeyPressTime != lastHotbarPressTime) Sound::Play2D("MenuSelect5.ogg", 0.5f, 0.0f);
 		lastHotbarPressTime = controls.lastKeyPressTime;
-		was_click = false;
+		was_left_click = false;
+		was_right_click = false;
 	}
 }

@@ -11,57 +11,46 @@ void onInit(CBlob@ this)
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	this.getShape().getConsts().bullet = true;
-	
-	CSprite@ thisSprite = this.getSprite();
-	CSpriteLayer@ l = thisSprite.addSpriteLayer("l", "ShadowBurstOrb.png", 24, 16);
-	if (l !is null)
-	{
-		l.ScaleBy(Vec2f(0.95f, 0.95f));
-
-		Animation@ anim = l.addAnimation("default", 0, false);
-		if (anim !is null)
-		{
-			int[] frames = {0,1,2,1,0};
-			anim.AddFrames(frames);
-			
-			l.SetAnimation(anim);
-			l.setRenderStyle(RenderStyle::additive);
-			l.SetRelativeZ(1.0f);
-		}
-	}
-
 	this.getShape().SetGravityScale(0.0f);
+	this.getShape().getConsts().mapCollisions = false;
+
+	Vec2f[] old_pos;
+	old_pos.push_back(this.getPosition());
+	this.set("old_positions", @old_pos);
 
 	if (!isClient()) return;
-
-	Vec2f frameSize = Vec2f(64, 48);
+	Vec2f frameSize = Vec2f(32, 32);
 	this.getSprite().SetVisible(false);
 
-	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "sb_rend0", false, false, Vec2f(0, 0), frameSize);
-	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "sb_rend1", false, false, Vec2f(32, 0), frameSize);
-	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "sb_rend2", false, false, Vec2f(64, 0), frameSize);
-	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "sb_rend3", false, false, Vec2f(32, 0), frameSize);
+	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend0", false, false, Vec2f(0, 0), frameSize);
+	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend1", false, false, Vec2f(32, 0), frameSize);
+	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend2", false, false, Vec2f(64, 0), frameSize);
+	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend3", false, false, Vec2f(32, 0), frameSize);
 
-	int cb_id = Render::addBlobScript(Render::layer_prehud, this, "PlagueBlob.as", "laserEffects");
+	int cb_id = Render::addBlobScript(Render::layer_prehud, this, "ShadowBurstOrb.as", "laserEffects");
 }
 
-void onTick(CSprite@ this)
-{
-	CSpriteLayer@ l = this.getSpriteLayer("l");
-	if (l !is null)
-	{
-		l.animation.frame = this.animation.frame;
-	}
-}
+const int positions_save_time_in_seconds = 15;
+const u8 old_positions_save_threshold = 3;
 
+const f32 ticks_noclip = 0;
 void onTick(CBlob@ this)
 {
-	if (this.getTickSinceCreated() == 0)
+	this.setAngleDegrees(-this.getVelocity().Angle());
+	this.getShape().getConsts().mapCollisions = this.getTickSinceCreated() >= ticks_noclip;
+
+	if (this.getTickSinceCreated() % old_positions_save_threshold == 0)
 	{
-		CSprite@ sprite = this.getSprite();
-		sprite.PlaySound("PoisonSurge"+XORRandom(3)+".ogg", 1.5f, 1.2f + XORRandom(11) * 0.01f);
-		sprite.SetZ(-1.0f);
-		sprite.SetRelativeZ(-1.0f);
+		Vec2f[]@ positions;
+		if (this.get("old_positions", @positions))
+		{
+			if (positions.size() > positions_save_time_in_seconds * Maths::Round(f32(getTicksASecond()) / f32(old_positions_save_threshold)))
+			{
+				positions.erase(positions.size() - 1);
+			}
+
+			positions.insertAt(0, this.getPosition());
+		}
 	}
 
 	if (!isClient()) return;
@@ -131,22 +120,111 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return (isEnemy(this, blob));
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, Vec2f p2)
 {
-	if (solid || (blob !is null && blob.hasTag("kill poison spells")))
+	if (solid && blob is null)
 	{
 		this.Tag("mark_for_death");
+		CMap@ map = this.getMap();
+		
+		if (this.hasTag("no_projectiles")) return;
+		
+		Vec2f pdir = normal;
+		pdir.Normalize();
+		Vec2f pdirNormal = pdir;
+
+		f32 t = 8;
+		pdir *= this.getRadius() * 2;
+
+		Vec2f[] checks = {Vec2f(t, 0), Vec2f(-t, 0), Vec2f(0, t), Vec2f(0, -t)};
+		Vec2f[] dirs;
+
+		Vec2f pos = p2 + pdir;
+		Vec2f offset = Vec2f_zero;
+		pos = Vec2f(Maths::Floor(pos.x / 8) * 8, Maths::Floor(pos.y / 8) * 8) + Vec2f(4, 4);
+
+		for (u8 i = 0; i < checks.length; i++)
+		{
+			Vec2f check_pos = pos + checks[i];
+			Vec2f opposite_pos = pos - checks[i];
+
+			bool opposite_is_solid = map.isTileSolid(opposite_pos);
+			u8 solid_count = 0;
+			
+			for (u8 j = 0; j < checks.length; j++)
+			{
+				Vec2f other_pos = p2 + checks[j];
+				if (map.isTileSolid(other_pos))
+				{
+					solid_count++;
+					if (solid_count >= 2) break;
+				}
+			}
+			offset += opposite_is_solid ? checks[i] : Vec2f_zero;
+
+			if (!map.isTileSolid(check_pos) && (!opposite_is_solid || solid_count == 2))
+			{
+				dirs.push_back(checks[i]);
+			}
+		}
+
+		if (isServer())
+		{
+			for (u8 i = 0; i < dirs.length; i++)
+			{
+				CBlob@ orb = server_CreateBlob("shadowburstorb", this.getTeamNum(), pos);
+				if (orb !is null)
+				{
+					Vec2f dir = dirs[i];
+					dir.Normalize();
+					orb.setVelocity(dir * 8.0f);
+					orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+					orb.server_SetTimeToDie(5.0f);
+
+					orb.Tag("no_projectiles");
+					orb.Sync("no_projectiles", true);
+				}
+			}
+		}
 	}
 	
-	if (blob !is null && doesCollideWithBlob(this, blob))
+	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("mark_for_death"))
 	{
 		this.Tag("mark_for_death");
+
+		if (!this.hasTag("no_projectiles"))
+		{
+			Vec2f[]@ positions;
+			if (!this.get("old_positions", @positions))
+			{
+				return;
+			}
+
+			u8 ticks_warp = 3;
+			int index = Maths::Min(positions.length-1, ticks_warp * old_positions_save_threshold);
+			Vec2f at = positions[index];
+
+			CBlob@ orb = server_CreateBlob("shadowburstorb", this.getTeamNum(), at);
+			if (orb !is null)
+			{
+				Vec2f dir = blob.getPosition() - at;
+				dir.Normalize();
+
+				orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+				orb.setVelocity(dir * 8.0f);
+				orb.set_f32("damage", this.get_f32("damage"));
+				orb.server_SetTimeToDie(2.5f + XORRandom(51) * 0.01f);
+
+				orb.Tag("no_projectiles");
+				orb.Sync("no_projectiles", true);
+			}
+		}
 	}
 }
 
 void onDie(CBlob@ this)
 {
-	this.getSprite().PlaySound("CardDie.ogg", 1.0f, 0.65f+XORRandom(11) * 0.01f);
+	if (!this.hasTag("no_projectiles")) this.getSprite().PlaySound("CardDie.ogg", 0.5f, 0.45f+XORRandom(11) * 0.01f);
 	Boom(this);
 	sparks(this.getPosition(), 50);
 }
@@ -157,17 +235,17 @@ void Boom(CBlob@ this)
 	if (!isServer()) return;
 }
 
-void makeSmokeParticle(CBlob@ this, const Vec2f vel = Vec2f_zero, const string filename = "WhitePuff")
+void makeSmokeParticle(CBlob@ this, const Vec2f vel = Vec2f_zero, const string filename = "GenericBlast")
 {
 	const f32 rad = 2.0f;
 	Vec2f random = Vec2f(XORRandom(128)-64, XORRandom(128)-64) * 0.015625f * rad;
 	{
-		CParticle@ p = ParticleAnimated(XORRandom(2) == 0 ? filename + ".png" : filename + "2.png", 
+		CParticle@ p = ParticleAnimated(this.hasTag("no_projectiles") ? filename + "6.png" : filename + "5.png", 
 										this.getPosition(), 
 										vel, 
 										float(XORRandom(360)), 
 										1.0f + XORRandom(50) * 0.01f,
-										5, 
+										2, 
 										0.0f, 
 										false);
 
@@ -175,8 +253,8 @@ void makeSmokeParticle(CBlob@ this, const Vec2f vel = Vec2f_zero, const string f
 		{
 			p.bounce = 0;
     		p.fastcollision = true;
-			p.colour = SColor(255, 255, 55+XORRandom(25), 180+XORRandom(75));
-			p.forcecolor = SColor(255, 255, 55+XORRandom(25), 180+XORRandom(75));
+			p.colour = SColor(255, 200+XORRandom(55), 25+XORRandom(50), 200+XORRandom(55));
+			p.forcecolor = SColor(255, 200+XORRandom(55), 25+XORRandom(50), 200+XORRandom(55));
 			p.setRenderStyle(RenderStyle::additive);
 			p.Z = 1.5f;
 		}
@@ -223,25 +301,29 @@ void laserEffects(CBlob@ this, int id)
     string rendname = anim_loop[ts / anim_time % anim_loop.length];
     f32 z = 100.0f;
 
+	f32 mod = Maths::Min(f32(ts) / 5, 1.0f);
+	u8 alpha = mod * 255;
+	f32 s = this.hasTag("no_projectiles") ? 8.0f : 12.0f;
+
     Vec2f[] v_pos;
     Vec2f[] v_uv;
     SColor[] v_col;
 
-    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-16, -16));
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-s, -s) * mod);
     v_uv.push_back(Vec2f(0, 0));
-    v_col.push_back(SColor(255, 255, 255, 255));
+    v_col.push_back(SColor(alpha, 255, 255, 255));
 
-    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(16, -16));
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(s, -s) * mod);
     v_uv.push_back(Vec2f(1, 0));
-    v_col.push_back(SColor(255, 255, 255, 255));
+    v_col.push_back(SColor(alpha, 255, 255, 255));
 
-    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(16, 16));
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(s, s) * mod);
     v_uv.push_back(Vec2f(1, 1));
-    v_col.push_back(SColor(255, 255, 255, 255));
+    v_col.push_back(SColor(alpha, 255, 255, 255));
 
-    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-16, 16));
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-s, s) * mod);
     v_uv.push_back(Vec2f(0, 1));
-    v_col.push_back(SColor(255, 255, 255, 255));
+    v_col.push_back(SColor(alpha, 255, 255, 255));
 
     Render::QuadsColored(rendname, z, v_pos, v_uv, v_col);
 }
