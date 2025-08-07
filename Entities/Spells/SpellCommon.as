@@ -6379,7 +6379,60 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-//477345426 darkritual
+		// shadowburst
+		case -1379480811:
+		{
+			if (this.hasScript("ShadowBurstCast.as"))
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				manaInfo.mana += spell.mana;
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			}
+
+			u32 cast_time = getGameTime();
+			u8 period = 30;
+			u8 max_count = 1;
+			f32 speed = 7.0f;
+			u8 count = 0;
+
+			switch(charge_state)
+			{
+				case minimum_cast:	
+				case medium_cast:
+				{}
+				break;
+				case complete_cast:
+				{
+					//period = 12;
+				}
+				break;
+				case super_cast:
+				{
+					//
+				}
+				break;
+
+				default: return;
+			}
+
+			this.set_u32("shadowburst_cast_time", cast_time);
+			this.set_u8("shadowburst_count", max_count);
+			this.set_u8("shadowburst_period", period);
+			this.set_f32("shadowburst_speed", speed);
+			this.set_u8("shadowburst_current_count", 0);
+
+			if (!this.hasScript("ShadowBurstCast.as"))
+			{
+				this.AddScript("ShadowBurstCast.as");
+			}
+		}
+		break;
+
+		//477345426 darkritual
 
 		default:
 		{

@@ -1,24 +1,19 @@
 #include "Hitters.as";
 #include "HittersWW.as";
-#include "MagicCommon.as";
-#include "SpellUtils.as";
+#include "TextureCreation.as";
 
-const f32 explosion_radius = 24.0f;
 void onInit(CBlob@ this)
 {
 	this.Tag("projectile");
 	this.Tag("kill other spells");
 	this.Tag("counterable");
-	this.Tag("poison projectile");
-
-	this.set_u32("sound_at", 0);
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	this.getShape().getConsts().bullet = true;
 	
 	CSprite@ thisSprite = this.getSprite();
-	CSpriteLayer@ l = thisSprite.addSpriteLayer("l", "PoisonSurge.png", 24, 16);
+	CSpriteLayer@ l = thisSprite.addSpriteLayer("l", "ShadowBurstOrb.png", 24, 16);
 	if (l !is null)
 	{
 		l.ScaleBy(Vec2f(0.95f, 0.95f));
@@ -26,16 +21,28 @@ void onInit(CBlob@ this)
 		Animation@ anim = l.addAnimation("default", 0, false);
 		if (anim !is null)
 		{
-			int[] frames = {0,1,2,3};
+			int[] frames = {0,1,2,1,0};
 			anim.AddFrames(frames);
 			
 			l.SetAnimation(anim);
 			l.setRenderStyle(RenderStyle::additive);
-			l.SetRelativeZ(-0.5f);
+			l.SetRelativeZ(1.0f);
 		}
 	}
-	
+
 	this.getShape().SetGravityScale(0.0f);
+
+	if (!isClient()) return;
+
+	Vec2f frameSize = Vec2f(64, 48);
+	this.getSprite().SetVisible(false);
+
+	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "sb_rend0", false, false, Vec2f(0, 0), frameSize);
+	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "sb_rend1", false, false, Vec2f(32, 0), frameSize);
+	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "sb_rend2", false, false, Vec2f(64, 0), frameSize);
+	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "sb_rend3", false, false, Vec2f(32, 0), frameSize);
+
+	int cb_id = Render::addBlobScript(Render::layer_prehud, this, "PlagueBlob.as", "laserEffects");
 }
 
 void onTick(CSprite@ this)
@@ -49,10 +56,6 @@ void onTick(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getVelocity().Length() > 0.01f && !this.hasTag("mark_for_death"))
-		this.setAngleDegrees(-this.getVelocity().Angle());
-	else this.Tag("mark_for_death");
-
 	if (this.getTickSinceCreated() == 0)
 	{
 		CSprite@ sprite = this.getSprite();
@@ -68,7 +71,7 @@ void onTick(CBlob@ this)
 
 	if (getGameTime() % 1 == 0 && this.getTickSinceCreated() > 3)
     {
-        CParticle@ p = ParticleAnimated("PoisonSurgeParticle.png", this.getPosition(), Vec2f_zero, this.getAngleDegrees(), 1.0f, 5, 0.0f, true);
+        CParticle@ p = ParticleAnimated("ShadowBurstOrb.png", this.getPosition(), Vec2f_zero, this.getAngleDegrees(), 1.0f, 5, 0.0f, true);
 	    if (p !is null)
 	    {
 	    	p.bounce = 0;
@@ -132,30 +135,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1)
 {
 	if (solid || (blob !is null && blob.hasTag("kill poison spells")))
 	{
-		bool bounce = !this.hasTag("no_bounce");
-		if (!bounce)
-		{
-			this.Tag("no_shrapnel");
-			this.Tag("mark_for_death");
-		}
-		else
-		{
-			if (this.get_u32("sound_at") + 5 > getGameTime()) return;
-			this.set_u32("sound_at", getGameTime());
-			this.getSprite().PlaySound("PoisonSurgeReflect.ogg", 0.5f, 0.9f + XORRandom(11) * 0.01f);
-		}
+		this.Tag("mark_for_death");
 	}
 	
 	if (blob !is null && doesCollideWithBlob(this, blob))
 	{
-		this.Tag("no_shrapnel");
 		this.Tag("mark_for_death");
 	}
 }
 
 void onDie(CBlob@ this)
 {
-	this.getSprite().PlaySound("SplatExplosion.ogg", 1.5f, 1.0f+XORRandom(11) * 0.01f);
+	this.getSprite().PlaySound("CardDie.ogg", 1.0f, 0.65f+XORRandom(11) * 0.01f);
 	Boom(this);
 	sparks(this.getPosition(), 50);
 }
@@ -164,66 +155,14 @@ void Boom(CBlob@ this)
 {
 	makeSmokeParticle(this);
 	if (!isServer()) return;
-
-	CBlob@[] bs;
-	getMap().getBlobsInRadius(this.getPosition(), explosion_radius, @bs);
-
-	CPlayer@ owner = this.getDamageOwnerPlayer();
-	CBlob@ hitter = owner !is null && owner.getBlob() !is null ? owner.getBlob() : null;
-
-	for (int i = 0; i < bs.length; i++)
-	{
-		CBlob@ blob = bs[i];
-		if (blob !is null && ((hitter !is null && blob is hitter) || isEnemy(this, blob)))
-		{
-			Vec2f dir = blob.getPosition() - this.getPosition();
-			f32 dir_len = dir.Length();
-
-			dir.Normalize();
-			dir *= explosion_radius * 2 - dir_len;
-			
-			this.server_Hit(blob, this.getPosition(), dir, this.get_f32("damage"), Hitters::explosion, true);
-			Poison(blob, this.get_u32("poison_time"), hitter);
-		}
-	}
-
-	if (this.hasTag("no_shrapnel"))
-	{
-		return;
-	}
-
-	u8 shrapnel_count = this.get_u8("shrapnel_count");
-	u8 angle = this.get_u8("shrapnel_angle");
-	if (shrapnel_count > 0)
-	{
-		for (int i = 0; i < shrapnel_count; i++)
-		{
-			Vec2f vel = Vec2f(8, 0).RotateBy(this.getAngleDegrees() + -angle * 0.5f + (i * (angle / (shrapnel_count - 1))));
-			vel.y -= 2.0f;
-			
-			CBlob@ shrapnel = server_CreateBlob("poisonsurgeshrapnel", this.getTeamNum(), this.getPosition());
-			if (shrapnel !is null)
-			{
-				if (this.hasTag("shrapnel_bouncy"))
-				{
-					shrapnel.getShape().setElasticity(0.33f);
-					shrapnel.getShape().setFriction(0.25f + XORRandom(51) * 0.01f);
-				}
-
-				shrapnel.setVelocity(vel);
-				shrapnel.set_f32("damage", this.get_f32("shrapnel_damage"));
-				shrapnel.server_SetTimeToDie(3);
-			}
-		}
-	}
 }
 
-void makeSmokeParticle(CBlob@ this, const Vec2f vel = Vec2f_zero, const string filename = "Smoke")
+void makeSmokeParticle(CBlob@ this, const Vec2f vel = Vec2f_zero, const string filename = "WhitePuff")
 {
 	const f32 rad = 2.0f;
 	Vec2f random = Vec2f(XORRandom(128)-64, XORRandom(128)-64) * 0.015625f * rad;
 	{
-		CParticle@ p = ParticleAnimated("GenericBlast5.png", 
+		CParticle@ p = ParticleAnimated(XORRandom(2) == 0 ? filename + ".png" : filename + "2.png", 
 										this.getPosition(), 
 										vel, 
 										float(XORRandom(360)), 
@@ -236,8 +175,8 @@ void makeSmokeParticle(CBlob@ this, const Vec2f vel = Vec2f_zero, const string f
 		{
 			p.bounce = 0;
     		p.fastcollision = true;
-			p.colour = SColor(255, 55+XORRandom(25), 255, 55+XORRandom(25));
-			p.forcecolor = SColor(255, 55+XORRandom(25), 255, 55+XORRandom(25));
+			p.colour = SColor(255, 255, 55+XORRandom(25), 180+XORRandom(75));
+			p.forcecolor = SColor(255, 255, 55+XORRandom(25), 180+XORRandom(75));
 			p.setRenderStyle(RenderStyle::additive);
 			p.Z = 1.5f;
 		}
@@ -256,9 +195,9 @@ void sparks(Vec2f pos, int amount)
         vel.RotateBy(_sprk_r.NextFloat() * 360.0f);
 
 		u8 rnd = XORRandom(100);
-		SColor col = SColor(255, 0+rnd/2, 255, 55+rnd);
+		SColor col = SColor(255, 200+XORRandom(55), 55+rnd, 155+rnd);
         CParticle@ p = ParticlePixelUnlimited(pos, vel, col, true);
-        if(p is null) return; //bail if we stop getting particles
+        if (p is null) return; //bail if we stop getting particles
 
     	p.fastcollision = true;
         p.timeout = 10 + _sprk_r.NextRanged(20);
@@ -268,4 +207,41 @@ void sparks(Vec2f pos, int amount)
 		p.gravity = Vec2f_zero;
 		p.setRenderStyle(RenderStyle::additive);
     }
+}
+
+const string[] anim_loop = {
+	"sb_rend0",
+	"sb_rend1",
+	"sb_rend2",
+    "sb_rend3"
+};
+const u8 anim_time = 2;
+
+void laserEffects(CBlob@ this, int id)
+{
+    int ts = this.getTickSinceCreated();
+    string rendname = anim_loop[ts / anim_time % anim_loop.length];
+    f32 z = 100.0f;
+
+    Vec2f[] v_pos;
+    Vec2f[] v_uv;
+    SColor[] v_col;
+
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-16, -16));
+    v_uv.push_back(Vec2f(0, 0));
+    v_col.push_back(SColor(255, 255, 255, 255));
+
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(16, -16));
+    v_uv.push_back(Vec2f(1, 0));
+    v_col.push_back(SColor(255, 255, 255, 255));
+
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(16, 16));
+    v_uv.push_back(Vec2f(1, 1));
+    v_col.push_back(SColor(255, 255, 255, 255));
+
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-16, 16));
+    v_uv.push_back(Vec2f(0, 1));
+    v_col.push_back(SColor(255, 255, 255, 255));
+
+    Render::QuadsColored(rendname, z, v_pos, v_uv, v_col);
 }
