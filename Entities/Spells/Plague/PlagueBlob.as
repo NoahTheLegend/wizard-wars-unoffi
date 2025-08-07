@@ -98,7 +98,6 @@ const string[] anim_loop = {
 };
 
 const u8 anim_time = 4;
-
 void laserEffects(CBlob@ this, int id)
 {
     if (this.hasTag("stop_rendering")) return;
