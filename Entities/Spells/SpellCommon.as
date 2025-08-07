@@ -6096,6 +6096,67 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		break;
 
 		// WARLOCK
+		case 1783647402: //Shadow Spear
+        {
+            if (!isServer()){
+                   return;
+            }
+
+            f32 orbspeed = necro_shoot_speed;
+            f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
+            f32 orbDamage = 1.0f * extraDamage;
+            
+            switch(charge_state)
+            {
+                case minimum_cast:
+                {
+                    orbspeed *= (1.0f/2.0f);
+                    orbDamage *= 0.5f;
+                }
+                break;
+
+                case medium_cast:
+                {
+                    orbspeed *= (4.0f/5.0f);
+                    orbDamage *= 0.7f;
+                }
+                break;
+
+                case complete_cast:
+                {
+                    orbDamage *= 1.0f;
+                }
+                break;
+
+                case super_cast:
+                {
+                    orbspeed *= 1.2f;
+                    orbDamage *= 1.5f;
+                }
+                break;
+                default:return;
+            }
+
+            Vec2f orbPos = thispos/* + Vec2f(0.0f,-2.0f)*/;
+            Vec2f orbVel = (aimpos - orbPos);
+            orbVel.Normalize();
+            orbVel *= orbspeed;
+
+            CBlob@ orb = server_CreateBlob( "shadowspear" );
+            if (orb !is null)
+            {
+                orb.set_f32("explosive_damage", orbDamage);
+
+                orb.IgnoreCollisionWhileOverlapped( this );
+                orb.SetDamageOwnerPlayer( this.getPlayer() );
+                orb.server_setTeamNum( this.getTeamNum() );
+                orb.setPosition( orbPos );
+                orb.setVelocity( orbVel );
+            }
+        }
+        break;
+
+
 		case -969070148: // warp field
 		{
 			if (isServer())

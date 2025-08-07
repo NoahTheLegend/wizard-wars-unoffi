@@ -454,7 +454,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				b.Tag("just_countered");
 				b.Tag("mark_for_death");
 				b.Tag("counterspelled");
-
+				b.set_u16("countered_by_id", caster.getNetworkID());
 				if (b.getName() == "plant_aura")
 				{retribution = true;}
 					
