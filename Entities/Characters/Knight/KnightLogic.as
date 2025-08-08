@@ -218,12 +218,12 @@ void onTick(CBlob@ this)
 	}
 
 	/////// debug
-	if(isClient() && isServer() && this.getPlayer() !is null)
-	{
-		CBlob@ b = server_CreateBlob("wizard", this.getTeamNum(), this.getPosition());
-		b.server_SetPlayer(this.getPlayer());
-		this.server_Die();
-	}
+	//if(isClient() && isServer() && this.getPlayer() !is null)
+	//{
+	//	CBlob@ b = server_CreateBlob("wizard", this.getTeamNum(), this.getPosition());
+	//	b.server_SetPlayer(this.getPlayer());
+	//	this.server_Die();
+	//}
 
 	//knight logic stuff
 	//get the vars to turn various other scripts on/off

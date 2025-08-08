@@ -10,10 +10,32 @@
 #include "PaladinCommon.as";
 #include "JesterCommon.as";
 #include "WarlockCommon.as";
+#include "SpellUtils.as";
 
 const u32 fall_step = 24.0f;
 const u32 fall_max_len = 24.0f;
 const f32 fall_speed = 1.0f;
+
+void onTick(CSprite@ this)
+{
+	CBlob@ blob = this.getBlob();
+	if (blob is null || !blob.isMyPlayer()) return;
+
+	if (blob.hasTag("update_target_grabber"))
+	{
+		CBlob@ targetBlob = client_getNearbySpellTarget(blob);
+		if (targetBlob !is null)
+		{
+			blob.set_u16("target_grabber_id", targetBlob.getNetworkID());
+		}
+		else
+		{
+			blob.set_u16("target_grabber_id", 0);
+		}
+
+		blob.Untag("update_target_grabber");
+	}
+}
 
 void onRender(CSprite@ this)
 {
@@ -37,7 +59,7 @@ void onRender(CSprite@ this)
 				return;
 			}
 
-			bool draw_grounded = false;
+			u8 draw_mode = 0;
 			string bname = blob.getName();
 			f32 spell_range = -1;
 
@@ -51,7 +73,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Wizard[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			else if (bname == "necromancer")
@@ -63,7 +85,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Necromancer[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			else if (bname == "druid")
@@ -75,7 +97,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Druid[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			else if (bname == "swordcaster")
@@ -87,7 +109,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_SwordCaster[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			else if (bname == "entropist")
@@ -99,7 +121,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Entropist[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			else if (bname == "priest") 
@@ -111,7 +133,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Priest[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			else if (bname == "shaman")
@@ -123,7 +145,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Shaman[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			else if (bname == "paladin")
@@ -135,7 +157,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Paladin[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			else if (bname == "jester")
@@ -147,7 +169,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Jester[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 			if (bname == "warlock")
@@ -159,7 +181,7 @@ void onRender(CSprite@ this)
 					casting_key == "a4" ? playerPrefsInfo.hotbarAssignments_Warlock[Maths::Min(17,hotbarLength-1)] :
 					playerPrefsInfo.primarySpellID];
 
-				draw_grounded = spell.grounded;
+				draw_mode = spell.target_type;
 				spell_range = spell.range;
 			}
 
@@ -187,7 +209,7 @@ void onRender(CSprite@ this)
 
 			if (blob.getPlayer() is null) return;
 
-			if (draw_grounded)
+			if (draw_mode == 1)
 			{
 				u32 height = getLandHeight(blockedPos);
 				bool fail = height == 0;
@@ -217,30 +239,19 @@ void onRender(CSprite@ this)
 				}
 				//GUI::DrawLine2D(blockedPos2D, ground_pos2d, fail ? SColor(125, 255, 55, 55) : SColor(125, 255, 255, 255));
 			}
+			else if (draw_mode == 2)
+			{
+				blob.Tag("update_target_grabber");
+
+				u16 target_id = blob.get_u16("target_grabber_id");
+				CBlob@ targetBlob = getBlobByNetworkID(target_id);
+
+				if (targetBlob !is null)
+				{
+					Vec2f drawPos = getDriver().getScreenPosFromWorldPos(targetBlob.getPosition());
+					GUI::DrawRectangle(drawPos - Vec2f(16, 16), drawPos + Vec2f(16, 16), SColor(155, 189, 69, 224));
+				}
+			}
 		}
 	}
-}
-
-u32 getLandHeight(Vec2f pos)
-{
-	CMap@ map = getMap(); //standard map check
-	if(map is null)
-	{return 0;}
-
-	u16 tilesdown = 0;
-	
-	u32 pos_y = pos.y - pos.y % map.tilesize;//Store the y pos floored to the nearest top of a tile
-	while(true)//Loop until stopped inside
-	{
-		if(map.tilemapheight * map.tilesize < pos_y + tilesdown * map.tilesize)//If we are checking below the map itself
-		{
-			break;
-		}
-		if(map.isTileSolid(Vec2f(pos.x, pos_y + map.tilesize * tilesdown)))//if this current point has a solid tile
-		{
-			return(pos_y + tilesdown * map.tilesize);//The current blobs pos plus one or more tiles down
-		}
-		tilesdown += 1;
-	}
-	return 0;
 }

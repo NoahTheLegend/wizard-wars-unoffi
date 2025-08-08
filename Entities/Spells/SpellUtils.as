@@ -1043,3 +1043,35 @@ int closestBlobIndex(CBlob@ this, CBlob@[] blobs, bool friendly)
     
     return bestIndex;
 }
+
+const f32 max_grab_range = 64.0f;
+CBlob@ client_getNearbySpellTarget(CBlob@ this)
+{
+	CControls@ c = getControls();
+	if (c is null) return null;
+	if (!this.isMyPlayer()) return null;
+
+	CBlob@[] playerblobs;
+	getBlobsByTag("player", @playerblobs);
+
+	Vec2f aimPos = getDriver().getWorldPosFromScreenPos(c.getMouseScreenPos());
+	f32 range = 99999.0f;
+	CBlob@ targetBlob = null;
+
+	for (int i = 0; i < playerblobs.length; i++)
+	{
+		CBlob@ playerblob = playerblobs[i];
+		if (playerblob is null
+			|| playerblob.getTeamNum() == this.getTeamNum()
+			|| playerblob.hasTag("dead")) continue;
+
+		f32 dist = (aimPos - playerblob.getPosition()).Length();
+		if (dist < max_grab_range && dist < range)
+		{
+			range = dist;
+			@targetBlob = @playerblob;
+		}
+	}
+
+	return targetBlob;
+}

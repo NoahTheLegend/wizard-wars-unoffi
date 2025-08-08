@@ -204,6 +204,33 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 			int index = Maths::Min(positions.length-1, ticks_warp * old_positions_save_threshold);
 			Vec2f at = positions[index];
 
+			this.getSprite().PlaySound("ShadowBurstShoot.ogg", 0.75f, 1.5 + XORRandom(11) * 0.01f);
+			for (int i = 0; i < 2+XORRandom(6); i++)
+    		{
+				Vec2f vel(1.0f + XORRandom(20) * 0.01f, 0);
+				vel.RotateBy(XORRandom(100) * 0.01f * 360.0f);
+
+    		    CParticle@ p = ParticleAnimated( CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+											at, 
+											vel, 
+											float(XORRandom(360)), 
+											1.0f, 
+											4 + XORRandom(8), 
+											0.0f, 
+											false );
+
+    		    if (p is null) break;
+
+    			p.fastcollision = true;
+    		    p.scale = 1.0f;
+    		    p.damping = 0.925f;
+				p.Z = 600.0f;
+				p.lighting = false;
+				p.colour = SColor(255, 200+XORRandom(55), 85+XORRandom(50), 200+XORRandom(55));
+				p.forcecolor = SColor(255, 200+XORRandom(55), 85+XORRandom(50), 200+XORRandom(55));
+				p.setRenderStyle(RenderStyle::additive);
+    		}
+
 			CBlob@ orb = server_CreateBlob("shadowburstorb", this.getTeamNum(), at);
 			if (orb !is null)
 			{
@@ -245,7 +272,7 @@ void makeSmokeParticle(CBlob@ this, const Vec2f vel = Vec2f_zero, const string f
 										vel, 
 										float(XORRandom(360)), 
 										1.0f + XORRandom(50) * 0.01f,
-										2, 
+										3, 
 										0.0f, 
 										false);
 
@@ -253,8 +280,8 @@ void makeSmokeParticle(CBlob@ this, const Vec2f vel = Vec2f_zero, const string f
 		{
 			p.bounce = 0;
     		p.fastcollision = true;
-			p.colour = SColor(255, 200+XORRandom(55), 25+XORRandom(50), 200+XORRandom(55));
-			p.forcecolor = SColor(255, 200+XORRandom(55), 25+XORRandom(50), 200+XORRandom(55));
+			p.colour = SColor(255, 200+XORRandom(55), 85+XORRandom(50), 200+XORRandom(55));
+			p.forcecolor = SColor(255, 200+XORRandom(55), 85+XORRandom(50), 200+XORRandom(55));
 			p.setRenderStyle(RenderStyle::additive);
 			p.Z = 1.5f;
 		}
@@ -299,9 +326,10 @@ void laserEffects(CBlob@ this, int id)
 {
     int ts = this.getTickSinceCreated();
     string rendname = anim_loop[ts / anim_time % anim_loop.length];
-    f32 z = 100.0f;
+    f32 z = 50.0f;
 
-	f32 mod = Maths::Min(f32(ts) / 5, 1.0f);
+	f32 t = this.hasTag("no_projectiles") ? 5 : 10;
+	f32 mod = Maths::Min(f32(ts) / t, 1.0f);
 	u8 alpha = mod * 255;
 	f32 s = this.hasTag("no_projectiles") ? 8.0f : 12.0f;
 

@@ -30,7 +30,7 @@ void onTick(CBlob@ this)
             int[] frames = {0, 1, 2, 3, 3, 4, 5, 6, 7, 8, 9};
             anim.AddFrames(frames);
             castFront.SetAnimation(anim);
-            castFront.SetRelativeZ(55.0f);
+            castFront.SetRelativeZ(75.0f);
         }
         
         if (castBack is null)
@@ -103,7 +103,7 @@ void onTick(CBlob@ this)
                 orb.SetDamageOwnerPlayer(this.getPlayer());
                 orb.setVelocity(dir * this.get_f32("shadowburst_speed"));
                 orb.set_f32("damage", this.get_f32("shadowburst_damage"));
-                orb.server_SetTimeToDie(1.5f + XORRandom(25) * 0.01f);
+                orb.server_SetTimeToDie(2.0f + XORRandom(25) * 0.01f);
             }
         }
     }

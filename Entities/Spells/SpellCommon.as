@@ -14,7 +14,7 @@ const int complete_cast = NecromancerParams::cast_3;
 const int super_cast = NecromancerParams::extra_ready;
 const float necro_shoot_speed = NecromancerParams::shoot_max_vel;
 
-void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimpos , Vec2f thispos)
+void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimpos, Vec2f thispos, u16 targetID)
 {	//To get a spell hash to add more spells type this in the console (press home in game)
 	//print('cfg_name'.getHash()+'');
 	//As an example with the meteor spell, i'd type out
@@ -25,6 +25,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
 		f32 orbDamage = X.Xf * extraDamage;
 	*/
+
+	u8 spell_mode = spell.target_type;
+
+	bool has_target = false;
+	CBlob@ spell_target = null;
+	
+	if (spell_mode == 2)
+	{
+		CBlob@ target = getBlobByNetworkID(targetID);
+		if (target !is null)
+		{
+			has_target = true;
+			@spell_target = @target;
+		}
+	}
 
 	if(isClient())
 	{
@@ -6096,62 +6111,66 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		break;
 
 		// WARLOCK
-		case 1783647402: //Shadow Spear
+		case 1783647402: // shadowspear
         {
-            if (!isServer()){
-                   return;
+			ManaInfo@ manaInfo;
+			if (!this.get("manaInfo", @manaInfo)) {
+				return;
+			}
+
+			if (targetID == 0 || getBlobByNetworkID(targetID) is null)
+			{
+				manaInfo.mana += spell.mana;
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+				return;
+			}
+
+            if (!isServer())
+			{
+                return;
             }
 
-            f32 orbspeed = necro_shoot_speed;
-            f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
-            f32 orbDamage = 1.0f * extraDamage;
+            f32 orbspeed = 1.0f;
+			f32 damage = 3.0f;
+			int max_mana_steal = 10;
+			u8 max_repeats = 3;
             
             switch(charge_state)
             {
                 case minimum_cast:
-                {
-                    orbspeed *= (1.0f/2.0f);
-                    orbDamage *= 0.5f;
-                }
-                break;
-
                 case medium_cast:
-                {
-                    orbspeed *= (4.0f/5.0f);
-                    orbDamage *= 0.7f;
-                }
-                break;
-
                 case complete_cast:
-                {
-                    orbDamage *= 1.0f;
-                }
                 break;
 
                 case super_cast:
                 {
-                    orbspeed *= 1.2f;
-                    orbDamage *= 1.5f;
+                    orbspeed = 6.0f;
+					max_mana_steal = 15;
                 }
                 break;
+
                 default:return;
             }
 
-            Vec2f orbPos = thispos/* + Vec2f(0.0f,-2.0f)*/;
-            Vec2f orbVel = (aimpos - orbPos);
-            orbVel.Normalize();
-            orbVel *= orbspeed;
+			if (this.hasTag("extra_damage"))
+			{
+				damage = 4.0f;
+				max_mana_steal += 5;
+				max_repeats = 5;
+			}
 
-            CBlob@ orb = server_CreateBlob( "shadowspear" );
+			Vec2f orbPos = Vec2f(0, -1028.0f); // teleports at target
+            CBlob@ orb = server_CreateBlob("shadowspear", this.getTeamNum(), orbPos);
             if (orb !is null)
             {
-                orb.set_f32("explosive_damage", orbDamage);
+                orb.SetDamageOwnerPlayer(this.getPlayer());
 
-                orb.IgnoreCollisionWhileOverlapped( this );
-                orb.SetDamageOwnerPlayer( this.getPlayer() );
-                orb.server_setTeamNum( this.getTeamNum() );
-                orb.setPosition( orbPos );
-                orb.setVelocity( orbVel );
+				orb.set_f32("damage", damage);
+				orb.set_f32("speed", orbspeed);
+				orb.set_u8("max_mana_steal", max_mana_steal);
+				orb.set_s8("remaining_repeats", max_repeats);
+				orb.set_u8("real_id", XORRandom(max_repeats));
+				orb.set_u16("follow_id", targetID);
             }
         }
         break;

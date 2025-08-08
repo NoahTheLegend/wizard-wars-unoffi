@@ -1,105 +1,81 @@
 #include "Hitters.as";
 #include "TeamColour.as";
-#include "MagicCommon.as"
+#include "MagicCommon.as";
+#include "TextureCreation.as";
 
+const f32 rad = 156.0f;
+const f32 afterdeath_time = 0.1f;
 void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
+
 	consts.mapCollisions = false;
 	consts.bullet = false;
 	consts.net_threshold_multiplier = 1.0f;
+	shape.SetGravityScale(0.0f);
+
 	this.Tag("projectile");
 	this.Tag("counterable");
-	shape.SetGravityScale(0.0f);
-	
-	this.set_f32("lifetime",0);
 	this.Tag("no trampoline collision");
 	this.Tag("smashtoparticles_additive");
-	
-    //dont collide with top of the map
-	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
-    this.server_SetTimeToDie(60);
+	this.set_f32("lifetime", 0);
+	this.SetMapEdgeFlags(CBlob::map_collide_none | CBlob::map_collide_nodeath);
+	this.server_SetTimeToDie(1);
+
 	CSprite@ sprite = this.getSprite();
 	sprite.SetZ(1500.0f);
 	sprite.setRenderStyle(RenderStyle::additive);
-	this.getSprite().RotateBy(+45, Vec2f_zero);
+	sprite.RotateBy(45, Vec2f_zero);
+	this.set_f32("smashtoparticles_extra_rot", 45);
+
 	u16[] ids;
 	this.set("hit_ids", @ids);
 	this.addCommandID("stole_mana");
+
+	if (!isClient()) return;
+	const Vec2f frameSize(48, 48);
+
+    SetupImage("ShadowSpear.png", SColor(255, 255, 255, 255), "ss_rend0", false, false, Vec2f(0, 0), frameSize);
+	SetupImage("ShadowSpear.png", SColor(255, 255, 255, 255), "ss_rend1", false, false, Vec2f(0, 0), frameSize);
+	SetupImage("ShadowSpear.png", SColor(255, 255, 255, 255), "ss_rend2", false, false, Vec2f(0, 0), frameSize);
+	SetupImage("ShadowSpear.png", SColor(255, 255, 255, 255), "ss_rend3", false, false, Vec2f(0, 0), frameSize);
+
+    int cb_id = Render::addBlobScript(Render::layer_prehud, this, "ShadowSpear.as", "laserEffects");
 }
 
-//f32 stoprange = 48.0f;
-const f32 ticks_noclip = 10;
 void onTick(CBlob@ this)
 {
-	this.setAngleDegrees(-this.getVelocity().Angle());
+	Vec2f dir = this.getVelocity();
+	this.setAngleDegrees(-dir.Angle());
 
-	this.setAngleDegrees(-this.getVelocity().Angle());
-
-    bool has_solid = this.getShape().isOverlappingTileSolid(true);
-    if (!this.hasTag("solid") && getMap() !is null && !has_solid)
-    {
-        this.getShape().getConsts().mapCollisions = true;
-        if (has_solid) this.Tag("mark_for_death");
-        this.Tag("solid");
-    }
-    else if (!this.hasTag("solid") && this.getTickSinceCreated() > ticks_noclip)
-        this.Tag("mark_for_death");
-	/*Vec2f pos = this.getPosition();
-	Vec2f target_pos = this.get_Vec2f("target_pos");
-	bool back = this.get_bool("back");
-	f32 dist = (pos-target_pos).Length();
-	Vec2f dir = target_pos-pos;
 	dir.Normalize();
+	this.AddForce(dir * this.getMass());
 
-	Vec2f vel = this.getVelocity();
-	f32 speed = this.get_f32("speed");
-	f32 factor = 1.0f * Maths::Min(dist, stoprange) / stoprange;
-
-	// particles
-	if (isClient())
+	if (this.getTickSinceCreated() == 0)
 	{
-		u8 t = this.getTeamNum();
-		for (u8 i = 0; i < 2; i++)
+		if (!isServer()) return;
+		s8 remaining_repeats = this.get_s8("remaining_repeats");
+
+		u8 real_id = this.get_u8("real_id");
+		if (remaining_repeats != real_id) this.Tag("fake_blob");
+		
+		u16 targetID = this.get_u16("follow_id");
+		if (targetID != 0)
 		{
-			Vec2f dir = Vec2f(-4, 4 * (i%2==0?-1:1)).RotateBy(this.getAngleDegrees());
-			Vec2f ppos = this.getOldPosition()+dir;
-			Vec2f vel = this.getVelocity() + dir/4;
-			CParticle@ p = ParticlePixelUnlimited(ppos, vel, getTeamColor(t), true);
-    		if(p !is null)
+			CBlob@ target = getBlobByNetworkID(targetID);
+			if (target !is null)
 			{
-    			p.fastcollision = true;
-    			p.timeout = 15 + XORRandom(11);
-    			p.damping = 0.85f+XORRandom(101)*0.001f;
-				p.gravity = Vec2f(0,0);
-				p.collides = false;
-				p.Z = 510.0f;
-				p.setRenderStyle(RenderStyle::additive);
+				this.setPosition(target.getPosition() + Vec2f(rad + XORRandom(rad), 0).RotateBy(XORRandom(360)));
+				Vec2f dir = target.getPosition() - this.getPosition();
+				dir.Normalize();
+				dir *= this.get_f32("speed");
+				this.setVelocity(dir);
+				this.setAngleDegrees(-dir.Angle());
 			}
 		}
 	}
-	
-	this.setVelocity(dir * speed * factor);
-
-	if (dist < stoprange && vel.Length() < 1.0f)
-	{
-		if (back) this.Tag("mark_for_death");
-		this.set_bool("back", true);
-		back = true;
-
-		CPlayer@ p = this.getDamageOwnerPlayer();
-		if (p is null || p.getBlob() is null)
-		{
-			this.Tag("mark_for_death");
-		}
-		else
-		{
-			this.set_Vec2f("target_pos", p.getBlob().getPosition());
-		}
-	}
-	if (vel.Length() >= 1.0f) this.setAngleDegrees(-this.getVelocity().Angle() + (back?180:0));*/
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
@@ -108,10 +84,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		if (isEnemy(this, blob))
 		{
-			float damage = this.get_f32("damage");
+			this.server_SetTimeToDie(afterdeath_time);
+			f32 damage = this.get_f32("damage");
 			this.getSprite().PlaySound("exehit.ogg", 1.5f, 1.5f+XORRandom(26)*0.01f);
 
-			if (isServer())
+			if (isServer() && !this.hasTag("fake_blob"))
 			{
 				this.server_Hit(blob, blob.getPosition(), this.getVelocity(), damage, Hitters::arrow, true);
 
@@ -119,16 +96,21 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 				{
 					this.Tag("mark_for_death");
 				}
+
 				u16[]@ ids;
-				if (this.get("hit_ids", @ids) && ids.find(blob.getNetworkID()) == -1){
+				if (this.get("hit_ids", @ids) && ids.find(blob.getNetworkID()) == -1)
+				{
 					CBitStream params;
 					params.write_u16(blob.getNetworkID());
+					params.write_u8(this.get_u8("max_mana_steal"));
+
 					this.SendCommand(this.getCommandID("stole_mana"), params);
 					ids.push_back(blob.getNetworkID());
 				}
 			}
 		}
 	}
+
 	if (blob is null && solid)
 	{
 		this.Tag("mark_for_death");
@@ -140,18 +122,25 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	if (cmd == this.getCommandID("stole_mana"))
 	{
 		u16 id = params.read_u16();
+		u8 max_steal = params.read_u8();
+
 		CBlob@ b = getBlobByNetworkID(id);
 		if (b is null) return;
+		
 		ManaInfo@ manaInfo;
-		if (b.get("manaInfo", @manaInfo)) {
+		if (b.get("manaInfo", @manaInfo))
+		{
 			print("stole mana from " + b.getName() + " " + manaInfo.mana);
-			if (manaInfo.mana >= 1){
-				int steal = Maths::Min(10, manaInfo.mana);
+			if (manaInfo.mana > 0)
+			{
+				int steal = Maths::Min(max_steal, manaInfo.mana);
 				manaInfo.mana -= steal;
-				if (b is null) return;
+
+				if (!isServer() || b is null) return;
 				CBlob@ orb = server_CreateBlob("shadowspearmanaorb", this.getTeamNum(), b.getPosition());
-				orb.setVelocity(Vec2f(1+XORRandom(25)*0.1f, 0).RotateBy(XORRandom(360)));
-				orb.server_setTeamNum( this.getTeamNum() );
+
+				orb.setVelocity(Vec2f(1 + XORRandom(25) * 0.1f, 0).RotateBy(XORRandom(360)));
+				orb.server_setTeamNum(this.getTeamNum());
 				orb.set_s32("mana_stored", steal);
 			}
 		}
@@ -160,6 +149,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 bool isEnemy(CBlob@ this, CBlob@ target)
 {
+	u16 targetID = this.get_u16("follow_id");
+	if (targetID == 0) return false;
+
 	CBlob@ friend = getBlobByNetworkID(target.get_netid("brain_friend_id"));
 	return 
 	(
@@ -171,8 +163,77 @@ bool isEnemy(CBlob@ this, CBlob@ target)
 				&& (friend is null
 					|| friend.getTeamNum() != this.getTeamNum()
 					)
+				&& target.getNetworkID() == targetID
 			)
 		)
 		&& target.getTeamNum() != this.getTeamNum() 
 	);
+}
+
+void onDie(CBlob@ this)
+{
+	if (!isServer()) return;
+
+	bool fake_blob = this.hasTag("fake_blob");
+	if (!fake_blob) return;
+
+	s8 remaining = this.get_s8("remaining_repeats") - 1;
+	if (remaining < 0) return;
+
+	u16 targetID = this.get_u16("follow_id");
+
+	Vec2f orbPos = Vec2f(0, -1028.0f); // teleports at target
+	CBlob@ orb = server_CreateBlob("shadowspear", this.getTeamNum(), orbPos);
+	if (orb !is null)
+	{
+		orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+
+		orb.set_f32("damage", this.get_f32("damage"));
+		orb.set_f32("speed", this.get_f32("speed"));
+		orb.set_u8("max_mana_steal", this.get_u8("max_mana_steal"));
+		orb.set_s8("remaining_repeats", remaining);
+		orb.set_u8("real_id", this.get_u8("real_id"));
+		orb.set_u16("follow_id", targetID);
+    }
+}
+
+const string[] anim_loop = {
+	"ss_rend0",
+	"ss_rend1",
+	"ss_rend2",
+    "ss_rend3"
+};
+
+const u8 anim_time = 4;
+void laserEffects(CBlob@ this, int id)
+{
+    int ts = this.getTickSinceCreated();
+    string rendname = anim_loop[ts / anim_time % anim_loop.length];
+    f32 z = 100.0f;
+
+    Vec2f[] v_pos;
+    Vec2f[] v_uv;
+    SColor[] v_col;
+
+	f32 s = 48;
+	f32 mod = Maths::Min(f32(ts) / 8, 1.0f);
+	u8 alpha = 255 * mod;
+
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-s, -s));
+    v_uv.push_back(Vec2f(0, 0));
+    v_col.push_back(SColor(alpha, 255, 255, 255));
+
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(s, -s));
+    v_uv.push_back(Vec2f(1, 0));
+    v_col.push_back(SColor(alpha, 255, 255, 255));
+
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(s, s));
+    v_uv.push_back(Vec2f(1, 1));
+    v_col.push_back(SColor(alpha, 255, 255, 255));
+
+    v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-s, s));
+    v_uv.push_back(Vec2f(0, 1));
+    v_col.push_back(SColor(alpha, 255, 255, 255));
+
+    Render::QuadsColored(rendname, z, v_pos, v_uv, v_col);
 }

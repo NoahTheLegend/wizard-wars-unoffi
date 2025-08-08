@@ -241,9 +241,16 @@ void ManageSpell( CBlob@ this, NecromancerInfo@ necromancer, PlayerPrefsInfo@ pl
 				castSpellID = playerPrefsInfo.hotbarAssignments_Necromancer[Maths::Min(15,hotbarLength-1)];
 			else
 				castSpellID = playerPrefsInfo.primarySpellID;
+            CBlob@ target = spell.target_type == 2 ? client_getNearbySpellTarget(this) : null;
+
+			u16 targetID = 0;
+			if (target !is null) targetID = target.getNetworkID();
+
             params.write_u8(castSpellID);
             params.write_Vec2f(spellPos);
 			params.write_Vec2f(pos);
+			params.write_Vec2f(this.getAimPos());
+			params.write_u16(targetID);
             this.SendCommand(this.getCommandID("spell"), params);
 			
 			int spell_cd_time = NecromancerParams::spells[castSpellID].cooldownTime * getTicksASecond();
@@ -458,7 +465,9 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         Spell spell = NecromancerParams::spells[spellID];
         Vec2f aimpos = params.read_Vec2f();
 		Vec2f thispos = params.read_Vec2f();
-        CastSpell(this, charge_state, spell, aimpos, thispos);
+        Vec2f serverAimPos = params.read_Vec2f();
+		u16 targetID = params.read_u16();
+        CastSpell(this, charge_state, spell, aimpos, thispos, targetID);
 		
 		manaInfo.mana -= spell.mana;
     }
