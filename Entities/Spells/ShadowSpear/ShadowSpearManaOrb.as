@@ -10,11 +10,13 @@ void onInit(CBlob@ this)
 	
 	this.getShape().getConsts().bullet = true;
     this.addCommandID("add_mana");
+
+	this.set_Vec2f("smashtoparticles_grav", Vec2f(0, 0.25f));
 }
 
 void onTick(CBlob@ this)
 {
-	if (this.getCurrentScript().tickFrequency == 1)
+	if (this.getTickSinceCreated() == 0)
 	{
 		this.getShape().SetGravityScale(0.0f);
 		this.server_SetTimeToDie(15);
@@ -22,14 +24,8 @@ void onTick(CBlob@ this)
 		this.SetLightRadius(24.0f);
 		this.SetLightColor(SColor(255, 211, 121, 224));
 		this.set_string("custom_explosion_sound", "OrbExplosion.ogg");
-		this.getSprite().PlaySound("WizardShoot.ogg", 2.0f);
 		this.getSprite().SetZ(1000.0f);
-
-		//makes a stupid annoying sound
-		//ParticleZombieLightning( this.getPosition() );
-
-		// done post init
-		this.getCurrentScript().tickFrequency = 10;
+		this.getSprite().PlaySound("mana_smooth.ogg", 1.0f, 1.0f + XORRandom(10) * 0.01f);
 	}
 
 	{
@@ -50,6 +46,23 @@ void onTick(CBlob@ this)
 				}
 			}
 		}
+	}
+
+	if (isClient() && this.getVelocity().Length() > 0.01f)
+	{
+        CParticle@ p = ParticleAnimated("ShadowSpearManaOrb.png", this.getPosition(), Vec2f_zero, this.getAngleDegrees(), 0.75f, 3, 0.0f, true);
+	    if (p !is null)
+	    {
+	    	p.bounce = 0;
+        	p.collides = false;
+			p.fastcollision = true;
+			p.timeout = 30;
+            p.growth = -0.05f;
+	    	p.Z = -1.0f;
+	    	p.gravity = Vec2f_zero;
+	    	p.deadeffect = -1;
+            p.setRenderStyle(RenderStyle::additive);
+	    }
 	}
 }
 
@@ -100,11 +113,13 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (solid || blob.hasTag("kill other spells"))
 	{
-		this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 1.0f + XORRandom(3)/10.0f);
+		this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.35f, 0.75f + XORRandom(3)/10.0f);
 		sparks(this.getPosition(), 4);
 	}
-    if(blob !is null && blob.hasTag("player") && blob.getTeamNum() == this.getTeamNum() && isServer())
+    if (blob !is null && blob.hasTag("player") && blob.getTeamNum() == this.getTeamNum() && isServer())
     {
+		if (this.hasTag("added")) return;
+
         CBitStream params;
 		params.write_u16(blob.getNetworkID());
 		this.SendCommand(this.getCommandID("add_mana"), params);
@@ -116,14 +131,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		u16 id = params.read_u16();
 		CBlob@ b = getBlobByNetworkID(id);
+
 		if (b is null) return;
 		ManaInfo@ manaInfo;
-		if (b.get("manaInfo", @manaInfo)) {
+		if (b.get("manaInfo", @manaInfo))
+		{
 			print("add mana from " + b.getName() + " " + manaInfo.mana);
-			if (manaInfo.mana < manaInfo.maxMana){
-                this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 1.0f + XORRandom(3)/10.0f);
+			if (manaInfo.mana < manaInfo.maxMana)
+			{
+                this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 0.75f + XORRandom(3)/10.0f);
 				manaInfo.mana = Maths::Min(manaInfo.mana + this.get_s32("mana_stored"), manaInfo.maxMana);
+
                 this.Tag("mark_for_death");
+				this.Tag("added");
 			}
 		}
 	}
@@ -132,6 +152,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 void onDie(CBlob@ this)
 {
 	sparks(this.getPosition(), 10);
+
+	if (isServer())
+	{
+		u16 countered_by_id = this.get_u16("countered_by_id");
+		CBlob@ countered_by = getBlobByNetworkID(countered_by_id);
+		if (countered_by !is null)
+		{
+			CBitStream params;
+			params.write_u16(countered_by.getNetworkID());
+			this.SendCommand(this.getCommandID("add_mana"), params);
+		}
+	}
+
+	this.getSprite().PlaySound("mana_smooth.ogg", 1.0f, 0.75f + XORRandom(10) * 0.01f);
 }
 
 Random _sprk_r(21342);

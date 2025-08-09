@@ -16,6 +16,8 @@ const u32 fall_step = 24.0f;
 const u32 fall_max_len = 24.0f;
 const f32 fall_speed = 1.0f;
 
+u16 target_grabber_time = 0;
+const u16 max_grab_time = 10;
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -23,7 +25,84 @@ void onTick(CSprite@ this)
 
 	if (blob.hasTag("update_target_grabber"))
 	{
-		CBlob@ targetBlob = client_getNearbySpellTarget(blob);
+		PlayerPrefsInfo@ playerPrefsInfo;
+		if (!blob.getPlayer().get("playerPrefsInfo", @playerPrefsInfo)) 
+		{
+			return;
+		}
+
+		u8 castSpellID;
+		string bname = blob.getName();
+		string casting_key = blob.get_string("casting_key");
+
+		u8[] hotbarAssignments;
+		Spell[] spellList;
+
+		if (bname == "wizard")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Wizard;
+			spellList = WizardParams::spells;
+		}
+		else if (bname == "necromancer")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Necromancer;
+			spellList = NecromancerParams::spells;
+		}
+		else if (bname == "druid")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Druid;
+			spellList = DruidParams::spells;
+		}
+		else if (bname == "swordcaster")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_SwordCaster;
+			spellList = SwordCasterParams::spells;
+		}
+		else if (bname == "entropist")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Entropist;
+			spellList = EntropistParams::spells;
+		}
+		else if (bname == "priest")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Priest;
+			spellList = PriestParams::spells;
+		}
+		else if (bname == "shaman")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Shaman;
+			spellList = ShamanParams::spells;
+		}
+		else if (bname == "paladin")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Paladin;
+			spellList = PaladinParams::spells;
+		}
+		else if (bname == "jester")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Jester;
+			spellList = JesterParams::spells;
+		}
+		else if (bname == "warlock")
+		{
+			hotbarAssignments = playerPrefsInfo.hotbarAssignments_Warlock;
+			spellList = WarlockParams::spells;
+		}
+
+		int hotbarLength = hotbarAssignments.length;
+		if (casting_key == "a2")
+			castSpellID = hotbarAssignments[Maths::Min(15, hotbarLength-1)];
+		else if (casting_key == "a3")
+			castSpellID = hotbarAssignments[Maths::Min(16, hotbarLength-1)];
+		else if (casting_key == "a4")
+			castSpellID = hotbarAssignments[Maths::Min(17, hotbarLength-1)];
+		else
+			castSpellID = playerPrefsInfo.primarySpellID;
+
+		Spell spell = spellList[castSpellID];
+	
+		target_grabber_time = Maths::Min(target_grabber_time + 1, max_grab_time);
+		CBlob@ targetBlob = client_getNearbySpellTarget(blob, spell.range, spell.target_grab_range);
 		if (targetBlob !is null)
 		{
 			blob.set_u16("target_grabber_id", targetBlob.getNetworkID());
@@ -34,6 +113,10 @@ void onTick(CSprite@ this)
 		}
 
 		blob.Untag("update_target_grabber");
+	}
+	else
+	{
+		target_grabber_time = 0;
 	}
 }
 
@@ -200,7 +283,6 @@ void onRender(CSprite@ this)
 				blob.set_Vec2f("old_blockedpos", blockedPos);
 			}
 
-
 			Vec2f myPos = getDriver().getScreenPosFromWorldPos(pos);
 			Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos(aimpos);
 
@@ -216,7 +298,6 @@ void onRender(CSprite@ this)
 				Vec2f ground_cast = Vec2f(blockedPos.x, fail ? map.tilemapheight * 8 : height);
 
 				Vec2f ground_pos2d = getDriver().getScreenPosFromWorldPos(ground_cast);
-
 				f32 zoom = getCamera().targetDistance;
 
 				Vec2f fall_vec = ground_pos2d - blockedPos2D;
@@ -237,7 +318,6 @@ void onRender(CSprite@ this)
 					
 					GUI::DrawLine2D(step_line_pos+offset, step_line_pos+offset+Vec2f(0, fall_max_len), new_col);
 				}
-				//GUI::DrawLine2D(blockedPos2D, ground_pos2d, fail ? SColor(125, 255, 55, 55) : SColor(125, 255, 255, 255));
 			}
 			else if (draw_mode == 2)
 			{
@@ -248,8 +328,11 @@ void onRender(CSprite@ this)
 
 				if (targetBlob !is null)
 				{
+					f32 mod = f32(target_grabber_time) / f32(max_grab_time);
 					Vec2f drawPos = getDriver().getScreenPosFromWorldPos(targetBlob.getPosition());
-					GUI::DrawRectangle(drawPos - Vec2f(16, 16), drawPos + Vec2f(16, 16), SColor(155, 189, 69, 224));
+
+					f32 targetDistance = getCamera() !is null ? getCamera().targetDistance : 1.0f;
+					GUI::DrawIcon("SpellTarget.png", (getGameTime() / 4) % 4, Vec2f(32, 48), drawPos - Vec2f(32, 60) * targetDistance, 1.0f * targetDistance, SColor(175 * mod, 255, 255, 255));
 				}
 			}
 		}

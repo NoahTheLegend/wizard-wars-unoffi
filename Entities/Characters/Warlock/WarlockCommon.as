@@ -80,7 +80,7 @@ namespace WarlockParams
 				SpellCategory::debuff, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("shadowspear", "Shadow Spear", 0, "Throw a shadow spear which curses touched enemy and steals their mana. Anyone who deals damage to the cursed target will steal some of their mana.",
-				SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f, true, 2),
+				SpellCategory::offensive, SpellType::other, 1, 15, 0, array<f32> = {256.0f, 64.0f}, true, 2),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f),

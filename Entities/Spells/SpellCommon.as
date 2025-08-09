@@ -6152,26 +6152,31 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
                 default:return;
             }
 
+			u8 spearsCount = 1;
 			if (this.hasTag("extra_damage"))
 			{
-				damage = 4.0f;
-				max_mana_steal += 5;
+				damage = 2.0f;
+				max_mana_steal = 15;
 				max_repeats = 5;
+				spearsCount = 2;
 			}
 
-			Vec2f orbPos = Vec2f(0, -1028.0f); // teleports at target
-            CBlob@ orb = server_CreateBlob("shadowspear", this.getTeamNum(), orbPos);
-            if (orb !is null)
-            {
-                orb.SetDamageOwnerPlayer(this.getPlayer());
+			for (u8 i = 0; i < spearsCount; i++)
+			{
+				Vec2f orbPos = Vec2f(0, -1028.0f); // teleports at target
+				CBlob@ orb = server_CreateBlob("shadowspear", this.getTeamNum(), orbPos);
+				if (orb !is null)
+				{
+					orb.SetDamageOwnerPlayer(this.getPlayer());
 
-				orb.set_f32("damage", damage);
-				orb.set_f32("speed", orbspeed);
-				orb.set_u8("max_mana_steal", max_mana_steal);
-				orb.set_s8("remaining_repeats", max_repeats);
-				orb.set_u8("real_id", XORRandom(max_repeats));
-				orb.set_u16("follow_id", targetID);
-            }
+					orb.set_f32("damage", damage);
+					orb.set_f32("speed", orbspeed);
+					orb.set_u8("max_mana_steal", max_mana_steal);
+					orb.set_s8("remaining_repeats", max_repeats);
+					orb.set_u8("real_id", XORRandom(max_repeats));
+					orb.set_u16("follow_id", targetID);
+				}
+			}
         }
         break;
 

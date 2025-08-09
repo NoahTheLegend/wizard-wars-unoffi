@@ -252,8 +252,8 @@ void onTick(CBlob@ this)
 						else
 							p.Z = -10.0f;
 
-						p.colour = SColor(155, 200+XORRandom(55), 25+XORRandom(125), 200+XORRandom(55));
-						p.forcecolor = SColor(155, 200+XORRandom(55), 25+XORRandom(125), 200+XORRandom(55));
+						p.colour = SColor(175 + XORRandom(25), 220+XORRandom(35), 25+XORRandom(55), 210+XORRandom(45));
+						p.forcecolor = SColor(175 + XORRandom(25), 220+XORRandom(35), 25+XORRandom(55), 210+XORRandom(45));
 					}
 				}
 			}
@@ -286,8 +286,11 @@ void onTick(CBlob@ this)
 				if (getNet().isClient())
 				{
 					const f32 rad = 6.0f;
-					Vec2f random = Vec2f(XORRandom(128)-64, XORRandom(128)-64) * 0.015625f * rad;
-					CParticle@ p = ParticleAnimated("MissileFire1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
+					Vec2f random = Vec2f(XORRandom(16) + 16, 0).RotateBy(XORRandom(360));
+					Vec2f rNorm = random;
+					rNorm.Normalize();
+					Vec2f ppos = this.getPosition() + this.getVelocity() + random;
+					CParticle@ p = ParticleAnimated(XORRandom(5) == 0 ? "Track1.png" : "Swirl1.png", ppos, -rNorm * random.Length() * 0.06f, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.01f, true);
 					if (p !is null)
 					{
 						p.bounce = 0;
@@ -296,6 +299,9 @@ void onTick(CBlob@ this)
 							p.Z = 10.0f;
 						else
 							p.Z = -10.0f;
+
+						p.colour = SColor(180, 80+XORRandom(40), 10+XORRandom(40), 40+XORRandom(40));
+						p.forcecolor = SColor(180, 80+XORRandom(40), 10+XORRandom(40), 40+XORRandom(40));
 					}
 				}
 			}
