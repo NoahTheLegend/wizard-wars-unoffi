@@ -140,9 +140,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1)
 		}
 		else
 		{
-			if (this.get_u32("sound_at") + 5 > getGameTime()) return;
-			this.set_u32("sound_at", getGameTime());
-			this.getSprite().PlaySound("PoisonSurgeReflect.ogg", 0.5f, 0.9f + XORRandom(11) * 0.01f);
+			if (this.get_u32("sound_at") + 5 < getGameTime())
+			{
+				this.set_u32("sound_at", getGameTime());
+				this.getSprite().PlaySound("PoisonSurgeReflect.ogg", 0.5f, 0.9f + XORRandom(11) * 0.01f);
+			}
 		}
 	}
 	

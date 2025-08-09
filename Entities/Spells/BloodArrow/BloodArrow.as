@@ -20,11 +20,11 @@ void onInit(CBlob@ this)
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 
-    this.server_SetTimeToDie(60);
-	this.set_f32("stoprange", stoprange_base + XORRandom(stoprange_random));
+    this.server_SetTimeToDie(3);
 
 	if (!isClient()) return;
 	CSprite@ sprite = this.getSprite();
+	
 	sprite.SetZ(750.0f);
 	sprite.ScaleBy(Vec2f(0.33f, 0.33f));
 	//sprite.setRenderStyle(RenderStyle::additive);
@@ -38,9 +38,6 @@ void onInit(CBlob@ this)
 	}
 }
 
-const f32 stoprange_base = 24.0f;
-const f32 stoprange_random = 24.0f;
-
 void onTick(CBlob@ this)
 {
 	Vec2f pos = this.getPosition();
@@ -48,18 +45,44 @@ void onTick(CBlob@ this)
 
 	SColor col = SColor(155+XORRandom(55), 125+XORRandom(55), 10+XORRandom(25), 0);
 	if (this.getTeamNum() == 0) col = SColor(155+XORRandom(55), 10+XORRandom(25), 0, 125+XORRandom(55));
-	
-	bool stop = this.get_bool("stop");
-	f32 stoprange = this.get_f32("stoprange");
 
-	Vec2f dir = target_pos-pos;
+	Vec2f dir = target_pos - pos;
 	f32 dist = dir.Length();
-
-	dir.Normalize();
 
 	Vec2f vel = this.getVelocity();
 	f32 speed = this.get_f32("speed");
-	f32 factor = 1.0f * Maths::Min(dist, stoprange) / stoprange;
+	f32 factor = 1.0f;
+
+	if (dist < 16.0f || this.hasTag("reached"))
+	{
+		if (!this.hasTag("reached"))
+		{
+			// push to either perpendicular side with random force
+			Vec2f push_dir = Vec2f(-1 - XORRandom(11) * 0.1f, XORRandom(8) - 4).RotateBy(this.getAngleDegrees());
+			push_dir.Normalize();
+			push_dir *= XORRandom(3) + 3;
+			this.AddForce(push_dir * this.getMass());
+		}
+		this.Tag("reached");
+
+
+		dir.Normalize();
+		Vec2f tangent = Vec2f(-dir.y, dir.x);
+		f32 orbit_speed = speed * 0.7f;
+		this.AddForce(tangent * orbit_speed);
+
+		f32 pull_strength = 0.5f;
+		this.AddForce(dir * pull_strength * this.getMass());
+
+		factor = 0.7f;
+	}
+	else
+	{
+		dir.Normalize();
+
+		this.setVelocity(dir * speed * factor);
+	}
+	if (vel.Length() >= 1.0f) this.setAngleDegrees(-this.getVelocity().Angle());
 
 	// particles
 	if (isClient() && this.getTickSinceCreated() == 1)
@@ -110,19 +133,6 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
-	this.setVelocity(dir * speed * factor);
-
-	if (dist < stoprange && vel.Length() < 1.0f)
-	{
-		this.set_bool("stop", true);
-
-		if (this.getTimeToDie() > 1.5f)
-		{
-			this.server_SetTimeToDie(0.5f+XORRandom(51)*0.01f);
-		}
-	}
-	if (vel.Length() >= 1.0f) this.setAngleDegrees(-this.getVelocity().Angle());
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)

@@ -72,7 +72,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
             int max_frames_in_row = Maths::Floor(w / framesize.x);
             image.setPixelPosition(Vec2f((frame * framesize.x % max_frames_in_row), Maths::Floor((frame * framesize.y) / max_frames_in_row)));
         }
-        else framesize = Vec2f(w,h);
+        else framesize = Vec2f(sprite.getFrameWidth(), sprite.getFrameHeight());
         //printf("frsize: "+framesize+" fr: "+frame);
 
         Vec2f center = Vec2f(-framesize.x/2, -framesize.y/2) + sprite.getOffset(); // shift it to upper left corner for 1/2 of sprite size

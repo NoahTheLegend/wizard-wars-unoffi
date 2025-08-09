@@ -55,7 +55,7 @@ namespace NecromancerParams
 			SpellCategory::utility, SpellType::other, 5, 10, 10, 8.0f, true),
 				
 		Spell("unholy_resurrection", "Unholy Resurrection", 24, "Inexpensively resurrect fallen allies... Though they may not find themselves completely restored to their former glory.",
-			SpellCategory::support, SpellType::other, 20, 30, 5, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_REVIVE}),
+			SpellCategory::support, SpellType::other, 20, 30, 5, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_REVIVE}),
 							
 		Spell("leech_g", "Leech", 130, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
 			SpellCategory::offensive, SpellType::other, 22, 40, 3, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_VAMPIRISM}),

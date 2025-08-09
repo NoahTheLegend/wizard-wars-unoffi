@@ -455,6 +455,7 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				b.Tag("mark_for_death");
 				b.Tag("counterspelled");
 				b.set_u16("countered_by_id", caster.getNetworkID());
+				
 				if (b.getName() == "plant_aura")
 				{retribution = true;}
 					
@@ -1044,8 +1045,7 @@ int closestBlobIndex(CBlob@ this, CBlob@[] blobs, bool friendly)
     return bestIndex;
 }
 
-const f32 max_grab_range = 64.0f;
-CBlob@ client_getNearbySpellTarget(CBlob@ this)
+CBlob@ client_getNearbySpellTarget(CBlob@ this, f32 spell_range, f32 max_grab_range)
 {
 	CControls@ c = getControls();
 	if (c is null) return null;
@@ -1055,6 +1055,8 @@ CBlob@ client_getNearbySpellTarget(CBlob@ this)
 	getBlobsByTag("player", @playerblobs);
 
 	Vec2f aimPos = getDriver().getWorldPosFromScreenPos(c.getMouseScreenPos());
+	Vec2f endPoint = this.get_Vec2f("spell blocked pos");
+
 	f32 range = 99999.0f;
 	CBlob@ targetBlob = null;
 
@@ -1063,13 +1065,18 @@ CBlob@ client_getNearbySpellTarget(CBlob@ this)
 		CBlob@ playerblob = playerblobs[i];
 		if (playerblob is null
 			|| playerblob.getTeamNum() == this.getTeamNum()
-			|| playerblob.hasTag("dead")) continue;
+			|| playerblob.hasTag("dead")
+			|| (playerblob.getPosition() - endPoint).Length() >= max_grab_range) continue;
 
 		f32 dist = (aimPos - playerblob.getPosition()).Length();
 		if (dist < max_grab_range && dist < range)
 		{
-			range = dist;
-			@targetBlob = @playerblob;
+			bool rayCast = getMap().rayCastSolidNoBlobs(endPoint, playerblob.getPosition());
+			if (!rayCast)
+			{
+				range = dist;
+				@targetBlob = @playerblob;
+			}
 		}
 	}
 

@@ -242,7 +242,7 @@ void ManageSpell( CBlob@ this, ShamanInfo@ shaman, PlayerPrefsInfo@ playerPrefsI
 				castSpellID = playerPrefsInfo.hotbarAssignments_Shaman[Maths::Min(15,hotbarLength-1)];
 			else
 				castSpellID = playerPrefsInfo.primarySpellID;
-            CBlob@ target = spell.target_type == 2 ? client_getNearbySpellTarget(this) : null;
+            CBlob@ target = spell.target_type == 2 ? client_getNearbySpellTarget(this, spell.range, spell.target_grab_range) : null;
 
 			u16 targetID = 0;
 			if (target !is null) targetID = target.getNetworkID();

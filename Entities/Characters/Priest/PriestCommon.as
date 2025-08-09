@@ -37,7 +37,7 @@ namespace PriestParams
 			SpellCategory::support, SpellType::other, 10, 15, 0, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
 			 
 		Spell("revive", "Revive", 15, "Fully bring trusty allies back from the dead by aiming a reviving missile at their gravestone.",
-			SpellCategory::support, SpellType::other, 90, 60, 15, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_REVIVE}),
+			SpellCategory::support, SpellType::other, 90, 60, 15, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_REVIVE}),
 
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
 			SpellCategory::debuff, SpellType::other, 20, 20, 0, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_CONTROL}), 

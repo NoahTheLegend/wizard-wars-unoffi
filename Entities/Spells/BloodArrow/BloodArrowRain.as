@@ -40,7 +40,7 @@ void onTick(CBlob@ this)
             orb.set_Vec2f("target_pos", dir - extra_dir);
 
             orb.SetDamageOwnerPlayer(this.getPlayer());
-            orb.server_SetTimeToDie(5.0f);
+            orb.server_SetTimeToDie(2.0f + XORRandom(51) * 0.01f);
 
             orb.set_f32("speed", this.hasTag("extra_damage") ? 10.0f : 8.0f);
             orb.set_f32("damage", this.get_f32("bloodarrow_damage"));

@@ -181,6 +181,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 					orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 					orb.server_SetTimeToDie(5.0f);
 
+					orb.set_f32("damage", this.get_f32("damage"));
 					orb.Tag("no_projectiles");
 					orb.Sync("no_projectiles", true);
 				}
@@ -191,6 +192,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("mark_for_death"))
 	{
 		this.Tag("mark_for_death");
+
+		if (isServer())
+		{
+			this.server_Hit(blob, blob.getPosition(), this.getVelocity(), this.get_f32("damage"), Hitters::explosion, true);
+		}
 
 		if (!this.hasTag("no_projectiles"))
 		{
@@ -239,9 +245,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 
 				orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 				orb.setVelocity(dir * 8.0f);
-				orb.set_f32("damage", this.get_f32("damage"));
 				orb.server_SetTimeToDie(2.5f + XORRandom(51) * 0.01f);
 
+				orb.set_f32("damage", this.get_f32("damage"));
 				orb.Tag("no_projectiles");
 				orb.Sync("no_projectiles", true);
 			}

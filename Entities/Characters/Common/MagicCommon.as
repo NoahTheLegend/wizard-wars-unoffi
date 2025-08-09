@@ -50,6 +50,7 @@ shared class Spell
 	s32 cooldownTime;
 
 	f32 range;
+	f32 target_grab_range;
 	s32 ready_time;
 
 	s32 cast_period;
@@ -76,6 +77,37 @@ shared class Spell
 		mana = i_mana;
 		cooldownTime = i_cooldownTime;
 		range = i_range;
+		target_grab_range = 64.0f;
+
+		cast_period = i_cast_period;
+		cast_period_1 = cast_period/3;
+		cast_period_2 = 2*cast_period/3;
+		full_cast_period = cast_period*3;
+
+		effect_types = _effect_types;
+		for (u8 i = 0; i < effect_types.size(); i++)
+		{
+			attributes.push_back(makeAttribute(effect_types[i]));
+		}
+
+		needs_full = fully_loaded;
+		target_type = _target_type;
+	}
+
+	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_category, u8 i_type,
+		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32[] i_range,
+		bool fully_loaded = false, u8 _target_type = 0, int[] _effect_types = -1)
+	{
+		typeName = i_typeName;
+		name = i_name;
+		iconFrame = i_iconFrame;
+		spellDesc = i_spellDesc;
+		category = i_category;
+		type = i_type;
+		mana = i_mana;
+		cooldownTime = i_cooldownTime;
+		range = i_range.size() > 0 ? i_range[0] : 0.0f;
+		target_grab_range = i_range.size() > 1 ? i_range[1] : 64.0f;
 
 		cast_period = i_cast_period;
 		cast_period_1 = cast_period/3;

@@ -142,7 +142,6 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
         is_aux2 = true;
     }
 	this.set_string("casting_key", casting_key);
-	
 	Spell spell = DruidParams::spells[spellID];
 	
 	//raycast arrow
@@ -243,7 +242,7 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
 				castSpellID = playerPrefsInfo.hotbarAssignments_Druid[Maths::Min(15,hotbarLength-1)];
 			else
 				castSpellID = playerPrefsInfo.primarySpellID;
-			CBlob@ target = spell.target_type == 2 ? client_getNearbySpellTarget(this) : null;
+			CBlob@ target = spell.target_type == 2 ? client_getNearbySpellTarget(this, spell.range, spell.target_grab_range) : null;
 
 			u16 targetID = 0;
 			if (target !is null) targetID = target.getNetworkID();
