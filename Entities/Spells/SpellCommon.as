@@ -6111,6 +6111,84 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		break;
 
 		// WARLOCK
+		case -1298128588:  // corruptionshard 
+		{
+			{
+				CBlob@[] totems;
+				getBlobsByName("corruptionshard",@totems);
+
+				if (this.getPlayer() is null)
+				{return;}
+				bool found = false;
+				for(int i = 0; i < totems.length; i++)
+				{
+					if (totems[i] is null)
+					{continue;}
+					if (totems[i].getDamageOwnerPlayer() is null)
+					{continue;}
+					if(totems[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
+					{
+						//totems[i].Tag("mark_for_death");
+						//return;
+						found = true;
+						break;
+					}
+				}
+
+				int height = getLandHeight(aimpos);
+				if(height != 0 && !found)
+				{
+					if(isServer())
+					{
+						CBlob@ tot = server_CreateBlob("corruptionshard",this.getTeamNum(),Vec2f(aimpos.x,height) );
+						tot.SetDamageOwnerPlayer(this.getPlayer());
+
+						switch (charge_state)
+						{
+							case 1:
+							case 2:
+							{
+								tot.set_s32("aliveTime", 1800);
+								break;
+							}
+							case 3:
+							{
+								tot.set_s32("aliveTime", 2100); //1m10s
+								break;
+							}
+							case 4:
+							{
+								tot.set_s32("aliveTime", 2400);//1m20s
+								break;
+							}
+							case 5:
+							{
+								tot.set_s32("aliveTime", 2700); //1m30s
+								break;
+							}
+						}
+						if (this.hasTag("extra_damage"))
+						{
+							tot.Tag("extra_damage");
+							tot.set_s32("aliveTime", 2700); //1m30s
+						}
+					}
+				}
+				else
+				{
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
+					}
+					
+					manaInfo.mana += spell.mana;
+					
+					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+				}
+			}
+			break;
+		}
+		
 		case 1783647402: // shadowspear
         {
 			ManaInfo@ manaInfo;
