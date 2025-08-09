@@ -62,6 +62,7 @@ const string zoomOut_key = getControls().getActionKeyKeyName( AK_ZOOMOUT );
     Button@ toggleHotkeyEmotesBtn;
 	Rectangle@ optionsFrame;
 	Rectangle@[] optionsFramePages;
+	Rectangle@ guideFrame;
 	Rectangle@ classesFrame;
 	Icon@ helpIcon;
 	Icon@ canvasIcon;
@@ -93,6 +94,7 @@ bool isGUINull()
 	if (resetSpell is null) { warn("debug: resetSpell is null"); return true; }
 	if (achievementBtn is null) { warn("debug: achievementBtn is null"); return true; }
 	if (optionsFrame is null) { warn("debug: optionsFrame is null"); return true; }
+	if (guideFrame is null) { warn("debug: guideFrame is null"); return true; }
 	if (classesFrame is null) { warn("debug: classesFrame is null"); return true; }
 	if (helpIcon is null) { warn("debug: helpIcon is null"); return true; }
 	if (canvasIcon is null) { warn("debug: canvasIcon is null"); return true; }
@@ -190,6 +192,20 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 		Label@ stat3 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat3"));
 		if (stat3 is null) return;
+		Rectangle@ classList = cast<Rectangle>(rightPage.getChild("classList"));
+		if (classList !is null)
+		{
+			for (int i = 0; i < classList._customData; i++)
+			{
+				Button@ reference = cast<Button@>(classList.getChild("classButton_" + i));
+				if (reference !is null)
+				{
+					Label@ label = cast<Label@>(reference.getChild("selectedLabel"));
+					if (label !is null)
+					label.isEnabled = (i == classIndex-1);
+				}
+			}
+		}
 
 		PlayFlipSound();
 
@@ -403,6 +419,7 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
+		guideFrame.isEnabled = false;
 	}
 
 	if (sender is introBtn)
@@ -414,6 +431,7 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
+		guideFrame.isEnabled = false;
 	}
 
 	if (sender is optionsBtn)
@@ -423,6 +441,7 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
+		guideFrame.isEnabled = false;
 	}
 
 	if (sender is classesBtn)
@@ -432,6 +451,7 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 		classesFrame.isEnabled = true;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
+		guideFrame.isEnabled = false;
 	}
 
 	if (sender.name == "spellsMenu") // class frame button
@@ -459,9 +479,20 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 		optionsFrame.isEnabled = false;
 		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
+		guideFrame.isEnabled = false;
 		
 		togglemenuBtn.isEnabled = false;
 		togglemenuBtn.toggled = false;
+	}
+	if (sender.name == "guideMenu") // class frame button
+	{
+		guideFrame.isEnabled = true;
+
+		helpIcon.isEnabled = false;
+		optionsFrame.isEnabled = false;
+		classesFrame.isEnabled = false;
+		shipAchievements.isEnabled = false;
+		playerClassButtons.isEnabled = false;
 	}
 
 	//if (sender is achievementBtn)
@@ -862,6 +893,17 @@ void onTick(CRules@ this)
 				helpWindow.addChild(playerClassButtons);
 			}
 		}
+		// guide
+		@guideFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
+		guideFrame._customData = 0; // page index
+		guideFrame.setLevel(ContainerLevel::PAGE);
+		{
+			Label@ TestGuideLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "Test", SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
+			TestGuideLabel.name = "TestGuideLabel";
+			TestGuideLabel.localPosition = Vec2f(guideFrame.size.x / 2 - 3, guideFrame.size.y / 2 - 4);
+			guideFrame.addChild(TestGuideLabel);
+		}
+		helpWindow.addChild(guideFrame);
 
 		// options
 		@optionsFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
@@ -1075,11 +1117,12 @@ void onTick(CRules@ this)
 
 			// classes' icons
 			Rectangle@ classList = @Rectangle(Vec2f(40, 40), Vec2f(page_size.x - 80, page_size.y - 100), SColor(0, 0, 0, 0));
+			classList.name = "classList";
 			Vec2f grid = Vec2f(4, 4);
 
 			Vec2f last_icon_size = Vec2f(0, 0);
 			u8 rnd_seed = XORRandom(10);
-
+			classList._customData = grid.x * grid.y;
 			for (u8 i = 0; i < grid.x * grid.y; i++)
 			{
 				Button@ reference;
@@ -1101,7 +1144,7 @@ void onTick(CRules@ this)
 				{
 					@reference = @Button(Vec2f(0, 0), last_icon_size, "", SColor(255, 125, 125, 125));
 				}
-
+				reference.name = "classButton_" + i;
 				reference._customData = i < playerClassButtons.list.length ? i + 102 : 101; // 100 is reserved for "info" redirect button
 				reference.addClickListener(classFrameClickHandler);
 				reference.setPosition(Vec2f(
@@ -1115,6 +1158,11 @@ void onTick(CRules@ this)
 					reference.nodraw = true;
 					reference.addChild(icon);
 				}
+				Label@ selectedLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "SELECTED "+i, SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
+				selectedLabel.name = "selectedLabel";
+				selectedLabel.localPosition = Vec2f(reference.size.x / 2 - 3, reference.size.y / 2 - 4);
+				selectedLabel.isEnabled = false;
+				reference.addChild(selectedLabel);
 				classList.addChild(reference);
 			}
 			rightPage.addChild(classList);
@@ -1156,6 +1204,26 @@ void onTick(CRules@ this)
 			spellsMenuLabel.name = "spellsMenuLabel";
 			spellsMenuLabel.localPosition = Vec2f(spellsMenu.size.x / 2 - 3, spellsMenu.size.y / 2 - 4);
 			spellsMenu.addChild(spellsMenuLabel);
+
+			// GUIDE BUTTON
+			Button@ guideMenu = @Button(Vec2f(spellsMenu.localPosition.x + spellsMenu.size.x + 8, page_size.y - 92), buttonSize, "Guide", SColor(0, 0, 0, 0));
+			guideMenu.setLevel(ContainerLevel::PAGE);
+			guideMenu.nodraw = true;
+			guideMenu._customData = 0;
+			guideMenu.name = "guideMenu";
+			guideMenu.addClickListener(iconClickHandler);
+			guideMenu.addHoverStateListener(iconHoverHandler);
+			guideMenu.addClickListener(ButtonClickHandler);
+
+			Icon@ guideMenuIcon = @Icon("BookButtons.png", Vec2f(0, guideMenu.size.y / 2 - 32), Vec2f(112, 48), 0, 1.0f, true, buttonSize);
+			guideMenuIcon.name = "iconback";
+			guideMenu.addChild(guideMenuIcon);
+			rightPage.addChild(guideMenu);
+
+			Label@ guideMenuLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "Guide", SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
+			guideMenuLabel.name = "guideMenuLabel";
+			guideMenuLabel.localPosition = Vec2f(guideMenu.size.x / 2 - 3, guideMenu.size.y / 2 - 4);
+			guideMenu.addChild(guideMenuLabel);
 
 			classesFrame.addChild(leftPage);
 			classesFrame.addChild(rightPage);
