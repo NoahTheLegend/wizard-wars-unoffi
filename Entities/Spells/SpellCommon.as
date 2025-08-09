@@ -6511,14 +6511,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case complete_cast:
 				{
 					period = 10;
-					damage = 0.8f;
+					damage = 0.6f;
 				}
 				break;
 				case super_cast:
 				{
 					period = 10;
 					max_count = 3;
-					damage = 1.0f;
+					damage = 0.8f;
 				}
 				break;
 
@@ -6529,14 +6529,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				speed += 1.0f;
 				period = 8;
-				max_count = 4;
-				damage += 0.2f;
+				max_count = 5;
 			}
 
 			this.set_u32("shadowburst_cast_time", cast_time);
 			this.set_u8("shadowburst_count", max_count);
 			this.set_u8("shadowburst_period", period);
 			this.set_f32("shadowburst_speed", speed);
+			this.set_f32("shadowburst_damage", damage);
 			this.set_u8("shadowburst_current_count", 0);
 
 			if (!this.hasScript("ShadowBurstCast.as"))

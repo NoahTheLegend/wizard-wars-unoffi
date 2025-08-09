@@ -82,7 +82,7 @@ namespace PaladinParams
 				SpellCategory::support, SpellType::other, 10, 50, 18, 198.0f, true, 0, array<int> = {SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
 							
 		Spell("knight_revive", "Revive", 106, "Summon a noble warrior back from the dead with aiming a reviving missile at their gravestone.",
-				SpellCategory::support, SpellType::other, 70, 60, 10, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_REVIVE}),
+				SpellCategory::support, SpellType::other, 70, 60, 10, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_REVIVE}),
 
 		Spell("fury", "Holy Angel", 101, "Summon an Angel releasing blades at enemies nearby. Overcharge increases her damage and fire rate.",
 				SpellCategory::summoning, SpellType::other, 70, 80, 16, 64.0f, true, 0, array<int> = {SpellAttribute::SPELL_SUMMON}),

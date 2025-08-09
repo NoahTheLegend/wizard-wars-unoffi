@@ -21,8 +21,8 @@ namespace WarlockParams
 	const ::f32 MAX_ATTACK_DIST = 500.0f;
 	const ::s32 MAX_MANA = 50;
 	const ::s32 MANA_REGEN = 0;
-	const ::f32 HEALTH_COST_PER_1_MANA = 0.04f; // 0.2f is 1 HP
-	const ::f32 MANA_PER_1_DAMAGE = 2;
+	const ::f32 HEALTH_COST_PER_1_MANA = 0.05f; // 0.2f is 1 HP
+	const ::f32 MANA_PER_1_DAMAGE = 1;
 	
 	const ::string[] zombieTypes = {"zombie", "skeleton", "greg", "wraith"};
 	
@@ -38,7 +38,7 @@ namespace WarlockParams
 				SpellCategory::special, SpellType::other, 8, 10, 0, 64.0f, true),
 			
 		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
-				SpellCategory::offensive, SpellType::other, 20, 40, 3, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_VAMPIRISM}),
+				SpellCategory::offensive, SpellType::healthcost, 3, 40, 3, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_VAMPIRISM}),
 		
 		Spell("tomeblood", "Tome of Blood", 127, "Consumes health instead of mana. A swarm of blood arrows to summon beneath the position.",
 				SpellCategory::offensive, SpellType::healthcost, 2, 40, 3, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEALTHCOST}),
@@ -59,10 +59,10 @@ namespace WarlockParams
 				SpellCategory::summoning, SpellType::other, 1, 15, 0, 128.0f, false, 1),
 
 		Spell("plague", "Plague", 139, "Permanent poison. Poison damage period is twice longer. Poisons enemies that damaged you, as long as the spirit exists. Cast again to disable the effect.",
-				SpellCategory::debuff, SpellType::other, 1, 30, 1, 16.0f, true, 0, array<int> = {SpellAttribute::SPELL_POISON, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_CASTEREFFECT}),
+				SpellCategory::debuff, SpellType::other, 5, 40, 2, 16.0f, true, 0, array<int> = {SpellAttribute::SPELL_POISON, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("shadowburst", "Shadow Burst", 142, "",
-				SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f, true, 0),
+				SpellCategory::offensive, SpellType::other, 15, 15, 0, 180.0f, true, 0),
 
 		Spell("hellfiresummon", "Hellfire Summon", 0, "Summon a hell spirit to absorb enemy spells. Press [SHIFT] to make it breath fire.",
 				SpellCategory::summoning, SpellType::other, 1, 15, 0, 16.0f),
@@ -71,13 +71,13 @@ namespace WarlockParams
 				SpellCategory::utility, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("demonicpact", "Demonic Pact", 138, "Consumes health instead of mana. Resurrect one of your allies into a demon. The demon will restore health to its master when killed, although not when despelled.",
-				SpellCategory::support, SpellType::healthcost, 1, 15, 0, 16.0f),
+				SpellCategory::support, SpellType::healthcost, 1, 15, 0, 256.0f),
 
 		Spell("fear", "Fear", 145, "Curse nearby enemies with fear, causing them to run stoplessly",
-				SpellCategory::debuff, SpellType::other, 1, 15, 0, 16.0f),
+				SpellCategory::debuff, SpellType::other, 1, 15, 0, 360.0f),
 
 		Spell("silence", "Silence", 146, "Silence an enemy, preventing them from casting spells, except teleport.",
-				SpellCategory::debuff, SpellType::other, 1, 15, 0, 16.0f),
+				SpellCategory::debuff, SpellType::other, 1, 15, 0, 360.0f),
 
 		Spell("shadowspear", "Shadow Spear", 0, "Throw a shadow spear which curses touched enemy and steals their mana. Anyone who deals damage to the cursed target will steal some of their mana.",
 				SpellCategory::offensive, SpellType::other, 1, 15, 0, array<f32> = {256.0f, 64.0f}, true, 2),

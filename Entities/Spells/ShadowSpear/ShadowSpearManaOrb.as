@@ -11,7 +11,7 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().bullet = true;
     this.addCommandID("add_mana");
 
-	this.set_Vec2f("smashtoparticles_grav", Vec2f(0, 0.25f));
+	this.set_Vec2f("smashtoparticles_grav", Vec2f(0, 0.0f));
 }
 
 void onTick(CBlob@ this)
@@ -25,7 +25,7 @@ void onTick(CBlob@ this)
 		this.SetLightColor(SColor(255, 211, 121, 224));
 		this.set_string("custom_explosion_sound", "OrbExplosion.ogg");
 		this.getSprite().SetZ(1000.0f);
-		this.getSprite().PlaySound("mana_smooth.ogg", 1.0f, 1.0f + XORRandom(10) * 0.01f);
+		this.getSprite().PlaySound("mana_smooth.ogg", 0.85f, 1.0f + XORRandom(10) * 0.01f);
 	}
 
 	{
@@ -136,7 +136,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		ManaInfo@ manaInfo;
 		if (b.get("manaInfo", @manaInfo))
 		{
-			print("add mana from " + b.getName() + " " + manaInfo.mana);
+			//print("add mana from " + b.getName() + " " + manaInfo.mana);
 			if (manaInfo.mana < manaInfo.maxMana)
 			{
                 this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 0.75f + XORRandom(3)/10.0f);
@@ -165,7 +165,7 @@ void onDie(CBlob@ this)
 		}
 	}
 
-	this.getSprite().PlaySound("mana_smooth.ogg", 1.0f, 0.75f + XORRandom(10) * 0.01f);
+	this.getSprite().PlaySound("mana_smooth.ogg", 0.75f, 0.75f + XORRandom(10) * 0.01f);
 }
 
 Random _sprk_r(21342);

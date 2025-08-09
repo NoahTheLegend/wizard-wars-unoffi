@@ -49,7 +49,7 @@ namespace WizardParams
 			SpellCategory::offensive, SpellType::other, 45, 45, 0, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_RAIN}),
 			 
 		Spell("revive", "Revive", 15, "Fully bring trusty allies back from the dead by aiming a reviving missile at their gravestone.",
-			SpellCategory::support, SpellType::other, 75, 40, 15, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_REVIVE}),
+			SpellCategory::support, SpellType::other, 75, 40, 15, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_REVIVE}),
 			 
 		Spell("magic_barrier", "Magic Barrier", 21, "Create a wall of pure magical energy in front of you that blocks most small projectiles.",
 			SpellCategory::defensive, SpellType::other, 12, 7, 0, 32.0f, true, 0, array<int> = {SpellAttribute::SPELL_BARRIER}),
