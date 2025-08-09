@@ -56,7 +56,7 @@ namespace WarlockParams
 				SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("corruptionshard", "Corruption Shard", 135, "Place a venomous shard that poisons enemies nearby. After a short while, the shard explodes, restoring some of warlock's health and mana.",
-				SpellCategory::summoning, SpellType::other, 1, 15, 0, 16.0f),
+				SpellCategory::summoning, SpellType::other, 1, 15, 0, 128.0f, false, 1),
 
 		Spell("plague", "Plague", 139, "Permanent poison. Poison damage period is twice longer. Poisons enemies that damaged you, as long as the spirit exists. Cast again to disable the effect.",
 				SpellCategory::debuff, SpellType::other, 1, 30, 1, 16.0f, true, 0, array<int> = {SpellAttribute::SPELL_POISON, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_CASTEREFFECT}),
