@@ -20,7 +20,7 @@ void onInit( CBlob@ this )
 	
 	ManaInfo manaInfo;
 	manaInfo.maxMana = WarlockParams::MAX_MANA;
-	manaInfo.mana = 0;//manaInfo.maxMana;
+	manaInfo.mana = WarlockParams::MAX_MANA / 2;
 	manaInfo.manaRegen = WarlockParams::MANA_REGEN;
 	this.set("manaInfo", @manaInfo);
 

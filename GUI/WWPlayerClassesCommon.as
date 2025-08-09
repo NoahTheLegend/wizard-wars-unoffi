@@ -155,7 +155,7 @@ const string[] classDescriptions = {
     " Shamans command totems and elemental forces through channels to nature's spirits and their ancestors.\n\n Versatile in both offense and defense, bound to the elements of earth, fire and water, they adapt fluidly to any situation.",
     " Paladins embody noble strength, standing as steadfast tanks and shining symbols of hope.\nTheir holy damage burns through darkness, while their protective auras bolster allies and their souls.\nThey are the shield of the team, and their presence is a rallying point for all.",
     " Jesters strike with sleight and show, twisting fights with every blow; spells erupt and vanish fast, forcing foes to fail or gasp; what seems like chaos, wild and sly, becomes a plan to bleed you dry; they dance through danger, bold and bright, and turn confusion into might.",
-    " Warlocks pursue forbidden paths, accepting the cost to wield destructive to their health forces.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts, other reshape the flow of battle with their life force."
+    " Warlocks pursue forbidden paths, accepting the cost to wield destructive forces, which also limits them at streaming their mana.\nBlood, decay and time itself are tools as much as elements of their craft. While some warlocks borrow power through demonic pacts and dark magic, other reshape the flow of battle with their life force."
 };
 
 const string[] classTips = {

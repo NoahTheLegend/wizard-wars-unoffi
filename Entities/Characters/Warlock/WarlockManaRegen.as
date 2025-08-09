@@ -3,12 +3,19 @@
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-    if (hitBlob !is null && hitBlob.hasTag("player"))
+    if (hitBlob !is null && hitBlob.hasTag("flesh") && hitBlob.getTeamNum() != this.getTeamNum() && hitBlob !is this)
     {
-        ManaInfo@ manaInfo;
-        if (hitBlob.get("manaInfo", @manaInfo))
+        CPlayer@ damageOwner = this.getDamageOwnerPlayer();
+        if (damageOwner is null) return;
+
+        CBlob@ ownerBlob = damageOwner.getBlob();
+        if (ownerBlob !is null)
         {
-            manaInfo.mana += (damage / 5.0f) * MANA_PER_1_DAMAGE;
+            ManaInfo@ manaInfo;
+            if (ownerBlob.get("manaInfo", @manaInfo))
+            {
+                manaInfo.mana += damage * 10 * WarlockParams::MANA_PER_1_DAMAGE;
+            }
         }
     }
 }

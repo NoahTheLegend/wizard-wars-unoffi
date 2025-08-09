@@ -6,6 +6,7 @@ void onInit(CRules@ this)
 {
 	Driver@ driver = getDriver();
 	driver.ForceStartShaders();
+	
     driver.SetShader("hq2x", false);
 	driver.AddShader("blackhole", 5.0f);
 	driver.SetShader("blackhole", false);
@@ -22,16 +23,14 @@ void onTick(CRules@ this)
 		driver.ForceStartShaders();
 	}
 
-    if (v_fastrender) return;
-
+    //if (v_fastrender) return;
     this.clear("blackholes");
 
-    // Find blobs and add positions to array
     CBlob@[] bhBlobs;
 	getBlobsByName("black_hole", @bhBlobs);
     for (uint i = 0; i < bhBlobs.length; i++)
     {
-        BlackHole bHole(bhBlobs[i].getPosition(), 0.1f);  // position, intensity(radius)
+        BlackHole bHole(bhBlobs[i].getPosition(), 0.1f);
         this.push("blackholes", @bHole);
     }
     CBlob@[] bhbBlobs;
@@ -45,10 +44,10 @@ void onTick(CRules@ this)
 void onRender(CRules@ this)
 {
     Driver@ driver = getDriver();
-	if (v_fastrender) {
-        driver.SetShader("blackhole", false);
-		return;
-    }
+	//if (v_fastrender) {
+    //    driver.SetShader("blackhole", false);
+	//	return;
+    //}
 
 	BlackHole@[]@ blackholes;
 	if (!this.get("blackholes", @blackholes)) return;

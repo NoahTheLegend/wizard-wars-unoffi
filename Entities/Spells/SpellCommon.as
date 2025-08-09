@@ -6301,7 +6301,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
            		return;
 			}
 
-			f32 dmg = this.hasTag("extra_damage") ? 3.0f : 2.5f;
+			f32 dmg = this.hasTag("extra_damage") ? 3.5f : 2.5f;
 			u8 shrapnel_count = 3;
 			u8 angle = 45;
 			u32 poison_time = 300;
@@ -6309,21 +6309,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			switch (charge_state)
 			{
 				case minimum_cast:
-				{
-					orbspeed *= 0.85f;
-					dmg -= 0.5f;
-				}
-				break;
 				case medium_cast:
-				{
-					dmg -= 0.25f;
-				}
 				break;
 
 				case complete_cast:
 				{
-					angle = 20;
+					dmg += 0.5f;
 					shrapnel_count = 5;
+					angle = 20;
 					angle = 45;
 					poison_time = 450;
 				}
@@ -6331,10 +6324,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 				case super_cast:
 				{
+					dmg += 1.0f;
 					angle = 15;
 					shrapnel_count = 5;
 					orbspeed *= 1.15f;
-					dmg += 0.5f;
 					poison_time = 600;
 				}
 

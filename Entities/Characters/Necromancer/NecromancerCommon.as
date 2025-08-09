@@ -39,7 +39,7 @@ namespace NecromancerParams
 		Spell("zombie", "Summon a Zombie", 2, "Summon an undead minion to fight by your side.",
 			SpellCategory::summoning, SpellType::summoning, 18, 15, 0, 64.0f, true, 0, array<int> = {SpellAttribute::SPELL_SUMMON}),
 			 
-		Spell("black_hole", "Black Hole", 18, "Open a portal into outer space, pulling your enemies into the void. Also drains the mana of enemies in the area.",
+		Spell("black_hole", "Black Hole", 18, "Open a portal into outer space, pulling your enemies into the void. Drains the mana of enemies in the area.",
 			SpellCategory::utility, SpellType::other, 55, 120, 4, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_CONTROL}),
  
 		Spell("zombieknight", "Summon a Zombie knight", 5, "Summon a very strong zombie to your side. Very effective for blocking in tight corridors.",
