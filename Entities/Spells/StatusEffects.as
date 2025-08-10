@@ -1,4 +1,4 @@
-//Status Effects
+#include "Hitters.as";
 #include "HittersWW.as";
 #include "StatusEffects.as";
 #include "RunnerCommon.as"
@@ -211,6 +211,44 @@ void onTick(CBlob@ this)
 			this.Sync("last_poison_owner_id", true);
 			this.Sync("poisoned", true);
 		}
+	}
+
+	//DARKRITUAL
+	u16 darkritual = this.get_u16("darkritual_effect_time");
+	if (darkritual > 0)
+	{
+		darkritual--;
+
+		if (darkritual % 2 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{		
+				if (getNet().isClient())
+				{
+					const f32 rad = 6.0f;
+					Vec2f random = Vec2f(XORRandom(96)-48, XORRandom(64)-32 ) * 0.015625f * rad;
+					CParticle@ p = ParticleAnimated("BloodDrops.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
+					if (p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+
+						if (XORRandom(2) == 0)
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+					}
+				}
+			}
+		}
+
+		if (darkritual == 1 && isServer())
+		{
+			f32 darkRitualDamage = this.get_f32("darkritual_self_damage");
+			this.server_Hit(this, this.getPosition(), Vec2f_zero, darkRitualDamage, Hitters::crush, true);
+		}
+
+		this.set_u16("darkritual_effect_time", darkritual);
 	}
 
 	//CARNAGE

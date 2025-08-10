@@ -4,6 +4,7 @@
 
 const int positions_save_time_in_seconds = 15;
 const u8 old_positions_save_threshold = 1;
+const f32 darkritual_lifesteal_mod = 0.5f;
 
 namespace WarlockParams
 {
@@ -56,31 +57,31 @@ namespace WarlockParams
 				SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("corruptionshard", "Corruption Shard", 135, "Create a venomous shard releasing poison and fear aura periodically. After a short while, the shard will explode and restore some of your health and mana.",
-				SpellCategory::summoning, SpellType::other, 1, 15, 0, 128.0f, false, 1),
+				SpellCategory::summoning, SpellType::other, 1, 15, 0, 128.0f, false, 1, array<int> = {SpellAttribute::SPELL_POISON, SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_GROUNDED}),
 
 		Spell("plague", "Plague", 139, "Permanent poison. Poison damage period is twice longer. Enemies dealing you damage might get poisoned, as long as the Plague spirit exists. Cast again to disable the effect.",
 				SpellCategory::debuff, SpellType::other, 5, 40, 2, 0.0f, true, 0, array<int> = {SpellAttribute::SPELL_POISON, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("shadowburst", "Shadow Burst", 142, "Materialize several shadow orbs that shatter on impact. When colliding with an enemy, another projectile is created behind.",
-				SpellCategory::offensive, SpellType::other, 10, 15, 0, 180.0f, true, 0),
+				SpellCategory::offensive, SpellType::other, 10, 15, 0, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
-		Spell("shadowspear", "Shadow Spear", 147, "Create a a few subsequent shadow spears following the target. Only one spear can deal damage and steal some of enemy mana in a form of an orb. Counterspelling the mana orb will give mana to caster.",
-				SpellCategory::offensive, SpellType::other, 20, 15, 0, array<f32> = {256.0f, 64.0f}, true, 2),
+		Spell("shadowspear", "Shadow Spear", 147, "Create several consecutive shadow spears that follow the target. Only one spear can deal damage and steal some of the enemy's mana in the form of an orb. Counterspelling the mana orb will restore mana to the caster. Anyone but the orb owner will receive twice more mana.",
+				SpellCategory::offensive, SpellType::other, 20, 15, 0, array<f32> = {256.0f, 64.0f}, true, 2, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
-		Spell("darkritual", "Dark Ritual", 133, "For the next 5 seconds the spells that cost health will restore it instead of consuming. You take 5 damage in the end of the effect.",
-				SpellCategory::utility, SpellType::other, 1, 15, 0, 16.0f),
+		Spell("darkritual", "Dark Ritual", 133, "Your spells gain lifesteal for a few seconds. You take 5 damage in the end of the effect.",
+				SpellCategory::utility, SpellType::other, 30, 40, 20, 0.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_VAMPIRISM}),
 
 		Spell("demonicpact", "Demonic Pact", 138, "Consumes health instead of mana. Resurrect one of your allies into a demon. The demon will restore health to its master when killed, although not when despelled.",
-				SpellCategory::support, SpellType::healthcost, 1, 15, 0, 256.0f),
+				SpellCategory::support, SpellType::healthcost, 1, 15, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_SUMMON, SpellAttribute::SPELL_REVIVE}),
 
 		Spell("fear", "Fear", 145, "Curse an enemy with fear, causing them to run stoplessly",
-				SpellCategory::debuff, SpellType::other, 5, 10, 1, 360.0f),
+				SpellCategory::debuff, SpellType::other, 5, 10, 1, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_CONTROL}),
 
 		Spell("silence", "Silence", 146, "Silence an enemy, preventing them from casting spells, except teleport.",
-				SpellCategory::debuff, SpellType::other, 15, 20, 4, 360.0f),
+				SpellCategory::debuff, SpellType::other, 15, 20, 4, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_CONTROL}),
 
-		Spell("carnage", "Carnage", 136, "Consumes health instead of mana. Reset all your spell cooldowns. Overcharge to make the next spell you cast have half the charge time and no cooldown.",
-				SpellCategory::utility, SpellType::healthcost, 2.5, 15, 8, 0.0f),
+		Spell("carnage", "Carnage", 136, "Consumes health instead of mana. Reset most your spell cooldowns. Overcharge to make the next spell you cast have half the charge time and no cooldown.",
+				SpellCategory::utility, SpellType::healthcost, 2.5, 15, 8, 0.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("", "", 0, "Empty spell.",
 				SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f),

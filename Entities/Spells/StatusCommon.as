@@ -1,3 +1,5 @@
+#include "WarlockCommon.as";
+
 shared Vec2f getScreenSize()
 {
     return getDriver().getScreenDimensions();
@@ -90,6 +92,7 @@ shared enum StatusType
     SILENCED =                  23,
     FEAR =                      24,
     CARNAGE =                   25,
+    DARKRITUAL =                26,
 
     TOTAL
 };
@@ -132,7 +135,8 @@ shared u8[] TOOLTIPS_SPECIFIC()
         StatusSpecific::OTHER, // PLAGUE
         StatusSpecific::CONTROL, // SILENCED
         StatusSpecific::CONTROL, // FEAR
-        StatusSpecific::BUFF // CARNAGE
+        StatusSpecific::BUFF, // CARNAGE
+        StatusSpecific::OTHER // DARKRITUAL
     };
     
     return arr;
@@ -166,7 +170,8 @@ shared string[] TOOLTIPS()
         "Plague: permanently poisoned, taking damage poisons the enemy",
         "Silenced: unable to cast spells except teleport",
         "Fear: constantly running",
-        "Carnage: decreased spell cast time, spells won't have cooldown on cast"
+        "Carnage: decreased spell cast time, spells won't have cooldown on cast",
+        "Dark Ritual: spells restore "+Maths::Round(darkritual_lifesteal_mod * 100.0f)+"% of damage dealt, you take damage in the end of the effect"
     };
     
     return arr;

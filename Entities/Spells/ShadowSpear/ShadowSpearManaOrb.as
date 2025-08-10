@@ -139,8 +139,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			//print("add mana from " + b.getName() + " " + manaInfo.mana);
 			if (manaInfo.mana < manaInfo.maxMana)
 			{
-                this.getSprite().PlaySound("EnergyBounce" + (XORRandom(2)+1) + ".ogg", 0.3f, 0.75f + XORRandom(3)/10.0f);
-				manaInfo.mana = Maths::Min(manaInfo.mana + this.get_s32("mana_stored"), manaInfo.maxMana);
+				int mana = this.get_s32("mana_stored");
+				if (b.getPlayer() !is this.getDamageOwnerPlayer()) mana *= 2;
+				
+				manaInfo.mana = Maths::Min(manaInfo.mana + mana, manaInfo.maxMana);
 
                 this.Tag("mark_for_death");
 				this.Tag("added");

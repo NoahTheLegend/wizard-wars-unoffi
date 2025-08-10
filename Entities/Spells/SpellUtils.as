@@ -216,7 +216,7 @@ void SummonZombie(CBlob@ this, string name, Vec2f pos, int team)
 	}
 }
 
-void Heal( CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool sound = true, f32 particles_factor = 1.0f)
+void Heal(CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool sound = true, f32 particles_factor = 1.0f)
 {
 	f32 health = blob.getHealth();
 	f32 initHealth = blob.getInitialHealth();

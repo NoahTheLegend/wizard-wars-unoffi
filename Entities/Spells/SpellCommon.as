@@ -6110,7 +6110,37 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+
+
 		// WARLOCK
+		case 477345426: // darkritual
+		{
+			this.getSprite().PlaySound("DarkRitualOn.ogg", 0.85f, 1.0f + XORRandom(10) * 0.01f);
+
+			u16 effectTime = 225; // 7.5 seconds
+			f32 self_damage = 1.0f;
+
+			if (charge_state == 5)
+			{
+				effectTime += 45;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				effectTime += 90;
+			}
+
+			this.set_u16("darkritual_effect_time", effectTime);
+			this.set_f32("darkritual_self_damage", self_damage);
+
+			if (isServer())
+			{
+				this.Sync("darkritual_effect_time", true);
+				this.Sync("darkritual_self_damage", true);
+			}
+		}
+		break;
+
 		case -352148188: // carnage
 		{
 			if (!isClient()) return;
@@ -6121,7 +6151,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				for (u8 i = 0; i < playerPrefsInfo.spell_cooldowns.size(); i++)
 				{
-					//if (i != 15)
+					if (i != 13) // not dark ritual, carnage doesnt get affected anyway
 					{
 						playerPrefsInfo.spell_cooldowns[i] = 0;
 					}
@@ -6559,8 +6589,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
-
-		//477345426 darkritual
 
 		default:
 		{

@@ -50,6 +50,7 @@ void onInit(CSprite@ this)
     blob.set_u16("silenced", 0);
     blob.set_u16("feared", 0);
     // carnage is tag
+    blob.set_u16("darkritual_effect_time", 0);
 
     setBar(blob);
 }
@@ -270,6 +271,7 @@ class StatusBar
         u16 silenced_timer = blob.get_u16("silenced");
         u16 feared_timer = blob.get_u16("feared");
         u16 carnage_timer = blob.hasTag("carnage_effect") ? 1 : 0;
+        u16 darkritual_effect_time = blob.get_u16("darkritual_effect_time");
 
         handleStatus(StatusType::IGNITED,                   burn_timer);
         handleStatus(StatusType::WET,                       wet_timer);
@@ -297,6 +299,7 @@ class StatusBar
         handleStatus(StatusType::SILENCED,                  silenced_timer);
         handleStatus(StatusType::FEAR,                      feared_timer);
         handleStatus(StatusType::CARNAGE,                   carnage_timer);
+        handleStatus(StatusType::DARKRITUAL,                darkritual_effect_time);
     }
 
     u8 getHoveredStatus()

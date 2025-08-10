@@ -159,10 +159,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 				if (!isServer() || b is null) return;
 				CBlob@ orb = server_CreateBlob("shadowspearmanaorb", this.getTeamNum(), b.getPosition());
-
-				orb.setVelocity(Vec2f(1 + XORRandom(25) * 0.1f, 0).RotateBy(XORRandom(360)));
-				orb.server_setTeamNum(this.getTeamNum());
-				orb.set_s32("mana_stored", steal);
+				if (orb !is null)
+				{
+					orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+					orb.setVelocity(Vec2f(1 + XORRandom(25) * 0.1f, 0).RotateBy(XORRandom(360)));
+					orb.server_setTeamNum(this.getTeamNum());
+					orb.set_s32("mana_stored", steal);
+				}
 			}
 		}
 		else
