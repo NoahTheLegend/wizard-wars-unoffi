@@ -18,4 +18,5 @@ enum EffectMissileNumbered
 	shapeshift_effect_missile,
 	silence_effect_missile,
 	fear_effect_missile,
+	demonicpact_effect_missile,
 };

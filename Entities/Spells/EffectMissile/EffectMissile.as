@@ -71,6 +71,7 @@ void onTick( CBlob@ this)
 			case revive_effect_missile:
 			case revive_knight_effect_missile:
 			case unholyRes_effect_missile:
+			case demonicpact_effect_missile:
 			{
 				targetType = 1;
 			}
@@ -358,7 +359,13 @@ void setEffect(CBlob@ this, CBlob@ blob)
 				UnholyRes(blob);
 			}
 			break;
-			
+
+			case demonicpact_effect_missile:
+			{
+				DemonicPact(blob);
+			}
+			break;
+
 			default: break;
 		} //switch end
 

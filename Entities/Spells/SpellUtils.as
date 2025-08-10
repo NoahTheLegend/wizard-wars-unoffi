@@ -379,6 +379,33 @@ void UnholyRes(CBlob@ blob)
 	ParticleZombieLightning( blob.getPosition() );
 }
 
+void DemonicPact(CBlob@ blob)
+{			
+	int playerId = blob.get_u16("owner_player");
+	CPlayer@ deadPlayer = getPlayerByNetworkId(playerId);
+
+	if (isServer() && deadPlayer !is null)
+	{
+		CBlob@ newBlob = server_CreateBlob("demon", deadPlayer.getTeamNum(), blob.getPosition());		
+		if (newBlob !is null)
+		{
+			newBlob.server_SetPlayer(deadPlayer);
+
+			ManaInfo@ manaInfo;
+			if (newBlob.get("manaInfo", @manaInfo))
+			{
+				manaInfo.mana = 0;
+			}
+
+			makeReviveParticles(newBlob);
+			blob.Tag("mark_for_death");
+		}
+	}
+		
+	blob.getSprite().PlaySound("Summon2.ogg", 0.8f, 0.75f);
+	ParticleZombieLightning(blob.getPosition());
+}
+
 void makeReviveParticles(CBlob@ this, const f32 velocity = 1.0f, const int smallparticles = 12, const bool sound = true)
 {
 	if ( !isClient() ){

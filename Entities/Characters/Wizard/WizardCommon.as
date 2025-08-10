@@ -75,10 +75,10 @@ namespace WizardParams
 		Spell("negatisphere", "Negation Spheres", 50, "Moving magic field that negates other counterable spells. Press SHIFT to launch them in the direction of your aim.",
 			SpellCategory::defensive, SpellType::other, 20, 45, 1, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_CASTEREFFECT}),
 				
-		Spell("plasma_shot", "Plasma Shot", 17, "Fires a burst of slow moving plasma that explodes on impact or after reaching its destination.",
+		Spell("plasma_shot", "Plasma Shot", 17, "Fire a slowly moving plasma that explodes on impact or after reaching its destination.",
 			SpellCategory::offensive, SpellType::other, 25, 20, 0, 500.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
-		Spell("chainlightning", "Chain Lightning", 84, "Send a lightning at the enemy which may hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
+		Spell("chainlightning", "Chain Lightning", 84, "Send a lightning at the enemy which might hit a close target after a successful hit. Overcharge increases damage and the max amount of targets.",
 			SpellCategory::offensive, SpellType::other, 18, 30, 1, 164.0f, false, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_ELECTRICITY}),
 
 		Spell("flamecircle", "Circle of Flames", 124, "A hellfire area that will incinerate any enemies inside.",
