@@ -23,13 +23,13 @@ namespace WarlockParams
 	const ::s32 MAX_MANA = 50;
 	const ::s32 MANA_REGEN = 0;
 	const ::f32 HEALTH_COST_PER_1_MANA = 0.04f; // 0.2f is 1 HP
-	const ::f32 MANA_PER_1_DAMAGE = 2;
+	const ::f32 MANA_PER_1_DAMAGE = 1;
 	
 	const ::string[] zombieTypes = {"zombie", "skeleton", "greg", "wraith"};
 	
 	const ::Spell[] spells = 
 	{
-		Spell("bloodarrow_rain", "Blood Arrows", 122, "Consumes health instead of mana. Embodies many drops of blood into sharp daggers to launch.",
+		Spell("bloodbolt_rain", "Blood Bolts", 148, "Consumes health instead of mana. Embodies blood into accelerating bolts to launch.",
 				SpellCategory::offensive, SpellType::healthcost, 0.5f, 20, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEALTHCOST}),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",

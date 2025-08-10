@@ -55,7 +55,8 @@ void onInit( CBlob@ this )
     this.addCommandID("freeze");
     this.addCommandID("spell");
 	this.addCommandID("chronomantic_teleport");
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	this.addCommandID("add_sb_cast");
+	this.getShape().getConsts().net_threshold_multiplier = 1.5f;
 	
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_up | CBlob::map_collide_nodeath);
 	this.getCurrentScript().removeIfTag = "dead";
@@ -130,6 +131,19 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 
         is_aux2 = true;
     }
+	if (isClient() && getRules().get_bool("showHelp"))
+	{
+		is_pressed = false;
+		just_pressed = false;
+		just_released = false;
+
+		is_secondary = false;
+		is_aux1 = false;
+		is_aux2 = false;
+
+		casting_key = "a1";
+	}
+
 	this.set_string("casting_key", casting_key);
 	
 	Spell spell = WarlockParams::spells[spellID];
@@ -242,8 +256,8 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			u16 targetID = 0;
 			if (target !is null) targetID = target.getNetworkID();
 
-			bool can_apply_cd_time = !this.hasTag("carnage_effect");
-			if (this.hasTag("carnage_effect"))
+			bool can_apply_cd_time = !this.hasTag("carnage_effect") || spell.typeName == "darkritual";
+			if (!can_apply_cd_time && this.hasTag("carnage_effect"))
 				this.Untag("carnage_effect");
 
             params.write_u8(castSpellID);
@@ -503,6 +517,27 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		if (b is null) return;
 
 		Freeze(b, 2.0f*power);
+	}
+	else if (cmd == this.getCommandID("add_sb_cast"))
+	{
+		if (isClient() && !this.hasScript("ShadowBurstCast.as"))
+		{
+			u32 cast_time = params.read_u32();
+			u8 max_count = params.read_u8();
+			u8 period = params.read_u8();
+			f32 speed = params.read_f32();
+			f32 damage = params.read_f32();
+			u8 unused = params.read_u8();
+
+			this.set_u32("shadowburst_cast_time", cast_time);
+			this.set_u8("shadowburst_count", max_count);
+			this.set_u8("shadowburst_period", period);
+			this.set_f32("shadowburst_speed", speed);
+			this.set_f32("shadowburst_damage", damage);
+			this.set_u8("shadowburst_current_count", 0);
+
+			this.AddScript("ShadowBurstCast.as");
+		}
 	}
 	else if (cmd == this.getCommandID("chronomantic_teleport"))
 	{

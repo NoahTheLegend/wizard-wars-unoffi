@@ -566,7 +566,6 @@ void onTick(CMovement@ this)
 
 	if (moveVars.jumpFactor > 0.01f && !isknocked)
 	{
-
 		if (onground)
 		{
 			moveVars.jumpCount = 0;
@@ -576,7 +575,8 @@ void onTick(CMovement@ this)
 			moveVars.jumpCount++;
 		}
 
-		if (up && vel.y > -moveVars.jumpMaxVel)
+		bool trampoline_floor = blob.exists("trampoline_floor") && blob.get_u32("trampoline_floor") > getGameTime();
+		if (up && (vel.y > -moveVars.jumpMaxVel || trampoline_floor))
 		{
 			moveVars.jumpStart = 0.7f;
 			moveVars.jumpMid = 0.2f;

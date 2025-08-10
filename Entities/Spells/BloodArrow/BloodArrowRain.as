@@ -6,7 +6,7 @@ void onTick(CBlob@ this)
     u8 delay = this.get_u8("bloodarrow_delay");
 	u8 wait_time = this.get_u8("bloodarrow_wait");
 
-    f32 level = float(getGameTime()-this.get_u32("bloodarrow_start"))/float(this.get_u8("bloodarrows")*delay);
+    f32 level = f32(getGameTime()-this.get_u32("bloodarrow_start")) / f32(this.get_u8("bloodarrows") * delay);
 
     if (isServer() && getGameTime() % delay == 0)
     {

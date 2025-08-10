@@ -1280,12 +1280,14 @@ void onTick(CRules@ this)
         updateOptionSliderValues();
     }
 
-    bool previous_showHelp = showHelp;//Must be last
+    bool previous_showHelp = showHelp; // must be last
+	this.set_bool("showHelp", showHelp);
 }
 
 void setCachedStates(CRules@ this)
 {
 	showHelp = startCloseBtn.getBool("Start Closed", "WizardWars");
+
 	startCloseBtn.toggled = !startCloseBtn.getBool("Start Closed","WizardWars");
 	startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
     

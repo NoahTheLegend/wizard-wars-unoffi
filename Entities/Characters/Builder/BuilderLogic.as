@@ -31,7 +31,7 @@ void onInit(CBlob@ this)
 
 	CShape@ shape = this.getShape();
 	shape.SetRotationsAllowed(false);
-	shape.getConsts().net_threshold_multiplier = 0.5f;
+	shape.getConsts().net_threshold_multiplier = 1.5f;
 
 	this.set_Vec2f("inventory offset", Vec2f(0.0f, 160.0f));
 

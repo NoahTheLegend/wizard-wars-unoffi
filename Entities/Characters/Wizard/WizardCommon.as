@@ -60,14 +60,17 @@ namespace WizardParams
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
 			SpellCategory::support, SpellType::other, 8, 15, 0, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
 			
-		Spell("lightning", "Lightning", 26, "Call down the blazing wrath of heaven upon the heads of those who oppose you. .",
+		Spell("lightning", "Lightning", 26, "Call down the blazing wrath of heaven upon the heads of those who oppose you.",
 			SpellCategory::offensive, SpellType::other, 35, 30, 0, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_RAIN, SpellAttribute::SPELL_ELECTRICITY}),
 
 		Spell("mana_drain_circle", "Circle of Disenchant", 33, "Those who stand inside this circle lose their mana and are slowed to a crawl",
 			SpellCategory::utility, SpellType::other, 40, 60, 20, 312, true, 0, array<int> = {SpellAttribute::SPELL_CONTROL}),
 
-		Spell("mana_transfer", "Mana Transfer", 48, "Transfers mana equivalent to the target's regen. Generates 1 extra mana if overcharged.",
-			SpellCategory::support, SpellType::other, 8, 10, 0, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_ALLYEFFECT}),
+		//Spell("mana_transfer", "Mana Transfer", 48, "Transfers mana equivalent to the target's regen. Generates 1 extra mana if overcharged.",
+		//	SpellCategory::support, SpellType::other, 8, 10, 0, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_ALLYEFFECT}),
+
+		Spell("magicplatform", "Magic Platform", 131, "Create a steady platform mid-air.",
+			SpellCategory::utility, SpellType::other, 20, 42, 10, 256.0f, true, 0),
 
 		Spell("negatisphere", "Negation Spheres", 50, "Moving magic field that negates other counterable spells. Press SHIFT to launch them in the direction of your aim.",
 			SpellCategory::defensive, SpellType::other, 20, 45, 1, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_SHIFT, SpellAttribute::SPELL_CASTEREFFECT}),

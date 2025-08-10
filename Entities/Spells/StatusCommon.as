@@ -160,8 +160,8 @@ shared string[] TOOLTIPS()
         "Entropist Sidewind: ignore collisions, increased movement speed",
         "Entropist Burn: free spells, diminished spell cast time, losing 30 mana per second",
         "Aura (Tau): take less damage and transfer some of it to the linked ally when nearby",
-        "Aura (Sigma): restore health instead of mana, increases damage taken, disables mana replenishment at obelisks",
-        "Aura (Omega): restore mana on hit, returns some of the damage split between enemies nearby",
+        "Aura (Sigma): regenerating health, increases damage taken, disables mana gain",
+        "Aura (Omega): restores mana on hit, returns some of the damage split between enemies nearby",
         "Hallowed Barrier: decreases damage taken",
         "Humility: disable healing",
         "Majesty: decreased spells cooldown",
@@ -171,7 +171,7 @@ shared string[] TOOLTIPS()
         "Silenced: unable to cast spells except teleport",
         "Fear: constantly running",
         "Carnage: decreased spell cast time, spells won't have cooldown on cast",
-        "Dark Ritual: spells restore "+Maths::Round(darkritual_lifesteal_mod * 100.0f)+"% of damage dealt, you take damage in the end of the effect"
+        "Dark Ritual: spells gain "+Maths::Round(darkritual_lifesteal_mod * 100.0f)+"% lifesteal, you get damaged after effect"
     };
     
     return arr;

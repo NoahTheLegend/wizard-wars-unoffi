@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;
 	consts.bullet = false;
-	consts.net_threshold_multiplier = 0.5f;
+	consts.net_threshold_multiplier = 1.5f;
 
 	this.Tag("projectile");
 	shape.SetGravityScale(0.0f);

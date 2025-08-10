@@ -13,12 +13,14 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().bullet = true;
 	this.getShape().SetGravityScale(0.0f);
 	this.getShape().getConsts().mapCollisions = false;
+	this.getShape().getConsts().net_threshold_multiplier = 4.0f;
 
 	Vec2f[] old_pos;
 	old_pos.push_back(this.getPosition());
 	this.set("old_positions", @old_pos);
 
 	if (!isClient()) return;
+
 	Vec2f frameSize = Vec2f(32, 32);
 	this.getSprite().SetVisible(false);
 
@@ -258,6 +260,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 void onDie(CBlob@ this)
 {
 	if (!this.hasTag("no_projectiles")) this.getSprite().PlaySound("CardDie.ogg", 0.5f, 0.45f+XORRandom(11) * 0.01f);
+
 	Boom(this);
 	sparks(this.getPosition(), 50);
 }

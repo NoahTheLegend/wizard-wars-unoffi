@@ -40,6 +40,7 @@ void onInit( CBlob@ this )
 
 	SColor col = SColor(220, 237, 20, 20);
 	bool green = this.getName().find("_g") != -1;
+
 	this.set_bool("green", green);
 	if (green)
 	{
@@ -47,8 +48,7 @@ void onInit( CBlob@ this )
 		rendname = "rend_lg";
 	}
 
-	this.set_string("rendname", rendname);
-	Setup(col, rendname, false);//Red Laser
+	Setup(col, rendname, false);
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "Leech.as", "laserEffects");
 }
 
@@ -73,7 +73,6 @@ void updateLaserPositions(CBlob@ this)
 	aimNorm.Normalize();
 	
 	Vec2f destination = aimPos;
-	
 	Vec2f shootVec = destination-thisPos;
 	
 	Vec2f normal = (Vec2f(aimVec.y, -aimVec.x));
@@ -130,24 +129,28 @@ void laserEffects(CBlob@ this, int id)
 {
 	CSprite@ thisSprite = this.getSprite();
 	Vec2f thisPos = this.getPosition();
-	//laser effects	
-	if ( this.getTickSinceCreated() > 1 )	//delay to prevent rendering lasers leading from map origin
+
+	if (this.getTickSinceCreated() > 1)
 	{
 		Vec2f[]@ laser_positions;
-		this.get( "laser positions", @laser_positions );
+		this.get("laser positions", @laser_positions);
 		
 		Vec2f[]@ laser_vectors;
-		this.get( "laser vectors", @laser_vectors );
+		this.get("laser vectors", @laser_vectors);
 		
-		if ( laser_positions is null || laser_vectors is null )
-			return; 
+		if (laser_positions is null || laser_vectors is null)
+			return;
+
 		int laserPositions = laser_positions.length;
-		
 		f32 ticksTillUpdate = getGameTime() % TICKS_PER_SEG_UPDATE;
 		
 		int lastPosArrayElement = laser_positions.length-1;
 		int lastVecArrayElement = laser_vectors.length-1;
-		
+
+		string rendname = "rend_l";
+		bool green = this.getName().find("_g") != -1;
+		if (green) rendname = "rend_lg";
+
 		f32 z = thisSprite.getZ() - 0.4f;
 		for (int i = laser_positions.length - laserPositions; i < lastVecArrayElement; i++)
 		{
@@ -156,20 +159,10 @@ void laserEffects(CBlob@ this, int id)
 			Vec2f followVec = currSegPos - prevSegPos;
 			Vec2f followNorm = followVec;
 			followNorm.Normalize();
-			
+
 			f32 followDist = followVec.Length();
-			
 			f32 laserLength = (followDist+3.6f) / 16.0f;		
-			
-			
-			/*Vec2f netTranslation = Vec2f(0,0);
-			for (int t = i+1; t < lastVecArrayElement; t++)
-			{	
-				netTranslation = netTranslation - laser_vectors[t]; 
-			}*/
-			
-			//Vec2f movementOffset = laser_positions[lastPosArrayElement-1] - thisPos;
-			
+
 			Vec2f[] v_pos;
 			Vec2f[] v_uv;
 			
@@ -178,7 +171,7 @@ void laserEffects(CBlob@ this, int id)
 			v_pos.push_back(currSegPos + Vec2f( followDist * laserLength, LASER_WIDTH).RotateBy(-followNorm.Angle(), Vec2f())	); v_uv.push_back(Vec2f(1,1));//Bottom right?
 			v_pos.push_back(currSegPos + Vec2f(-followDist * laserLength, LASER_WIDTH).RotateBy(-followNorm.Angle(), Vec2f())	); v_uv.push_back(Vec2f(0,1));//Bottom left?
 				
-			Render::Quads(this.get_string("rendname"), z, v_pos, v_uv);
+			Render::Quads(rendname, z, v_pos, v_uv);
 			
 			v_pos.clear();
 			v_uv.clear();

@@ -145,7 +145,7 @@ void onTick( CSprite@ this )
 
 	// animations
 	int spellsLength = PriestParams::spells.length;
-const bool firing = blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2);;
+const bool firing = (blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2)) && !getRules().get_bool("showHelp");;
 	const bool left = blob.isKeyPressed(key_left);
 	const bool right = blob.isKeyPressed(key_right);
 	const bool up = blob.isKeyPressed(key_up);

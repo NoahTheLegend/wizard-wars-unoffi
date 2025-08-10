@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = true;	 // we have our own map collision
 	consts.bullet = true;
-	consts.net_threshold_multiplier = 0.25f;
+	consts.net_threshold_multiplier = 1.25f;
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("die_in_divine_shield");

@@ -19,7 +19,7 @@ void onInit(CBlob@ this)
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	
 	this.getShape().getConsts().bullet = true;
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	this.getShape().getConsts().net_threshold_multiplier = 1.5f;
 	CSprite@ sprite = this.getSprite();
 	sprite.SetRelativeZ(-15.0f);
 	CSpriteLayer@ l = sprite.addSpriteLayer("layer", "BouncyBomb.png", 32, 32);

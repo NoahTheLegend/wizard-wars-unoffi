@@ -25,7 +25,7 @@ void onInit( CBlob @ this )
 	
 	CShape@ shape = this.getShape();
 	//shape.SetStatic(true);
-	shape.SetGravityScale( 0.0f );
+	shape.SetGravityScale(0.0f);
 	shape.SetRotationsAllowed(false);
 	
 	ShapeConsts@ consts = shape.getConsts();
@@ -36,7 +36,6 @@ void onInit( CBlob @ this )
 	thisSprite.PlaySound("lightning_impact.ogg", 5.0f, 1.0f + XORRandom(5)/10.0f);
 	
 	this.set_bool("initialized", false);
-	
 	this.server_SetTimeToDie(LIFETIME);
 }
 

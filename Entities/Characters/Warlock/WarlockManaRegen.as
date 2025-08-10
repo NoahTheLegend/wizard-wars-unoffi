@@ -16,6 +16,10 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
             if (ownerBlob.get("manaInfo", @manaInfo))
             {
                 manaInfo.mana += damage * 10 * WarlockParams::MANA_PER_1_DAMAGE;
+                if (manaInfo.mana > manaInfo.maxMana)
+                {
+                    manaInfo.mana = manaInfo.maxMana;
+                }
             }
 
             if (ownerBlob.get_u16("darkritual_effect_time") > 0)

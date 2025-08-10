@@ -13,7 +13,7 @@ void onInit(CBlob@ this)
 	//shape.getConsts().net_threshold_multiplier = 2.0f;
 
 	shape.SetGravityScale(0);
-	shape.getConsts().net_threshold_multiplier = 0.5f;
+	shape.getConsts().net_threshold_multiplier = 1.5f;
 
 	this.set_bool("back", false);
 

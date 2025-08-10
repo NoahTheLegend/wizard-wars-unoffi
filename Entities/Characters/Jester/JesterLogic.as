@@ -48,7 +48,7 @@ void onInit( CBlob@ this )
     this.addCommandID("freeze");
     this.addCommandID("spell");
 	this.addCommandID("airhorn");
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	this.getShape().getConsts().net_threshold_multiplier = 1.5f;
 
     AddIconToken( "$Skeleton$", "SpellIcons.png", Vec2f(16,16), 0 );
     AddIconToken( "$Zombie$", "SpellIcons.png", Vec2f(16,16), 1 );
@@ -148,6 +148,19 @@ void ManageSpell( CBlob@ this, JesterInfo@ jester, PlayerPrefsInfo@ playerPrefsI
 
         is_aux2 = true;
     }
+	if (isClient() && getRules().get_bool("showHelp"))
+	{
+		is_pressed = false;
+		just_pressed = false;
+		just_released = false;
+
+		is_secondary = false;
+		is_aux1 = false;
+		is_aux2 = false;
+
+		casting_key = "a1";
+	}
+
 	this.set_string("casting_key", casting_key);
 	
 	Spell spell = JesterParams::spells[spellID];

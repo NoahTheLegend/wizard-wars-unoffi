@@ -32,7 +32,7 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
     shape.SetGravityScale(0.0f);
 	shape.getConsts().mapCollisions = false;
-	shape.getConsts().net_threshold_multiplier = 0.25f;
+	shape.getConsts().net_threshold_multiplier = 1.25f;
 	this.getSprite().SetZ(510);
 	
 	this.set_Vec2f("target_pos", Vec2f_zero);

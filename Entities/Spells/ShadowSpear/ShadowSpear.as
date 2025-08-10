@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 
 	consts.mapCollisions = false;
 	consts.bullet = false;
-	consts.net_threshold_multiplier = 1.0f;
+	consts.net_threshold_multiplier = 4.0f;
 	shape.SetGravityScale(0.0f);
 
 	this.Tag("projectile");

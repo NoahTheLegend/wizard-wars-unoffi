@@ -1,4 +1,3 @@
-
 void onTick(CBlob@ this)
 {
     CSprite@ sprite = this.getSprite();
@@ -10,12 +9,13 @@ void onTick(CBlob@ this)
 
     int diff = gt - cast_time;
     bool cast_blob = diff % period == 0;
-    if (diff == period / 2) sprite.PlaySound("ShadowBurstCast.ogg", 1.0f, pitch + XORRandom(11) * 0.01f);
 
     u8 max_count = this.get_u8("shadowburst_count");
     u8 count = this.get_u8("shadowburst_current_count");
     f32 level = float(count) / float(max_count);
+
     if (cast_blob) this.set_u8("shadowburst_current_count", count + 1);
+    if (diff % period == 0) sprite.PlaySound("ShadowBurstCast.ogg", 1.0f, pitch + XORRandom(11) * 0.01f);
 
     CSpriteLayer@ castFront = sprite.getSpriteLayer("shadowburst_front");
     CSpriteLayer@ castBack = sprite.getSpriteLayer("shadowburst_back");
@@ -108,7 +108,7 @@ void onTick(CBlob@ this)
         }
     }
 
-    if ((isServer() && level >= 1.0f) || (isClient() && level >= 1.0f && (castFront is null || castFront.isAnimationEnded())))
+    if (level >= 1.0f)
     {
         this.RemoveScript("ShadowBurstCast.as");
 
