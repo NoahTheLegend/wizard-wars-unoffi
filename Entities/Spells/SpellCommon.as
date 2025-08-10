@@ -2095,19 +2095,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -401411067://lightning
 		{
-            Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
-		
+            Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+			Sound::Play("LightningStrike.ogg", aimpos, 1.0f, 0.9f + XORRandom(11) * 0.01f);
+
 			if (isServer())
 			{
-				CBlob@ orb = server_CreateBlob( "lightning", this.getTeamNum(), Vec2f(aimpos.x, 4.0f) ); 
+				CBlob@ orb = server_CreateBlob("lightning", this.getTeamNum(), Vec2f(aimpos.x, 4.0f));
 				if (orb !is null)
 				{
-                    if(this.hasTag("extra_damage"))
-                        orb.Tag("extra_damage");//Remember to change this in Lightning.as
+					if (this.hasTag("extra_damage"))
+						orb.Tag("extra_damage");//Remember to change this in Lightning.as
 
 					orb.set_Vec2f("aim pos", aimpos);
-
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.SetDamageOwnerPlayer(this.getPlayer());
 				}
 			}
 		}
@@ -6111,7 +6111,28 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		break;
 
 		// WARLOCK
-		case -1298128588:  // corruptionshard 
+		case -352148188: // carnage
+		{
+			if (!isClient()) return;
+			this.getSprite().PlaySound("CarnageOn.ogg", 0.75f, 1.0f + XORRandom(10) * 0.01f);
+
+			PlayerPrefsInfo@ playerPrefsInfo;
+			if (player.get("playerPrefsInfo", @playerPrefsInfo))
+			{
+				for (u8 i = 0; i < playerPrefsInfo.spell_cooldowns.size(); i++)
+				{
+					//if (i != 15)
+					{
+						playerPrefsInfo.spell_cooldowns[i] = 0;
+					}
+				}
+
+				if (charge_state == 5) this.Tag("carnage_effect");
+			}
+		}
+		break;
+
+		case -1298128588: // corruptionshard 
 		{
 			{
 				CBlob@[] totems;

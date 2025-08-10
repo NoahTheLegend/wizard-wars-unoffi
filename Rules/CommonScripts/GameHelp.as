@@ -200,9 +200,9 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 				Button@ reference = cast<Button@>(classList.getChild("classButton_" + i));
 				if (reference !is null)
 				{
-					Label@ label = cast<Label@>(reference.getChild("selectedLabel"));
-					if (label !is null)
-					label.isEnabled = (i == classIndex-1);
+					Icon@ selectedReference = cast<Icon@>(reference.getChild("selectedReference"));
+					if (selectedReference !is null)
+						selectedReference.isEnabled = i == classIndex - 1;
 				}
 			}
 		}
@@ -1158,11 +1158,11 @@ void onTick(CRules@ this)
 					reference.nodraw = true;
 					reference.addChild(icon);
 				}
-				Label@ selectedLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "SELECTED "+i, SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
-				selectedLabel.name = "selectedLabel";
-				selectedLabel.localPosition = Vec2f(reference.size.x / 2 - 3, reference.size.y / 2 - 4);
-				selectedLabel.isEnabled = false;
-				reference.addChild(selectedLabel);
+				Icon@ selectedReference = @Icon("PaperButton.png", Vec2f(0, 0), Vec2f(24, 24), 0, 1.0f, true, reference.size);
+				selectedReference.name = "selectedReference";
+				selectedReference.isEnabled = false;
+
+				reference.addChild(selectedReference);
 				classList.addChild(reference);
 			}
 			rightPage.addChild(classList);
@@ -1205,7 +1205,6 @@ void onTick(CRules@ this)
 			spellsMenuLabel.localPosition = Vec2f(spellsMenu.size.x / 2 - 3, spellsMenu.size.y / 2 - 4);
 			spellsMenu.addChild(spellsMenuLabel);
 
-			// GUIDE BUTTON
 			Button@ guideMenu = @Button(Vec2f(spellsMenu.localPosition.x + spellsMenu.size.x + 8, page_size.y - 92), buttonSize, "Guide", SColor(0, 0, 0, 0));
 			guideMenu.setLevel(ContainerLevel::PAGE);
 			guideMenu.nodraw = true;

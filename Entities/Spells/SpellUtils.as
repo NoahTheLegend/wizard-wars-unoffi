@@ -484,21 +484,35 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
-			if ( b.get_u16("manaburn") > 0 && sameTeam )
+			if (b.get_u16("manaburn") > 0 && sameTeam)
 			{				
 				b.set_u16("manaburn", 1);
 				b.Sync("manaburn", true);
 					
 				countered = true;
 			}
-			if ( b.get_u16("healblock") > 0 && sameTeam )
-			{				
+			if (b.get_u16("healblock") > 0 && sameTeam)
+			{
 				b.set_u16("healblock", 1);
 				b.Sync("healblock", true);
 					
 				countered = true;
 			}
-			
+			if (b.get_u16("silenced") > 0 && sameTeam)
+			{
+				b.set_u16("silenced", 1);
+				b.Sync("silenced", true);
+
+				countered = true;
+			}
+			if (b.get_u16("feared") > 0 && sameTeam)
+			{
+				b.set_u16("feared", 1);
+				b.Sync("feared", true);
+
+				countered = true;
+			}
+
 			// enemy buffs
 			if (
 			(b.get_u16("hastened") > 0

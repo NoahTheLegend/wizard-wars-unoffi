@@ -20,7 +20,7 @@ void onInit( CBlob@ this )
 	
 	ManaInfo manaInfo;
 	manaInfo.maxMana = WarlockParams::MAX_MANA;
-	manaInfo.mana = WarlockParams::MAX_MANA / 2;
+	manaInfo.mana = 15;
 	manaInfo.manaRegen = WarlockParams::MANA_REGEN;
 	this.set("manaInfo", @manaInfo);
 
@@ -185,33 +185,24 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 		warlock.spells_cancelling = true;	
 		
 		// only stop cancelling once all spells buttons are released
-		if ( !is_pressed )
+		if (!is_pressed)
 		{
 			warlock.spells_cancelling = false;
 		}
 	}
-	/*
-	if(this.getPlayer() is getLocalPlayer())
-		{
-			if(controls.isKeyJustPressed(KEY_LSHIFT))
-			{
-				this.set_bool("shiftlaunch", true);
-				print("hello");
-			}
-			if(controls.isKeyJustReleased(KEY_LSHIFT))
-			{
-				this.set_bool("shiftlaunch", false);
-				print("ohno");
-			}
-		}
-	*/
+
+	f32 mod = 1.0f;
+	if (this.hasTag("carnage_effect")) mod = 2.0f;
+
 	f32 wizHealth = this.getHealth();
-	bool enough_health = spell.type == SpellType::healthcost ? wizHealth >= spell.mana * 0.1f : wizHealth >= spell.mana * WarlockParams::HEALTH_COST_PER_1_MANA * 0.5f;
-	bool canCastSpell = (wizMana >= spell.mana || enough_health) && playerPrefsInfo.spell_cooldowns[spellID] <= 0;
+	bool enough_health = spell.type == SpellType::healthcost ? wizHealth >= spell.mana : wizHealth >= spell.mana * WarlockParams::HEALTH_COST_PER_1_MANA * 0.5f;
+	bool canCastSpell = ((spell.type == SpellType::healthcost ? wizHealth * 10 : wizMana) >= spell.mana || enough_health) && playerPrefsInfo.spell_cooldowns[spellID] <= 0;
+
     if (is_pressed && canCastSpell) 
     {
         moveVars.walkFactor *= 0.8f;
-        charge_time += 1;
+        charge_time += 1 * mod;
+
         if (charge_time >= spell.full_cast_period)
         {
             charge_state = WarlockParams::extra_ready;
@@ -251,19 +242,24 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			u16 targetID = 0;
 			if (target !is null) targetID = target.getNetworkID();
 
+			bool can_apply_cd_time = !this.hasTag("carnage_effect");
+			if (this.hasTag("carnage_effect"))
+				this.Untag("carnage_effect");
+
             params.write_u8(castSpellID);
             params.write_Vec2f(spellPos);
 			params.write_Vec2f(pos);
 			params.write_Vec2f(this.getAimPos());
 			params.write_u16(targetID);
-            this.SendCommand(this.getCommandID("spell"), params);
+			this.SendCommand(this.getCommandID("spell"), params);
 			
 			int spell_cd_time = WarlockParams::spells[castSpellID].cooldownTime * getTicksASecond();
 			f32 cd_reduction_factor = 1.0f * this.get_f32("majestyglyph_cd_reduction");
 			int apply_cd_time = (spell_cd_time == 0 ? 0 : spell_cd_time * cd_reduction_factor);
 
-			playerPrefsInfo.spell_cooldowns[castSpellID] = apply_cd_time;
+			playerPrefsInfo.spell_cooldowns[castSpellID] = can_apply_cd_time ? apply_cd_time : 0;
         }
+		
         charge_state = WarlockParams::not_aiming;
         charge_time = 0;
     }
@@ -470,7 +466,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 		f32 wizHealth = this.getHealth();
 		f32 wizMana = manaInfo.mana;
-		bool enough_health = spell.type == SpellType::healthcost ? wizHealth >= spell.mana * 0.1f : wizHealth >= spell.mana * WarlockParams::HEALTH_COST_PER_1_MANA * 0.5f;
+		bool enough_health = spell.type == SpellType::healthcost ? wizHealth * 10 >= spell.mana : wizHealth >= spell.mana * WarlockParams::HEALTH_COST_PER_1_MANA * 0.5f;
 		
 		if (wizMana >= spell.mana && spell.type != SpellType::healthcost)
 		{
@@ -541,7 +537,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 			if (isClient())
 			{
-				this.getSprite().PlaySound("warp_teleport.ogg", 1.0f, 1.5f+XORRandom(21)*0.01f);
+				this.getSprite().PlaySound("warp_teleport.ogg", 0.65f, 1.35f+XORRandom(21)*0.01f);
 			}
 
 			ParticleAnimated("Flash3.png",
@@ -580,7 +576,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 					if (isClient())
 					{
-						this.getSprite().PlaySound("warp_teleport.ogg", 0.5f, 1.5f+XORRandom(21) * 0.01f);
+						this.getSprite().PlaySound("warp_teleport.ogg", 0.65f, 1.35f+XORRandom(21) * 0.01f);
 					}
 
 					ParticleAnimated("Flash3.png",

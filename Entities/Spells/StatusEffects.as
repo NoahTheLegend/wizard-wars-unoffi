@@ -213,6 +213,54 @@ void onTick(CBlob@ this)
 		}
 	}
 
+	//CARNAGE
+	if (this.hasTag("carnage_effect"))
+	{
+		CParticle@[] ps;
+		this.get("carnage_particles", ps);
+
+		if (this.getTickSinceCreated() % 8 == 0)
+		{
+			const f32 rad = 16.0f;
+			Vec2f random = Vec2f(XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+
+			CParticle@ p = ParticleAnimated("MissileFire6.png", random, Vec2f(0,0), 0, 1.0f, 1+XORRandom(2), 0.2f, true);
+			if (p !is null)
+			{
+				p.gravity = Vec2f(0, 0.1f + XORRandom(16) * 0.01f);
+				p.bounce = 0;
+				p.collides = false;
+    			p.fastcollision = true;
+				p.timeout = 30;
+				p.colour = SColor(255, 255, 0, 55);
+				p.forcecolor = SColor(255, 255, 0, 55);
+
+				if (XORRandom(2) == 0)
+					p.Z = -10.0f;
+				else
+					p.Z = 10.0f;
+
+				ps.push_back(p);
+			}
+		}
+
+		for (int i = 0; i < ps.size(); i++)
+		{
+			CParticle@ p = ps[i];
+			if (p is null) continue;
+			if (p.timeout < 1)
+			{
+				ps.erase(i);
+				i--;
+				continue;
+			}
+
+			p.position = this.getPosition() + this.getVelocity() + p.gravity;
+		}
+		
+		this.set("carnage_particles", ps);
+	}
+
 	//SILENCE
 	u16 silenced = this.get_u16("silenced");
 	if (silenced > 0)
@@ -309,7 +357,7 @@ void onTick(CBlob@ this)
 
 		if (feared == 0)
 		{
-			thisSprite.PlaySound("FearOff.ogg", 0.8f, 1.35f + XORRandom(16) * 0.01f);
+			thisSprite.PlaySound("FearOff.ogg", 0.8f, 0.9f + XORRandom(16) * 0.01f);
 			this.Sync("feared", true);
 		}
 	}

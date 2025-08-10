@@ -89,6 +89,7 @@ shared enum StatusType
     PLAGUE =                    22,
     SILENCED =                  23,
     FEAR =                      24,
+    CARNAGE =                   25,
 
     TOTAL
 };
@@ -130,7 +131,8 @@ shared u8[] TOOLTIPS_SPECIFIC()
         StatusSpecific::CONTROL, // CONFUSED
         StatusSpecific::OTHER, // PLAGUE
         StatusSpecific::CONTROL, // SILENCED
-        StatusSpecific::CONTROL // FEAR
+        StatusSpecific::CONTROL, // FEAR
+        StatusSpecific::BUFF // CARNAGE
     };
     
     return arr;
@@ -163,7 +165,8 @@ shared string[] TOOLTIPS()
         "Confused: reversed controls",
         "Plague: permanently poisoned, taking damage poisons the enemy",
         "Silenced: unable to cast spells except teleport",
-        "Fear: constantly running"
+        "Fear: constantly running",
+        "Carnage: decreased spell cast time, spells won't have cooldown on cast"
     };
     
     return arr;

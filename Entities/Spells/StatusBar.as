@@ -49,6 +49,7 @@ void onInit(CSprite@ this)
     blob.set_bool("plague", false);
     blob.set_u16("silenced", 0);
     blob.set_u16("feared", 0);
+    // carnage is tag
 
     setBar(blob);
 }
@@ -89,67 +90,6 @@ void onTick(CSprite@ this)
     {
         setBar(blob);
     }
-
-    /*
-    if (getControls().isKeyJustPressed(KEY_KEY_H))
-    {
-        blob.add_u8("iter", 1);
-        
-        if(blob.get_u8("iter")==1)  blob.set_u16("poisoned", 240);
-        if(blob.get_u8("iter")==2)  blob.set_u16("wet timer", 9000);
-        if(blob.get_u8("iter")==3)  blob.set_s16("burn timer", 9000);
-        if(blob.get_u8("iter")==4)  blob.set_u16("hastened", 9000);
-        if(blob.get_u8("iter")==5)  blob.set_u16("slowed", 9000);
-        if(blob.get_u8("iter")==6)  blob.set_u16("airblastShield", 9000);
-        if(blob.get_u8("iter")==7)  blob.set_u32("damage_boost", getGameTime() + 9000);
-        if(blob.get_u8("iter")==8)  blob.set_u16("focus", 9000);
-        if(blob.get_u8("iter")==9)  blob.set_u32("overload mana regen", getGameTime() + 9000);
-        if(blob.get_u8("iter")==10) blob.set_u16("fireProt", 9000);
-        if(blob.get_u8("iter")==11) blob.set_u16("regen", 9000);
-        if(blob.get_u8("iter")==12) blob.set_u16("manaburn", 9000);
-        if(blob.get_u8("iter")==13) blob.set_u16("sidewinding", 9000);
-        if(blob.get_u8("iter")==14) blob.set_bool("burnState", true);
-        if(blob.get_u8("iter")==15) blob.set_u16("dmgconnection", 9000);
-        if(blob.get_u8("iter")==16) blob.set_bool("manatohealth", true);
-        if(blob.get_u8("iter")==17) blob.set_bool("damagetomana", true);
-        if(blob.get_u8("iter")==18) blob.set_u16("hallowedbarrier", 9000);
-        if(blob.get_u8("iter")==19) blob.set_u16("healblock", 9000);
-        if(blob.get_u8("iter")==20) blob.set_u16("cdreduction", 9000);
-        if(blob.get_u8("iter")==21) blob.set_u16("antidebuff", 9000);
-        if(blob.get_u8("iter")==22) blob.set_u16("confused", 9000);
-        if (blob.get_u8("iter") == 22)
-        {
-            blob.set_u8("iter", 0);
-        }
-    }
-    else if (getControls().isKeyJustPressed(KEY_KEY_J))
-    {
-        blob.set_u16("poisoned", 0);
-        blob.set_u16("wet timer", 0);
-        blob.set_s16("burn timer", 0);
-        blob.set_u16("hastened", 0);
-        blob.set_u16("slowed", 0);
-        blob.set_u16("airblastShield", 0);
-        blob.set_u32("damage_boost", 0);
-        blob.set_u16("focus", 0);
-        blob.set_u32("overload mana regen", 0);
-        blob.set_u16("fireProt", 0);
-        blob.set_u16("regen", 0);
-        blob.set_u16("manaburn", 0);
-        blob.set_u16("sidewinding", 0);
-        blob.set_bool("burnState", false);
-        blob.set_u16("dmgconnection", 0);
-        blob.set_bool("manatohealth", false);
-        blob.set_bool("damagetomana", false);
-        blob.set_u16("hallowedbarrier", 0);
-        blob.set_u16("healblock", 0);
-        blob.set_u16("cdreduction", 0);
-        blob.set_u16("antidebuff", 0);
-        blob.set_u16("confused", 0);
-    }
-
-    if (blob.get_u16("poisoned") > 0) blob.sub_u16("poisoned", 1);
-    */
 }
 
 void onRender(CSprite@ this)
@@ -198,21 +138,22 @@ enum SPELL_INDEX
     CONFUSED,
     PLAGUE,
     SILENCED,
-    FEAR
+    FEAR,
+    CARNAGE
 };
 
 u8[][] disabled_for_classes =
         {
-            {}, // wizard
-            {}, // necromancer
-            {}, // druid
-            {}, // swordcaster
-            {}, // entropist
-            {}, // priest
-            {}, // shaman
-            {}, // paladin
-            {}, // jester
-            {5} // warlock
+            {SPELL_INDEX::CARNAGE}, // wizard
+            {SPELL_INDEX::CARNAGE}, // necromancer
+            {SPELL_INDEX::CARNAGE}, // druid
+            {SPELL_INDEX::CARNAGE}, // swordcaster
+            {SPELL_INDEX::CARNAGE}, // entropist
+            {SPELL_INDEX::CARNAGE}, // priest
+            {SPELL_INDEX::CARNAGE}, // shaman
+            {SPELL_INDEX::CARNAGE}, // paladin
+            {SPELL_INDEX::CARNAGE}, // jester
+            {SPELL_INDEX::FOCUS} // warlock
         };
 
 class StatusBar
@@ -300,7 +241,6 @@ class StatusBar
             return;
 
         u8 disabled_row = blob.get_u8("disabled_row");
-
         u16 poison = blob.get_u16("poisoned");
 
         // clear effects / debuffs from despell hook, this hook is supposed to ensure first doesnt break and to update the duration
@@ -329,6 +269,7 @@ class StatusBar
         u16 plague_timer = blob.get_bool("plague") ? 1 : 0;
         u16 silenced_timer = blob.get_u16("silenced");
         u16 feared_timer = blob.get_u16("feared");
+        u16 carnage_timer = blob.hasTag("carnage_effect") ? 1 : 0;
 
         handleStatus(StatusType::IGNITED,                   burn_timer);
         handleStatus(StatusType::WET,                       wet_timer);
@@ -355,6 +296,7 @@ class StatusBar
         handleStatus(StatusType::PLAGUE,                    plague_timer);
         handleStatus(StatusType::SILENCED,                  silenced_timer);
         handleStatus(StatusType::FEAR,                      feared_timer);
+        handleStatus(StatusType::CARNAGE,                   carnage_timer);
     }
 
     u8 getHoveredStatus()
