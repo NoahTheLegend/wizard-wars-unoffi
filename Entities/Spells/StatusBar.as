@@ -244,7 +244,7 @@ class StatusBar
         u8 disabled_row = blob.get_u8("disabled_row");
         u16 poison = blob.get_u16("poisoned");
 
-        // clear effects / debuffs from despell hook, this hook is supposed to ensure first doesnt break and to update the duration
+        // clear effects / debuffs from dispell hook, this hook is supposed to ensure first doesnt break and to update the duration
         s16 burn_timer = blob.get_s16("burn timer");
         u16 wet_timer = blob.get_u16("wet timer");
         u16 freeze_timer = 0; AttachmentPoint@ ap = blob.isAttached() ? blob.getAttachments().getAttachmentPoint("PICKUP2") : null; if (blob.isAttached() && ap !is null && ap.getOccupied() !is null) freeze_timer = ap.getOccupied().getTimeToDie() * 30;

@@ -30,6 +30,8 @@ void onTick(CBlob@ this)
             orb.set_f32("acceleration", this.hasTag("extra_damage") ? 16 : 12);
             orb.set_u32("acceleration_tsc_mod", 30);
             orb.set_f32("max_speed", 24.0f);
+
+            orb.setAngleDegrees(-dir.Angle());
         }
     }
 

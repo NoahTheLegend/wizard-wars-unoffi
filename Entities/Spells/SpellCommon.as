@@ -14,7 +14,7 @@ const int complete_cast = NecromancerParams::cast_3;
 const int super_cast = NecromancerParams::extra_ready;
 const float necro_shoot_speed = NecromancerParams::shoot_max_vel;
 
-void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimpos, Vec2f thispos, u16 targetID)
+void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimpos, Vec2f thispos, u16 targetID, int mana_taken = 0, f32 health_taken = 0)
 {	//To get a spell hash to add more spells type this in the console (press home in game)
 	//print('cfg_name'.getHash()+'');
 	//As an example with the meteor spell, i'd type out
@@ -6192,16 +6192,58 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 
 		// WARLOCK
-		case 477345426: // darkritual
+
+		case -12171628681: // demonicpact
+		{
+			f32 orbspeed = 4.0f;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.3f;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;	
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", demonicpact_effect_missile);
+					orb.set_u8("override_sprite_frame", 14);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		case 477345426: // dark ritual
 		{
 			this.getSprite().PlaySound("DarkRitualOn.ogg", 0.85f, 1.0f + XORRandom(10) * 0.01f);
 
-			u16 effectTime = 225; // 7.5 seconds
-			f32 self_damage = 2.0f;
+			u16 effectTime = 240; // 8 seconds
+			f32 self_damage = 2.0f; // 10
 
 			if (charge_state == 5)
 			{
-				effectTime += 45;
+				effectTime += 60;
 			}
 
 			if (this.hasTag("extra_damage"))
@@ -6217,6 +6259,34 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				this.Sync("darkritual_effect_time", true);
 				this.Sync("darkritual_self_damage", true);
+			}
+
+			if (!isClient())
+			{
+    			f32 max_range = 24.0f;
+    			u8 quantity = 20;
+
+				u8 rnd = XORRandom(55);
+				SColor col = SColor(255, 155+XORRandom(100), rnd / 2, rnd);
+
+    			Vec2f thisPos = this.getPosition();
+				for (u8 i = 0; i < quantity; i++)
+    			{
+    			    Vec2f ppos = thisPos + Vec2f(max_range, 0).RotateBy((360.0f/quantity) * i);
+    			    Vec2f dir = thisPos - ppos;
+
+    			    dir.Normalize();
+    			    dir *= 2.0f + XORRandom(21) * 0.1f;
+
+    			    CParticle@ p = ParticlePixelUnlimited(ppos, dir, col, true);
+    			    if (p is null) return;
+
+    			    p.fastcollision = true;
+    			    p.gravity = Vec2f_zero;
+    			    p.timeout = 20 + XORRandom(10);
+    			    p.scale = 0.5f + XORRandom(51) * 0.001f;
+    			    p.damping = 0.95f;
+    			}
 			}
 		}
 		break;
@@ -6267,7 +6337,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					}
 				}
 
-				int alive_time = 30 * 30;
+				int alive_time = 20 * 30;
 				f32 heal_amount = 0.75f; // 7.5 hp
 				int mana_amount = 20;
 				f32 max_range = 96.0f;
@@ -6288,7 +6358,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 							case super_cast:
 							{
-								alive_time = 40 * 30;
+								alive_time = 15 * 30;
 								max_range = 128.0f;
 								alt_delay = 120;
 								debuff_time = 150;
@@ -6332,8 +6402,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					if (!this.get( "manaInfo", @manaInfo )) {
 						return;
 					}
+
+					if (health_taken > 0.0f)
+					{
+						Heal(this, this, health_taken * 0.5f, false, false, 0);
+						
+						if (mana_taken > 0)
+						{
+							manaInfo.mana += mana_taken;
+						}
+					}
+					else
+					{
+						manaInfo.mana += spell.mana;
+					}
 					
-					manaInfo.mana += spell.mana;
 					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 				}
 			}
@@ -6342,16 +6425,28 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		
 		case 1783647402: // shadowspear
         {
-			ManaInfo@ manaInfo;
-			if (!this.get("manaInfo", @manaInfo)) {
-				return;
-			}
-
 			if (targetID == 0 || getBlobByNetworkID(targetID) is null)
 			{
-				manaInfo.mana += spell.mana;
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+
+				if (health_taken > 0.0f)
+				{
+					Heal(this, this, health_taken * 0.5f, false, false, 0);
+					
+					if (mana_taken > 0)
+					{
+						manaInfo.mana += mana_taken;
+					}
+				}
+				else
+				{
+					manaInfo.mana += spell.mana;
+				}
+				
 				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
-				return;
 			}
 
             if (!isServer())
@@ -6634,8 +6729,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (!this.get( "manaInfo", @manaInfo )) {
 					return;
 				}
-				
-				manaInfo.mana += spell.mana;
+
+				if (health_taken > 0.0f)
+				{
+					Heal(this, this, health_taken * 0.5f, false, false, 0);
+					
+					if (mana_taken > 0)
+					{
+						manaInfo.mana += mana_taken;
+					}
+				}
+				else
+				{
+					manaInfo.mana += spell.mana;
+				}
+
 				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 			}
 

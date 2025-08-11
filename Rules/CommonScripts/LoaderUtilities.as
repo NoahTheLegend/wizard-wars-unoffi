@@ -65,8 +65,6 @@ void onTick(CMap@ map)
 {
 	if (getGameTime() != 0 && map.hasTag("rope_map_updated"))
 	{
-		warn("Rope map updated: x("+MAP_TILES.length+")");
-
 		map.Untag("rope_map_updated");
 		SaveMap(getMap());
 	}

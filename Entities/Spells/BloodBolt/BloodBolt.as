@@ -10,7 +10,8 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
 	consts.bullet = true;
-	consts.net_threshold_multiplier = 1.0f;
+	consts.net_threshold_multiplier = 2.0f;
+
 	this.Tag("projectile");
 	this.Tag("counterable");
 
@@ -24,7 +25,7 @@ void onInit(CBlob@ this)
 	CSprite@ sprite = this.getSprite();
 	
 	sprite.SetZ(750.0f);
-	sprite.setRenderStyle(RenderStyle::additive);
+	//sprite.setRenderStyle(RenderStyle::additive);
 
 	CSpriteLayer@ l = sprite.addSpriteLayer("BloodBolt.png", 16, 16);
 	if (l !is null)
@@ -93,10 +94,16 @@ void onTick(CBlob@ this)
 	if (isClient() && this.getTickSinceCreated() >= 3)
 	{
 		u8 trail_size = 3;
-		f32 trail_gap = vel.Length() / 2;
+		f32 trail_gap = 2.0f;
+
+		SColor col = SColor(255, 255, 255, 255);
+		if (this.getTeamNum() == 0)
+		{
+			col = SColor(255, 15+XORRandom(25), 15+XORRandom(55), 225 + XORRandom(25));
+		}
 		for (u8 i = 0; i < trail_size; i++)
     	{
-    	    CParticle@ p = ParticleAnimated("BloodBolt.png", this.getPosition() + Vec2f(i * trail_gap, 0).RotateBy(this.getAngleDegrees()), vel, this.getAngleDegrees(), 1.0f, 5, 0.0f, true);
+    	    CParticle@ p = ParticleAnimated("BloodBolt.png", this.getPosition() - Vec2f(4 + i * trail_gap, 0).RotateBy(this.getAngleDegrees()), vel, this.getAngleDegrees(), 1.0f, 5, 0.0f, true);
 		    if (p !is null)
 		    {
 		    	p.bounce = 0;
@@ -108,6 +115,9 @@ void onTick(CBlob@ this)
 		    	p.gravity = Vec2f_zero;
 		    	p.deadeffect = -1;
     	        p.setRenderStyle(RenderStyle::additive);
+
+				p.colour = col;
+				p.forcecolor = col;
 		    }
     	}
 	}

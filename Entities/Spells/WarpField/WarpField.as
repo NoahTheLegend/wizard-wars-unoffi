@@ -83,7 +83,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-    if (this.get_u8("despelled") >= 1) this.server_Die();
+    if (this.get_u8("dispelled") >= 1) this.server_Die();
     u8 type = this.get_u8("type");
 
     f32 lifetime_factor = Maths::Clamp((int(this.getTickSinceCreated() - 30) / 90.0f), 0.0f, 1.0f);

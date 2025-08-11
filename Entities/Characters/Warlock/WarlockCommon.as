@@ -44,7 +44,7 @@ namespace WarlockParams
 		Spell("tomeblood", "Tome of Blood", 127, "Consumes health instead of mana. A swarm of blood arrows to summon beneath the position.",
 				SpellCategory::offensive, SpellType::healthcost, 2, 40, 3, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEALTHCOST}),
 
-		Spell("warp_field", "Sigil of Warp", 140, "Open a shroud on map that shrinks the reality in an area. Teleporting inside will open a portal at random location. Can be despelled by anyone.",
+		Spell("warp_field", "Sigil of Warp", 140, "Open a shroud on map that shrinks the reality in an area. Teleporting inside will open a portal at random location. Can be dispelled by anyone.",
 				SpellCategory::utility, SpellType::other, 30, 50, 15, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_MOVEMENT}),
 
 		Spell("chronomantic_teleport", "Chronomantic Teleport", 141, "Consumes health instead of mana. Teleports you to a random location on the map. When overcharged, teleports you to where you were at 5 seconds ago.",
@@ -52,9 +52,6 @@ namespace WarlockParams
 
 		Spell("poisonsurge", "Toxic Bolt", 137, "Unleash a bolt of toxic sludge that splits into smaller, non-poisoned spheres after a short delay.",
 				SpellCategory::offensive, SpellType::other, 25, 40, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_POISON}),
-
-		Spell("causticray", "Caustic Ray", 134, "Place a few pillars of corrosive energy that will poison enemies and set their spells on a delay.",
-				SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f),
 
 		Spell("corruptionshard", "Corruption Shard", 135, "Create a venomous shard releasing poison and fear aura periodically. After a short while, the shard will explode and restore some of your health and mana.",
 				SpellCategory::summoning, SpellType::other, 1, 15, 0, 128.0f, false, 1, array<int> = {SpellAttribute::SPELL_POISON, SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_GROUNDED}),
@@ -68,11 +65,14 @@ namespace WarlockParams
 		Spell("shadowspear", "Shadow Spear", 147, "Create several consecutive shadow spears that follow the target. Only one spear can deal damage and steal some of the enemy's mana in the form of an orb. Counterspelling the mana orb will restore mana to the caster. Anyone but the orb owner will receive twice more mana.",
 				SpellCategory::offensive, SpellType::other, 20, 15, 0, array<f32> = {256.0f, 64.0f}, true, 2, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
-		Spell("darkritual", "Dark Ritual", 133, "Your spells gain lifesteal for a few seconds. You take 5 damage in the end of the effect.",
+		Spell("carnage", "Carnage", 136, "Consumes health instead of mana. Reset most of your spell cooldowns. Overcharge to make the next spell you cast have half the charge time and no cooldown.",
+				SpellCategory::utility, SpellType::healthcost, 5, 15, 8, 0.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT}),
+
+		Spell("darkritual", "Dark Ritual", 133, "Your spells gain lifesteal for a few seconds. You take 10 damage in the end of the effect.",
 				SpellCategory::utility, SpellType::other, 30, 40, 20, 0.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_VAMPIRISM}),
 
-		Spell("demonicpact", "Demonic Pact", 138, "Consumes health instead of mana. Resurrect one of your allies into a demon. The demon will restore health to its master when killed, although not when despelled.",
-				SpellCategory::support, SpellType::healthcost, 1, 15, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_SUMMON, SpellAttribute::SPELL_REVIVE}),
+		Spell("demonicpact", "Demonic Pact", 138, "Consumes health instead of mana. Seal the soul of your fallen ally into a demon. They will restore health to you when killed, although not when dispelled. Taking damage improves them!",
+				SpellCategory::support, SpellType::healthcost, 10, 15, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_SUMMON, SpellAttribute::SPELL_REVIVE}),
 
 		Spell("fear", "Fear", 145, "Curse an enemy with fear, causing them to run stoplessly",
 				SpellCategory::debuff, SpellType::other, 5, 10, 1, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_CONTROL}),
@@ -80,9 +80,12 @@ namespace WarlockParams
 		Spell("silence", "Silence", 146, "Silence an enemy, preventing them from casting spells, except teleport.",
 				SpellCategory::debuff, SpellType::other, 15, 20, 4, 360.0f, true, 0, array<int> = {SpellAttribute::SPELL_CONTROL}),
 
-		Spell("carnage", "Carnage", 136, "Consumes health instead of mana. Reset most your spell cooldowns. Overcharge to make the next spell you cast have half the charge time and no cooldown.",
-				SpellCategory::utility, SpellType::healthcost, 2.5, 15, 8, 0.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT}),
+		//Spell("causticray", "Caustic Ray", 134, "Place a few pillars of corrosive energy that will poison enemies and set their spells on a delay.",
+		//		SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f),
 
+		Spell("", "", 0, "Empty spell.",
+				SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f),
+		
 		Spell("", "", 0, "Empty spell.",
 				SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f),
 		

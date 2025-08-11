@@ -132,10 +132,23 @@ void onTick( CSprite@ this )
 			u8 primarySpellID = Maths::Min(hotbarAssignments[playerPrefsInfo.primaryHotkeyID], spellsLength-1);
 			@sp = @classSpells[primarySpellID];
 
-			bool not_a2 = !blob.isKeyPressed(key_action2);
-			bool not_aux1 = !blob.isKeyPressed(key_action3);
-			bool not_aux2 = !blob.isKeyPressed(key_taunts);
-			if (blob.isMyPlayer() && sp !is null && sp.typeName == "chronomantic_teleport" && not_a2 && not_aux1 && not_aux2)
+			u8 a2SpellID = Maths::Min(hotbarAssignments[15], spellsLength-1);
+			u8 a3SpellID = Maths::Min(hotbarAssignments[16], spellsLength-1);
+			u8 a4SpellID = Maths::Min(hotbarAssignments[17], spellsLength-1);
+
+			string casting_key = blob.get_string("casting_key");
+			string name = "";
+
+			if (casting_key == "a1")
+				name = classSpells[primarySpellID].typeName;
+			else if (casting_key == "a2")
+				name = classSpells[a2SpellID].typeName;
+			else if (casting_key == "a3")
+				name = classSpells[a3SpellID].typeName;
+			else if (casting_key == "a4")
+				name = classSpells[a4SpellID].typeName;
+
+			if (blob.isMyPlayer() && sp !is null && name == "chronomantic_teleport")
 			{
 				int cursor_frame = getHUD().getCursorFrame();
 				Vec2f[]@ positions;

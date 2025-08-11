@@ -3,7 +3,7 @@
 
 const f32 follow_distance = 48.0f;
 const f32 deceleration_distance = follow_distance * 2;
-const f32 circle_distance = 32.0f;
+const f32 circle_distance = 40.0f;
 const f32 acceleration = 0.025f;
 const f32 deceleration = 0.01f;
 const f32 max_speed = 8.0f;

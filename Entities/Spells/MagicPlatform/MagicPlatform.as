@@ -9,10 +9,10 @@ void onInit(CBlob@ this)
     shape.SetGravityScale(0.0f);
     shape.SetRotationsAllowed(false);
 
-    this.set_u8("despelled", 0);
+    this.set_u8("dispelled", 0);
     this.set_Vec2f("smashtoparticles_grav", Vec2f_zero);
-    
-    this.Tag("multi_despell");
+
+    this.Tag("multi_dispell");
     this.Tag("cantparry");
     this.Tag("cantmove");
     this.Tag("no trampoline collision");
@@ -36,7 +36,7 @@ bool IsFinite(f32 value)
 
 void onTick(CBlob@ this)
 {
-    if (this.get_u8("despelled") >= (this.get_bool("small") ? 1 : 2))
+    if (this.get_u8("dispelled") >= (this.get_bool("small") ? 1 : 2))
     {
         this.Tag("mark_for_death");
     }

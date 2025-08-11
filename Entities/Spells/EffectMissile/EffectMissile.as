@@ -143,7 +143,7 @@ void onTick( CBlob@ this)
 				{
 					case 0: //follows allies
 					{
-						if (sameTeam && !isOwnerBlob(this, other) && other.hasTag("player") && !other.hasTag("dead")) //home in on living allies
+						if (sameTeam && !isOwnerBlob(this, other) && other.hasTag("player") && !other.hasTag("ignore_effects") && !other.hasTag("dead")) //home in on living allies
 						{
 							Vec2f tpos = other.getPosition();									  
 							f32 dist = (tpos - thisPos).getLength();
@@ -362,7 +362,7 @@ void setEffect(CBlob@ this, CBlob@ blob)
 
 			case demonicpact_effect_missile:
 			{
-				DemonicPact(blob);
+				CreateDemonicPact(this, blob);
 			}
 			break;
 

@@ -2,7 +2,7 @@ const string textureName = "RopeSegment.png";
 const Vec2f textureSize(32, 4.5f);
 
 const float ROPE_DEFAULT_SEGMENT_LENGTH = 16;
-const int   ROPE_DEFAULT_NODE_COUNT = 10;
+const int   ROPE_DEFAULT_NODE_COUNT = 7;
 const u8    ROPE_DEFAULT_ITERATIONS = 15;
 const Vec2f ROPE_DEFAULT_GRAVITY = Vec2f(0, 9.81f);
 const float ROPE_DEFAULT_DAMPING = 1.0f;
@@ -25,6 +25,15 @@ void onInit(CBlob@ this)
     this.set_f32("rope_damping", ROPE_DEFAULT_DAMPING);
     this.set_f32("rope_FRICTION", ROPE_DEFAULT_FRICTION);
     this.set("rope_initialized", false);
+
+    this.getShape().SetGravityScale(0.0f);
+    this.getShape().getConsts().mapCollisions = false;
+
+    this.SetMapEdgeFlags(CBlob::map_collide_none | CBlob::map_collide_nodeath);
+    if (isClient())
+    {
+        int cb_id = Render::addBlobScript(Render::layer_tiles, this, "Rope.as", "Render");
+    }
 }
 
 void onReload(CBlob@ this)
@@ -72,13 +81,15 @@ void onTick(CBlob@ this)
 
     if (debug_key_e) return;
     rope.tick();
+
+    rope.nodes[0].pos = this.get_Vec2f("firstPos");
+	rope.nodes[rope.nodes.size() - 1].pos = this.get_Vec2f("lastPos");
 }
 
-void onRender(CSprite@ sprite)
+void Render(CBlob@ this, int id)
 {
     Rope@ rope;
-    CBlob@ blob = sprite.getBlob();
-    if (blob !is null && blob.get("rope", @rope))
+    if (this.get("rope", @rope))
     {
         rope.render();
     }
@@ -214,14 +225,13 @@ class Rope
 
         RopeSegment@ firstNode = nodes[0];
         RopeSegment@ lastNode = nodes[nodes.size() - 1];
+
         if (firstNode is null || lastNode is null) return;
-        firstNode.pos = getControls().getMouseWorldPos();
 
         bool lastPinned = false;
         CBlob@ blob = getPlayer(0).getBlob();
         if (blob !is null)
         {
-            lastNode.pos = blob.getPosition();
             lastPinned = true;
         }
 

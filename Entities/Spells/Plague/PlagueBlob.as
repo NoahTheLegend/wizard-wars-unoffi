@@ -37,6 +37,10 @@ void onInit(CBlob@ this)
 	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "pb_rend1", false, false, Vec2f(0, 32), frameSize);
 	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "pb_rend2", false, false, Vec2f(0, 64), frameSize);
 	SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "pb_rend3", false, false, Vec2f(0, 96), frameSize);
+    SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "pb_rend4", false, false, Vec2f(0, 128), frameSize);
+    SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "pb_rend5", false, false, Vec2f(0, 160), frameSize);
+    SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "pb_rend6", false, false, Vec2f(0, 192), frameSize);
+    SetupImage("PlagueBlob.png", SColor(255, 255, 255, 255), "pb_rend7", false, false, Vec2f(0, 224), frameSize);
     int cb_id = Render::addBlobScript(Render::layer_prehud, this, "PlagueBlob.as", "laserEffects");
 
     for (int i = 0; i < 6+XORRandom(6); i++)
@@ -94,7 +98,11 @@ const string[] anim_loop = {
 	"pb_rend0",
 	"pb_rend1",
 	"pb_rend2",
-    "pb_rend3"
+    "pb_rend3",
+    "pb_rend4",
+    "pb_rend5",
+    "pb_rend6",
+    "pb_rend7"
 };
 
 const u8 anim_time = 4;
@@ -110,21 +118,23 @@ void laserEffects(CBlob@ this, int id)
     Vec2f[] v_uv;
     SColor[] v_col;
 
+    u8 a = 255;
+
     v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-16, -16));
     v_uv.push_back(Vec2f(0, 0));
-    v_col.push_back(SColor(255, 255, 255, 255));
+    v_col.push_back(SColor(a, 255, 255, 255));
 
     v_pos.push_back(this.getInterpolatedPosition() + Vec2f(16, -16));
     v_uv.push_back(Vec2f(1, 0));
-    v_col.push_back(SColor(255, 255, 255, 255));
+    v_col.push_back(SColor(a, 255, 255, 255));
 
     v_pos.push_back(this.getInterpolatedPosition() + Vec2f(16, 16));
     v_uv.push_back(Vec2f(1, 1));
-    v_col.push_back(SColor(255, 255, 255, 255));
+    v_col.push_back(SColor(a, 255, 255, 255));
 
     v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-16, 16));
     v_uv.push_back(Vec2f(0, 1));
-    v_col.push_back(SColor(255, 255, 255, 255));
+    v_col.push_back(SColor(a, 255, 255, 255));
 
     Render::QuadsColored(rendname, z, v_pos, v_uv, v_col);
 }

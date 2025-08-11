@@ -61,6 +61,7 @@ class PNGLoader
 		{
 			SetupMap(image.getWidth(), image.getHeight());
 			SetupBackgrounds();
+			ResetRopeMap(map);
 
 			while(image.nextPixel())
 			{

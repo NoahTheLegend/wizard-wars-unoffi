@@ -393,7 +393,7 @@ void onTick(CBlob@ this)
 			{
 				positions.erase(positions.size() - 1);
 			}
-
+			
 			positions.insertAt(0, this.getPosition());
 		}
 	}
@@ -495,14 +495,14 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 			f32 healthCost = healthCost = missingMana * WarlockParams::HEALTH_COST_PER_1_MANA;
 
 			this.server_Hit(this, this.getPosition(), Vec2f_zero, healthCost, Hitters::fall, true);
-			CastSpell(this, charge_state, spell, aimpos, thispos, targetID);
+			CastSpell(this, charge_state, spell, aimpos, thispos, targetID, wizMana, healthCost);
 		}
 		else if (enough_health)
 		{
 			f32 healthCost = spell.mana * 0.2f;
 			
 			this.server_Hit(this, this.getPosition(), Vec2f_zero, healthCost, Hitters::fall, true);
-			CastSpell(this, charge_state, spell, aimpos, thispos, targetID);
+			CastSpell(this, charge_state, spell, aimpos, thispos, targetID, 0, healthCost);
 		}
 	}
 	else if (cmd == this.getCommandID("freeze"))
@@ -645,6 +645,21 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
     if (( hitterBlob.getName() == "wraith" || hitterBlob.getName() == "orb" ) && hitterBlob.getTeamNum() == this.getTeamNum())
         return 0;
+
+	if (isServer())
+	{
+		CBlob@[] demons;
+		getBlobsByTag("demon_of_" + this.getNetworkID(), @demons);
+		for (u8 i = 0; i < demons.length; i++)
+		{
+			CBlob@ demon = demons[i];
+			if (demon !is null)
+			{
+				demon.set_u8("charges", damage * 5 * 2); // for 1 hp damage we restore 2 charges
+				demon.Sync("charges", true);
+			}
+		}
+	}
 
     return damage;
 }

@@ -60,7 +60,7 @@ namespace SwordCasterParams
 		Spell("nemesis", "Nemesis", 85, "Summons a row of falling swords from the sky. Overcharge increases the amount of swords and decreases the delay between load and launch.",
 				SpellCategory::offensive, SpellType::other, 30, 30, 3, 384.0f, false, 0, array<int> = {SpellAttribute::SPELL_RAIN}),
 			 
-		Spell("lynch", "Lynch", 125, "Pulls the enemy inside and casts a several execution swords with a delay. Teleporting outside will harm the trapped. Requires 2 despells to break.",
+		Spell("lynch", "Lynch", 125, "Pulls the enemy inside and casts a several execution swords with a delay. Teleporting outside will harm the trapped. Requires 2 dispells to break.",
 				SpellCategory::offensive, SpellType::other, 45, 55, 12, 156.0f, true, 0, array<int> = {SpellAttribute::SPELL_CONTROL}),
 			
 		Spell("", "", 0, "Empty spell.",

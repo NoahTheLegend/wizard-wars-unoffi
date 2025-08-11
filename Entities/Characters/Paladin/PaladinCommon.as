@@ -78,7 +78,7 @@ namespace PaladinParams
 		Spell("faithglaive", "Faith Glaive", 102, "Releases a short-range glaive to slash in front of you. The spell disables teleport and awaits some time before attack.",
 				SpellCategory::offensive, SpellType::other, 20, 30, 1, 0.0f, false, 0, array<int> = {SpellAttribute::SPELL_MELEE}),
 
-		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for everyone inside. Enemies also claim this effect. Doesnt stack. Can be despelled by anyone.",
+		Spell("blesscircle", "Circle of Bless", 103, "Sets mana regeneration to maximum (+1) for everyone inside. Enemies also claim this effect. Doesnt stack. Can be dispelled by anyone.",
 				SpellCategory::support, SpellType::other, 10, 50, 18, 198.0f, true, 0, array<int> = {SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
 							
 		Spell("knight_revive", "Revive", 106, "Summon a noble warrior back from the dead with aiming a reviving missile at their gravestone.",

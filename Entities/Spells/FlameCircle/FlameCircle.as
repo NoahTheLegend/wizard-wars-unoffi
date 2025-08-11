@@ -199,7 +199,7 @@ void onTick(CSprite@ this)
         f32 speed = b.hasTag("fullCharge") ? 4 : 3;
         speed *= Maths::Min(1.5f, b.getTickSinceCreated() / 30.0f);
 
-        this.RotateByDegrees(speed / (b.get_u8("despelled") + 1) ,Vec2f(0,0));
+        this.RotateByDegrees(speed / (b.get_u8("dispelled") + 1) ,Vec2f(0,0));
         if (reverse) this.ScaleBy(Vec2f(0.935f, 0.935f));
 
         u16 netid = b.getNetworkID();

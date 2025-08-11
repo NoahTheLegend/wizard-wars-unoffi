@@ -251,7 +251,7 @@ void Heal(CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool soun
 	if (isClient())
 	{
 		if (sound) blob.getSprite().PlaySound("Heal.ogg", 0.8f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );
-		makeHealParticles(blob, 1.0f, 12 * particles_factor, sound);
+		if (particles_factor > 0) makeHealParticles(blob, 1.0f, 12 * particles_factor, sound);
 	}
 }
 
@@ -379,17 +379,35 @@ void UnholyRes(CBlob@ blob)
 	ParticleZombieLightning( blob.getPosition() );
 }
 
-void DemonicPact(CBlob@ blob)
-{			
-	int playerId = blob.get_u16("owner_player");
+void CreateDemonicPact(CBlob@ this, CBlob@ gravestone)
+{
+	if (!isServer()) return;
+	if (gravestone is null) return;
+
+	CBlob@ book = server_CreateBlob("demonrevivebook", this.getTeamNum(), gravestone.getPosition());
+	if (book !is null)
+	{
+		book.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+		book.set_u16("follow_id", gravestone.getNetworkID());
+	}
+}
+
+void DemonicPact(CBlob@ this, CBlob@ gravestone)
+{
+	if (this is null || gravestone is null) return;
+
+	int playerId = gravestone.get_u16("owner_player");
 	CPlayer@ deadPlayer = getPlayerByNetworkId(playerId);
 
+	CPlayer@ damageOwner = this.getDamageOwnerPlayer();
 	if (isServer() && deadPlayer !is null)
 	{
-		CBlob@ newBlob = server_CreateBlob("demon", deadPlayer.getTeamNum(), blob.getPosition());		
+		CBlob@ newBlob = server_CreateBlob("demon", deadPlayer.getTeamNum(), gravestone.getPosition());
 		if (newBlob !is null)
 		{
 			newBlob.server_SetPlayer(deadPlayer);
+			newBlob.SetDamageOwnerPlayer(damageOwner);
+			newBlob.set_u16("ownerplayer_id", damageOwner !is null ? damageOwner.getNetworkID() : 0);
 
 			ManaInfo@ manaInfo;
 			if (newBlob.get("manaInfo", @manaInfo))
@@ -398,12 +416,12 @@ void DemonicPact(CBlob@ blob)
 			}
 
 			makeReviveParticles(newBlob);
-			blob.Tag("mark_for_death");
+			newBlob.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 		}
 	}
 		
-	blob.getSprite().PlaySound("Summon2.ogg", 0.8f, 0.75f);
-	ParticleZombieLightning(blob.getPosition());
+	gravestone.getSprite().PlaySound("Summon2.ogg", 0.8f, 0.75f);
+	ParticleZombieLightning(gravestone.getPosition());
 }
 
 void makeReviveParticles(CBlob@ this, const f32 velocity = 1.0f, const int smallparticles = 12, const bool sound = true)
@@ -627,9 +645,9 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
-			else if(!sameTeam && (b.hasTag("multi_despell")))
+			else if(!sameTeam && (b.hasTag("multi_dispell")))
 			{
-				b.add_u8("despelled",1);
+				b.add_u8("dispelled",1);
 				countered = true;
 			}
 			if (retribution)

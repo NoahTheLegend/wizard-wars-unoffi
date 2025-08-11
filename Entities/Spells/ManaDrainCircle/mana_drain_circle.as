@@ -139,7 +139,7 @@ void onTick(CSprite@ this)
     bool fullCharge = blob.hasTag("fullCharge");
     float rotateSpeed = fullCharge ? 2 : 1;
 
-    rotateSpeed /= (blob.get_u8("despelled") + 1);
+    rotateSpeed /= (blob.get_u8("dispelled") + 1);
 
     this.RotateBy(rotateSpeed, Vec2f_zero);
     bar.RotateBy(rotateSpeed * -2, Vec2f_zero);
