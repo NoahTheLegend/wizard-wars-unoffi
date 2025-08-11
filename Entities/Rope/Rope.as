@@ -26,13 +26,15 @@ void onInit(CBlob@ this)
     this.set_f32("rope_FRICTION", ROPE_DEFAULT_FRICTION);
     this.set("rope_initialized", false);
 
+    this.set_bool("render", false);
+
     this.getShape().SetGravityScale(0.0f);
     this.getShape().getConsts().mapCollisions = false;
 
     this.SetMapEdgeFlags(CBlob::map_collide_none | CBlob::map_collide_nodeath);
     if (isClient())
     {
-        int cb_id = Render::addBlobScript(Render::layer_tiles, this, "Rope.as", "Render");
+        int cb_id = Render::addBlobScript(Render::layer_objects, this, "Rope.as", "Render");
     }
 }
 
@@ -88,6 +90,8 @@ void onTick(CBlob@ this)
 
 void Render(CBlob@ this, int id)
 {
+    if (!this.get_bool("render")) return;
+
     Rope@ rope;
     if (this.get("rope", @rope))
     {
@@ -427,10 +431,10 @@ class Rope
             float texWidth = textureSize.x;
             float nextTexU = currentTexU + (length / texWidth);
 
-            verts.push_back(Vertex(v1.x, v1.y, 0, currentTexU, 0.0f, SColor(255, 255, 255, 255)));
-            verts.push_back(Vertex(v2.x, v2.y, 0, currentTexU, 1.0f, SColor(255, 255, 255, 255)));
-            verts.push_back(Vertex(v3.x, v3.y, 0, nextTexU, 1.0f, SColor(255, 255, 255, 255)));
-            verts.push_back(Vertex(v4.x, v4.y, 0, nextTexU, 0.0f, SColor(255, 255, 255, 255)));
+            verts.push_back(Vertex(v1.x, v1.y, -50, currentTexU, 0.0f, SColor(255, 255, 255, 255)));
+            verts.push_back(Vertex(v2.x, v2.y, -50, currentTexU, 1.0f, SColor(255, 255, 255, 255)));
+            verts.push_back(Vertex(v3.x, v3.y, -50, nextTexU, 1.0f, SColor(255, 255, 255, 255)));
+            verts.push_back(Vertex(v4.x, v4.y, -50, nextTexU, 0.0f, SColor(255, 255, 255, 255)));
 
             currentTexU = nextTexU;
         }

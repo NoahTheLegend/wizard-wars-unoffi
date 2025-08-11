@@ -79,7 +79,10 @@ void onInit(CBlob@ this)
 	knight_actorlimit_setup(this);
 	this.getShape().SetRotationsAllowed(false);
 	this.getShape().getConsts().net_threshold_multiplier = 1.5f;
+
+	this.Tag("ignore_scoreboard");
 	this.Tag("player");
+	
 	this.Tag("no_mana_pool");
 	this.Tag("flesh");
 

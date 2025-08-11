@@ -17,7 +17,7 @@ void onInit(CBlob@ this)
 
     this.set_u32("alt_counter", 0);
     this.set_Vec2f("smashtoparticles_grav", Vec2f(0, -0.035f));
-    this.set_Vec2f("smashtoparticles_grav_rnd", Vec2f((XORRandom(20)-10) * 0.01f, -0.035f));
+    this.set_Vec2f("smashtoparticles_grav_rnd", Vec2f(0.035f, -0.035f));
     
     this.getShape().SetStatic(true);
     this.addCommandID("restore_caster");

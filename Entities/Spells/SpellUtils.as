@@ -389,6 +389,7 @@ void CreateDemonicPact(CBlob@ this, CBlob@ gravestone)
 	{
 		book.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 		book.set_u16("follow_id", gravestone.getNetworkID());
+		if (this.hasTag("extra_damage")) book.Tag("extra_damage");
 	}
 }
 
@@ -402,7 +403,7 @@ void DemonicPact(CBlob@ this, CBlob@ gravestone)
 	CPlayer@ damageOwner = this.getDamageOwnerPlayer();
 	if (isServer() && deadPlayer !is null)
 	{
-		CBlob@ newBlob = server_CreateBlob("demon", deadPlayer.getTeamNum(), gravestone.getPosition());
+		CBlob@ newBlob = server_CreateBlob(this.hasTag("extra_damage") ? "demonbig" :"demon", deadPlayer.getTeamNum(), gravestone.getPosition());
 		if (newBlob !is null)
 		{
 			newBlob.server_SetPlayer(deadPlayer);

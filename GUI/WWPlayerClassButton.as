@@ -124,7 +124,7 @@ class WWPlayerClassButton
 			// position empty frame
 			@selectedSpellIcon = @Icon(iconTexture, Vec2f(page_size.x / 2 - 32, 54), Vec2f(16, 16), 0, 2.0f);
 			@selectedSpellName = @Label(Vec2f(page_size.x / 2, 30), Vec2f(page_size.x, 32), "Select a spell", col_text, true, "KingThingsPetrockLight_32");
-			@selectedSpellDescription = @Label(Vec2f(10, 124), Vec2f(page_size.x, 32), "Description", col_text, false, "KingThingsPetrockLight_18");
+			@selectedSpellDescription = @Label(Vec2f(10, 124), Vec2f(page_size.x + 24, 32), "Description", col_text, false, "KingThingsPetrockLight_18");
 
 			Icon@ ornamentLine2 = @Icon("OrnamentCurvyWide.png", Vec2f(-6, hotbarTitle.localPosition.y + 0), Vec2f(336, 48), 0, 1.0f, true, Vec2f(272, 48));
 			ornamentLine2.name = "ornamentLine2";

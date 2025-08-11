@@ -15,7 +15,13 @@ void onInit(CBlob@ this)
     this.Tag("cantparry");
 	this.Tag("no trampoline collision");
 
+	this.set_Vec2f("smashtoparticles_grav", Vec2f(0, -0.025f));
+	this.set_Vec2f("smashtoparticles_grav_rnd", Vec2f(0, 0));
+	this.Tag("smashtoparticles_additive");
+
     this.getShape().getConsts().mapCollisions = false;
+	this.getShape().SetGravityScale(0.0f);
+	this.getShape().SetRotationsAllowed(false);
     this.SetMapEdgeFlags(CBlob::map_collide_none | CBlob::map_collide_nodeath);
 
     this.server_SetTimeToDie(revive_time);
@@ -54,7 +60,7 @@ void onTick(CBlob@ this)
         return;
     }
 
-    this.setPosition(Vec2f_lerp(this.getPosition(), follower.getPosition() - Vec2f(0, 32), 0.25f));
+    this.setPosition(Vec2f_lerp(this.getPosition(), follower.getPosition() - Vec2f(-1, 24), 0.25f));
 }
 
 void onDie(CBlob@ this)

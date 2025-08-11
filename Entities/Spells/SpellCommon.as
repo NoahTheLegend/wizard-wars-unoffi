@@ -6193,7 +6193,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		// WARLOCK
 
-		case -12171628681: // demonicpact
+		case -2033004596: // demonicpact
 		{
 			f32 orbspeed = 4.0f;
 
@@ -6225,6 +6225,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{
 					orb.set_u8("effect", demonicpact_effect_missile);
 					orb.set_u8("override_sprite_frame", 14);
+					if (this.hasTag("extra_damage")) orb.Tag("extra_damage");
 
 					orb.IgnoreCollisionWhileOverlapped(this);
 					orb.SetDamageOwnerPlayer(this.getPlayer());

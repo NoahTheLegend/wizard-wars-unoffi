@@ -19,7 +19,7 @@ void onTick( CBlob@ this )
 	//kill if player is null or a spectator	or owner alive
 	if ( deadPlayer !is null )
 	{
-		if ( deadPlayer.getBlob() !is null || deadPlayer.getTeamNum() == getRules().getSpectatorTeamNum() )
+		if ( (deadPlayer.getBlob() !is null && !deadPlayer.getBlob().hasTag("hold_gravestone")) || deadPlayer.getTeamNum() == getRules().getSpectatorTeamNum() )
 			this.server_Die();
 	}
 	else

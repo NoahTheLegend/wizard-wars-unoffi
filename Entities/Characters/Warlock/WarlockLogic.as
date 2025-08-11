@@ -256,7 +256,8 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			u16 targetID = 0;
 			if (target !is null) targetID = target.getNetworkID();
 
-			bool can_apply_cd_time = !this.hasTag("carnage_effect") || spell.typeName == "darkritual";
+			Spell castSpell = WarlockParams::spells[castSpellID];
+			bool can_apply_cd_time = !this.hasTag("carnage_effect") || castSpell.typeName == "darkritual";
 			if (!can_apply_cd_time && this.hasTag("carnage_effect"))
 				this.Untag("carnage_effect");
 
@@ -646,16 +647,17 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
     if (( hitterBlob.getName() == "wraith" || hitterBlob.getName() == "orb" ) && hitterBlob.getTeamNum() == this.getTeamNum())
         return 0;
 
-	if (isServer())
+	if (isServer() && damage > 0.1f)
 	{
 		CBlob@[] demons;
 		getBlobsByTag("demon_of_" + this.getNetworkID(), @demons);
+
 		for (u8 i = 0; i < demons.length; i++)
 		{
 			CBlob@ demon = demons[i];
 			if (demon !is null)
 			{
-				demon.set_u8("charges", damage * 5 * 2); // for 1 hp damage we restore 2 charges
+				demon.set_u16("charges", damage * 5 ); // for 1 hp damage we restore 1 charges
 				demon.Sync("charges", true);
 			}
 		}

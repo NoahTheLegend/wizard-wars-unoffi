@@ -2,6 +2,7 @@
 
 #include "DummyCommon.as";
 
+/*
 // use this script only in pair with LoaderUtilities.as
 bool rope_map_updated = false;
 u8[][] MAP_TILES;
@@ -69,9 +70,11 @@ void onTick(CMap@ map)
 		SaveMap(getMap());
 	}
 }
+*/
 
 bool onMapTileCollapse(CMap@ map, u32 offset)
 {
+	/*
 	int x = offset % map.tilemapwidth;
 	int y = offset / map.tilemapwidth;
 
@@ -87,6 +90,7 @@ bool onMapTileCollapse(CMap@ map, u32 offset)
 		
 		map.Tag("rope_map_updated");
 	}
+	*/
 
 	if (isDummyTile(map.getTile(offset).type))
 	{
@@ -103,7 +107,7 @@ bool onMapTileCollapse(CMap@ map, u32 offset)
 
 void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 {
-    UpdateMap(map, index, tile_new);
+    //UpdateMap(map, index, tile_new);
 
 	if(isDummyTile(tile_new))
 	{

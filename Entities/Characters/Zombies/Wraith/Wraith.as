@@ -162,6 +162,7 @@ void onInit(CBrain@ this)
 
 void onInit(CBlob@ this)
 {
+	this.Tag("ignore_scoreboard");
 	this.Tag("player");
 	this.addCommandID("self ignite");
 
