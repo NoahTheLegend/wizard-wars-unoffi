@@ -151,7 +151,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		ManaInfo@ manaInfo;
 		if (b.get("manaInfo", @manaInfo))
 		{
-			print("stole mana from " + b.getName() + " " + manaInfo.mana);
+			//print("stole mana from " + b.getName() + " " + manaInfo.mana);
 			if (manaInfo.mana > 0)
 			{
 				int steal = Maths::Min(max_steal, manaInfo.mana);

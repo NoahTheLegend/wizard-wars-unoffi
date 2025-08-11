@@ -5,6 +5,7 @@
 /rcon CBlob@ b=server_CreateBlob('demonbig',1,Vec2f_zero);b.set_u16('ownerplayer_id',getPlayer(1).getNetworkID());b.server_SetPlayer(getPlayer(0));
 CBlob@ k=getBlobByName('knight');CBlob@ w=server_CreateBlob('warlock',0,k.getPosition());w.server_SetPlayer(k.getPlayer());k.server_Die());
 */
+
 const f32 max_vel = 6.0f;
 const f32 acceleration = 1.0f;
 const f32 max_range = 96.0f;
