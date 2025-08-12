@@ -164,3 +164,8 @@ void onDie(CBlob@ this)
 {
     this.getSprite().PlaySound("EnergySound2.ogg", 0.8f, 0.85f + XORRandom(11) * 0.01f);
 }
+
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+    return false;
+}

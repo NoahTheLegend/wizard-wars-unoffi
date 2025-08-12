@@ -451,3 +451,8 @@ Vec2f Reflect(Vec2f direction, Vec2f  normal)
 
     return direction - scaledNormal;
 }
+
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+    return false;
+}

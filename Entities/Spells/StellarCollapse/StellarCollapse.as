@@ -17,8 +17,7 @@ void onInit(CBlob@ this)
 
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 	this.getShape().SetGravityScale(0.0f);
-	//this.getShape().getConsts().bullet = true;
-	//this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	this.getShape().getConsts().net_threshold_multiplier = 8.0f;
 
 	if (!isClient()) return;
 	Vec2f framePos = Vec2f(0, 0);

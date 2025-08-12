@@ -158,7 +158,9 @@ void onTick(CBlob@ this)
 
 			charges -= cost_shield;
 		}
+		
 		this.set_u16("charges", charges);
+		this.Sync("charges", true);
 	}
 
 	if (this.exists("rope_id") && this.get_u16("rope_id") != 0)

@@ -1,8 +1,5 @@
 #include "Hitters.as";
 #include "BrainPathing.as";
-#include "PlayerPrefsCommon.as";
-
-const u8 mossy_golem_cooldown = 8; // in seconds
 
 void onInit(CBlob@ this)
 {
@@ -116,19 +113,6 @@ void onTick(CBlob@ this)
 		this.Tag("prep");
 		this.getShape().SetGravityScale(0.0f); // we have own gravity
 		this.getSprite().PlaySound("TreeGrow", 1.0f, 0.8f+XORRandom(10)*0.01f);
-
-		CPlayer@ owner = this.getDamageOwnerPlayer();
-		if (owner !is null)
-		{
-			PlayerPrefsInfo@ playerPrefsInfo;
-			if (!owner.get("playerPrefsInfo", @playerPrefsInfo))
-			{
-				return;
-			}
-
-			playerPrefsInfo.spell_cooldowns[9] = mossy_golem_cooldown*30;
-			print("Mossy Golem cooldown set: " + playerPrefsInfo.spell_cooldowns[9]);
-		}
 	}
 	
 	//if (isClient() && isServer())

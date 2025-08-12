@@ -1,3 +1,7 @@
+#include "PlayerPrefsCommon.as";
+
+const u8 mossy_golem_cooldown = 8; // in seconds
+
 void onInit(CBlob@ this)
 {
     this.set_s32("aliveTime",300);
@@ -63,9 +67,22 @@ void onTick(CBlob@ this)
                             mossy_golem.set_u16("owner_id", this.getDamageOwnerPlayer().getNetworkID());
                             mossy_golem.Tag("mg_owner" + this.getDamageOwnerPlayer().getNetworkID());
                         }
-
-                        blob.server_Die();
+                        
+                        this.server_Die();
                     }
+
+                    CPlayer@ owner = this.getDamageOwnerPlayer();
+		            if (owner !is null)
+		            {
+		            	PlayerPrefsInfo@ playerPrefsInfo;
+		            	if (!owner.get("playerPrefsInfo", @playerPrefsInfo))
+		            	{
+		            		return;
+		            	}
+
+		            	playerPrefsInfo.spell_cooldowns[9] = mossy_golem_cooldown*30;
+		            	print("Mossy Golem cooldown set: " + playerPrefsInfo.spell_cooldowns[9]);
+		            }
                 }
             }
         }
