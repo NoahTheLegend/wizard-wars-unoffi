@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 	this.set_u32("explosion_delay", 5 + XORRandom(5));
 
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
-	this.getShape().SetGravityScale(0.85f);
+	this.getShape().getConsts().net_threshold_multiplier = 0.33f;
 
 	if (!isClient()) return;
 	Vec2f framePos = Vec2f(0, 0);
@@ -65,7 +65,7 @@ void laserEffects(CBlob@ this, int id)
 
 	if (ts > 1)
 	{
-		Vec2f pos = this.getPosition() + render_offset;
+		Vec2f pos = this.getInterpolatedPosition() + render_offset;
 		CSprite@ sprite = this.getSprite();
 		CMap@ map = getMap();
 		f32 z = 100.0f;
@@ -158,11 +158,12 @@ void laserEffects(CBlob@ this, int id)
 void onTick(CBlob@ this)
 {
 	//if (isServer()) this.AddForce(Vec2f(0, this.getMass() * 0.5f));
-
 	if (this.getTickSinceCreated() == 0)
 	{
 		this.setPosition(Vec2f(this.getPosition().x, -32.0f));
 		this.getSprite().PlaySound("StellarCollapseSpawn.ogg", 2.0f, 0.9f + XORRandom(15) * 0.01f);
+
+		this.getShape().SetGravityScale(0.85f);
 	}
 
 	bool collided = this.hasTag("collided");

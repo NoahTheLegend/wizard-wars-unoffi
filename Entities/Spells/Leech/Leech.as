@@ -252,7 +252,7 @@ void onTick(CBlob@ this)
 					else if (!damageDealt)
 					{
 						f32 dmg = this.get_f32("damage");
-						Vec2f attackVector = Vec2f(1,0).RotateBy(attackAngle);
+						Vec2f attackVector = Vec2f(1, 0).RotateBy(attackAngle);
 
 						if (target.hasTag("shielded") && blockAttack(target, attackVector, 0.0f)) //knight blocks with shield
 						{
@@ -261,8 +261,8 @@ void onTick(CBlob@ this)
                     		{target.getSprite().PlaySound("ShieldHit.ogg");}
 						}
 
-						if (target.getName() == "shard") target.server_Die();
-						else this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
+						if (target.getName() == "shard") dmg *= 100.0f;
+						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
 
 						CPlayer@ ownerPlayer = this.getDamageOwnerPlayer();
 						if (ownerPlayer !is null && target.getPlayer() !is null)

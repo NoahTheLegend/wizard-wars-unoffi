@@ -15,8 +15,7 @@ void onInit(CBlob@ this)
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
-	this.getShape().getConsts().net_threshold_multiplier = 4.0f;
-	//this.getShape().getConsts().bullet = true;
+	this.getShape().SetGravityScale(0.0f);
 	
 	CSprite@ thisSprite = this.getSprite();
 	CSpriteLayer@ l = thisSprite.addSpriteLayer("l", "PoisonSurge.png", 24, 16);
@@ -35,8 +34,6 @@ void onInit(CBlob@ this)
 			l.SetRelativeZ(-0.5f);
 		}
 	}
-	
-	this.getShape().SetGravityScale(0.0f);
 }
 
 void onTick(CSprite@ this)
@@ -50,10 +47,19 @@ void onTick(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	if (isServer() && this.getVelocity().Length() > 0.01f && !this.hasTag("mark_for_death"))
-		this.setAngleDegrees(-this.getVelocity().Angle());
-	else this.Tag("mark_for_death");
-	if (this.hasTag("mark_for_death")) this.setVelocity(Vec2f_zero);
+	if (this.exists("vel") && this.get_Vec2f("vel") != Vec2f_zero)
+	{
+		this.setVelocity(this.get_Vec2f("vel"));
+		this.set_Vec2f("vel", Vec2f_zero);
+	}
+
+	if (isServer())
+	{
+		if (this.getVelocity().Length() > 0.01f && !this.hasTag("mark_for_death"))
+			this.setAngleDegrees(-this.getVelocity().Angle());
+		else this.Tag("mark_for_death");
+		if (this.hasTag("mark_for_death")) this.setVelocity(Vec2f_zero);
+	}
 
 	if (this.getTickSinceCreated() == 0)
 	{

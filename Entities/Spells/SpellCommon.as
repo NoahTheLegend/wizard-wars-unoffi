@@ -6257,18 +6257,18 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			this.getSprite().PlaySound("DarkRitualOn.ogg", 0.85f, 1.0f + XORRandom(10) * 0.01f);
 
-			u16 effectTime = 240; // 8 seconds
-			f32 self_damage = 2.0f; // 10
+			u16 effectTime = 360; // 12 seconds
+			f32 self_damage = 2.0f; // 10 damage
 
 			if (charge_state == 5)
 			{
-				effectTime += 60;
+				effectTime += 120; // + 4 seconds
 			}
 
 			if (this.hasTag("extra_damage"))
 			{
-				effectTime += 120;
-				self_damage += 1.0f;
+				effectTime += 180; // + 6 seconds
+				self_damage += 1.0f; // + 5 damage
 			}
 
 			this.set_u16("darkritual_effect_time", effectTime);
@@ -6337,7 +6337,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			{
 				CBlob@[] totems;
-				getBlobsByName("corruptionshard",@totems);
+				getBlobsByName("corruptionshard", @totems);
 
 				if (this.getPlayer() is null)
 				{return;}
@@ -6358,7 +6358,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					}
 				}
 
-				int alive_time = 20 * 30;
+				int alive_time = 15 * 30;
 				f32 heal_amount = 1.0f; // 7.5 hp
 				int mana_amount = 25;
 				f32 max_range = 96.0f;
@@ -6379,7 +6379,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 							case super_cast:
 							{
-								alive_time = 15 * 30;
+								alive_time = 12.5f * 30;
+								heal_amount = 1.25f;
 								max_range = 128.0f;
 								alt_delay = 120;
 								debuff_time = 150;
@@ -6394,7 +6395,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							if (this.hasTag("extra_damage"))
 							{
 								tot.Tag("extra_damage");
-	
+
+								alive_time = 10 * 30;
 								heal_amount = 1.5f;
 								mana_amount = 35;
 								alt_delay = 45;
@@ -6631,7 +6633,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 				orb.server_setTeamNum(this.getTeamNum());
 				orb.setPosition(orbPos);
-				orb.setVelocity(orbVel);
+
+				orb.set_Vec2f("vel", orbVel);
+				orb.Sync("vel", true);
 			}
 			break;
 		}
@@ -6769,7 +6773,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 
 			u32 cast_time = getGameTime();
-			u8 period = 15;
+			u8 period = 10;
 			u8 max_count = 2;
 			f32 speed = 7.0f;
 			f32 damage = 0.6f;
@@ -6802,7 +6806,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (this.hasTag("extra_damage"))
 			{
 				speed += 1.5f;
-				period = 4;
+				period = 6;
 				max_count = 5;
 			}
 

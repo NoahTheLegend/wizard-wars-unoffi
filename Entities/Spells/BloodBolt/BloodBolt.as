@@ -61,7 +61,7 @@ void onTick(CBlob@ this)
 	f32 accel = this.get_f32("acceleration") * accel_mod;
 
 	if (vel.Length() < this.get_f32("max_speed")) this.AddForce(dir * accel);
-	if (vel.Length() >= 0.1f) this.setAngleDegrees(-this.getVelocity().Angle());
+	if (vel.Length() > 0.25f) this.setAngleDegrees(-this.getVelocity().Angle());
 
 	// particles
 	if (isClient() && this.getTickSinceCreated() == 1)

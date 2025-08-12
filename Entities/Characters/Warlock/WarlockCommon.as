@@ -20,7 +20,7 @@ namespace WarlockParams
 
 	const ::f32 shoot_max_vel = 8.0f;
 	const ::f32 MAX_ATTACK_DIST = 500.0f;
-	const ::s32 MAX_MANA = 50;
+	const ::s32 MAX_MANA = 70;
 	const ::s32 MANA_REGEN = 0;
 	const ::f32 HEALTH_COST_PER_1_MANA = 0.02f; // 0.2f is 1 HP
 	const ::f32 MANA_PER_1_DAMAGE = 1;
@@ -69,7 +69,7 @@ namespace WarlockParams
 				SpellCategory::utility, SpellType::healthcost, 3, 25, 14, 8.0f, false, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("darkritual", "Dark Ritual", 133, "Your spells gain lifesteal for a few seconds. You take 10 damage in the end of the effect.",
-				SpellCategory::utility, SpellType::other, 30, 35, 26, 8.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_VAMPIRISM}),
+				SpellCategory::utility, SpellType::other, 30, 30, 22, 8.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_VAMPIRISM}),
 
 		Spell("demonicpact", "Demonic Pact", 138, "Seal the soul of your fallen ally into a demon. They will restore health to you when killed, although not when dispelled. Taking damage improves them!",
 				SpellCategory::support, SpellType::healthcost, 15, 40, 10, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_SUMMON, SpellAttribute::SPELL_REVIVE}),

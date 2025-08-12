@@ -533,7 +533,7 @@ void onDie(CBlob@ this)
 {
 	if (this.hasTag("counterspelled")) return;
 	Vec2f pos = this.getPosition();
-	u8 spores_count = 6 + XORRandom(7);
+	u8 spores_count = 6 + XORRandom(5);
 	
 	if (isServer())
 	{
@@ -556,13 +556,13 @@ void onDie(CBlob@ this)
 
 	if (isServer())
 	{
-		u8 bees = 3+XORRandom(4);
+		u8 bees = 3+XORRandom(2);
 		for (u8 i = 0; i < bees; i++)
 		{
 			Vec2f vel(0, -2.0f - XORRandom(3));
 			vel.RotateBy(this.getAngleDegrees() - 90 + XORRandom(180));
-			Vec2f rnd = Vec2f(XORRandom(16) - 8, XORRandom(16) - 8);
 
+			Vec2f rnd = Vec2f(XORRandom(16) - 8, XORRandom(16) - 8);
 			CBlob@ bee = server_CreateBlob("bee", this.getTeamNum(), pos + rnd);
 			if (bee !is null)
 			{
