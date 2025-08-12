@@ -6478,7 +6478,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
             }
 
             f32 orbspeed = 1.0f;
-			f32 damage = 3.0f;
+			f32 damage = 2.5f;
 			int max_mana_steal = 15;
 			u8 max_repeats = 3;
             
@@ -6491,6 +6491,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
                 case super_cast:
                 {
+					damage += 0.5f;
                     orbspeed = 6.0f;
 					max_mana_steal = 20;
                 }
@@ -6502,7 +6503,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			u8 spearsCount = 1;
 			if (this.hasTag("extra_damage"))
 			{
-				damage = 2.0f;
 				max_mana_steal = 20;
 				max_repeats = 5;
 				spearsCount = 2;
