@@ -90,7 +90,7 @@ void onTick(CBlob@ this)
 				if (!isServer()) return;
 				this.setPosition(target.getPosition() + Vec2f(rad + XORRandom(rad), 0).RotateBy(XORRandom(360)));
 
-				Vec2f dir = target.getPosition() - this.getPosition();
+				Vec2f dir = target.getPosition() + target.getVelocity() - this.getPosition();
 				dir.Normalize();
 				dir *= this.get_f32("speed");
 
