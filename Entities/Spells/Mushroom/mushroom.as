@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-    if (this.getTickSinceCreated() == 15)
+    if (this.getTickSinceCreated() == 1)
     {
         CBlob@[] bs;
         getMap().getBlobsInRadius(this.getPosition(), this.getRadius(), @bs);
