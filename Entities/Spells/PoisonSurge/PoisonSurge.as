@@ -53,6 +53,7 @@ void onTick(CBlob@ this)
 	if (this.getVelocity().Length() > 0.01f && !this.hasTag("mark_for_death"))
 		this.setAngleDegrees(-this.getVelocity().Angle());
 	else this.Tag("mark_for_death");
+	if (this.hasTag("mark_for_death")) this.setVelocity(Vec2f_zero);
 
 	if (this.getTickSinceCreated() == 0)
 	{
