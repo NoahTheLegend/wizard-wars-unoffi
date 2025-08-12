@@ -25,6 +25,7 @@ void onInit(CBlob@ this)
 	this.Tag("cantparry");
 	this.Tag("ignore_effects");
 	this.Tag("hold_gravestone");
+	this.Tag("follower");
 
 	this.Tag("ignore_scoreboard");
 	this.Tag("player");
@@ -145,7 +146,7 @@ void onTick(CBlob@ this)
 
 			charges -= 1;
 		}
-		else if (this.isKeyJustPressed(key_action2) && this.get_bool("big") && charges >= cost_shield)
+		else if (this.isKeyJustPressed(key_action2) && charges >= cost_shield)
 		{
 			Vec2f shieldPos = pos + aimNorm * 16.0f;
 			CBlob@ shield = server_CreateBlob("demonbarrier", this.getTeamNum(), shieldPos);
@@ -364,13 +365,7 @@ void onTick(CSprite@ this)
         CSpriteLayer@ shard = this.getSpriteLayer("shard"+i);
         if (shard !is null)
         {
-			if (i >= charges)
-			{
-				shard.SetVisible(false);
-				continue;
-			}
-		
-            shard.SetVisible(true);
+            shard.SetVisible(i < charges);
 			shard.SetFacingLeft(true);
 
             f32 x = Maths::Round(Maths::Sin((getGameTime()+i*6) * 0.33f) * 11);

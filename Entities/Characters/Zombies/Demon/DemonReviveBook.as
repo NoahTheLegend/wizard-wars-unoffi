@@ -4,7 +4,7 @@
 const f32 damage = 1.0f;
 const u16 fear_time = 150;
 const u16 explosion_radius = 40.0f;
-const f32 revive_time = 3.0f;
+const f32 revive_time = 2.0f;
 
 void onInit(CBlob@ this)
 {

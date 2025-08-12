@@ -19,38 +19,36 @@ void onTick(CBlob@ this)
 
             if (blob !is null && blob.getTeamNum() == this.getTeamNum() && blob.getName() == "moss")
             {
-                print("Found moss blob");
                 CPlayer@ owner = blob.getDamageOwnerPlayer();
-                print("os "+(owner is null)+" "+owner.getNetworkID() +" "+this.getDamageOwnerPlayer().getNetworkID());
                 if (owner !is null && owner is this.getDamageOwnerPlayer())
                 {
-                    print("spawning");
-                    for (int i = 0; i < 8+XORRandom(5); i++)
+                    if (isClient())
                     {
-                        Vec2f vel(1.0f + XORRandom(10)*0.1f, 0);
-                        vel.RotateBy(XORRandom(360));
-
-                        CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
-                                                        this.getPosition(), 
-                                                        vel, 
-                                                        float(XORRandom(360)), 
-                                                        1.0f, 
-                                                        4 + XORRandom(8), 
-                                                        0.0f, 
-                                                        false );
-
-                        if (p is null)
+                        for (int i = 0; i < 8+XORRandom(5); i++)
                         {
-                            return;
-                        }
+                            Vec2f vel(1.0f + XORRandom(10)*0.1f, 0);
+                            vel.RotateBy(XORRandom(360));
 
-                        p.fastcollision = true;
-                        p.scale = 1.0f - XORRandom(51) * 0.01f;
-                        p.damping = 0.925f;
-                        p.Z = 750.0f;
-                        p.colour = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
-                        p.forcecolor = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
-                        p.setRenderStyle(RenderStyle::additive);
+                            CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+                                                            this.getPosition(), 
+                                                            vel, 
+                                                            float(XORRandom(360)), 
+                                                            1.0f, 
+                                                            4 + XORRandom(8), 
+                                                            0.0f, 
+                                                            false );
+
+                            if (p !is null)
+                            {
+                                p.fastcollision = true;
+                                p.scale = 1.0f - XORRandom(51) * 0.01f;
+                                p.damping = 0.925f;
+                                p.Z = 750.0f;
+                                p.colour = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+                                p.forcecolor = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+                                p.setRenderStyle(RenderStyle::additive);
+                            }
+                        }
                     }
 
                     if (isServer())
