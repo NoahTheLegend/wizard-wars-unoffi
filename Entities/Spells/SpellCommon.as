@@ -4786,10 +4786,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			CBlob@[] arclightningBlobs;
 			getBlobsByTag("arclightning_owner_"+player.getUsername(), @arclightningBlobs);
-			if (arclightningBlobs.size() > 5)
+			if (arclightningBlobs.size() > 4)
 			{
 				ManaInfo@ manaInfo;
-				if (!this.get( "manaInfo", @manaInfo )) {
+				if (!this.get("manaInfo", @manaInfo)) {
 					return;
 				}
 
@@ -6324,7 +6324,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				for (u8 i = 0; i < playerPrefsInfo.spell_cooldowns.size(); i++)
 				{
-					if (i != 12 && i != 17) // not carnage, not dark ritual
+					if (i != 12 && i != 16) // not carnage, not dark ritual
 					{
 						playerPrefsInfo.spell_cooldowns[i] = 0;
 					}

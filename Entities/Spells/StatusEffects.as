@@ -380,7 +380,7 @@ void onTick(CBlob@ this)
 			{		
 				if(getNet().isClient())
 				{
-					const f32 rad = 6.0f;
+					const f32 rad = 8.0f;
 					Vec2f random = Vec2f(XORRandom(96)-48, XORRandom(64)-32 ) * 0.015625f * rad;
 					CParticle@ p = ParticleAnimated("WaterDrops1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
 					if (p !is null)

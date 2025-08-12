@@ -164,11 +164,11 @@ shared string[] TOOLTIPS()
         "Aura (Omega): restores mana on hit, returns some of the damage split between enemies nearby",
         "Hallowed Barrier: decreases damage taken",
         "Humility: disable healing",
-        "Majesty: decreased spells cooldown",
+        "Majesty: decreased spell cooldown",
         "Wisdom: wipe some of negative effects",
         "Confused: reversed controls",
         "Plague: permanently poisoned, taking damage poisons the enemy",
-        "Silenced: unable to cast spells except teleport",
+        "Silenced: unable to cast spells, except teleport",
         "Fear: constantly running",
         "Carnage: decreased spell cast time, spells won't have cooldown on cast",
         "Dark Ritual: spells gain "+Maths::Round(darkritual_lifesteal_mod * 100.0f)+"% lifesteal, you get damaged after effect"

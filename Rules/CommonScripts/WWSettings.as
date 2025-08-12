@@ -44,7 +44,6 @@ void onTick(CRules@ this)
 	{
 		if (server_buffered_ready.size() < 2)
 		{
-			print("Shapeshift timeout reached, removing buffered data");
 			eraseBuffers();
 		}
 
@@ -194,8 +193,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		if (isServer())
 		{
-			caster.server_SetHealth(targetHealth);
-			target.server_SetHealth(casterHealth);
+			caster.server_SetHealth(casterHealth);
+			target.server_SetHealth(targetHealth);
 		}
 
 		ManaInfo@ casterManaInfo;

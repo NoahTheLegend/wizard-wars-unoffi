@@ -14,7 +14,7 @@ void onTick(CBlob@ this)
     {
         print("onTick: getTickSinceCreated == 1");
         CBlob@[] bs;
-        getMap().getBlobsInRadius(this.getPosition(), this.getRadius() + 4.0f, @bs);
+        getMap().getBlobsInRadius(this.getPosition(), this.getRadius(), @bs);
         print("onTick: Found " + bs.length + " blobs in radius");
 
         for (u32 i = 0; i < bs.length; i++)

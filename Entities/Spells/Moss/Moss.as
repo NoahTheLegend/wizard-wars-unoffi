@@ -479,25 +479,22 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 				MakeFlowerParticles(this.getPosition(), 3 + XORRandom(3), Vec2f(0, -1.0f), 90);
 			}
 
-			if (isServer())
+			if (isEnemy(this, blob) && blob.get_u16("hastened") == 0)
 			{
-				if (isEnemy(this, blob) && blob.get_u16("hastened") == 0)
+				// apply slow effect
+				if (blob.hasTag("player"))
 				{
-					// apply slow effect
-					if (blob.hasTag("player"))
-					{
-						blob.set_u16("slowed", Maths::Max(slow_time, blob.get_u16("slowed")));
-						blob.Sync("slowed", true);
-					}
+					blob.set_u16("slowed", Maths::Max(slow_time, blob.get_u16("slowed")));
+					if (isServer()) blob.Sync("slowed", true);
 				}
-				else if (blob.get_u16("slowed") == 0)
+			}
+			else if (blob.get_u16("slowed") == 0)
+			{
+				// apply hastens effect
+				if (blob.hasTag("player"))
 				{
-					// apply hastens effect
-					if (blob.hasTag("player"))
-					{
-						blob.set_u16("hastened", Maths::Max(haste_time, blob.get_u16("hastened")));
-						blob.Sync("hastened", true);
-					}
+					blob.set_u16("hastened", Maths::Max(haste_time, blob.get_u16("hastened")));
+					if (isServer()) blob.Sync("hastened", true);
 				}
 			}
 		}

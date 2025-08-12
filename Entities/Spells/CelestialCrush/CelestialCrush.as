@@ -17,8 +17,8 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;	 // we have our own map collision
-	consts.bullet = false;
-	consts.net_threshold_multiplier = 2.0f;
+	//consts.bullet = true;
+	//consts.net_threshold_multiplier = 2.0f;
 
 	this.Tag("projectile");
 	this.Tag("counterable");
