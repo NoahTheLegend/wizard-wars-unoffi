@@ -6433,14 +6433,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						if (mana_taken > 0)
 						{
 							manaInfo.mana += mana_taken;
+							this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 						}
 					}
 					else
 					{
 						manaInfo.mana += spell.mana;
+						this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 					}
-					
-					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 				}
 			}
 			break;
@@ -6564,7 +6564,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 819257813: // poisonsurge
 		{
-			f32 orbspeed = 5.5f;
+			f32 orbspeed = 6.0f;
 
 			if (!isServer()){
            		return;
@@ -6621,6 +6621,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.set_u8("shrapnel_count", shrapnel_count);
 				orb.set_u8("shrapnel_angle", angle);
 				orb.set_u32("poison_time", poison_time);
+				orb.Tag("no_bounce");
 
 				orb.setAngleDegrees(-(aimpos - orbPos).Angle()+90);
 				orb.server_SetTimeToDie(1);
@@ -6628,7 +6629,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				if (this.hasTag("extra_damage"))
 				{
 					orb.Tag("shrapnel_bouncy");
-					orb.Tag("no_bounce");
 				}
 
 				orb.server_setTeamNum(this.getTeamNum());

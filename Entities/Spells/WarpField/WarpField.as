@@ -167,7 +167,7 @@ void onTick(CBlob@ this)
         }
     }
 
-    if (this.getTickSinceCreated() < 20)
+    if (this.getTickSinceCreated() < 10)
     {
         return;
     }
@@ -247,7 +247,8 @@ void onTick(CBlob@ this)
                 else
                 {
                     Vec2f warp_pos = this.getPosition() - dir * (effectRadius + 8.0f);
-                    if (map.isTileSolid(map.getTile(warp_pos).type) || warp_pos.y > map.tilemapheight * map.tilesize - 16)
+                    if (map.isTileSolid(map.getTile(warp_pos).type) || warp_pos.y > map.tilemapheight * map.tilesize - 16
+                        || warp_pos.x < 8 || warp_pos.x > map.tilemapwidth * map.tilesize - 8)
                     {
                         tp_back = true;
                     }
