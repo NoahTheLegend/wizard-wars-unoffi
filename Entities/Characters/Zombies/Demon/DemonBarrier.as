@@ -51,17 +51,7 @@ bool isEnemy(CBlob@ this, CBlob@ target)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ b)
 {
-	Vec2f dir = b.getOldPosition() - this.getPosition();
-	dir.Normalize();
-
-	f32 angle = dir.Angle();
-	f32 thisAngle = this.getAngleDegrees();
-
-	f32 diff = angle - thisAngle;
-	if (diff < -180) diff += 360;
-	if (diff > 180) diff -= 360;
-
-	return (isEnemy(this, b) && diff > -90 && diff < 90);
+	return isEnemy(this, b);
 }
 
 Random _sprk_r(32432);

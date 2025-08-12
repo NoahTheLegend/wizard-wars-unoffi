@@ -6771,7 +6771,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			u32 cast_time = getGameTime();
 			u8 period = 15;
 			u8 max_count = 2;
-			f32 speed = 6.0f;
+			f32 speed = 7.0f;
 			f32 damage = 0.6f;
 			u8 count = 0;
 
@@ -6792,6 +6792,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					period = 10;
 					max_count = 3;
 					damage = 0.8f;
+					speed += 0.5f;
 				}
 				break;
 
@@ -6800,7 +6801,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			if (this.hasTag("extra_damage"))
 			{
-				speed += 1.0f;
+				speed += 1.5f;
 				period = 8;
 				max_count = 5;
 			}
