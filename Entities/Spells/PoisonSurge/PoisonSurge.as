@@ -15,7 +15,7 @@ void onInit(CBlob@ this)
 	
 	//dont collide with edge of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
-	//this.getShape().getConsts().net_threshold_multiplier = 2.0f;
+	this.getShape().getConsts().net_threshold_multiplier = 4.0f;
 	//this.getShape().getConsts().bullet = true;
 	
 	CSprite@ thisSprite = this.getSprite();
