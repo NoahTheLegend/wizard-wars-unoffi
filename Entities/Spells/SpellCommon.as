@@ -6283,10 +6283,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (!isClient())
 			{
     			f32 max_range = 24.0f;
-    			u8 quantity = 20;
+    			u8 quantity = 30;
 
 				u8 rnd = XORRandom(55);
 				SColor col = SColor(255, 155+XORRandom(100), rnd / 2, rnd);
+
+				ParticleBloodSplat(this.getPosition(), true);
 
     			Vec2f thisPos = this.getPosition();
 				for (u8 i = 0; i < quantity; i++)
@@ -6297,7 +6299,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
     			    dir.Normalize();
     			    dir *= 2.0f + XORRandom(21) * 0.1f;
 
-    			    CParticle@ p = ParticlePixelUnlimited(ppos, dir, col, true);
+    			    CParticle@ p = ParticlePixelUnlimited(ppos, -dir, col, true);
     			    if (p is null) return;
 
     			    p.fastcollision = true;
@@ -6322,12 +6324,14 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				for (u8 i = 0; i < playerPrefsInfo.spell_cooldowns.size(); i++)
 				{
-					if (i != 13 && i != 17) // not dark ritual, not carnage
+					if (i != 12 && i != 17) // not carnage, not dark ritual
 					{
 						playerPrefsInfo.spell_cooldowns[i] = 0;
 					}
 				}
 			}
+
+			
 		}
 		break;
 

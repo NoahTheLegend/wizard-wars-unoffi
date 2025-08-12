@@ -498,13 +498,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Wizard.length; i++)
 				{		
-					if ( cfg.exists( "wizard hotkey" + i ) )
+					//if ( cfg.exists( "wizard hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("wizard hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("wizard hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Wizard = loadedHotkeys;
 				//print("Hotkey config file loaded.");
@@ -544,13 +543,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Druid.length; i++)
 				{		
-					if ( cfg.exists( "druid hotkey" + i ) )
+					//if ( cfg.exists( "druid hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("druid hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("druid hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Druid = loadedHotkeys;
 				//print("Hotkey config file loaded.");
@@ -590,13 +588,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Necromancer.length; i++)
 				{		
-					if ( cfg.exists( "necromancer hotkey" + i ) )
+					//if ( cfg.exists( "necromancer hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("necromancer hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("necromancer hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Necromancer = loadedHotkeys;
 				//ig file loaded.");
@@ -636,13 +633,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_SwordCaster.length; i++)
 				{		
-					if ( cfg.exists( "swordcaster hotkey" + i ) )
+					//if ( cfg.exists( "swordcaster hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("swordcaster hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("swordcaster hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_SwordCaster = loadedHotkeys;
 				//print("Hotkey config file loaded.");
@@ -682,13 +678,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Entropist.length; i++)
 				{		
-					if ( cfg.exists( "entropist hotkey" + i ) )
+					//if ( cfg.exists( "entropist hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("entropist hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("entropist hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Entropist = loadedHotkeys;
 				//print("Hotkey config file loaded.");
@@ -728,13 +723,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Priest.length; i++)
 				{		
-					if ( cfg.exists( "priest hotkey" + i ) )
+					//if ( cfg.exists( "priest hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("priest hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("priest hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Priest = loadedHotkeys;
 				//print("Hotkey config file loaded.");
@@ -774,13 +768,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Shaman.length; i++)
 				{		
-					if ( cfg.exists( "shaman hotkey" + i ) )
+					//if ( cfg.exists( "shaman hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("shaman hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("shaman hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Shaman = loadedHotkeys;
 				//print("Hotkey config file loaded.");
@@ -820,13 +813,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Paladin.length; i++)
 				{		
-					if ( cfg.exists( "paladin hotkey" + i ) )
+					//if ( cfg.exists( "paladin hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("paladin hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("paladin hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Paladin = loadedHotkeys;
 				//print("Hotkey config file loaded.");
@@ -867,13 +859,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Jester.length; i++)
 				{		
-					if ( cfg.exists( "jester hotkey" + i ) )
+					//if ( cfg.exists( "jester hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("jester hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("jester hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Jester = loadedHotkeys;
 				//print("Hotkey config file loaded.");
@@ -914,13 +905,12 @@ void loadHotbarAssignments( CPlayer@ this, string playerClass )
 			{
 				for (uint i = 0; i < playerPrefsInfo.hotbarAssignments_Warlock.length; i++)
 				{		
-					if ( cfg.exists( "warlock hotkey" + i ) )
+					//if ( cfg.exists( "warlock hotkey" + i ) )
 					{
-						u32 iHotkeyAssignment = cfg.read_u32("warlock hotkey" + i);
+						u32 iHotkeyAssignment = cfg.read_u32("warlock hotkey" + i, i);
 						loadedHotkeys.push_back( Maths::Min(iHotkeyAssignment, spellsLength-1) );
 					}
-					else
-						loadedHotkeys.push_back(0);
+					
 				}
 				playerPrefsInfo.hotbarAssignments_Warlock = loadedHotkeys;
 				//print("Hotkey config file loaded.");

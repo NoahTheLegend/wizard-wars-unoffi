@@ -257,7 +257,7 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			if (target !is null) targetID = target.getNetworkID();
 
 			Spell castSpell = WarlockParams::spells[castSpellID];
-			bool can_apply_cd_time = !this.hasTag("carnage_effect") || castSpell.typeName == "darkritual";
+			bool can_apply_cd_time = !this.hasTag("carnage_effect") || castSpell.typeName == "carnage" || castSpell.typeName == "darkritual";
 			if (!can_apply_cd_time && this.hasTag("carnage_effect"))
 				this.Untag("carnage_effect");
 
@@ -266,13 +266,13 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			params.write_Vec2f(pos);
 			params.write_Vec2f(this.getAimPos());
 			params.write_u16(targetID);
+			this.SendCommand(this.getCommandID("spell"), params);
 			
 			int spell_cd_time = WarlockParams::spells[castSpellID].cooldownTime * getTicksASecond();
 			f32 cd_reduction_factor = 1.0f * this.get_f32("majestyglyph_cd_reduction");
 			int apply_cd_time = (spell_cd_time == 0 ? 0 : spell_cd_time * cd_reduction_factor);
 
 			playerPrefsInfo.spell_cooldowns[castSpellID] = can_apply_cd_time ? apply_cd_time : 0;
-			this.SendCommand(this.getCommandID("spell"), params);
         }
 		
         charge_state = WarlockParams::not_aiming;

@@ -16,6 +16,7 @@ void onInit(CBlob@ this)
     this.Tag("cantparry");
     this.Tag("cantmove");
     this.Tag("no trampoline collision");
+    this.Tag("solidblob");
 
     this.set_Vec2f("init_pos", Vec2f_zero);
     this.set_f32("push_mod", 1.0f);
@@ -39,6 +40,27 @@ void onTick(CBlob@ this)
     if (this.get_u8("dispelled") >= (this.get_bool("small") ? 1 : 2))
     {
         this.Tag("mark_for_death");
+    }
+
+    Vec2f pos = this.getPosition();
+    Vec2f init_pos = this.get_Vec2f("init_pos");
+    Vec2f vel = this.getVelocity();
+
+    if (isClient() && getGameTime() % (v_fastrender ? 2 : 1) == 0)
+    {
+        CParticle@ p = ParticleAnimated(this.getSprite().getConsts().filename, Vec2f_lerp(pos, pos + vel, getInterpolationFactor()) - Vec2f(0, 2), Vec2f_zero, 0, 1.0f, v_fastrender ? 15 : 5, 0.0f, true);
+        if (p !is null)
+        {
+            p.bounce = 0;
+            p.collides = true;
+            p.fastcollision = true;
+            p.timeout = 15;
+            p.growth = -0.01f;
+            p.Z = -1.0f;
+            p.gravity = Vec2f_zero;
+            p.deadeffect = -1;
+            p.setRenderStyle(RenderStyle::additive);
+        }
     }
 
     if (!isServer()) return;
@@ -74,9 +96,6 @@ void onTick(CBlob@ this)
         }
     }
 
-    Vec2f pos = this.getPosition();
-    Vec2f init_pos = this.get_Vec2f("init_pos");
-
     if (this.hasTag("extra_damage"))
     {
         init_pos.y += Maths::Sin(this.getTickSinceCreated() * 0.05f) * 32.0f;
@@ -93,14 +112,12 @@ void onTick(CBlob@ this)
         dir = Vec2f_zero;
 
     s8 s = pos.y < init_pos.y ? 1 : -1;
-    Vec2f vel = this.getVelocity();
-
     f32 dist_factor = Maths::Clamp(dir_len / max_dist, 0.0f, 5.0);
     f32 damp_range = 4.0f;
 
     if (Maths::Abs(pos.y - init_pos.y) < damp_range)
     {
-        this.setVelocity(Vec2f(vel.x, vel.y * 0.85f));
+        this.setVelocity(Vec2f(vel.x, vel.y * 0.75f));
     }
     this.setPosition(Vec2f(init_pos.x, pos.y));
 
@@ -113,23 +130,6 @@ void onTick(CBlob@ this)
             this.AddForce(Vec2f(0, force));
         }
     }
-
-    if (!isClient()) return;
-    if (getGameTime() % (v_fastrender ? 2 : 1) != 0) return;
-
-    CParticle@ p = ParticleAnimated(this.getSprite().getConsts().filename, Vec2f_lerp(pos, pos + vel, getInterpolationFactor()) - Vec2f(0, 2), Vec2f_zero, 0, 1.0f, v_fastrender ? 15 : 5, 0.0f, true);
-    if (p !is null)
-    {
-        p.bounce = 0;
-        p.collides = true;
-        p.fastcollision = true;
-        p.timeout = 15;
-        p.growth = -0.01f;
-        p.Z = -1.0f;
-        p.gravity = Vec2f_zero;
-        p.deadeffect = -1;
-        p.setRenderStyle(RenderStyle::additive);
-    }
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
@@ -138,12 +138,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
     {
         blob.set_u32("trampoline_floor", getGameTime() + 5);
 
-        f32 vel_y = blob.getVelocity().y;
-        f32 lerp_val = Maths::Abs(Maths::Sqrt(Maths::Abs(vel_y)));
-        if (IsFinite(lerp_val))
-        {
-            this.set_f32("push_mod", Maths::Lerp(this.get_f32("push_mod"), 0.0f, lerp_val));
-        }
+        //f32 vel_y = blob.getVelocity().y;
+        //f32 lerp_val = Maths::Abs(Maths::Sqrt(Maths::Abs(vel_y)));
+        //if (IsFinite(lerp_val))
+        //{
+        //    this.set_f32("push_mod", Maths::Lerp(this.get_f32("push_mod"), 0.0f, lerp_val));
+        //}
     }
 }
 
@@ -157,7 +157,7 @@ void onEndCollision(CBlob@ this, CBlob@ blob)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-    return blob.hasTag("flesh") && blob.getPosition().y < this.getPosition().y - 12;
+    return blob.hasTag("flesh") && blob.getPosition().y < this.getPosition().y - 10;
 }
 
 void onDie(CBlob@ this)

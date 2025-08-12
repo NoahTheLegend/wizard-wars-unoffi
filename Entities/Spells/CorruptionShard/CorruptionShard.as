@@ -22,6 +22,8 @@ void onInit(CBlob@ this)
     this.getShape().SetStatic(true);
     this.addCommandID("restore_caster");
     this.addCommandID("sfx");
+
+    this.SetFacingLeft(XORRandom(2) == 0);
 }
 
 void onTick(CBlob@ this)

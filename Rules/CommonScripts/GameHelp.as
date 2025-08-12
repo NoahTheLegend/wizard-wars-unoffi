@@ -897,12 +897,6 @@ void onTick(CRules@ this)
 		@guideFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
 		guideFrame._customData = 0; // page index
 		guideFrame.setLevel(ContainerLevel::PAGE);
-		{
-			Label@ TestGuideLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "Test", SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
-			TestGuideLabel.name = "TestGuideLabel";
-			TestGuideLabel.localPosition = Vec2f(guideFrame.size.x / 2 - 3, guideFrame.size.y / 2 - 4);
-			guideFrame.addChild(TestGuideLabel);
-		}
 		helpWindow.addChild(guideFrame);
 
 		// options

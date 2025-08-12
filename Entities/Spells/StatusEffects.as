@@ -219,25 +219,24 @@ void onTick(CBlob@ this)
 	{
 		darkritual--;
 
-		if (darkritual % 2 == 0)
+		if (isClient() && darkritual % 3 == 0)
 		{
-			for (int i = 0; i < 3; i++)
-			{		
-				if (getNet().isClient())
-				{
-					const f32 rad = 10.0f;
-					Vec2f random = Vec2f(XORRandom(96)-48, XORRandom(64)-32 ) * 0.015625f * rad;
-					CParticle@ p = ParticleAnimated("BloodDrops.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
-					if (p !is null)
-					{
-						p.bounce = 0;
-    					p.fastcollision = true;
+			ParticleBloodSplat(this.getPosition() + Vec2f(XORRandom(41)*0.1f, 0).RotateBy(XORRandom(360)), false);
 
-						if (XORRandom(2) == 0)
-							p.Z = 10.0f;
-						else
-							p.Z = -10.0f;
-					}
+			for (int i = 0; i < 4; i++)
+			{
+				const f32 rad = 10.0f;
+				Vec2f random = Vec2f(XORRandom(96)-48, XORRandom(64)-32 ) * 0.015625f * rad;
+				CParticle@ p = ParticleAnimated("BloodDrops.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
+				if (p !is null)
+				{
+					p.bounce = 0;
+    				p.fastcollision = true;
+
+					if (XORRandom(2) == 0)
+						p.Z = 10.0f;
+					else
+						p.Z = -10.0f;
 				}
 			}
 		}
@@ -255,47 +254,7 @@ void onTick(CBlob@ this)
 	if (this.hasTag("carnage_effect"))
 	{
 		CParticle@[] ps;
-		this.get("carnage_particles", ps);
 
-		Vec2f random = Vec2f(XORRandom(16)-8, XORRandom(16)-8);
-
-		if (this.getTickSinceCreated() % 6 == 0)
-		{
-			CParticle@ p = ParticleAnimated("MissileFire6.png", random, Vec2f(0,0), 0, 1.0f, 3+XORRandom(2), 0.2f, true);
-			if (p !is null)
-			{
-				p.gravity = Vec2f(0, 0.1f + XORRandom(16) * 0.01f);
-				p.bounce = 0;
-				p.collides = false;
-    			p.fastcollision = true;
-				p.timeout = 30;
-				p.colour = SColor(255, 255, 0, 55);
-				p.forcecolor = SColor(255, 255, 0, 55);
-
-				if (XORRandom(2) == 0)
-					p.Z = -10.0f;
-				else
-					p.Z = 10.0f;
-
-				ps.push_back(p);
-			}
-		}
-
-		for (int i = 0; i < ps.size(); i++)
-		{
-			CParticle@ p = ps[i];
-			if (p is null) continue;
-			if (p.timeout < 1)
-			{
-				ps.erase(i);
-				i--;
-				continue;
-			}
-
-			p.position = this.getPosition() - Vec2f(0, 16) + this.getVelocity() + p.gravity;
-		}
-		
-		this.set("carnage_particles", ps);
 	}
 
 	//SILENCE
