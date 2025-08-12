@@ -6324,7 +6324,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				for (u8 i = 0; i < playerPrefsInfo.spell_cooldowns.size(); i++)
 				{
-					if (i != 12 && i != 13) // not carnage, not dark ritual
+					if (i != 12)
 					{
 						playerPrefsInfo.spell_cooldowns[i] = 0;
 					}
@@ -6479,7 +6479,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
             f32 orbspeed = 1.0f;
 			f32 damage = 3.0f;
-			int max_mana_steal = 10;
+			int max_mana_steal = 15;
 			u8 max_repeats = 3;
             
             switch(charge_state)
@@ -6492,7 +6492,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
                 case super_cast:
                 {
                     orbspeed = 6.0f;
-					max_mana_steal = 15;
+					max_mana_steal = 20;
                 }
                 break;
 
@@ -6503,7 +6503,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (this.hasTag("extra_damage"))
 			{
 				damage = 2.0f;
-				max_mana_steal = 15;
+				max_mana_steal = 20;
 				max_repeats = 5;
 				spearsCount = 2;
 			}

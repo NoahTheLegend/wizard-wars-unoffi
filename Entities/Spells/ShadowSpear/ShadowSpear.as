@@ -5,6 +5,8 @@
 
 const f32 rad = 156.0f;
 const f32 afterdeath_time = 0.1f;
+const f32 accel_mod = 1.5f;
+
 void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
@@ -60,7 +62,7 @@ void onTick(CBlob@ this)
 	this.setAngleDegrees(-dir.Angle());
 
 	dir.Normalize();
-	this.AddForce(dir * this.getMass());
+	this.AddForce(dir * this.getMass() * accel_mod);
 
 	if (this.getTickSinceCreated() == 0)
 	{

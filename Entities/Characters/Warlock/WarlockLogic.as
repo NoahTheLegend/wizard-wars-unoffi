@@ -257,7 +257,7 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			if (target !is null) targetID = target.getNetworkID();
 
 			Spell castSpell = WarlockParams::spells[castSpellID];
-			bool can_apply_cd_time = !this.hasTag("carnage_effect") || castSpell.typeName == "carnage" || castSpell.typeName == "darkritual";
+			bool can_apply_cd_time = !this.hasTag("carnage_effect") || castSpell.typeName == "carnage";
 			if (!can_apply_cd_time && this.hasTag("carnage_effect"))
 				this.Untag("carnage_effect");
 

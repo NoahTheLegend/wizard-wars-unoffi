@@ -4,7 +4,7 @@
 
 const int positions_save_time_in_seconds = 15;
 const u8 old_positions_save_threshold = 1;
-const f32 darkritual_lifesteal_mod = 0.5f;
+const f32 darkritual_lifesteal_mod = 1.0f;
 
 namespace WarlockParams
 {
@@ -39,7 +39,7 @@ namespace WarlockParams
 				SpellCategory::special, SpellType::other, 10, 10, 0, 64.0f, true),
 			
 		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
-				SpellCategory::offensive, SpellType::healthcost, 4, 35, 5, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_VAMPIRISM}),
+				SpellCategory::offensive, SpellType::other, 10, 25, 2, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_VAMPIRISM}),
 		
 		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows to summon beneath the position.",
 				SpellCategory::offensive, SpellType::healthcost, 1.5, 40, 3, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEALTHCOST}),
@@ -66,7 +66,7 @@ namespace WarlockParams
 				SpellCategory::offensive, SpellType::other, 20, 35, 8, array<f32> = {256.0f, 64.0f}, true, 2, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
 		Spell("carnage", "Carnage", 136, "Reset most of your spell cooldowns. Overcharge to make the next spell you cast have half the charge time and no cooldown.",
-				SpellCategory::utility, SpellType::healthcost, 3, 25, 14, 8.0f, false, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT}),
+				SpellCategory::utility, SpellType::healthcost, 3, 20, 12, 8.0f, false, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT}),
 
 		Spell("darkritual", "Dark Ritual", 133, "Your spells gain lifesteal for a few seconds. You take 10 damage in the end of the effect.",
 				SpellCategory::utility, SpellType::other, 30, 30, 22, 8.0f, true, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_VAMPIRISM}),

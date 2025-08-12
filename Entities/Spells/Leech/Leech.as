@@ -5,7 +5,7 @@
 #include "SpellUtils.as";
 
 const f32 RANGE = 180.0f;
-const f32 LIFETIME = 0.5f;
+const f32 LIFETIME = 0.33f;
 
 const int MAX_LASER_POSITIONS = 35;
 const int LASER_UPDATE_TIME = 10;
