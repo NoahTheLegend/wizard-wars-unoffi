@@ -158,7 +158,7 @@ void onTick(CBlob@ this)
 
 			charges -= cost_shield;
 		}
-		
+
 		this.set_u16("charges", charges);
 		this.Sync("charges", true);
 	}
@@ -253,7 +253,12 @@ void onDie(CBlob@ this)
 	if (!isClient()) return;
 	{
 		CBlob@ rope = getBlobByNetworkID(this.get_u16("rope_id"));
-		if (rope !is null) rope.server_Die();
+		if (rope !is null)
+		{
+			rope.set_bool("render", false);
+			rope.server_SetTimeToDie(0.1f);
+			rope.server_Die();
+		}
 
 		u16 ownerplayer_id = this.exists("ownerplayer_id") ? this.get_u16("ownerplayer_id") : 0;
 		if (ownerplayer_id != 0)

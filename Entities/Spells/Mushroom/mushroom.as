@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-    if (this.getTickSinceCreated() == 1)
+    if (this.getTickSinceCreated() == 15)
     {
         CBlob@[] bs;
         getMap().getBlobsInRadius(this.getPosition(), this.getRadius(), @bs);
@@ -88,7 +88,7 @@ void onTick(CBlob@ this)
         }
     }
 
-    if(this.getTickSinceCreated() > this.get_s32("aliveTime"))
+    if (this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
         this.Tag("mark_for_death");
     }

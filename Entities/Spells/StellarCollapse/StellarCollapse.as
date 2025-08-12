@@ -16,8 +16,7 @@ void onInit(CBlob@ this)
 	this.set_u32("explosion_delay", 5 + XORRandom(5));
 
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
-	this.getShape().SetGravityScale(0.0f);
-	this.getShape().getConsts().net_threshold_multiplier = 8.0f;
+	this.getShape().SetGravityScale(0.85f);
 
 	if (!isClient()) return;
 	Vec2f framePos = Vec2f(0, 0);
@@ -158,7 +157,7 @@ void laserEffects(CBlob@ this, int id)
 
 void onTick(CBlob@ this)
 {
-	if (isServer()) this.AddForce(Vec2f(0, this.getMass() * 0.5f));
+	//if (isServer()) this.AddForce(Vec2f(0, this.getMass() * 0.5f));
 
 	if (this.getTickSinceCreated() == 0)
 	{
