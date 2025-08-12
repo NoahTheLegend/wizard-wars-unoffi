@@ -8,6 +8,63 @@ void onInit(CBlob@ this)
     this.set_s32("nextSpore",getGameTime());
     this.Tag("counterable");
     this.Tag("totem");
+
+    this.addCommandID("set_cooldown");
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+    if (cmd == this.getCommandID("set_cooldown"))
+    {
+        u16 owner_id;
+        if (!params.saferead_u16(owner_id)) return;
+
+        CPlayer@ owner = getPlayerByNetworkId(owner_id);
+        if (owner !is null)
+        {
+            if (isClient())
+            {
+                for (int i = 0; i < 8+XORRandom(5); i++)
+                {
+                    Vec2f vel(1.0f + XORRandom(10)*0.1f, 0);
+                    vel.RotateBy(XORRandom(360));
+
+                    CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+                                                    this.getPosition(), 
+                                                    vel, 
+                                                    float(XORRandom(360)), 
+                                                    1.0f, 
+                                                    4 + XORRandom(8), 
+                                                    0.0f, 
+                                                    false );
+
+                    if (p !is null)
+                    {
+                        p.fastcollision = true;
+                        p.scale = 1.0f - XORRandom(51) * 0.01f;
+                        p.damping = 0.925f;
+                        p.Z = 750.0f;
+                        p.colour = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+                        p.forcecolor = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+                        p.setRenderStyle(RenderStyle::additive);
+                    }
+                }
+
+                CPlayer@ owner = this.getDamageOwnerPlayer();
+		        if (owner !is null)
+		        {
+		        	PlayerPrefsInfo@ playerPrefsInfo;
+		        	if (!owner.get("playerPrefsInfo", @playerPrefsInfo))
+		        	{
+		        		return;
+		        	}
+
+		        	playerPrefsInfo.spell_cooldowns[9] = mossy_golem_cooldown*30;
+		        	print("Mossy Golem cooldown set: " + playerPrefsInfo.spell_cooldowns[9]);
+		        }
+            }
+        }
+    }
 }
 
 void onTick(CBlob@ this)
@@ -26,35 +83,6 @@ void onTick(CBlob@ this)
                 CPlayer@ owner = blob.getDamageOwnerPlayer();
                 if (owner !is null && owner is this.getDamageOwnerPlayer())
                 {
-                    if (isClient())
-                    {
-                        for (int i = 0; i < 8+XORRandom(5); i++)
-                        {
-                            Vec2f vel(1.0f + XORRandom(10)*0.1f, 0);
-                            vel.RotateBy(XORRandom(360));
-
-                            CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
-                                                            this.getPosition(), 
-                                                            vel, 
-                                                            float(XORRandom(360)), 
-                                                            1.0f, 
-                                                            4 + XORRandom(8), 
-                                                            0.0f, 
-                                                            false );
-
-                            if (p !is null)
-                            {
-                                p.fastcollision = true;
-                                p.scale = 1.0f - XORRandom(51) * 0.01f;
-                                p.damping = 0.925f;
-                                p.Z = 750.0f;
-                                p.colour = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
-                                p.forcecolor = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
-                                p.setRenderStyle(RenderStyle::additive);
-                            }
-                        }
-                    }
-
                     if (isServer())
                     {
                         CBlob@ mossy_golem = server_CreateBlob("mossygolem", this.getTeamNum(), this.getPosition() - Vec2f(0, 4));
@@ -67,22 +95,13 @@ void onTick(CBlob@ this)
                             mossy_golem.set_u16("owner_id", this.getDamageOwnerPlayer().getNetworkID());
                             mossy_golem.Tag("mg_owner" + this.getDamageOwnerPlayer().getNetworkID());
                         }
-                        
-                        this.server_Die();
+
+                        CBitStream params;
+                        params.write_u16(this.getDamageOwnerPlayer().getNetworkID());
+                        this.SendCommand(this.getCommandID("set_cooldown"), params);
+
+                        this.Tag("mark_for_death");
                     }
-
-                    CPlayer@ owner = this.getDamageOwnerPlayer();
-		            if (owner !is null)
-		            {
-		            	PlayerPrefsInfo@ playerPrefsInfo;
-		            	if (!owner.get("playerPrefsInfo", @playerPrefsInfo))
-		            	{
-		            		return;
-		            	}
-
-		            	playerPrefsInfo.spell_cooldowns[9] = mossy_golem_cooldown*30;
-		            	print("Mossy Golem cooldown set: " + playerPrefsInfo.spell_cooldowns[9]);
-		            }
                 }
             }
         }

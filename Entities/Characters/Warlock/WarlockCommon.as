@@ -22,7 +22,7 @@ namespace WarlockParams
 	const ::f32 MAX_ATTACK_DIST = 500.0f;
 	const ::s32 MAX_MANA = 50;
 	const ::s32 MANA_REGEN = 0;
-	const ::f32 HEALTH_COST_PER_1_MANA = 0.04f; // 0.2f is 1 HP
+	const ::f32 HEALTH_COST_PER_1_MANA = 0.02f; // 0.2f is 1 HP
 	const ::f32 MANA_PER_1_DAMAGE = 1;
 	
 	const ::string[] zombieTypes = {"zombie", "skeleton", "greg", "wraith"};
@@ -30,7 +30,7 @@ namespace WarlockParams
 	const ::Spell[] spells = 
 	{
 		Spell("bloodbolt_rain", "Blood Bolts", 148, "Embodies blood into accelerating bolts to launch.",
-				SpellCategory::offensive, SpellType::healthcost, 0.5f, 18, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEALTHCOST}),
+				SpellCategory::offensive, SpellType::healthcost, 0.5f, 15, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEALTHCOST}),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 				SpellCategory::special, SpellType::other, 10, 6, 0, 270.0f, true, 0, array<int> = {SpellAttribute::SPELL_MOVEMENT}), 
@@ -51,7 +51,7 @@ namespace WarlockParams
 				SpellCategory::utility, SpellType::healthcost, 3, 24, 10, 16.0f, true, 0, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_HEALTHCOST}),
 
 		Spell("poisonsurge", "Toxic Bolt", 137, "Unleash a bolt of toxic sludge that splits into smaller, non-poisoned spheres after a short delay.",
-				SpellCategory::offensive, SpellType::other, 25, 40, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_POISON}),
+				SpellCategory::offensive, SpellType::other, 25, 38, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_POISON}),
 
 		Spell("corruptionshard", "Corruption Shard", 135, "Create a venomous shard releasing poison and fear aura periodically. After a short while, the shard will explode and restore some of your health and mana.",
 				SpellCategory::summoning, SpellType::other, 15, 40, 0, 128.0f, true, 1, array<int> = {SpellAttribute::SPELL_POISON, SpellAttribute::SPELL_CONTROL, SpellAttribute::SPELL_SENTRY, SpellAttribute::SPELL_GROUNDED}),
@@ -63,7 +63,7 @@ namespace WarlockParams
 				SpellCategory::offensive, SpellType::other, 12, 20, 2, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
 		Spell("shadowspear", "Shadow Spear", 147, "Create several consecutive shadow spears that follow the target. Only one spear can deal damage and steal some of the enemy's mana in the form of an orb. Counterspelling the mana orb will restore mana to the caster. Anyone but the orb owner will receive twice more mana.",
-				SpellCategory::offensive, SpellType::other, 20, 30, 8, array<f32> = {256.0f, 64.0f}, true, 2, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
+				SpellCategory::offensive, SpellType::other, 20, 35, 8, array<f32> = {256.0f, 64.0f}, true, 2, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
 
 		Spell("carnage", "Carnage", 136, "Reset most of your spell cooldowns. Overcharge to make the next spell you cast have half the charge time and no cooldown.",
 				SpellCategory::utility, SpellType::healthcost, 3, 25, 14, 8.0f, false, 0, array<int> = {SpellAttribute::SPELL_HEALTHCOST, SpellAttribute::SPELL_CASTEREFFECT}),
