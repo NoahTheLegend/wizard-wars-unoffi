@@ -65,7 +65,7 @@ void laserEffects(CBlob@ this, int id)
 
 	if (ts > 1)
 	{
-		Vec2f pos = this.getInterpolatedPosition() + render_offset;
+		Vec2f pos = this.getPosition() + render_offset;
 		CSprite@ sprite = this.getSprite();
 		CMap@ map = getMap();
 		f32 z = 100.0f;
