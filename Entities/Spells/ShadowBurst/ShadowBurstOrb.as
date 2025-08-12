@@ -322,7 +322,8 @@ void onDie(CBlob@ this)
 {
 	if (!this.hasTag("no_projectiles"))
 		this.getSprite().PlaySound("CardDie.ogg", 0.5f, 0.45f+XORRandom(11) * 0.01f);
-	this.getSprite().PlaySound("exehit.ogg", 1.0f, 1.5f + XORRandom(10) * 0.1f);
+	else
+		this.getSprite().PlaySound("exehit.ogg", 0.75f, 1.25f + XORRandom(10) * 0.1f);
 
 	Boom(this);
 	sparks(this.getPosition(), 50);

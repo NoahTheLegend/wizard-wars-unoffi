@@ -198,6 +198,8 @@ void onTick(CBlob@ this)
 							p.Z = 10.0f;
 						else
 							p.Z = -10.0f;
+
+						p.deadeffect = -1;
 					}
 				}
 			}
@@ -221,7 +223,7 @@ void onTick(CBlob@ this)
 
 		if (isClient() && darkritual % 3 == 0)
 		{
-			ParticleBloodSplat(this.getPosition() + Vec2f(XORRandom(41)*0.1f, 0).RotateBy(XORRandom(360)), false);
+			ParticleBloodSplat(this.getPosition() + Vec2f(XORRandom(121)*0.1f, 0).RotateBy(XORRandom(360)), false);
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -237,6 +239,8 @@ void onTick(CBlob@ this)
 						p.Z = 10.0f;
 					else
 						p.Z = -10.0f;
+
+					p.deadeffect = -1;
 				}
 			}
 		}
@@ -253,7 +257,6 @@ void onTick(CBlob@ this)
 	//CARNAGE
 	if (this.hasTag("carnage_effect"))
 	{
-		CParticle@[] ps;
 
 	}
 
@@ -296,8 +299,9 @@ void onTick(CBlob@ this)
 						else
 							p.Z = -10.0f;
 
-						p.colour = SColor(175 + XORRandom(25), 220+XORRandom(35), 25+XORRandom(55), 210+XORRandom(45));
-						p.forcecolor = SColor(175 + XORRandom(25), 220+XORRandom(35), 25+XORRandom(55), 210+XORRandom(45));
+						p.colour = SColor(175 + XORRandom(25), 180+XORRandom(35), 25+XORRandom(55), 220+XORRandom(35));
+						p.forcecolor = SColor(175 + XORRandom(25), 180+XORRandom(35), 25+XORRandom(55), 220+XORRandom(35));
+						p.deadeffect = -1;
 					}
 				}
 			}
@@ -346,6 +350,7 @@ void onTick(CBlob@ this)
 
 						p.colour = SColor(180, 80+XORRandom(40), 10+XORRandom(40), 40+XORRandom(40));
 						p.forcecolor = SColor(180, 80+XORRandom(40), 10+XORRandom(40), 40+XORRandom(40));
+						p.deadeffect = -1;
 					}
 				}
 			}
@@ -392,6 +397,8 @@ void onTick(CBlob@ this)
 							p.Z = 10.0f;
 						else
 							p.Z = -10.0f;
+
+						p.deadeffect = -1;
 					}
 				}
 			}

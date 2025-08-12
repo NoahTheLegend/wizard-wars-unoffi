@@ -1,3 +1,4 @@
+
 void makeSineSparks(Vec2f pos, uint amount, f32 width, f32 height, SColor color,
 	f32 narrow_top = 1.0f, f32 narrow_bottom = 1.0f, f32 narrow_center = 1.0f,
 	f32 spin_speed_factor = 1.0f, f32 damp = 1.0f, f32 lifetime = 3,

@@ -77,7 +77,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
     if (ownerBlob is null) return false;
     
     return blob is ownerBlob
-            && !blob.isKeyPressed(key_down) && blob.getPosition().y < this.getPosition().y - 4;
+            && !blob.isKeyPressed(key_down) && blob.getPosition().y < this.getPosition().y - 2;
 }
 
 void onDie(CBlob@ this)

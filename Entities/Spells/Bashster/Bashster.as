@@ -78,8 +78,10 @@ void onTick(CBlob@ this)
 
 	if (hold_time > max_hold_time || (!holding && this.getTickSinceCreated() > 15))
 	{		
-		if (isServer())
+		if (isServer() && !this.hasTag("created_blob"))
 		{
+			this.Tag("created_blob");
+
 			f32 damage = this.get_f32("damage");
 			damage += hold_time*dmg_per_step;
 

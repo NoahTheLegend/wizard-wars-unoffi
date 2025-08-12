@@ -60,7 +60,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		        	}
 
 		        	playerPrefsInfo.spell_cooldowns[9] = mossy_golem_cooldown*30;
-		        	print("Mossy Golem cooldown set: " + playerPrefsInfo.spell_cooldowns[9]);
 		        }
             }
         }

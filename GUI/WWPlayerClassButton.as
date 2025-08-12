@@ -126,7 +126,7 @@ class WWPlayerClassButton
 			@selectedSpellName = @Label(Vec2f(page_size.x / 2, 30), Vec2f(page_size.x, 32), "Select a spell", col_text, true, "KingThingsPetrockLight_32");
 			@selectedSpellDescription = @Label(Vec2f(10, 124), Vec2f(page_size.x + 24, 32), "Description", col_text, false, "KingThingsPetrockLight_18");
 
-			Icon@ ornamentLine2 = @Icon("OrnamentCurvyWide.png", Vec2f(-6, hotbarTitle.localPosition.y + 0), Vec2f(336, 48), 0, 1.0f, true, Vec2f(272, 48));
+			Icon@ ornamentLine2 = @Icon("OrnamentCurvyWide.png", Vec2f(-6, hotbarTitle.localPosition.y + 13), Vec2f(336, 48), 0, 1.0f, true, Vec2f(272, 48));
 			ornamentLine2.name = "ornamentLine2";
 			ornamentLine2.isEnabled = false;
 			rightPage.addChild(ornamentLine2);
@@ -170,7 +170,7 @@ class WWPlayerClassButton
 			classDescriptionButton.addChild(classDescriptionText);
 			classDescriptionText.name = "classDescriptionText";
 
-			Rectangle@ container = @Rectangle(Vec2f(8, page_size.y - 208), Vec2f(page_size.x - 16, 32), SColor(0, 0, 0, 0));
+			Rectangle@ container = @Rectangle(Vec2f(8, page_size.y - 192), Vec2f(page_size.x - 16, 32), SColor(0, 0, 0, 0));
 			container.name = "attributesContainer";
 			container.isEnabled = false;
 			rightPage.addChild(container);
@@ -411,7 +411,10 @@ class WWPlayerClassButton
 
 	void update()
 	{
-		f32 factor = f32(v_fpslimit) / 30;
+		f32 factor = 2; // vanilla build is capped at 60 fps
+		#ifdef STAGING
+		factor = f32(v_fpslimit) / 30;
+		#endif
 		tickrate++;
 
 		if (tickrate % factor != 0)
@@ -440,7 +443,11 @@ class WWPlayerClassButton
 			return;
 		}
 
-		f32 factor = f32(v_fpslimit) / 60.0f;
+		f32 factor = 1;
+		#ifdef STAGING
+		factor = f32(v_fpslimit) / 60;
+		#endif
+
 		f32 df = classDescriptionFadeFactor * getRenderDeltaTime() * 60.0f;
 
 		bool start = classDescriptionOpenTimer < 90;
@@ -943,8 +950,7 @@ void UpdateClassHotbar()
 	was_right_click = controls.isKeyJustPressed(KEY_RBUTTON);
 }
 
-const Spell emptySpell = Spell("", "", 0, "Empty spell.",
-				SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f);
+const Spell emptySpell = Spell("", "", 0, "Empty spell", SpellCategory::other, SpellType::other, 0, 0, 0, 0.0f, WizardSpellAttributesCollection[WizardSpellAttributes::ORB]);
 
 const u8 spells_maxcount = 15;
 void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, string className, u8[] hotbarAssignments, Spell[] classSpells)

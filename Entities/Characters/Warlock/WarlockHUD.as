@@ -4,6 +4,7 @@
 #include "PlayerPrefsCommon.as";
 #include "MagicCommon.as";
 #include "HUDStartPos.as";
+#include "AttributeCommon.as";
 
 const string iconsFilename = "SpellIcons.png";
 const int slotsSize = 6;
@@ -122,7 +123,7 @@ void onTick( CSprite@ this )
 		else if (pr_ts)
 				charging_spell = WarlockParams::spells[auxiliary2SpellID];
 		else
-				charging_spell = Spell("", "", 0, "", SpellType::other, 0, 0, 0, 0, 0); // Reset to empty spell if no key is pressed
+				charging_spell = Spell("", "", 0, "Empty spell", SpellCategory::other, SpellType::other, 0, 0, 0, 0.0f, WarlockSpellAttributesCollection[WarlockSpells::EMPTY_SPELL_WARLOCK1]);
 
 		if (hotbarAssignments.size() > 0)
 		{

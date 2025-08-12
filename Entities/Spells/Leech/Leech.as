@@ -44,7 +44,7 @@ void onInit( CBlob@ this )
 	this.set_bool("green", green);
 	if (green)
 	{
-		col = SColor(220, 40, 225, 55);
+		col = SColor(220, 60, 235, 85);
 		rendname = "rend_lg";
 	}
 

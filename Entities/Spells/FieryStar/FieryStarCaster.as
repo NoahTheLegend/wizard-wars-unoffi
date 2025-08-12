@@ -76,8 +76,12 @@ void onTick(CBlob@ this)
 	f32 narrow_bottom = 0.0f + narrow_center * 0.1f;
 
     f32 sin = (Maths::Sin(getGameTime() * 0.1f) + 1.0f) * 0.5f;
+    s8 t = 2;
+    #ifndef STAGING
+    t = 10;
+    #endif
     makeSineSparks(this.getPosition(), 20 + sin*20, 12, 12, SColor(255, 255, 255, XORRandom(155)),
-        narrow_top, narrow_bottom, narrow_center, 1.25f, 1.0f, 2 + 3*sin, SineStyle::easeout,
+        narrow_top, narrow_bottom, narrow_center, 1.25f, 1.0f, t + 3*sin, SineStyle::easeout,
             getSineSeed(this.getNetworkID()));
 
     sparks(this, Vec2f(0,-2), 1);

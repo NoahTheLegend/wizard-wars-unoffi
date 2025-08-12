@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
 
-	consts.mapCollisions = true;
+	consts.mapCollisions = false;
 	consts.bullet = true;
 	consts.net_threshold_multiplier = 2.0f;
 
@@ -113,7 +113,7 @@ void onTick(CBlob@ this)
 		if (side_threshold != 0 && absx < fly_factor)
 		{
 			f32 side_vel = facing_left ? -fly_up_power : fly_up_power;
-			this.AddForce(Vec2f(side_vel * Maths::Clamp(2.0f * (absx/vel.y), 1.0f, 2.0f) * 2 * Maths::Min(max_vel_x_per_tick, Maths::Abs(vel.y) * fly_factor), vel.y > 0 ? -vel.y * (1.0f - (f32(remaining) / f32(max_fly_up_power))) : 0));
+			this.AddForce(Vec2f(side_vel * Maths::Clamp(2.0f * (absx/(vel.y+0.0001f)), 1.0f, 2.0f) * 2 * Maths::Min(max_vel_x_per_tick, Maths::Abs(vel.y) * fly_factor), vel.y > 0 ? -vel.y * (1.0f - (f32(remaining) / f32(max_fly_up_power))) : 0));
 		}
 	}
 

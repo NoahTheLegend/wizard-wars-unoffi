@@ -276,7 +276,9 @@ void Grow(CBlob@ this, int power)
 	if (floor_offset.y > 0)
 	{
 		// on floor below, block lower tile and lower diagonals
-		blocked_offsets = {Vec2f(8, 8), Vec2f(-8, 8)};
+		blocked_offsets.push_back(Vec2f(8, 8));
+		blocked_offsets.push_back(Vec2f(-8, 8));
+
 		if (map.isTileSolid(pos + Vec2f(-8, 8)) && map.isTileSolid(pos + Vec2f(8, 8)))
 			blocked_offsets.push_back(Vec2f(0, 8)); // block lower tile if both sides are solid
 
@@ -284,19 +286,25 @@ void Grow(CBlob@ this, int power)
 	else if (floor_offset.y < 0)
 	{
 		// on ceiling, block upper tile and upper diagonals
-		blocked_offsets = {Vec2f(8, -8), Vec2f(-8, -8)};
+		blocked_offsets.push_back(Vec2f(8, -8));
+		blocked_offsets.push_back(Vec2f(-8, -8));
+
 		if (map.isTileSolid(pos + Vec2f(-8, -8)) && map.isTileSolid(pos + Vec2f(8, -8)))
 			blocked_offsets.push_back(Vec2f(0, -8)); // block upper tile if both sides are solid
 	}
 	else if (floor_offset.x > 0)
 	{
 		// on right wall, block right tile and right diagonals
-		blocked_offsets = {Vec2f(8, 0), Vec2f(8, 8), Vec2f(8, -8)};
+		blocked_offsets.push_back(Vec2f(8, 0));
+		blocked_offsets.push_back(Vec2f(8, 8));
+		blocked_offsets.push_back(Vec2f(8, -8));
 	}
 	else if (floor_offset.x < 0)
 	{
 		// on left wall, block left tile and left diagonals
-		blocked_offsets = {Vec2f(-8, 0), Vec2f(-8, 8), Vec2f(-8, -8)};
+		blocked_offsets.push_back(Vec2f(-8, 0));
+		blocked_offsets.push_back(Vec2f(-8, 8));
+		blocked_offsets.push_back(Vec2f(-8, -8));
 	}
 
 	// remove all blocked offsets from adjacency_offsets

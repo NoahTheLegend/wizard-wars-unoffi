@@ -61,12 +61,13 @@ shared class Spell
 	bool needs_full;
 	u8 target_type;
 
-	int[] effect_types;
+	uint[] effect_types;
 	Attribute@[] attributes;
+	uint[] empty;
 
 	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_category, u8 i_type,
 		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range,
-		bool fully_loaded = false, u8 _target_type = 0, int[] _effect_types = -1)
+		bool fully_loaded = false, u8 _target_type = 0, uint[] _effect_types = empty)
 	{
 		typeName = i_typeName;
 		name = i_name;
@@ -92,11 +93,15 @@ shared class Spell
 
 		needs_full = fully_loaded;
 		target_type = _target_type;
+
+		#ifndef STAGING
+		validateVanilla();
+		#endif
 	}
 
 	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_category, u8 i_type,
-		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32[] i_range,
-		bool fully_loaded = false, u8 _target_type = 0, int[] _effect_types = -1)
+		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range, f32 c_range,
+		bool fully_loaded = false, u8 _target_type = 0, uint[] _effect_types = empty)
 	{
 		typeName = i_typeName;
 		name = i_name;
@@ -106,8 +111,8 @@ shared class Spell
 		type = i_type;
 		mana = i_mana;
 		cooldownTime = i_cooldownTime;
-		range = i_range.size() > 0 ? i_range[0] : 0.0f;
-		target_grab_range = i_range.size() > 1 ? i_range[1] : 64.0f;
+		range = i_range;
+		target_grab_range = c_range;
 
 		cast_period = i_cast_period;
 		cast_period_1 = cast_period/3;
@@ -122,6 +127,52 @@ shared class Spell
 
 		needs_full = fully_loaded;
 		target_type = _target_type;
+
+		#ifndef STAGING
+		validateVanilla();
+		#endif
+	}
+
+	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_category, u8 i_type,
+		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range, uint[] _effect_types = empty)
+	{
+		typeName = i_typeName;
+		name = i_name;
+		iconFrame = i_iconFrame;
+		spellDesc = i_spellDesc;
+		category = i_category;
+		type = i_type;
+		mana = i_mana;
+		cooldownTime = i_cooldownTime;
+		range = i_range;
+		target_grab_range = 64.0f;
+
+		cast_period = i_cast_period;
+		cast_period_1 = cast_period/3;
+		cast_period_2 = 2*cast_period/3;
+		full_cast_period = cast_period*3;
+
+		effect_types = _effect_types;
+		for (u8 i = 0; i < effect_types.size(); i++)
+		{
+			attributes.push_back(makeAttribute(effect_types[i]));
+		}
+
+		needs_full = false;
+		target_type = 0;
+
+		#ifndef STAGING
+		validateVanilla();
+		#endif
+	}
+
+	void validateVanilla()
+	{
+		if (iconFrame < 0 || iconFrame >= 512)
+		{
+			error("Invalid icon frame: " + iconFrame + " for spell " + typename;
+			iconFrame = 0;
+		}
 	}
 };
 

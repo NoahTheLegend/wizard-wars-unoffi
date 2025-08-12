@@ -333,7 +333,7 @@ void onInit(CSprite@ this)
         Animation@ anim = layer.addAnimation("default", 0, false);
         if (anim !is null)
         {
-            int[] frames = {0, 0, 1, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 9};
+            int[] frames = {0, 0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 8, 9};
             anim.AddFrames(frames);
         }
     }
@@ -451,6 +451,7 @@ void onTick(CSprite@ this)
                 continue;
             }
 
+            // todo: vanilla is storing oldposition into CParticles; particles move bottom right
             SColor col = particle.colour;
 
             f32 sin_amplitude = particle.oldposition.x;

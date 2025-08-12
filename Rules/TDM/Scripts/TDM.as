@@ -158,6 +158,9 @@ shared class TDMSpawns : RespawnSystem
 					}
 				}
 			}
+
+			if (player.isBot())
+				p_info.blob_name = "knight";
 			
 			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 			if (playerBlob !is null)

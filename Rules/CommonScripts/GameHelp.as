@@ -125,7 +125,12 @@ void onInit(CRules@ this)
 
 void PlayFlipSound()
 {
-	Sound::Play2D("PageFlip"+XORRandom(6)+".ogg", 0.15f, 0.0f);
+	#ifdef STAGING
+	Sound::Play2D("PageFlip"+XORRandom(5)+".ogg", 1.0f, 0.0f);
+	return;
+	#endif
+
+	Sound::Play2D("PageFlip"+XORRandom(5)+".ogg", 0.5f, 0.0f);
 }
 
 // todo: bind this handler with spells menu handler in the inner frame
@@ -1454,7 +1459,11 @@ void onRender(CRules@ this)
 		helpWindow.localPosition = helpWindow.position;
 	}
 
-	f32 tick = f32(v_fpslimit) / 30.0f;
+	f32 tick = 2;
+	#ifdef STAGING
+	tick = f32(v_fpslimit) / 60;
+	#endif
+
 	active_time = showHelp ? active_time + 1.0f / tick : 0;
 
 	bool initialized = this.get_bool("GUI initialized");

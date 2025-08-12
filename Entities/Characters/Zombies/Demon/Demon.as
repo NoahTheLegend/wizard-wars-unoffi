@@ -3,7 +3,7 @@
 
 /*
 /rcon CBlob@ b=server_CreateBlob('demonbig',1,Vec2f_zero);b.set_u16('ownerplayer_id',getPlayer(1).getNetworkID());b.server_SetPlayer(getPlayer(0));
-CBlob@ k=getBlobByName('knight');CBlob@ w=server_CreateBlob('warlock',0,k.getPosition());w.server_SetPlayer(k.getPlayer());k.server_Die());
+CBlob@ k=getBlobByName('knight');CBlob@ w=server_CreateBlob('warlock',0,k.getPosition());w.server_SetPlayer(k.getPlayer());k.server_Die();
 */
 
 const f32 max_vel = 6.0f;
@@ -136,7 +136,7 @@ void onTick(CBlob@ this)
 				orb.SetDamageOwnerPlayer(this.getPlayer());
 				orb.server_SetTimeToDie(2.0f);
 
-				orb.set_f32("damage", 0.2f);
+				orb.set_f32("damage", 0.3f);
 				orb.set_f32("acceleration", this.get_bool("big") ? 16.0f : 12.0f);
 				orb.set_u32("acceleration_tsc_mod", 30);
 				orb.set_f32("max_speed", max_vel * 4.0f);
@@ -376,7 +376,7 @@ void onTick(CSprite@ this)
 			shard.SetFacingLeft(true);
 
             f32 x = Maths::Round(Maths::Sin((getGameTime()+i*6) * 0.33f) * 11);
-            f32 y = 1 + Maths::Round(-3 + Maths::Cos((getGameTime()+i*6) * 0.125f) * 6);
+            f32 y = 1 + Maths::Round(-3 + Maths::Cos((getGameTime()+i*6) * 0.5f) * 6);
     
             Vec2f offset = Vec2f(0, 2) + Vec2f(x * 2, y);
 
