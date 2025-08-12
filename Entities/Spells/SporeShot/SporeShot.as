@@ -183,7 +183,7 @@ void onDie( CBlob@ this )
 
 			if ( !map.rayCastSolidNoBlobs( pos, b.getPosition() ) )
 			{
-				this.server_Hit( b, pos, Vec2f_zero, this.get_f32("damage") , HittersWW::poison, false );
+				this.server_Hit( b, pos, Vec2f_zero, this.get_f32("damage") , Hitters::explosion, false );
 			}
 		}
 	}

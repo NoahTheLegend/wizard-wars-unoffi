@@ -8,47 +8,25 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-    print("onTick: Entered special code block");
-
     if (this.getTickSinceCreated() == 1)
     {
-        print("onTick: getTickSinceCreated == 1");
         CBlob@[] bs;
         getMap().getBlobsInRadius(this.getPosition(), this.getRadius(), @bs);
-        print("onTick: Found " + bs.length + " blobs in radius");
 
         for (u32 i = 0; i < bs.length; i++)
         {
-            print("onTick: Looping blobs, index " + i);
             CBlob@ blob = bs[i];
-            if (blob !is null)
-            {
-                print("onTick: blob is not null, name: " + blob.getName() + ", team: " + blob.getTeamNum());
-            }
-            else
-            {
-                print("onTick: blob is null");
-            }
 
             if (blob !is null && blob.getTeamNum() == this.getTeamNum() && blob.getName() == "moss")
             {
-                print("onTick: Found moss blob on same team");
+                print("Found moss blob");
                 CPlayer@ owner = blob.getDamageOwnerPlayer();
-                if (owner !is null)
-                {
-                    print("onTick: owner is not null, networkID: " + owner.getNetworkID());
-                }
-                else
-                {
-                    print("onTick: owner is null");
-                }
-
+                print("os "+(owner is null)+" "+owner.getNetworkID() +" "+this.getDamageOwnerPlayer().getNetworkID());
                 if (owner !is null && owner is this.getDamageOwnerPlayer())
                 {
-                    print("onTick: owner matches damage owner player");
+                    print("spawning");
                     for (int i = 0; i < 8+XORRandom(5); i++)
                     {
-                        print("onTick: Particle loop, index " + i);
                         Vec2f vel(1.0f + XORRandom(10)*0.1f, 0);
                         vel.RotateBy(XORRandom(360));
 
@@ -63,12 +41,7 @@ void onTick(CBlob@ this)
 
                         if (p is null)
                         {
-                            print("onTick: Particle is null, returning");
                             return;
-                        }
-                        else
-                        {
-                            print("onTick: Particle created");
                         }
 
                         p.fastcollision = true;
@@ -79,15 +52,12 @@ void onTick(CBlob@ this)
                         p.forcecolor = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
                         p.setRenderStyle(RenderStyle::additive);
                     }
-                    print("onTick: Finished particle loop");
 
                     if (isServer())
                     {
-                        print("onTick: isServer true, creating mossygolem");
                         CBlob@ mossy_golem = server_CreateBlob("mossygolem", this.getTeamNum(), this.getPosition() - Vec2f(0, 4));
                         if (mossy_golem !is null)
                         {
-                            print("onTick: mossy_golem created");
                             mossy_golem.SetFacingLeft(XORRandom(2) == 0);
                             mossy_golem.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
                             mossy_golem.server_SetTimeToDie(18+XORRandom(8)*0.1f);
@@ -95,36 +65,13 @@ void onTick(CBlob@ this)
                             mossy_golem.set_u16("owner_id", this.getDamageOwnerPlayer().getNetworkID());
                             mossy_golem.Tag("mg_owner" + this.getDamageOwnerPlayer().getNetworkID());
                         }
-                        else
-                        {
-                            print("onTick: mossy_golem is null");
-                        }
 
-                        print("onTick: Killing moss blob");
                         blob.server_Die();
                     }
-                    else
-                    {
-                        print("onTick: isServer false, not creating mossygolem");
-                    }
                 }
-                else
-                {
-                    print("onTick: owner does not match damage owner player or is null");
-                }
-            }
-            else
-            {
-                print("onTick: blob is null or not moss or not same team");
             }
         }
-        print("onTick: Finished blob loop");
     }
-    else
-    {
-        print("onTick: getTickSinceCreated != 1");
-    }
-    print("onTick: Exiting special code block");
 
     if(this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
