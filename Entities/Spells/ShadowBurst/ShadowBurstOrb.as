@@ -197,7 +197,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 
 		if (isServer())
 		{
-			this.server_Hit(blob, blob.getPosition(), this.getVelocity(), this.get_f32("damage"), Hitters::explosion, true);
+			f32 damage = this.get_f32("damage");
+			if (blob.hasTag("barrier")) damage *= 10;
+
+			this.server_Hit(blob, blob.getPosition(), this.getVelocity(), damage, Hitters::explosion, true);
 		}
 
 		if (!this.hasTag("no_projectiles"))

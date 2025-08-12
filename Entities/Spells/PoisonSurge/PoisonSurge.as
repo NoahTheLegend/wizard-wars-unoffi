@@ -50,7 +50,7 @@ void onTick(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getVelocity().Length() > 0.01f && !this.hasTag("mark_for_death"))
+	if (isServer() && this.getVelocity().Length() > 0.01f && !this.hasTag("mark_for_death"))
 		this.setAngleDegrees(-this.getVelocity().Angle());
 	else this.Tag("mark_for_death");
 	if (this.hasTag("mark_for_death")) this.setVelocity(Vec2f_zero);
@@ -149,8 +149,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1)
 			}
 		}
 	}
-	
-	if (blob !is null && doesCollideWithBlob(this, blob))
+
+	if (blob !is null && isEnemy(this, blob))
 	{
 		this.Tag("no_shrapnel");
 		this.Tag("mark_for_death");

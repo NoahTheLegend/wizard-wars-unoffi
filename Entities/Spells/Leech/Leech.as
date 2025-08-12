@@ -261,7 +261,9 @@ void onTick(CBlob@ this)
                     		{target.getSprite().PlaySound("ShieldHit.ogg");}
 						}
 
-						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
+						if (target.getName() == "shard") target.server_Die();
+						else this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
+
 						CPlayer@ ownerPlayer = this.getDamageOwnerPlayer();
 						if (ownerPlayer !is null && target.getPlayer() !is null)
 						{
