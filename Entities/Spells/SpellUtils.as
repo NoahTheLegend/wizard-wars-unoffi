@@ -717,8 +717,9 @@ void Slow(CBlob@ blob, u16 slowTime)
 	}
 	else
 	{
-		blob.set_u16("slowed", slowTime);
+		blob.set_u16("slowed", Maths::Max(slowTime, blob.get_u16("slowed")));
 		blob.Sync("slowed", true);
+
 		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
 	}
 }
@@ -729,8 +730,8 @@ void Silence(CBlob@ blob, u16 silenceTime)
 	{
 		blob.getSprite().PlaySound("SilenceOn.ogg", 0.7f, 1.0f + XORRandom(11) * 0.01f);
 	}
-	
-	blob.set_u16("silenced", silenceTime);
+
+	blob.set_u16("silenced", Maths::Max(silenceTime, blob.get_u16("silenced")));
 	blob.Sync("silenced", true);
 }
 
@@ -741,7 +742,7 @@ void Fear(CBlob@ blob, u16 fearTime)
 		blob.getSprite().PlaySound("FearOn.ogg", 0.8f, 1.0f + XORRandom(11) * 0.01f);
 	}
 	
-	blob.set_u16("feared", fearTime);
+	blob.set_u16("feared", Maths::Max(fearTime, blob.get_u16("feared")));
 	blob.Sync("feared", true);
 }
 
@@ -770,28 +771,32 @@ void Poison(CBlob@ blob, u16 poisonTime = defaultPoisonTime, CBlob@ hitter = nul
 	}
 
 	if (blob.get_u16("poisoned") == 0) blob.getSprite().PlaySound("SlowOn.ogg", 0.6f * sound_volume, 0.75f + XORRandom(1)/10.0f);
-	blob.set_u16("poisoned", poisonTime);
+
+	blob.set_u16("poisoned", Maths::Max(poisonTime, blob.get_u16("poisoned")));
 	blob.Sync("poisoned", true);
 }
 
 void Confuse( CBlob@ blob, u16 confuseTime )
 {	
-	blob.set_u16("confused", confuseTime);
+	blob.set_u16("confused", Maths::Max(confuseTime, blob.get_u16("confused")));
 	blob.Sync("confused", true);
+
 	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
 }
 
 void ManaBurn( CBlob@ blob, u16 burnTime )
 {	
-	blob.set_u16("manaburn", burnTime);
+	blob.set_u16("manaburn", Maths::Max(burnTime, blob.get_u16("manaburn")));
 	blob.Sync("manaburn", true);
+
 	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.15f + XORRandom(1)/10.0f);
 }
 
 void HealBlock( CBlob@ blob, u16 hbTime )
 {
-	blob.set_u16("healblock", hbTime);
+	blob.set_u16("healblock", Maths::Max(hbTime, blob.get_u16("healblock")));
 	blob.Sync("healblock", true);
+
 	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.35f + XORRandom(1)/10.0f);
 	blob.getSprite().PlaySound("sidewind_init", 0.5f, 0.8f);
 }
@@ -805,7 +810,7 @@ void Haste( CBlob@ blob, u16 hasteTime )
 	}
 	else
 	{
-		blob.set_u16("hastened", hasteTime);
+		blob.set_u16("hastened", Maths::Max(hasteTime, blob.get_u16("hastened")));
 		blob.Sync("hastened", true);
 		if(isClient())
 		{blob.getSprite().PlaySound("HasteOn.ogg", 0.8f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
@@ -814,14 +819,14 @@ void Haste( CBlob@ blob, u16 hasteTime )
 
 void Regen( CBlob@ blob, u16 regenTime )
 {	
-	blob.set_u16("regen", regenTime);
+	blob.set_u16("regen", Maths::Max(regenTime, blob.get_u16("regen")));
 	blob.Sync("regen", true);
 	blob.getSprite().PlaySound("Heal.ogg", 0.75f, 1.15f + XORRandom(1)/10.0f);
 }
 
 void CooldownReduce(CBlob@ blob, u16 time, f32 power)
 {	
-	blob.set_u16("cdreduction", time);
+	blob.set_u16("cdreduction", Maths::Max(time, blob.get_u16("cdreduction")));
 	blob.Sync("cdreduction", true);
 
 	blob.set_f32("majestyglyph_cd_reduction", glyph_cooldown_reduction);
@@ -833,7 +838,7 @@ void CooldownReduce(CBlob@ blob, u16 time, f32 power)
 
 void AntiDebuff(CBlob@ blob, u16 time)
 {	
-	blob.set_u16("antidebuff", time);
+	blob.set_u16("antidebuff", Maths::Max(time, blob.get_u16("antidebuff")));
 	blob.Sync("antidebuff", true);
 
 	blob.getSprite().PlaySound("PlantShotLaunch.ogg", 1.0f, 1.0f + XORRandom(16)*0.01f);
@@ -841,7 +846,7 @@ void AntiDebuff(CBlob@ blob, u16 time)
 
 void Sidewind( CBlob@ blob, u16 windTime )
 {	
-	blob.set_u16("sidewinding", windTime);
+	blob.set_u16("sidewinding", Maths::Max(windTime, blob.get_u16("sidewinding")));
 	blob.Sync("sidewinding", true);
 	if(isClient())
 	{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
@@ -920,14 +925,14 @@ void Barrier(CBlob@ blob, u16 time, u8 amount)
 
 void AirblastShield( CBlob@ blob, u16 airshieldTime )
 {	
-	blob.set_u16("airblastShield", airshieldTime);
+	blob.set_u16("airblastShield", Maths::Max(airshieldTime, blob.get_u16("airblastShield")));
 	blob.Sync("airblastShield", true);
 	//if(isClient())
 	//{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
 }
 void FireWard( CBlob@ blob, u16 firewardTime )
 {	
-	blob.set_u16("fireProt", firewardTime);
+	blob.set_u16("fireProt", Maths::Max(firewardTime, blob.get_u16("fireProt")));
 	blob.Sync("fireProt", true);
 	//if(isClient())
 	//{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
