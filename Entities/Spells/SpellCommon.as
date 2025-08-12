@@ -6783,13 +6783,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				break;
 				case complete_cast:
 				{
-					period = 10;
+					period = 8;
 					damage = 0.6f;
 				}
 				break;
 				case super_cast:
 				{
-					period = 10;
+					period = 6;
 					max_count = 3;
 					damage = 0.8f;
 					speed += 0.5f;
@@ -6802,7 +6802,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (this.hasTag("extra_damage"))
 			{
 				speed += 1.5f;
-				period = 8;
+				period = 4;
 				max_count = 5;
 			}
 
