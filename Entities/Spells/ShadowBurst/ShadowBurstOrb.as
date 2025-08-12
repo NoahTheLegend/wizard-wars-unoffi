@@ -2,6 +2,7 @@
 #include "HittersWW.as";
 #include "TextureCreation.as";
 
+const f32 angle_change_base = 5.0f;
 void onInit(CBlob@ this)
 {
 	this.Tag("projectile");
@@ -18,6 +19,9 @@ void onInit(CBlob@ this)
 	Vec2f[] old_pos;
 	old_pos.push_back(this.getPosition());
 	this.set("old_positions", @old_pos);
+
+	this.set_Vec2f("aimpos", Vec2f_zero);
+	this.addCommandID("aimpos sync");
 
 	if (!isClient()) return;
 
@@ -52,6 +56,60 @@ void onTick(CBlob@ this)
 			}
 
 			positions.insertAt(0, this.getPosition());
+		}
+	}
+
+	if (!this.hasTag("no_projectiles"))
+	{
+		Vec2f aimpos = this.get_Vec2f("aimpos");
+
+		CPlayer@ p = this.getDamageOwnerPlayer();
+		if (p !is null)
+		{
+			CBlob@ b = p.getBlob();
+			if (b !is null)
+			{
+				if (p.isMyPlayer())
+				{
+					aimpos = b.getAimPos();
+
+					CBitStream params;
+					params.write_Vec2f(aimpos);
+					this.SendCommand(this.getCommandID("aimpos sync"), params);
+				}
+			}
+		}
+
+		if (isServer() && this.hasTag("aiming"))
+		{
+			Vec2f pos = this.getPosition();
+			Vec2f vel = this.getVelocity();
+
+			if (vel == Vec2f_zero)
+			{
+				vel.x += 1.0f - XORRandom(3);
+				vel.y += 1.0f - XORRandom(3);
+			}
+
+			Vec2f dir = aimpos - pos;
+			dir.Normalize();
+
+			f32 current_angle = vel.Angle();
+			f32 target_angle = dir.Angle();
+			f32 angle_diff = target_angle - current_angle;
+
+			while (angle_diff > 180.0f) angle_diff -= 360.0f;
+			while (angle_diff < -180.0f) angle_diff += 360.0f;
+
+			f32 correction = Maths::Clamp(angle_diff, -angle_change_base, angle_change_base);
+			Vec2f new_vel = vel.RotateBy(-correction);
+
+			// Keep speed consistent
+			new_vel.Normalize();
+			new_vel *= Maths::Clamp(vel.Length(), 2.0f, 10.0f);
+
+			this.setVelocity(new_vel);
+			this.setAngleDegrees(-new_vel.Angle());
 		}
 	}
 
@@ -262,9 +320,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 
 void onDie(CBlob@ this)
 {
-	if (!this.hasTag("no_projectiles")) this.getSprite().PlaySound("CardDie.ogg", 0.5f, 0.45f+XORRandom(11) * 0.01f);
-
+	if (!this.hasTag("no_projectiles"))
+		this.getSprite().PlaySound("CardDie.ogg", 0.5f, 0.45f+XORRandom(11) * 0.01f);
 	this.getSprite().PlaySound("exehit.ogg", 1.0f, 1.5f + XORRandom(10) * 0.1f);
+
 	Boom(this);
 	sparks(this.getPosition(), 50);
 }
@@ -367,4 +426,12 @@ void laserEffects(CBlob@ this, int id)
     v_col.push_back(SColor(alpha, 255, 255, 255));
 
     Render::QuadsColored(rendname, z, v_pos, v_uv, v_col);
+}
+
+void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
+{
+    if (cmd == this.getCommandID("aimpos sync"))
+    {
+        this.set_Vec2f("aimpos", params.read_Vec2f());
+    }
 }

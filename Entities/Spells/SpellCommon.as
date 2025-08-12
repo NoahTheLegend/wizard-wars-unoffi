@@ -2960,6 +2960,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (!isServer()){
            		return;
 			}
+
 			f32 orbspeed = necro_shoot_speed*0.5f;
 			int amount = this.hasTag("extra_damage") ? 3 : 2;
 
@@ -2982,7 +2983,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				default:return;
 			}
-
 			
 			f32 angle_per_circle = 360/amount;
 
@@ -6564,7 +6564,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 819257813: // poisonsurge
 		{
-			f32 orbspeed = 6.0f;
+			f32 orbspeed = 5.5f;
 
 			if (!isServer()){
            		return;
@@ -6773,10 +6773,11 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			u32 cast_time = getGameTime();
 			u8 period = 10;
-			u8 max_count = 2;
+			u8 max_count = 3;
 			f32 speed = 7.0f;
-			f32 damage = 0.6f;
+			f32 damage = 0.75f;
 			u8 count = 0;
+			bool aiming = false;
 
 			switch(charge_state)
 			{
@@ -6787,15 +6788,12 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case complete_cast:
 				{
 					period = 8;
-					damage = 0.6f;
 				}
 				break;
 				case super_cast:
 				{
 					period = 6;
-					max_count = 3;
-					damage = 0.8f;
-					speed += 0.5f;
+					aiming = true;
 				}
 				break;
 
@@ -6817,6 +6815,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				this.set_f32("shadowburst_speed", speed);
 				this.set_f32("shadowburst_damage", damage);
 				this.set_u8("shadowburst_current_count", 0);
+				this.set_bool("shadowburst_aiming", aiming);
 
 				this.AddScript("ShadowBurstCast.as");
 			}

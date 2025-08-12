@@ -27,7 +27,7 @@ void onTick( CBlob@ this )
 	{
 		this.Tag("initted");
 		if (isClient())
-			this.getSprite().PlaySound("SpriteFire1.ogg", 0.5f, 1.5f + XORRandom(10)/10.0f);
+			this.getSprite().PlaySound("SpriteFire1.ogg", 0.75f, 1.5f + XORRandom(10)/10.0f);
 	}
 
 	if (isServer()

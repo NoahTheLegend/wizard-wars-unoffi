@@ -39,7 +39,7 @@ namespace WarlockParams
 				SpellCategory::special, SpellType::other, 10, 10, 0, 64.0f, true),
 			
 		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
-				SpellCategory::offensive, SpellType::other, 10, 25, 2, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_VAMPIRISM}),
+				SpellCategory::offensive, SpellType::other, 25, 25, 3, 180.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_VAMPIRISM}),
 		
 		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows to summon beneath the position.",
 				SpellCategory::offensive, SpellType::healthcost, 1.5, 40, 3, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEALTHCOST}),

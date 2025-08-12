@@ -104,6 +104,8 @@ void onTick(CBlob@ this)
                 orb.setVelocity(dir * this.get_f32("shadowburst_speed"));
                 orb.set_f32("damage", this.get_f32("shadowburst_damage"));
                 orb.server_SetTimeToDie(2.0f + XORRandom(25) * 0.01f);
+
+                if (this.hasTag("shadowburst_aiming")) orb.Tag("aiming");
             }
         }
     }
