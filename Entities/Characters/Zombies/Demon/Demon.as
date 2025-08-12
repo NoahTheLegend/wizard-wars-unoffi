@@ -136,7 +136,7 @@ void onTick(CBlob@ this)
 				orb.SetDamageOwnerPlayer(this.getPlayer());
 				orb.server_SetTimeToDie(2.0f);
 
-				orb.set_f32("damage", 0.4f);
+				orb.set_f32("damage", 0.2f);
 				orb.set_f32("acceleration", this.get_bool("big") ? 16.0f : 12.0f);
 				orb.set_u32("acceleration_tsc_mod", 30);
 				orb.set_f32("max_speed", max_vel * 4.0f);
