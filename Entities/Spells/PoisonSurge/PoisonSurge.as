@@ -69,6 +69,11 @@ void onTick(CBlob@ this)
 		sprite.SetRelativeZ(-1.0f);
 	}
 
+	if (this.getTickSinceCreated() > 15)
+	{
+		this.Tag("no_bounce");
+	}
+
 	if (!isClient()) return;
 
 	CSprite@ sprite = this.getSprite();

@@ -6604,7 +6604,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				default:return;
 			}
 
-			Vec2f orbPos = thispos;
+			Vec2f orbPos = thispos - Vec2f(0, 2);
 			Vec2f orbVel = (aimpos - orbPos);
 
 			orbVel.Normalize();
@@ -6621,7 +6621,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				orb.set_u8("shrapnel_count", shrapnel_count);
 				orb.set_u8("shrapnel_angle", angle);
 				orb.set_u32("poison_time", poison_time);
-				orb.Tag("no_bounce");
 
 				orb.setAngleDegrees(-(aimpos - orbPos).Angle()+90);
 				orb.server_SetTimeToDie(1);
