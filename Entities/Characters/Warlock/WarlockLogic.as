@@ -266,13 +266,13 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 			params.write_Vec2f(pos);
 			params.write_Vec2f(this.getAimPos());
 			params.write_u16(targetID);
-			this.SendCommand(this.getCommandID("spell"), params);
 			
 			int spell_cd_time = WarlockParams::spells[castSpellID].cooldownTime * getTicksASecond();
 			f32 cd_reduction_factor = 1.0f * this.get_f32("majestyglyph_cd_reduction");
 			int apply_cd_time = (spell_cd_time == 0 ? 0 : spell_cd_time * cd_reduction_factor);
 
 			playerPrefsInfo.spell_cooldowns[castSpellID] = can_apply_cd_time ? apply_cd_time : 0;
+			this.SendCommand(this.getCommandID("spell"), params);
         }
 		
         charge_state = WarlockParams::not_aiming;
@@ -644,7 +644,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-    if (( hitterBlob.getName() == "wraith" || hitterBlob.getName() == "orb" ) && hitterBlob.getTeamNum() == this.getTeamNum())
+    if ((hitterBlob.getName() == "wraith" || hitterBlob.getName() == "orb" ) && hitterBlob.getTeamNum() == this.getTeamNum())
         return 0;
 
 	if (isServer() && damage > 0.1f)
@@ -657,7 +657,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			CBlob@ demon = demons[i];
 			if (demon !is null)
 			{
-				demon.set_u16("charges", damage * 5 ); // for 1 hp damage we restore 1 charges
+				demon.set_u16("charges", damage * 5); // for 1 hp damage we restore 1 charges
 				demon.Sync("charges", true);
 			}
 		}

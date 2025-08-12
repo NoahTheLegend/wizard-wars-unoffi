@@ -401,7 +401,7 @@ void DemonicPact(CBlob@ this, CBlob@ gravestone)
 	CPlayer@ deadPlayer = getPlayerByNetworkId(playerId);
 
 	CPlayer@ damageOwner = this.getDamageOwnerPlayer();
-	if (isServer() && deadPlayer !is null)
+	if (isServer() && deadPlayer !is null && damageOwner.getNetworkID() != playerId)
 	{
 		CBlob@ newBlob = server_CreateBlob(this.hasTag("extra_damage") ? "demonbig" :"demon", deadPlayer.getTeamNum(), gravestone.getPosition());
 		if (newBlob !is null)

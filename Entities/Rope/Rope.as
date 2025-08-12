@@ -182,8 +182,8 @@ class Rope
         CMap@ map = getMap();
         if (map is null) return;
 
-        u8[][]@ rope_map;
-        if (!map.get("rope_map", @rope_map)) return;
+        //u8[][]@ rope_map;
+        //if (!map.get("rope_map", @rope_map)) return;
 
         Move(map);
         for (int i = 0; i < iterations; i++)
@@ -191,7 +191,7 @@ class Rope
             ApplyConstraints();
 
             if (debug_lctrl) continue;
-            if (enable_collisions) AttemptCollide(map, rope_map);
+            // if (enable_collisions) AttemptCollide(map, rope_map);
         }
     }
 

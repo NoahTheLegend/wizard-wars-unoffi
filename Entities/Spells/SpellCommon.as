@@ -1907,7 +1907,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 			this.set_u32("bloodbolt_start", getGameTime());
 			this.set_Vec2f("bloodbolt_aimpos", aimpos);
-			this.set_f32("bloodbolt_damage", 0.2f);
+			this.set_f32("bloodbolt_damage", 0.3f);
 
 			if (!this.hasScript("BloodBoltRain.as"))
 			{
@@ -4783,12 +4783,30 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 554573647: //arclightning
 		{
 			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
-		
+
+			CBlob@[] arclightningBlobs;
+			getBlobsByTag("arclightning_owner_"+player.getUsername(), @arclightningBlobs);
+			if (arclightningBlobs.size() > 5)
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+
+				manaInfo.mana += spell.mana;
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+
+				return;
+			}
+
 			if (isServer())
 			{
 				CBlob@ orb = server_CreateBlob("arclightning", this.getTeamNum(), orbPos); 
 				if (orb !is null)
 				{
+					orb.Tag("arclightning_owner_"+player.getUsername());
+					orb.Sync("arclightning_owner_"+player.getUsername(), true);
+
 					f32 damage = 0.05f;
 					u8 damage_thresh = 3;
 					u8 ttd = 30;
@@ -4800,7 +4818,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case super_cast:
 						{
 							damage_thresh = 2;
-							ttd = 38;
+							ttd += 5;
 							break;
 						}
 					}
@@ -4808,7 +4826,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
                     if (this.hasTag("extra_damage"))
                     {
 						damage = 0.1f;
-						ttd = 38;
+						ttd += 5;
 					}
 
 					orb.set_Vec2f("aim pos", aimpos);
@@ -6294,6 +6312,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -352148188: // carnage
 		{
+			if (charge_state == 5) this.Tag("carnage_effect");
+
 			if (!isClient()) return;
 			this.getSprite().PlaySound("CarnageOn.ogg", 0.75f, 1.0f + XORRandom(10) * 0.01f);
 
@@ -6307,8 +6327,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						playerPrefsInfo.spell_cooldowns[i] = 0;
 					}
 				}
-
-				if (charge_state == 5) this.Tag("carnage_effect");
 			}
 		}
 		break;
@@ -6339,8 +6357,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 
 				int alive_time = 20 * 30;
-				f32 heal_amount = 0.75f; // 7.5 hp
-				int mana_amount = 20;
+				f32 heal_amount = 1.0f; // 7.5 hp
+				int mana_amount = 25;
 				f32 max_range = 96.0f;
 				int alt_delay = 210;
 				int debuff_time = 120;
@@ -6375,8 +6393,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							{
 								tot.Tag("extra_damage");
 	
-								heal_amount = 1.0f;
-								mana_amount = 30;
+								heal_amount = 1.5f;
+								mana_amount = 35;
 								alt_delay = 45;
 								debuff_time = 180;
 							}

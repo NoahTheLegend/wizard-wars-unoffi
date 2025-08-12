@@ -41,6 +41,8 @@ void onTick(CBlob@ this)
         this.Tag("mark_for_death");
     }
 
+    if (!isServer()) return;
+
     if (this.getTickSinceCreated() == 0)
     {
         Vec2f pos = this.getPosition();

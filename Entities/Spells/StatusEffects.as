@@ -221,11 +221,11 @@ void onTick(CBlob@ this)
 
 		if (darkritual % 2 == 0)
 		{
-			for (int i = 0; i < 1; i++)
+			for (int i = 0; i < 3; i++)
 			{		
 				if (getNet().isClient())
 				{
-					const f32 rad = 6.0f;
+					const f32 rad = 10.0f;
 					Vec2f random = Vec2f(XORRandom(96)-48, XORRandom(64)-32 ) * 0.015625f * rad;
 					CParticle@ p = ParticleAnimated("BloodDrops.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
 					if (p !is null)
@@ -257,12 +257,11 @@ void onTick(CBlob@ this)
 		CParticle@[] ps;
 		this.get("carnage_particles", ps);
 
-		if (this.getTickSinceCreated() % 8 == 0)
-		{
-			const f32 rad = 16.0f;
-			Vec2f random = Vec2f(XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+		Vec2f random = Vec2f(XORRandom(16)-8, XORRandom(16)-8);
 
-			CParticle@ p = ParticleAnimated("MissileFire6.png", random, Vec2f(0,0), 0, 1.0f, 1+XORRandom(2), 0.2f, true);
+		if (this.getTickSinceCreated() % 6 == 0)
+		{
+			CParticle@ p = ParticleAnimated("MissileFire6.png", random, Vec2f(0,0), 0, 1.0f, 3+XORRandom(2), 0.2f, true);
 			if (p !is null)
 			{
 				p.gravity = Vec2f(0, 0.1f + XORRandom(16) * 0.01f);
@@ -293,7 +292,7 @@ void onTick(CBlob@ this)
 				continue;
 			}
 
-			p.position = this.getPosition() + this.getVelocity() + p.gravity;
+			p.position = this.getPosition() - Vec2f(0, 16) + this.getVelocity() + p.gravity;
 		}
 		
 		this.set("carnage_particles", ps);

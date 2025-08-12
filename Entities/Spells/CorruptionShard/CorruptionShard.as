@@ -109,7 +109,7 @@ void sparks(CBlob@ this, Vec2f pos, int amount, Vec2f gravity, bool alt_state = 
     u8 angle = XORRandom(360);
 
     u8 rnd = XORRandom(50);
-    SColor col = alt_state ? SColor(255, 200 + XORRandom(55), 80 + XORRandom(120), XORRandom(55)) : SColor(255, XORRandom(75) + rnd, 200 + rnd, 55 + rnd + XORRandom(10));
+    SColor col = !alt_state ? SColor(255, 200 + XORRandom(55), 80 + XORRandom(120), XORRandom(55)) : SColor(255, XORRandom(75) + rnd, 200 + rnd, 55 + rnd + XORRandom(10));
 
 	for (int i = 0; i < amount; i++)
     {

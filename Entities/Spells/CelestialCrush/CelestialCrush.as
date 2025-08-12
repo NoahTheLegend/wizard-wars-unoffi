@@ -18,11 +18,13 @@ void onInit(CBlob@ this)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;	 // we have our own map collision
 	consts.bullet = false;
-	consts.net_threshold_multiplier = 1.1f;
+	consts.net_threshold_multiplier = 2.0f;
+
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("die_in_divine_shield");
-	shape.SetGravityScale( 0.0f );
+
+	shape.SetGravityScale(0.0f);
 
     //dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);

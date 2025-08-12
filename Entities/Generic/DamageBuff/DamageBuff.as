@@ -39,7 +39,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
         return;
     }
 
-    if(blob.hasTag("player") && blob.get_u32("damage_boost") < getGameTime()+30 && blob.getConfig() != "knight")//Rip knights
+    if(blob.hasTag("player") && !blob.hasTag("ignore_effects") && blob.get_u32("damage_boost") < getGameTime()+30 && blob.getConfig() != "knight")//Rip knights
     {
         this.SendCommand(this.getCommandID("clientdeath"));//kill serverside
         

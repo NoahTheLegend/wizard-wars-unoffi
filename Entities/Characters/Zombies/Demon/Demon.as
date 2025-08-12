@@ -175,6 +175,10 @@ void onTick(CBlob@ this)
 
 		rope.set_Vec2f("firstPos", owner.getPosition());
 		rope.set_Vec2f("lastPos", pos);
+
+		rope.Sync("render", true);
+		rope.Sync("firstPos", true);
+		rope.Sync("lastPos", true);
 	}
 
 	Vec2f vel = this.getVelocity();

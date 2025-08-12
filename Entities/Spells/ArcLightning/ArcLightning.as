@@ -20,6 +20,9 @@ void onInit(CBlob@ this)
 	this.getShape().SetGravityScale(0.0f);
 	this.getShape().getConsts().mapCollisions = true;
 
+	Vec2f[] last_path;
+	this.set("last_lightning_path", @last_path);
+
 	if (!isClient()) return;
 
 	this.SetLight(true);
@@ -44,9 +47,6 @@ void onInit(CBlob@ this)
 		}
 	}
 
-	Vec2f[] last_path;
-	this.set("last_lightning_path", @last_path);
-
 	thisSprite.SetZ(525.0f);
 	thisSprite.SetEmitSound("BallLightningHum.ogg");
 	thisSprite.SetEmitSoundSpeed(1.15f);
@@ -60,6 +60,7 @@ void onInit(CBlob@ this)
 	SetupImage("ArcLightningTrail.png", SColor(175, 210, 240, 255), "arc_rend1", false);
 	SetupImage("ArcLightningTrail.png", SColor(175, 255, 255, 255), "arc_rend2", false);
 	SetupImage("ArcLightningTrail.png", SColor(175, 215, 215, 255), "arc_rend3", false);
+
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "ArcLightning.as", "laserEffects");
 }
 
@@ -211,7 +212,7 @@ void generateLightningPath(CBlob@ this, Vec2f start, Vec2f end, Vec2f[] &inout p
 		displacement *= envelope;
 
 		Vec2f point = start + vec*pos + normal*displacement;
-		if (old_path.length > i)
+		if (old_path !is null && old_path.length > i)
 		{
 			point = Vec2f_lerp(old_path[i], point, 0.5f);
 		}
@@ -353,11 +354,20 @@ void blast(Vec2f pos, int amount, f32 scale = 1.0f)
     }
 }
 
-bool isEnemy(CBlob@ blob, CBlob@ this)
+bool isEnemy( CBlob@ this, CBlob@ target )
 {
-	if (blob.getTeamNum() == this.getTeamNum()) return false;
-	return blob.hasTag("barrier") || blob.hasTag("flesh") || blob.hasTag("player");
+	return 
+	(
+		(target.getTeamNum() != this.getTeamNum() && (target.hasTag("barrier") || target.hasTag("kill other spells") || target.hasTag("door") || target.getName() == "trap_block"))
+		||
+		(
+			target.hasTag("flesh") 
+			&& !target.hasTag("dead") 
+			&& target.getTeamNum() != this.getTeamNum()
+		)
+	);
 }
+
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {

@@ -60,7 +60,7 @@ namespace ShamanParams
 		Spell("lavashot", "Lava Shot", 80, "Throw a ball of lava. Periodically drops a bit of lava while moving. Overcharge increases the rate of dropping lava and amount from impact.",
 			SpellCategory::offensive, SpellType::other, 40, 50, 3, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_FIRE}),
 		
-		Spell("arclightning", "Arc Lightning", 81, "Send a lightning arc that links to other arcs nearby.",
+		Spell("arclightning", "Arc Lightning", 81, "Send a lightning arc that links to other arcs nearby. Amount of lightnings is limited to 5.",
 			SpellCategory::offensive, SpellType::other, 18, 28, 0, 256.0f, true, 0, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_ELECTRICITY}),
 		
 		Spell("iciclerain", "Magic Icicles", 82, "Materialize icicles to throw at the aim position. Overcharge fully to control aim position meanwhile icicles are being released.",

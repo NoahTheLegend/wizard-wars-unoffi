@@ -18,9 +18,9 @@ funcdef void onPathDestinationHandle(CBlob@, BrainPath@);
 
 void addOnPathDestination(CBlob@ this, onPathDestinationHandle@ handle)     { this.set("onPathDestination handle", @handle); }
 
-const u32 stuck_time = 30; // Time it takes to shut off a specific waypoint if the bot cannot pass fast enough
-const f32 maximum_pathing_distance_high_level = tilesize * 100;
-const f32 maximum_pathing_distance_low_level = tilesize * 15;
+const u32 stuck_time = 5; // Time it takes to shut off a specific waypoint if the bot cannot pass fast enough
+const f32 maximum_pathing_distance_high_level = tilesize * 64;
+const f32 maximum_pathing_distance_low_level = tilesize * 16;
 
 class BrainPath
 {

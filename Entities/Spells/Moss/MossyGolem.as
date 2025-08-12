@@ -1,5 +1,8 @@
-#include "Hitters.as"
-#include "BrainPathing.as"
+#include "Hitters.as";
+#include "BrainPathing.as";
+#include "PlayerPrefsCommon.as";
+
+const u8 mossy_golem_cooldown = 8; // in seconds
 
 void onInit(CBlob@ this)
 {
@@ -113,6 +116,19 @@ void onTick(CBlob@ this)
 		this.Tag("prep");
 		this.getShape().SetGravityScale(0.0f); // we have own gravity
 		this.getSprite().PlaySound("TreeGrow", 1.0f, 0.8f+XORRandom(10)*0.01f);
+
+		CPlayer@ owner = this.getDamageOwnerPlayer();
+		if (owner !is null)
+		{
+			PlayerPrefsInfo@ playerPrefsInfo;
+			if (!owner.get("playerPrefsInfo", @playerPrefsInfo))
+			{
+				return;
+			}
+
+			playerPrefsInfo.spell_cooldowns[9] = mossy_golem_cooldown*30;
+			print("Mossy Golem cooldown set: " + playerPrefsInfo.spell_cooldowns[9]);
+		}
 	}
 	
 	//if (isClient() && isServer())
@@ -280,7 +296,7 @@ void onTick(CBlob@ this)
 					if (!map.isTileSolid(t) && !has_solid)
 						space++;
 
-					if (map.rayCastSolidNoBlobs(pos - Vec2f(0,this.getRadius()), step-Vec2f(0,8)))
+					if (map.rayCastSolidNoBlobs(pos - Vec2f(0, this.getRadius()), step-Vec2f(0, 8)))
 					{
 						space = 0;
 
@@ -534,40 +550,48 @@ void onDie(CBlob@ this)
 	if (this.hasTag("counterspelled")) return;
 	Vec2f pos = this.getPosition();
 	u8 spores_count = 6 + XORRandom(7);
-	for (u8 i = 0; i < spores_count; i++)
+	
+	if (isServer())
 	{
-		Vec2f vel(0, -1.0f - XORRandom(31) * 0.1f);
-		vel.RotateBy(this.getAngleDegrees() - 90 + XORRandom(180));
-		Vec2f rnd = Vec2f(XORRandom(16) - 8, XORRandom(16) - 8);
-
-		CBlob@ spore = server_CreateBlob("sporeshot", this.getTeamNum(), pos + rnd);
-		if (spore !is null)
+		for (u8 i = 0; i < spores_count; i++)
 		{
-			spore.setVelocity(vel);
-			spore.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
-			spore.set_f32("damage", 0.4f);
+			Vec2f vel(0, -1.0f - XORRandom(31) * 0.1f);
+			vel.RotateBy(this.getAngleDegrees() - 90 + XORRandom(180));
+			Vec2f rnd = Vec2f(XORRandom(16) - 8, XORRandom(16) - 8);
+
+			CBlob@ spore = server_CreateBlob("sporeshot", this.getTeamNum(), pos + rnd);
+			if (spore !is null)
+			{
+				spore.setVelocity(vel);
+				spore.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+				spore.set_f32("damage", 0.4f);
+			}
 		}
 	}
 	this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
 
-	u8 bees = 3+XORRandom(4);
-	for (u8 i = 0; i < bees; i++)
+	if (isServer())
 	{
-		Vec2f vel(0, -2.0f - XORRandom(3));
-		vel.RotateBy(this.getAngleDegrees() - 90 + XORRandom(180));
-		Vec2f rnd = Vec2f(XORRandom(16) - 8, XORRandom(16) - 8);
-
-		CBlob@ bee = server_CreateBlob("bee", this.getTeamNum(), pos + rnd);
-		if (bee !is null)
+		u8 bees = 3+XORRandom(4);
+		for (u8 i = 0; i < bees; i++)
 		{
-			bee.setVelocity(vel);
-			bee.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+			Vec2f vel(0, -2.0f - XORRandom(3));
+			vel.RotateBy(this.getAngleDegrees() - 90 + XORRandom(180));
+			Vec2f rnd = Vec2f(XORRandom(16) - 8, XORRandom(16) - 8);
 
-			bee.set_f32("damage", 0.4f);
-			bee.set_f32("heal_amount", 0.1f);
+			CBlob@ bee = server_CreateBlob("bee", this.getTeamNum(), pos + rnd);
+			if (bee !is null)
+			{
+				bee.setVelocity(vel);
+				bee.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+
+				bee.set_f32("damage", 0.4f);
+				bee.set_f32("heal_amount", 0.1f);
+			}
 		}
+		this.getSprite().PlaySound("bee-0"+(XORRandom(3)+1), 0.4f, 0.9f + XORRandom(10) * 0.01f);
 	}
-	this.getSprite().PlaySound("bee-0"+(XORRandom(3)+1), 0.4f, 0.9f + XORRandom(10) * 0.01f);
+	
 	if (isClient()) smoke(this.getPosition(), 15);
 }
 

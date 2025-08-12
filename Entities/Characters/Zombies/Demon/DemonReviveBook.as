@@ -60,7 +60,7 @@ void onTick(CBlob@ this)
         return;
     }
 
-    this.setPosition(Vec2f_lerp(this.getPosition(), follower.getPosition() - Vec2f(-1, 24), 0.25f));
+    this.setPosition(Vec2f_lerp(this.getPosition(), follower.getPosition() - Vec2f(-0.5f, 24), 0.25f));
 }
 
 void onDie(CBlob@ this)
