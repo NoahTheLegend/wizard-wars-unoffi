@@ -238,12 +238,12 @@ void Heal(CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool soun
         SetScreenFlash( 75, 0, 225, 0 );
 	}
 
-	if (this.getDamageOwnerPlayer() is getLocalPlayer())
-	{
-		CRules@ rules = getRules();
-		if (rules !is null && rules.get_bool("hovermessages_enabled"))
-			add_message(HealDealtMessage(healAmount));
-	}
+	//if (this.getDamageOwnerPlayer() is getLocalPlayer())
+	//{
+	//	CRules@ rules = getRules();
+	//	if (rules !is null && rules.get_bool("hovermessages_enabled"))
+	//		add_message(HealDealtMessage(healAmount));
+	//}
 	
 	if (isClient())
 	{

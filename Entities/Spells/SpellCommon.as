@@ -5399,7 +5399,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			bool extra_damage = this.hasTag("extra_damage");
 			f32 damage = 1.0f;
 			f32 extraDamage = extra_damage ? 1.5f : 1.0f;
-			u8 wait_time = extra_damage ? 5 : 10;
+			u8 wait_time = charge_state == super_cast ? 5 : 15;
 
 			switch(charge_state)
 			{
@@ -5420,7 +5420,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				case super_cast:
 				{
-					wait_time -= 5;
 					damage = 1.5f; // triple jab mode
 				}
 				break;
