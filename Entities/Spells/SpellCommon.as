@@ -4807,7 +4807,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.Tag("arclightning_owner_"+player.getUsername());
 					orb.Sync("arclightning_owner_"+player.getUsername(), true);
 
-					f32 damage = 0.05f;
+					f32 damage = 0.1f;
 					u8 damage_thresh = 3;
 					u8 ttd = 30;
 
@@ -4817,6 +4817,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case medium_cast:
 						case super_cast:
 						{
+							damage = 0.15f
 							damage_thresh = 2;
 							ttd += 5;
 							break;
@@ -4825,7 +4826,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
                     if (this.hasTag("extra_damage"))
                     {
-						damage = 0.1f;
+						damage = 0.2f;
 						ttd += 5;
 					}
 
