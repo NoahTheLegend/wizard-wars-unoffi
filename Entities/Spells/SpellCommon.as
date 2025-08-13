@@ -2121,9 +2121,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 770505718://leech
+		case 770505718: //leech
 		{
-			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
 		
 			if (isServer())
 			{
@@ -2165,6 +2165,9 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					orb.server_setTeamNum(this.getTeamNum());
 
 					orb.set_Vec2f("aim pos", aimpos);
+					orb.set_f32("damage", damage);
+					orb.set_f32("lifesteal_amount", heal);
+
 					orb.IgnoreCollisionWhileOverlapped(this);
 					orb.SetDamageOwnerPlayer(this.getPlayer());
 				}
