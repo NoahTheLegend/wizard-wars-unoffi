@@ -9,8 +9,6 @@ void onInit(CBlob@ this)
 
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
-	consts.bullet = true;
-	consts.net_threshold_multiplier = 2.0f;
 
 	this.Tag("projectile");
 	this.Tag("counterable");

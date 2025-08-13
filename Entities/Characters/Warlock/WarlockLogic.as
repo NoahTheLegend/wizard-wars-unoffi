@@ -385,6 +385,16 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 
 void onTick(CBlob@ this)
 {
+	// heal up to 5 hp slightly every 3 seconds
+	if (this.getHealth() < 0.5f && this.getTickSinceCreated() % 90 == 0)
+	{
+		this.server_Heal(0.1f);
+		if (this.getHealth() > 0.5f)
+		{
+			this.server_SetHealth(0.5f);
+		}
+	}
+
 	if (this.getTickSinceCreated() % old_positions_save_threshold == 0)
 	{
 		Vec2f[]@ positions;

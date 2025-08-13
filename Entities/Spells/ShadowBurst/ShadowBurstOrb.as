@@ -10,11 +10,9 @@ void onInit(CBlob@ this)
 	this.Tag("counterable");
 	
 	//dont collide with edge of the map
-	this.SetMapEdgeFlags(CBlob::map_collide_none);
-	this.getShape().getConsts().bullet = true;
 	this.getShape().SetGravityScale(0.0f);
 	this.getShape().getConsts().mapCollisions = false;
-	this.getShape().getConsts().net_threshold_multiplier = 4.0f;
+	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	Vec2f[] old_pos;
 	old_pos.push_back(this.getPosition());
@@ -80,7 +78,7 @@ void onTick(CBlob@ this)
 			}
 		}
 
-		if (isServer() && this.hasTag("aiming"))
+		if (this.hasTag("aiming"))
 		{
 			Vec2f pos = this.getPosition();
 			Vec2f vel = this.getVelocity();

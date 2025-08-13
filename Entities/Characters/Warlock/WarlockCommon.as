@@ -39,7 +39,7 @@ namespace WarlockParams
 				SpellCategory::special, SpellType::other, 10, 10, 0, 64.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::COUNTER_SPELL_WARLOCK]),
 			
 		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
-				SpellCategory::offensive, SpellType::other, 25, 25, 3, 180.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::LEECH_WARLOCK]),
+				SpellCategory::offensive, SpellType::other, 25, 25, 6, 180.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::LEECH_WARLOCK]),
 		
 		Spell("tomeblood", "Tome of Blood", 127, "A swarm of blood arrows to summon beneath the position.",
 				SpellCategory::offensive, SpellType::healthcost, 1.5, 40, 3, 256.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::TOME_OF_BLOOD]),
@@ -78,7 +78,7 @@ namespace WarlockParams
 				SpellCategory::debuff, SpellType::other, 5, 8, 1, 360.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::FEAR]),
 
 		Spell("silence", "Silence", 146, "Silence an enemy, preventing them from casting spells, except teleport.",
-				SpellCategory::debuff, SpellType::other, 10, 15, 4, 360.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::SILENCE]),
+				SpellCategory::debuff, SpellType::other, 10, 15, 15, 360.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::SILENCE]),
 
 		//Spell("causticray", "Caustic Ray", 134, "Place a few pillars of corrosive energy that will poison enemies and set their spells on a delay.",
 		//		SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f),
