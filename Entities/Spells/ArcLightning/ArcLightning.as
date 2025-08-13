@@ -5,7 +5,7 @@
 
 Random@ _laser_r = Random(0x10003);
 
-const f32 radius = 128.0f;
+const f32 radius = 180.0f;
 const u8 update_thresh = 5;
 
 void onInit(CBlob@ this)
