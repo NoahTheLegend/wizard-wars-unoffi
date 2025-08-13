@@ -70,7 +70,7 @@ namespace WizardParams
 		//	SpellCategory::support, SpellType::other, 8, 10, 0, 360.0f, true, 0, array<int>(SpellAttribute::SPELL_ALLYEFFECT)),		
 		
 		Spell("magicplatform", "Magic Platform", 131, "Create a steady platform mid-air.",
-			SpellCategory::utility, SpellType::other, 20, 42, 10, 256.0f, true, 0, WizardSpellAttributesCollection[WizardSpellAttributes::MAGICPLATFORM]),
+			SpellCategory::utility, SpellType::other, 18, 30, 10, 256.0f, true, 0, WizardSpellAttributesCollection[WizardSpellAttributes::MAGICPLATFORM]),
 		
 		Spell("negatisphere", "Negation Spheres", 50, "Moving magic field that negates other counterable spells. Press SHIFT to launch them in the direction of your aim.",
 			SpellCategory::defensive, SpellType::other, 20, 45, 1, 360.0f, true, 0, WizardSpellAttributesCollection[WizardSpellAttributes::NEGATISPHERE]),				

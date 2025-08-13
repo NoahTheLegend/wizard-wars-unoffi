@@ -69,7 +69,7 @@ void onTick(CBlob@ this)
 		sprite.SetRelativeZ(-1.0f);
 	}
 
-	if (this.getTickSinceCreated() > 15)
+	if (this.getTickSinceCreated() > 8)
 	{
 		this.Tag("no_bounce");
 	}
@@ -189,7 +189,7 @@ void Boom(CBlob@ this)
 	for (int i = 0; i < bs.length; i++)
 	{
 		CBlob@ blob = bs[i];
-		if (blob !is null && ((hitter !is null && blob is hitter) || isEnemy(this, blob)))
+		if (blob !is null && ((hitter !is null && blob is hitter) || isEnemy(this, blob) || blob.hasTag("plant")))
 		{
 			Vec2f dir = blob.getPosition() - this.getPosition();
 			f32 dir_len = dir.Length();
