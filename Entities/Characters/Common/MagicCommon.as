@@ -170,7 +170,7 @@ shared class Spell
 	{
 		if (iconFrame < 0 || iconFrame >= 512)
 		{
-			error("Invalid icon frame: " + iconFrame + " for spell " + typename;
+			error("Invalid icon frame: " + iconFrame + " for spell " + typeName);
 			iconFrame = 0;
 		}
 	}

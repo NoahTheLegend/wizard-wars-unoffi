@@ -12,7 +12,8 @@
 #include "MagicCommon.as";
 
 const Vec2f menuSize = Vec2f(800, 538);
-const string classIconsImage = "GUI/ClassIcons.png";
+const string classIconsImage = "GUI/ClassIconsLarge.png";
+const string classIconsImageHud = "GUI/ClassIconsLargeHud.png";
 
 bool showHelp = true;
 f32 active_time = 0;
@@ -24,6 +25,7 @@ bool page1 = true;
 const int slotsSize = 6;
 f32 boxMargin = 50.0f;
 string selectedClass = classes[0];
+int selectedClassID = 255;
 const SColor col_text = SColor(255, 91, 45, 18);
 
 //key names
@@ -145,6 +147,7 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 		if (copyId >= 0 && copyId < classes.size())
 		{
 			selectedClass = classes[copyId];
+			selectedClassID = copyId;
 		}
 
 		Rectangle@ leftPage = cast<Rectangle>(classesFrame.getChild("classFrameLeftPage"));
@@ -197,6 +200,7 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 
 		Label@ stat3 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat3"));
 		if (stat3 is null) return;
+
 		Rectangle@ classList = cast<Rectangle>(rightPage.getChild("classList"));
 		if (classList !is null)
 		{
@@ -207,7 +211,9 @@ void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
 				{
 					Icon@ selectedReference = cast<Icon@>(reference.getChild("selectedReference"));
 					if (selectedReference !is null)
-						selectedReference.isEnabled = i == classIndex - 1;
+					{
+						selectedReference.color = SColor(i == classIndex - 1 ? 255 : i < classes.length ? 100 : 0, 255, 255, 255);
+					}
 				}
 			}
 		}
@@ -403,6 +409,37 @@ void iconHoverHandler(bool hover, IGUIItem@ item)
 
 	int cd = icon._customData;
 	icon.index = (hover) ? cd + 1 : cd;
+}
+
+void classHoverHandler(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Button@ button = cast<Button@>(item);
+	if (button is null) return;
+
+	Icon@ icon = cast<Icon@>(button.getChild("iconback"));
+	if (icon is null) return;
+
+	int cd = icon._customData;
+	icon.index = (hover) ? cd + 1 : cd;
+}
+
+void referenceHoverHandler(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	int classIndex = item._customData - 101;
+	int copyId = classIndex - 1;
+
+	Button@ button = cast<Button@>(item);
+	if (button is null) return;
+
+	Icon@ icon = cast<Icon@>(button.getChild("selectedReference"));
+	if (icon is null) return;
+
+	bool selected = copyId == selectedClassID;
+	icon.color = SColor(hover || selected ? 255 : 100, 255, 255, 255);
 }
 
 void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
@@ -769,6 +806,9 @@ void onTick(CRules@ this)
 			canvasIcon.setLevel(ContainerLevel::BACKGROUND);
 		}
 
+		Icon@ top0 = @Icon( "MenuCanvasBookmarkLayerTop0.png", 	 Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
+		top0.setLevel(ContainerLevel::BACKGROUND);
+
 		//---KGUI Parenting---\\
 		// helpWindow
 		{
@@ -785,12 +825,10 @@ void onTick(CRules@ this)
 				Icon@ bottom0 = @Icon( "MenuCanvasBookmarkLayerBottom0.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
 				Icon@ bottom1 = @Icon( "MenuCanvasBookmarkLayerBottom1.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
 				Icon@ bottom2 = @Icon( "MenuCanvasBookmarkLayerBottom2.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
-				Icon@ top0    = @Icon( "MenuCanvasBookmarkLayerTop0.png", 	 Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
 
 				bottom0.setLevel(ContainerLevel::BACKGROUND);
 				bottom1.setLevel(ContainerLevel::BACKGROUND);
 				bottom2.setLevel(ContainerLevel::BACKGROUND);
-				top0.   setLevel(ContainerLevel::BACKGROUND);
 
 				Vec2f buttonSize = Vec2f(104, 52);
 				Vec2f iconSize = Vec2f(96, 32);
@@ -892,12 +930,13 @@ void onTick(CRules@ this)
 				helpWindow.addChild(bottom0);
 
 				helpWindow.addChild(togglemenuBtn);
-				helpWindow.addChild(top0);
-				
+				// add top after classses
+	
 				//helpWindow.addChild(achievementBtn);
 				helpWindow.addChild(playerClassButtons);
 			}
 		}
+
 		// guide
 		@guideFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
 		guideFrame._customData = 0; // page index
@@ -1032,6 +1071,7 @@ void onTick(CRules@ this)
 
 		setCachedStates(this);
 		initClasses();
+		helpWindow.addChild(top0);
 
 		// class selection page
 		@classesFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
@@ -1130,8 +1170,13 @@ void onTick(CRules@ this)
 					WWPlayerClassButton@ WWClassButton = @playerClassButtons.list[i];
 					if (WWClassButton is null) continue;
 
-					@reference = @Button(Vec2f(0, 0), WWClassButton.classButton.size, "", SColor(0, 0, 0, 0));
-					Icon@ icon = @WWClassButton.display;
+					@reference = @Button(Vec2f(0, 0), iconSize, "", SColor(0, 0, 0, 0));
+					reference.nodraw = true;
+					reference.addHoverStateListener(referenceHoverHandler);
+
+					string tex_name = getRules().get_bool("book_old_spell_icons") ? classIconsImageHud : classIconsImage;
+					Icon@ icon = @Icon(tex_name, Vec2f_zero, Vec2f(128, 128), i, 1.0f, true, Vec2f(64, 64));
+					icon.name = "classButtonIcon";
 					reference.addChild(icon);
 
 					if (i == playerClassButtons.list.length - 1)
@@ -1157,9 +1202,11 @@ void onTick(CRules@ this)
 					reference.nodraw = true;
 					reference.addChild(icon);
 				}
+
 				Icon@ selectedReference = @Icon("PaperButton.png", Vec2f(0, 0), Vec2f(24, 24), 0, 1.0f, true, reference.size);
 				selectedReference.name = "selectedReference";
-				selectedReference.isEnabled = false;
+				selectedReference.isEnabled = true;
+				selectedReference.color = SColor(i >= playerClassButtons.list.length ? 0 : 100, 255, 255, 255);
 
 				reference.addChild(selectedReference);
 				classList.addChild(reference);

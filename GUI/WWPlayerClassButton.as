@@ -24,6 +24,7 @@ string tooltip = "";
 Tooltip@[] tooltips_fetcher;
 
 const Vec2f iconSize = Vec2f(64, 64);
+const Vec2f classIconSize = Vec2f(64, 96);
 const f32 gridSize = 40.0f;
 const f32 sectionGap = 12.0f;
 
@@ -81,8 +82,15 @@ class WWPlayerClassButton
 		// class button and its frame (view)
 		Vec2f page_size = Vec2f(menuSize.x / 2 - 140, menuSize.y - 80);
 		{
-			@classButton = @Button(_pos, _size, "", SColor(255, 255, 255, 255));
-			@display = @Icon(_imageName, Vec2f_zero, Vec2f(32, 32), classID, 1.0f);
+			string tex = getRules().get_bool("book_old_spell_icons") ? "ClassButtonsHud.png" : "ClassButtons.png";
+			@classButton = @Button(_pos + Vec2f(0, 0), _size, "", SColor(255, 255, 255, 255));
+			@display = @Icon(tex, Vec2f(0, -8), Vec2f(128, 192), classID, 1.0f, true, Vec2f(64, 96));
+
+			display._customData = display.localPosition.y;
+			display.name = "iconback";
+
+			classButton.nodraw = true;
+			classButton.addHoverStateListener(BookMarkHoverStateHandler);
 
 			classButton.addChild(display);
 			classButton.name = _configFilename;
@@ -488,7 +496,7 @@ class WWPlayerClassButtonList : GenericGUIItem
 	u8[] specialties;
 	
 	//Styles: 0 = mini|1= small\\
-	WWPlayerClassButtonList(Vec2f _position,Vec2f _size, int _style){
+	WWPlayerClassButtonList(Vec2f _position, Vec2f _size, int _style){
 
 		super(_position, _size);
 		style = _style;
@@ -498,8 +506,10 @@ class WWPlayerClassButtonList : GenericGUIItem
 	}
 
 	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0, string _modName = "Default", 
-		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>(), string _imageName = classIconsImage, Vec2f _size = iconSize)
+		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>(), string _imageName = classIconsImage, Vec2f _size = classIconSize)
 	{
+		if (getRules().get_bool("book_old_spell_icons")) _imageName = classIconsImageHud;
+
 		WWPlayerClassButton@ classButton = @WWPlayerClassButton(_name, _desc, _configFilename, _classID, _cost, _imageName, _icon, _rarity, _modName, position, _size, _specialties, _stats);
 		list.push_back(classButton);
 
@@ -525,7 +535,7 @@ class WWPlayerClassButtonList : GenericGUIItem
 		needsUpdate = false;
 
 		int classesPerRow = 12;
-		int spacingX = iconSize.x;
+		int spacingX = iconSize.x + 4;
 		int spacingY = iconSize.y;
 		int startY = -32;
 
@@ -534,7 +544,7 @@ class WWPlayerClassButtonList : GenericGUIItem
 			int row = i / classesPerRow;
 			int col = i % classesPerRow;
 
-			f32 offset = i >= 5 ? 128.0f : 32.0f;
+			f32 offset = i >= 5 ? 88.0f : 40.0f;
 			Vec2f classPos = position + Vec2f(col * spacingX + offset, row * spacingY + startY);
 			list[i].draw(classPos);
 		}
