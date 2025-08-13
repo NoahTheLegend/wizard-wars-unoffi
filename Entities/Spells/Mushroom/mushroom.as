@@ -111,8 +111,10 @@ void onTick(CBlob@ this)
         this.Tag("mark_for_death");
     }
 
-    if(getGameTime() >= this.get_s32("nextSpore"))
+    if (getGameTime() >= this.get_s32("nextSpore"))
     {
+        this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
+
         createSporeshot(this);
         this.set_s32("nextSpore",getGameTime() + 150);
     }

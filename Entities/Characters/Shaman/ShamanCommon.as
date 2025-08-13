@@ -52,7 +52,7 @@ namespace ShamanParams
 			SpellCategory::summoning, SpellType::other, 40, 90, 8, 128.0f, true, 1, ShamanSpellAttributesCollection[ShamanSpells::TOTEM_OF_WATER]),
 		
 		Spell("earthtotem", "Totem of Earth", 78, "Slows down enemies nearby. Overcharge increases effect distance and time. Releases different effects when removed.",
-			SpellCategory::summoning, SpellType::other, 50, 75, 10, 224.0f, true, 1, ShamanSpellAttributesCollection[ShamanSpells::TOTEM_OF_EARTH]),
+			SpellCategory::summoning, SpellType::other, 40, 75, 10, 224.0f, true, 1, ShamanSpellAttributesCollection[ShamanSpells::TOTEM_OF_EARTH]),
 		
 		Spell("massfreeze", "Mass Freeze", 79, "Freeze everyone nearby, including yourself. Overcharge slightly increases distance and duration for enemy and deacreases for yourself. The effect doesn't apply to a target if its burning.",
 			SpellCategory::utility, SpellType::other, 40, 75, 25, 0.0f, true, 0, ShamanSpellAttributesCollection[ShamanSpells::MASS_FREEZE]),
@@ -61,10 +61,10 @@ namespace ShamanParams
 			SpellCategory::offensive, SpellType::other, 40, 50, 3, 256.0f, true, 0, ShamanSpellAttributesCollection[ShamanSpells::LAVA_SHOT]),
 		
 		Spell("arclightning", "Arc Lightning", 81, "Send a lightning arc that links to other arcs nearby. Amount of lightnings is limited to 5.",
-			SpellCategory::offensive, SpellType::other, 18, 28, 0, 256.0f, true, 0, ShamanSpellAttributesCollection[ShamanSpells::ARC_LIGHTNING]),
+			SpellCategory::offensive, SpellType::other, 12, 25, 0, 256.0f, true, 0, ShamanSpellAttributesCollection[ShamanSpells::ARC_LIGHTNING]),
 		
 		Spell("iciclerain", "Magic Icicles", 82, "Materialize icicles to throw at the aim position. Overcharge fully to control aim position meanwhile icicles are being released.",
-			SpellCategory::offensive, SpellType::other, 25, 30, 6, 512.0f, false, 0, ShamanSpellAttributesCollection[ShamanSpells::MAGIC_ICICLES]),
+			SpellCategory::offensive, SpellType::other, 20, 30, 6, 512.0f, false, 0, ShamanSpellAttributesCollection[ShamanSpells::MAGIC_ICICLES]),
 
 		Spell("waterbarrier", "Water Barrier", 83, "Cover yourself in a bubble of water, slowing down the enemies and spells. You are unable to use fire spells and receive more damage from electricity and ice while under the effect.",
 			SpellCategory::defensive, SpellType::other, 15, 35, 0, 0.0f, true, 0, ShamanSpellAttributesCollection[ShamanSpells::WATER_BARRIER]),
