@@ -3884,8 +3884,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 
 				CBlob@ target = getBlobByNetworkID(id);
-				if (target is null && !everyone_is_full)
-					@target = @this;
+				//if (target is null && !everyone_is_full)
+				//	@target = @this;
 
 				if (target !is null)
 				{
@@ -5891,11 +5891,15 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 				if (!isServer()) return;
 
-				CBlob@ random = server_CreateBlob(classes[XORRandom(classes.length)], this.getTeamNum(), this.getPosition());
+				u8 id = XORRandom(classes.length);
+				while (id == 8) id = XORRandom(classes.length);
+
+				CBlob@ random = server_CreateBlob(classes[id], this.getTeamNum(), this.getPosition());
 				if (random !is null)
 				{
 					random.server_SetHealth(this.getHealth());
 					random.server_SetPlayer(this.getPlayer());
+
 					if (this.hasTag("extra_damage"))
 					{
 						random.Tag("extra_damage");

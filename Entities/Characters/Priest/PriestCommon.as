@@ -25,7 +25,7 @@ namespace PriestParams
 	const ::Spell[] spells = 
 	{
 		Spell("epicorbmain", "Orbiting Orbs", 74, "Summons magic orbs rotating around its center. Amount of orbs scales with charge.",
-			SpellCategory::offensive, SpellType::other, 8, 30, 0, 360.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::ORBITING_ORBS]),
+			SpellCategory::offensive, SpellType::other, 8, 25, 0, 360.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::ORBITING_ORBS]),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 			SpellCategory::special, SpellType::other, 20, 6, 0, 270.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::TELEPORT_PRIEST]),
@@ -66,8 +66,8 @@ namespace PriestParams
 		Spell("fiery_star", "Fiery Stars", 58, "Launch a several concetrated fire elements at your enemies. Overcharge to store them at aim position.",
 			SpellCategory::offensive, SpellType::other, 25, 35, 1, 256.0f, false, 0, PriestSpellAttributesCollection[PriestSpells::FIERY_STARS]),
 						
-		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
-			SpellCategory::heal, SpellType::other, 40, 60, 18, 16.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::EMERGENCY_TELEPORT]),
+		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP.",
+			SpellCategory::heal, SpellType::other, 40, 60, 25, 16.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::EMERGENCY_TELEPORT]),
 
 		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, at cost of making you slower.\nCast again to disable the spell.",
 			SpellCategory::support, SpellType::other, 10, 30, 5, 16.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::DAMAGE_AURA]),
