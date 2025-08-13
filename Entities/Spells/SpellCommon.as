@@ -3910,7 +3910,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							Heal(this, this, base_heal * 0.5f);
 						}
 					}
+
 					this.getSprite().PlaySound("Teleport.ogg", 0.8f, 1.0f);
+				}
+				else
+				{
+					// return mana
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
+					}
+
+					manaInfo.mana += spell.mana;
+					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 				}
 			}
 		}

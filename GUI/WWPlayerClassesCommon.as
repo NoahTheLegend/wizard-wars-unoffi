@@ -4,7 +4,7 @@ const int[] classesHealth = {
 	70, // druid
 	90, // swordcaster
 	75, // entropist
-	80, // priest
+	85, // priest
 	80, // shaman
 	100, // paladin
 	80, // jester
