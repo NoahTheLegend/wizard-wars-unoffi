@@ -23,13 +23,39 @@ void onInit(CBlob@ this)
 
 	if (!isClient()) return;
 
+	for (int i = 0; i < 2+XORRandom(6); i++)
+    {
+		Vec2f vel(1.0f + XORRandom(20) * 0.01f, 0);
+		vel.RotateBy(XORRandom(100) * 0.01f * 360.0f);
+
+        CParticle@ p = ParticleAnimated( CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+									this.getPosition(), 
+									vel, 
+									float(XORRandom(360)), 
+									1.0f, 
+									4 + XORRandom(8), 
+									0.0f, 
+									false );
+
+        if (p is null) break;
+
+    	p.fastcollision = true;
+        p.scale = 1.0f;
+        p.damping = 0.925f;
+		p.Z = 600.0f;
+		p.lighting = false;
+		p.colour = SColor(255, 200+XORRandom(55), 85+XORRandom(50), 200+XORRandom(55));
+		p.forcecolor = SColor(255, 200+XORRandom(55), 85+XORRandom(50), 200+XORRandom(55));
+		p.setRenderStyle(RenderStyle::additive);
+    }
+
 	Vec2f frameSize = Vec2f(32, 32);
 	this.getSprite().SetVisible(false);
 
 	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend0", false, false, Vec2f(0, 0), frameSize);
-	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend1", false, false, Vec2f(32, 0), frameSize);
-	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend2", false, false, Vec2f(64, 0), frameSize);
-	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend3", false, false, Vec2f(32, 0), frameSize);
+	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend1", false, false, Vec2f(0, 32), frameSize);
+	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend2", false, false, Vec2f(0, 64), frameSize);
+	SetupImage("ShadowBurstOrb.png", SColor(255, 255, 255, 255), "sb_rend3", false, false, Vec2f(0, 32), frameSize);
 
 	int cb_id = Render::addBlobScript(Render::layer_prehud, this, "ShadowBurstOrb.as", "laserEffects");
 }
@@ -118,7 +144,7 @@ void onTick(CBlob@ this)
 
 	if (getGameTime() % 1 == 0 && this.getTickSinceCreated() > 3)
     {
-        CParticle@ p = ParticleAnimated("ShadowBurstOrb.png", this.getPosition(), Vec2f_zero, this.getAngleDegrees(), 1.0f, 5, 0.0f, true);
+        CParticle@ p = ParticleAnimated("ShadowBurstOrb.png", this.getPosition(), Vec2f_zero, this.getAngleDegrees(), 0.5f, 3, 0.0f, true);
 	    if (p !is null)
 	    {
 	    	p.bounce = 0;

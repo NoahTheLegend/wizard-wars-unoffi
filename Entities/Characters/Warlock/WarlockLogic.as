@@ -20,7 +20,7 @@ void onInit( CBlob@ this )
 	
 	ManaInfo manaInfo;
 	manaInfo.maxMana = WarlockParams::MAX_MANA;
-	manaInfo.mana = 15;
+	manaInfo.mana = 0;
 	manaInfo.manaRegen = WarlockParams::MANA_REGEN;
 	this.set("manaInfo", @manaInfo);
 
@@ -386,12 +386,12 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 void onTick(CBlob@ this)
 {
 	// heal up to 5 hp slightly every 3 seconds
-	if (this.getHealth() < 0.5f && this.getTickSinceCreated() % 90 == 0)
+	if (this.getHealth() < 0.25f && this.getTickSinceCreated() % 90 == 0)
 	{
-		this.server_Heal(0.1f);
-		if (this.getHealth() > 0.5f)
+		this.server_Heal(0.05f);
+		if (this.getHealth() > 0.25f)
 		{
-			this.server_SetHealth(0.5f);
+			this.server_SetHealth(0.25f);
 		}
 	}
 
