@@ -25,9 +25,12 @@ void onTick( CBlob@ this )
 {     
 	if (!this.hasTag("initted"))
 	{
-		this.Tag("initted");
-		if (isClient())
-			this.getSprite().PlaySound("SpriteFire1.ogg", 0.75f, 1.5f + XORRandom(10)/10.0f);
+		this.Tag("initted");	
+	}
+
+	if (this.getTickSinceCreated() == 0)
+	{
+		this.getSprite().PlaySound("SpriteFire1.ogg", 0.75f, 1.5f + XORRandom(10)/10.0f);
 	}
 
 	if (isServer()
