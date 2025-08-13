@@ -2006,6 +2006,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				this.add_u8("poisonarrows", 2);
 			}
+
 			this.set_u32("poisonarrow_start", getGameTime());
 			this.set_Vec2f("poisonarrow_aimpos", aimpos);
 			this.set_f32("poisonarrow_damage", 0.2f);
@@ -5398,7 +5399,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			bool extra_damage = this.hasTag("extra_damage");
 			f32 damage = 1.0f;
 			f32 extraDamage = extra_damage ? 1.5f : 1.0f;
-			u8 wait_time = extra_damage ? 15 : 20;
+			u8 wait_time = extra_damage ? 5 : 10;
 
 			switch(charge_state)
 			{

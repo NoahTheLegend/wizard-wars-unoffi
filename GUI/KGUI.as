@@ -701,7 +701,6 @@ class GenericGUIItem : IGUIItem{
 	{
 		if (getNet().isClient())
 		{
-			print("save:" + name +" "+ modName);
 			ConfigFile cfg = ConfigFile( "../Cache/"+modName+"_KGUI.cfg" );
 			cfg.add_f32(name+"_x", position.x);
 			cfg.add_f32(name+"_y", position.y);

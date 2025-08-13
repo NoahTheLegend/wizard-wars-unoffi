@@ -12,10 +12,10 @@ const u8 glaive_death_delay = 2;
 const f32 start_angle_jabs = 30;
 const Vec2f jabs_offset = Vec2f(-12, 0);
 const Vec2f[] jabs_positions_const = {Vec2f(-8,0),Vec2f(-32,16),Vec2f(-8,0),Vec2f(-32,-16),Vec2f(-8,0),Vec2f(-48,0)};
-const u8 jabbing_time = 4;
-const int mid_jab_angle = 15;
-const int left_jab_angle = 35;
-const int right_jab_angle = 35;
+const u8 jabbing_time = 3;
+const int mid_jab_angle = 25;
+const int left_jab_angle = 40;
+const int right_jab_angle = 40;
 
 const f32 scale = 1.25f; // both for sprite and distance
 const f32 extra_distance = 8; // attack distance

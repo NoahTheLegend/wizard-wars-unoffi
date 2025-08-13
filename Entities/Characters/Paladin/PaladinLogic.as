@@ -571,7 +571,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			if (enemiesInRadius.size() > 0)
 			{
 				f32 split_dmg = (damage * aura_omega_returned_damage_ratio) / enemiesInRadius.size();
-				if (sv_test) printf(""+damage+" "+aura_omega_returned_damage_ratio+" "+enemiesInRadius.size()+" "+split_dmg);
+				//if (sv_test) printf(""+damage+" "+aura_omega_returned_damage_ratio+" "+enemiesInRadius.size()+" "+split_dmg);
 				
 				for (uint i = 0; i < enemiesInRadius.size(); i++)
 				{
