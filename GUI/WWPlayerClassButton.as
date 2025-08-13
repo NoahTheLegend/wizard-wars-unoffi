@@ -25,6 +25,7 @@ Tooltip@[] tooltips_fetcher;
 
 const Vec2f iconSize = Vec2f(64, 64);
 const Vec2f classIconSize = Vec2f(64, 96);
+
 const f32 gridSize = 40.0f;
 const f32 sectionGap = 12.0f;
 
@@ -82,9 +83,8 @@ class WWPlayerClassButton
 		// class button and its frame (view)
 		Vec2f page_size = Vec2f(menuSize.x / 2 - 140, menuSize.y - 80);
 		{
-			string tex = getRules().get_bool("book_old_spell_icons") ? "ClassButtonsHud.png" : "ClassButtons.png";
 			@classButton = @Button(_pos + Vec2f(0, 0), _size, "", SColor(255, 255, 255, 255));
-			@display = @Icon(tex, Vec2f(0, -8), Vec2f(128, 192), classID, 1.0f, true, Vec2f(64, 96));
+			@display = @Icon(_imageName, Vec2f(0, -8), Vec2f(128, 192), classID, 1.0f, true, Vec2f(64, 96));
 
 			display._customData = display.localPosition.y;
 			display.name = "iconback";
@@ -508,7 +508,7 @@ class WWPlayerClassButtonList : GenericGUIItem
 	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0, string _modName = "Default", 
 		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>(), string _imageName = classIconsImage, Vec2f _size = classIconSize)
 	{
-		if (getRules().get_bool("book_old_spell_icons")) _imageName = classIconsImageHud;
+		_imageName = getRules().get_bool("book_old_spell_icons") ? "ClassButtonsHud.png": "ClassButtons.png"; // hardcoded rn
 
 		WWPlayerClassButton@ classButton = @WWPlayerClassButton(_name, _desc, _configFilename, _classID, _cost, _imageName, _icon, _rarity, _modName, position, _size, _specialties, _stats);
 		list.push_back(classButton);

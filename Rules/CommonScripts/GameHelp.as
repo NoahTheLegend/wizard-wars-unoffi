@@ -631,6 +631,28 @@ void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
 		bookSpellIcons.saveBool("Book Spell Icons", bookSpellIcons.toggled, "WizardWars");
 
 		getRules().set_bool("book_old_spell_icons", bookSpellIcons.toggled);
+
+		Rectangle@ classesFrameRightPage = cast<Rectangle>(classesFrame.getChild("classFrameRightPage"));
+		if (classesFrameRightPage !is null)
+		{
+			Rectangle@ classList = cast<Rectangle>(classesFrameRightPage.getChild("classList"));
+			if (classList !is null)
+			{
+				string tex_name = getRules().get_bool("book_old_spell_icons") ? classIconsImageHud : classIconsImage;
+				for (int i = 0; i < classList._customData; i++)
+				{
+					Button@ reference = cast<Button@>(classList.getChild("classButton_" + i));
+					if (reference !is null)
+					{
+						Icon@ icon = cast<Icon@>(reference.getChild("classButtonIcon"));
+						if (icon !is null)
+						{
+							icon.iconName = tex_name;
+						}
+					}
+				}
+			}
+		}
 		initClasses();
 	}
 
@@ -1066,6 +1088,7 @@ void onTick(CRules@ this)
 				optionsFrame.addChild(scroller_right);
 			}
 		}
+
 		updateOptionsScroller();
 		helpWindow.addChild(optionsFrame);
 

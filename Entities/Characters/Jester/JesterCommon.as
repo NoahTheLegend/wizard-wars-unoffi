@@ -64,7 +64,7 @@ namespace JesterParams
 			SpellCategory::support, SpellType::other, 12, 20, 0, 360.0f, true, 0, JesterSpellAttributesCollection[JesterSpells::HASTE_JESTER]),
 
 		Spell("shapeshift", "Shape Shift", 132, "Once per game, your form shall shift, your health and mana, none shall drift. Cast with a boost - a fateful clash, and you and foe shall swap in flash.",
-			SpellCategory::utility, SpellType::other, 85, 120, 60, 8.0f, true, 0, JesterSpellAttributesCollection[JesterSpells::SHAPE_SHIFT]),
+			SpellCategory::utility, SpellType::other, 85, 120, 0, 8.0f, true, 0, JesterSpellAttributesCollection[JesterSpells::SHAPE_SHIFT]),
 
 		Spell("", "", 0, "Empty spell.",
 			SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f, JesterSpellAttributesCollection[JesterSpells::EMPTY_SPELL_JESTER1]),		
