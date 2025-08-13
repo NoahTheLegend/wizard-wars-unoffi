@@ -11,7 +11,6 @@ void onInit(CBlob@ this)
     this.getShape().SetGravityScale(0.0f);
     this.getShape().getConsts().mapCollisions = false;
     this.getShape().SetRotationsAllowed(false);
-    this.getShape().getConsts().net_threshold_multiplier = 0.5f;
     
     this.set_Vec2f("smashtoparticles_grav", Vec2f_zero);
     this.getSprite().SetZ(580.0f);

@@ -6343,7 +6343,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				{return;}
 
 				bool found = false;
-				for(int i = 0; i < totems.length; i++)
+				for (int i = 0; i < totems.length; i++)
 				{
 					if (totems[i] is null)
 					{continue;}
@@ -6356,6 +6356,32 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						found = true;
 						break;
 					}
+				}
+
+				if (found)
+				{
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
+					}
+
+					if (health_taken > 0.0f)
+					{
+						Heal(this, this, health_taken * 0.5f, false, false, 0);
+						
+						if (mana_taken > 0)
+						{
+							manaInfo.mana += mana_taken;
+							this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+						}
+					}
+					else if (mana_amount > 0)
+					{
+						manaInfo.mana += spell.mana;
+						this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+					}
+					
+					return;
 				}
 
 				int alive_time = 15 * 30;
@@ -6417,29 +6443,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							tot.Sync("mana_amount", true);
 							tot.Sync("max_range", true);
 						}
-					}
-				}
-				else
-				{
-					ManaInfo@ manaInfo;
-					if (!this.get( "manaInfo", @manaInfo )) {
-						return;
-					}
-
-					if (health_taken > 0.0f)
-					{
-						Heal(this, this, health_taken * 0.5f, false, false, 0);
-						
-						if (mana_taken > 0)
-						{
-							manaInfo.mana += mana_taken;
-							this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
-						}
-					}
-					else if (mana_amount > 0)
-					{
-						manaInfo.mana += spell.mana;
-						this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 					}
 				}
 			}
