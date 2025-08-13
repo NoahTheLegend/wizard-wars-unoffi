@@ -6375,7 +6375,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 						}
 					}
-					else if (mana_amount > 0)
+					else if (mana_taken > 0)
 					{
 						manaInfo.mana += spell.mana;
 						this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
