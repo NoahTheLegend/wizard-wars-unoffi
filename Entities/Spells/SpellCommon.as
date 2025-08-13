@@ -4817,7 +4817,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						case medium_cast:
 						case super_cast:
 						{
-							damage = 0.15f
+							damage = 0.15f;
 							damage_thresh = 2;
 							ttd += 5;
 							break;
