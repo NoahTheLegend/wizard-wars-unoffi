@@ -51,7 +51,7 @@ namespace WarlockParams
 				SpellCategory::utility, SpellType::healthcost, 3, 24, 10, 16.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::CHRONOMANTIC_TELEPORT]),
 
 		Spell("poisonsurge", "Toxic Bolt", 137, "Unleash a bolt of toxic sludge that splits into smaller, non-poisoned spheres after a short delay.",
-				SpellCategory::offensive, SpellType::other, 25, 38, 3, 256.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::TOXIC_BOLT]),
+				SpellCategory::offensive, SpellType::other, 35, 40, 5, 256.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::TOXIC_BOLT]),
 
 		Spell("corruptionshard", "Corruption Shard", 135, "Create a venomous shard releasing poison and fear aura periodically. After a short while, the shard will explode and restore some of your health and mana.",
 				SpellCategory::summoning, SpellType::other, 15, 40, 8, 128.0f, true, 1, WarlockSpellAttributesCollection[WarlockSpells::CORRUPTION_SHARD]),
@@ -77,8 +77,8 @@ namespace WarlockParams
 		Spell("fear", "Fear", 145, "Curse an enemy with fear, causing them to run stoplessly",
 				SpellCategory::debuff, SpellType::other, 5, 8, 4, 360.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::FEAR]),
 
-		Spell("silence", "Silence", 146, "Silence an enemy, preventing them from casting spells, except teleport.",
-				SpellCategory::debuff, SpellType::other, 10, 15, 16, 360.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::SILENCE]),
+		Spell("silence", "Silence", 146, "Silence an enemy, preventing them from casting spells",
+				SpellCategory::debuff, SpellType::other, 15, 20, 14, 360.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::SILENCE]),
 
 		//Spell("causticray", "Caustic Ray", 134, "Place a few pillars of corrosive energy that will poison enemies and set their spells on a delay.",
 		//		SpellCategory::offensive, SpellType::other, 1, 15, 0, 16.0f),

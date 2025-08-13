@@ -6380,7 +6380,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						manaInfo.mana += spell.mana;
 						this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 					}
-					
+
 					return;
 				}
 
@@ -6662,7 +6662,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case -1217162868: // silence
 		{
 			f32 orbspeed = 4.2f;
-			u16 effectTime = 360;
+			u16 effectTime = 120;
 
 			switch(charge_state)
 			{
@@ -6674,7 +6674,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					orbspeed *= 1.6f;
-					effectTime += 90;
+					effectTime += 30;
 				}
 				break;
 				

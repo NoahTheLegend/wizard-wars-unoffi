@@ -271,7 +271,7 @@ void onTick(CBlob@ this)
 		{
 			for (u8 i = 0; i < playerPrefs.spell_cooldowns.size(); i++)
 			{
-				if (i != 1)
+				//if (i != 1)
 				{
 					playerPrefs.spell_cooldowns[i] = 10;
 				}
