@@ -50,6 +50,10 @@ bool IsFinite(f32 value)
 
 void onTick(CBlob@ this)
 {
+    Vec2f pos = this.getPosition();
+    Vec2f init_pos = this.get_Vec2f("init_pos");
+    Vec2f vel = this.getVelocity();
+
     if (isClient() && getGameTime() % (v_fastrender ? 2 : 1) == 0)
     {
         CParticle@ p = ParticleAnimated(this.getSprite().getConsts().filename, Vec2f_lerp(pos, pos + vel, getInterpolationFactor()) - Vec2f(0, 2), Vec2f_zero, 0, 1.0f, v_fastrender ? 15 : 5, 0.0f, true);
@@ -73,10 +77,6 @@ void onTick(CBlob@ this)
     {
         this.Tag("mark_for_death");
     }
-
-    Vec2f pos = this.getPosition();
-    Vec2f init_pos = this.get_Vec2f("init_pos");
-    Vec2f vel = this.getVelocity();
 
     if (this.hasTag("extra_damage"))
     {
