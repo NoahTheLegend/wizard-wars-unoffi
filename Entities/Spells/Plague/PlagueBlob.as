@@ -62,7 +62,7 @@ void onInit(CBlob@ this)
     	p.fastcollision = true;
         p.scale = 1.0f;
         p.damping = 0.925f;
-		p.Z = 600.0f;
+		p.Z = -100.0f;
 		p.lighting = false;
 		p.setRenderStyle(RenderStyle::additive);
     }
