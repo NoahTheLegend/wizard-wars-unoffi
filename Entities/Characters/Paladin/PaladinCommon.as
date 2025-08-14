@@ -40,7 +40,7 @@ namespace PaladinParams
 				SpellCategory::offensive, SpellType::other, 3, 25, 0, 120.0f, false, 0, PaladinSpellAttributesCollection[PaladinSpells::TEMPLAR_HAMMER]),
 
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-			SpellCategory::special, SpellType::other, 25, 8, 0, 270.0f, true, 0, PaladinSpellAttributesCollection[PaladinSpells::TELEPORT_PALADIN]),
+			SpellCategory::special, SpellType::other, 25, 6, 0, 270.0f, true, 0, PaladinSpellAttributesCollection[PaladinSpells::TELEPORT_PALADIN]),
 			 
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
 			SpellCategory::special, SpellType::other, 20, 10, 0, 64.0f, true, 0, PaladinSpellAttributesCollection[PaladinSpells::COUNTER_SPELL_PALADIN]),

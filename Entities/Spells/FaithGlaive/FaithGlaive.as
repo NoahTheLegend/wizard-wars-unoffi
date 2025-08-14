@@ -227,7 +227,7 @@ void onTick(CBlob@ this)
 					CBlob@ b = info.blob;
 					if (b is null || !isEnemy(this, b)) continue;
 
-					this.server_Hit(b, b.getPosition(), this.getVelocity(), this.get_f32("faithglaivedamage"), Hitters::sword);
+					this.server_Hit(b, b.getPosition(), Vec2f_zero, this.get_f32("faithglaivedamage"), Hitters::explosion, true);
 				}
 			}
 		}
