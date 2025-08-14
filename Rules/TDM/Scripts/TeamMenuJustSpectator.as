@@ -10,6 +10,7 @@ void onInit(CRules@ this)
 
 	this.addCommandID("sync_mana");
 	this.addCommandID("callback_mana_request");
+
 	this.addCommandID("shapeshift_gatherstats");
 	this.addCommandID("shapeshift_swap");
 	this.addCommandID("shapeshift_setstats");

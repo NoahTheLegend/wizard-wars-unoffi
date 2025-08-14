@@ -6,17 +6,6 @@ float max_distance = 9999.0f;
 uint16[] blob_ids;
 const Vec2f sc_pos = getDriver().getScreenCenterPos();
 
-void onInit(CRules@ this)
-{
-
-}
-
-void onRestart(CRules@ this)
-{
-	if (!this.hasCommandID("sync_mana")) this.addCommandID("sync_mana");
-	if (!this.hasCommandID("callback_mana_request")) this.addCommandID("callback_mana_request");
-}
-
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (isClient() && cmd == this.getCommandID("sync_mana"))
