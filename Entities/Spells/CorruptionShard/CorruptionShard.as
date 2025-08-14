@@ -38,14 +38,14 @@ void onTick(CBlob@ this)
         this.getSprite().PlaySound("CorruptionShardSpawn.ogg", 0.75f, 1.0f + XORRandom(11) * 0.01f);
     }
 
-    CBlob@[] bs;
-    getBlobsByTag("player", @bs);
-
-    f32 maxRange = this.get_f32("max_range");
-    u16 debuffTime = this.get_u16("debuff_time");
-
     if (isServer())
     {
+        CBlob@[] bs;
+        getBlobsByTag("player", @bs);
+
+        f32 maxRange = this.get_f32("max_range");
+        u16 debuffTime = this.get_u16("debuff_time");
+
         for (u16 i = 0; i < bs.length; i++)
         {
             CBlob@ b = bs[i];

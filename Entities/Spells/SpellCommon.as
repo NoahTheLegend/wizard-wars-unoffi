@@ -1905,7 +1905,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				this.add_u8("bloodbolts", 2);
 			}
-
+			
 			this.set_u32("bloodbolt_start", getGameTime());
 			this.set_Vec2f("bloodbolt_aimpos", aimpos);
 			this.set_f32("bloodbolt_damage", 0.3f);
