@@ -50,9 +50,21 @@ bool IsFinite(f32 value)
 
 void onTick(CBlob@ this)
 {
+    if (!isServer()) return;
+
+    if (this.get_u8("dispelled") >= (this.get_bool("small") ? 1 : 2))
+    {
+        this.Tag("mark_for_death");
+    }
+
     Vec2f pos = this.getPosition();
     Vec2f init_pos = this.get_Vec2f("init_pos");
     Vec2f vel = this.getVelocity();
+
+    if (this.hasTag("extra_damage"))
+    {
+        init_pos.y += Maths::Sin(this.getTickSinceCreated() * (0.0225f / this.get_f32("speed_reduction"))) * this.get_f32("height") * (this.get_bool("inversed") ? -1 : 1);
+    }
 
     if (isClient() && getGameTime() % (v_fastrender ? 2 : 1) == 0)
     {
@@ -71,18 +83,6 @@ void onTick(CBlob@ this)
         }
     }
 
-    if (!isServer()) return;
-
-    if (this.get_u8("dispelled") >= (this.get_bool("small") ? 1 : 2))
-    {
-        this.Tag("mark_for_death");
-    }
-
-    if (this.hasTag("extra_damage"))
-    {
-        init_pos.y += Maths::Sin(this.getTickSinceCreated() * (0.0225f / this.get_f32("speed_reduction"))) * this.get_f32("height") * (this.get_bool("inversed") ? -1 : 1);
-    }
-
     if (this.getTickSinceCreated() == 0)
     {
         bool inversed = this.get_Vec2f("spawn_customData").y == -1;
@@ -97,8 +97,8 @@ void onTick(CBlob@ this)
         this.setPosition(init_pos + Vec2f(0, 1 + XORRandom(31)*0.1f));
     }
 
-    this.setPosition(Vec2f(init_pos.x, pos.y));
     if (!isServer()) return;
+    this.setPosition(Vec2f(init_pos.x, pos.y));
 
     u8 t = 4;
     if (getGameTime() % t == 0)
