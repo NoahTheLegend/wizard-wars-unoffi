@@ -25,6 +25,7 @@ void onInit(CBlob@ this)
     this.set_f32("rope_damping", ROPE_DEFAULT_DAMPING);
     this.set_f32("rope_FRICTION", ROPE_DEFAULT_FRICTION);
     this.set("rope_initialized", false);
+    this.Tag("cantparry");
 
     this.set_bool("render", false);
 
