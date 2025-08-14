@@ -6662,6 +6662,11 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1993252871: //plague
 		{
+			if (!isServer())
+			{
+				return;
+			}
+
 			switch(charge_state)
 			{
 				case complete_cast:
@@ -6828,7 +6833,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				max_count = 5;
 			}
 
-			if (isServer() && !this.hasScript("ShadowBurstCast.as"))
+			if (!this.hasScript("ShadowBurstCast.as"))
 			{
 				this.set_u32("shadowburst_cast_time", cast_time);
 				this.set_u8("shadowburst_count", max_count);
@@ -6839,18 +6844,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				this.set_bool("shadowburst_aiming", aiming);
 
 				this.AddScript("ShadowBurstCast.as");
-			}
-
-			if (!isServer()) // delay the script via command
-			{
-				CBitStream params;
-				params.write_u32(cast_time);
-				params.write_u8(max_count);
-				params.write_u8(period);
-				params.write_f32(speed);
-				params.write_f32(damage);
-				params.write_u8(0);
-				this.SendCommand(this.getCommandID("add_sb_cast"), params);
 			}
 		}
 		break;

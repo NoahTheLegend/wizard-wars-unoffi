@@ -1211,17 +1211,6 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	CBlob@[] bs;
-	getMap().getBlobsInRadius(this.getPosition(), 256.0f, @bs);
-	for (int i = 0; i < bs.length; i++)
-	{
-		CBlob@ b = bs[i];
-		if (b !is null)
-		{
-			Poison(this, 10, b, 0);
-		}
-	}
-
 	//PLAGUE
 	{
 		bool plague = this.get_bool("plague");
@@ -1237,7 +1226,7 @@ void onTick(CBlob@ this)
 				this.AddScript("PlagueWard.as");
 			}
 
-			if (isServer()) Poison(this, 10, this, 0);
+			Poison(this, 10, this, 0);
 		}
 
 		//disable

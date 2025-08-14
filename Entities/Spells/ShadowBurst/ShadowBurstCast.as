@@ -110,7 +110,7 @@ void onTick(CBlob@ this)
         }
     }
 
-    if (level >= 1.0f)
+    if (count >= max_count)
     {
         this.RemoveScript("ShadowBurstCast.as");
 

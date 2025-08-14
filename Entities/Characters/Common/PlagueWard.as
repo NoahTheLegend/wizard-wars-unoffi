@@ -11,7 +11,7 @@ const f32 max_speed = 8.0f;
 void onTick(CBlob@ this)
 {
     if (!this.get_bool("plague")) return;
-    
+
     u16 plague_follow_id;
     CBlob@ plague = null;
 

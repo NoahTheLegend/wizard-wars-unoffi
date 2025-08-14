@@ -65,7 +65,6 @@ const u8 old_positions_save_threshold = 3;
 const f32 ticks_noclip = 0;
 void onTick(CBlob@ this)
 {
-	this.setAngleDegrees(-this.getVelocity().Angle());
 	this.getShape().getConsts().mapCollisions = this.getTickSinceCreated() >= ticks_noclip;
 
 	if (this.getTickSinceCreated() % old_positions_save_threshold == 0)
@@ -132,7 +131,6 @@ void onTick(CBlob@ this)
 			new_vel *= Maths::Clamp(vel.Length(), 2.0f, 10.0f);
 
 			this.setVelocity(new_vel);
-			this.setAngleDegrees(-new_vel.Angle());
 		}
 	}
 
@@ -323,19 +321,22 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 				p.setRenderStyle(RenderStyle::additive);
     		}
 
-			CBlob@ orb = server_CreateBlob("shadowburstorb", this.getTeamNum(), at);
-			if (orb !is null)
+			if (isServer())
 			{
-				Vec2f dir = blob.getPosition() - at;
-				dir.Normalize();
+				CBlob@ orb = server_CreateBlob("shadowburstorb", this.getTeamNum(), at);
+				if (orb !is null)
+				{
+					Vec2f dir = blob.getPosition() - at;
+					dir.Normalize();
 
-				orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
-				orb.setVelocity(dir * 8.0f);
-				orb.server_SetTimeToDie(2.5f + XORRandom(51) * 0.01f);
+					orb.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+					orb.setVelocity(dir * 8.0f);
+					orb.server_SetTimeToDie(2.5f + XORRandom(51) * 0.01f);
 
-				orb.set_f32("damage", this.get_f32("damage"));
-				orb.Tag("no_projectiles");
-				orb.Sync("no_projectiles", true);
+					orb.set_f32("damage", this.get_f32("damage"));
+					orb.Tag("no_projectiles");
+					orb.Sync("no_projectiles", true);
+				}
 			}
 		}
 	}

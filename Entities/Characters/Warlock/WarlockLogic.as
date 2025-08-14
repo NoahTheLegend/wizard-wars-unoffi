@@ -43,8 +43,6 @@ void onInit( CBlob@ this )
 	this.push("names to activate", "keg");
 	this.push("names to activate", "nuke");
 
-	this.set_bool("plague", false);
-
 	//centered on arrows
 	//this.set_Vec2f("inventory offset", Vec2f(0.0f, 122.0f));
 	//centered on items
@@ -55,13 +53,12 @@ void onInit( CBlob@ this )
     this.addCommandID("freeze");
     this.addCommandID("spell");
 	this.addCommandID("chronomantic_teleport");
-	this.addCommandID("add_sb_cast");
 	this.getShape().getConsts().net_threshold_multiplier = 1.5f;
 	
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_up | CBlob::map_collide_nodeath);
 	this.getCurrentScript().removeIfTag = "dead";
 
-	if(isServer())
+	if (isServer())
 		this.set_u8("spell_count", 0);
 }
 
@@ -531,27 +528,6 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		if (b is null) return;
 
 		Freeze(b, 2.0f*power);
-	}
-	else if (cmd == this.getCommandID("add_sb_cast"))
-	{
-		if (isClient() && !this.hasScript("ShadowBurstCast.as"))
-		{
-			u32 cast_time = params.read_u32();
-			u8 max_count = params.read_u8();
-			u8 period = params.read_u8();
-			f32 speed = params.read_f32();
-			f32 damage = params.read_f32();
-			u8 unused = params.read_u8();
-
-			this.set_u32("shadowburst_cast_time", cast_time);
-			this.set_u8("shadowburst_count", max_count);
-			this.set_u8("shadowburst_period", period);
-			this.set_f32("shadowburst_speed", speed);
-			this.set_f32("shadowburst_damage", damage);
-			this.set_u8("shadowburst_current_count", 0);
-
-			this.AddScript("ShadowBurstCast.as");
-		}
 	}
 	else if (cmd == this.getCommandID("chronomantic_teleport"))
 	{
