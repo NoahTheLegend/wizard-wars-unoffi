@@ -1218,7 +1218,7 @@ void onTick(CBlob@ this)
 		CBlob@ b = bs[i];
 		if (b !is null)
 		{
-			Poison(this, 10, blob, 0);
+			Poison(this, 10, b, 0);
 		}
 	}
 
