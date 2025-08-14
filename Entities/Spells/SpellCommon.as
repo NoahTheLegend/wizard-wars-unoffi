@@ -1885,13 +1885,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				break;
 				case complete_cast:
 				{
-					this.set_u8("bloodbolts", 3);
+					this.set_u8("bloodbolts", 4);
 					this.set_u8("bloodbolt_delay", 2);
 				}
 				break;
 				case super_cast:
 				{
-					this.set_u8("bloodbolts", 5);
+					this.set_u8("bloodbolts", 6);
 
 					this.set_u8("bloodbolt_delay", 1);
 					this.set_bool("static", false);
@@ -1905,6 +1905,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				this.add_u8("bloodbolts", 2);
 			}
+
 			this.set_u32("bloodbolt_start", getGameTime());
 			this.set_Vec2f("bloodbolt_aimpos", aimpos);
 			this.set_f32("bloodbolt_damage", 0.3f);

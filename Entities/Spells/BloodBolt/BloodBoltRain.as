@@ -27,8 +27,8 @@ void onTick(CBlob@ this)
             orb.server_SetTimeToDie(2.0f);
 
             orb.set_f32("damage", this.get_f32("bloodbolt_damage"));
-            orb.set_f32("acceleration", this.hasTag("extra_damage") ? 16 : 12);
-            orb.set_u32("acceleration_tsc_mod", 10);
+            orb.set_f32("acceleration", this.hasTag("extra_damage") ? 20 : 16);
+            orb.set_u32("acceleration_tsc_mod", 8);
             orb.set_f32("max_speed", 24.0f);
 
             orb.setAngleDegrees(-dir.Angle());

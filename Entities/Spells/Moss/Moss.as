@@ -37,12 +37,6 @@ void onInit(CBlob@ this)
 	bool[][]@ captured_tiles;
 	getRules().get("moss_captured_tiles", @captured_tiles);
 
-	captured_tiles.resize(map.tilemapwidth);
-	for (u32 i = 0; i < captured_tiles.size(); i++)
-	{
-		captured_tiles[i].resize(map.tilemapheight);
-	}
-
 	this.SetFacingLeft(XORRandom(2) == 0);
 	CSprite@ sprite = this.getSprite();
 	if (sprite !is null)
@@ -52,6 +46,12 @@ void onInit(CBlob@ this)
 
 	if (isServer() && XORRandom(chance_flowers_default) == 0)
 	{
+		captured_tiles.resize(map.tilemapwidth);
+		for (u32 i = 0; i < captured_tiles.size(); i++)
+		{
+			captured_tiles[i].resize(map.tilemapheight);
+		}
+
 		server_SetFlowers(this);
 	}
 }
