@@ -61,7 +61,7 @@ void onTick(CBlob@ this)
 
     if (this.hasTag("extra_damage"))
     {
-        init_pos.y += Maths::Sin(this.getTickSinceCreated() * (0.033f / this.get_f32("speed_reduction"))) * this.get_f32("height") * (this.get_bool("inversed") ? -1 : 1);
+        init_pos.y += Maths::Sin(this.getTickSinceCreated() * (0.015f / this.get_f32("speed_reduction"))) * this.get_f32("height") * (this.get_bool("inversed") ? -1 : 1);
     }
 
     if (isClient() && getGameTime() % (v_fastrender ? 2 : 1) == 0)
