@@ -5404,9 +5404,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			switch(charge_state)
 			{
 				case minimum_cast:
-				{
-					return;
-				}
 				case medium_cast:
 				{
 					damage = 1.5f;

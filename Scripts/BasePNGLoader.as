@@ -280,8 +280,64 @@ class PNGLoader
 			case map_colors::workbench:       autotile(offset); spawnBlob(map, "workbench",   offset, 255, true); break;
 			case map_colors::campfire:        autotile(offset); spawnBlob(map, "fireplace",   offset, 255); break;
 			case map_colors::saw:             autotile(offset); spawnBlob(map, "saw",         offset); break;
-			case map_colors::mana_obelisk:    autotile(offset); spawnBlob(map, "mana_obelisk", offset, -1, false, Vec2f(0.0f, 4.0f) ); break;
+			case map_colors::mana_obelisk:    autotile(offset); spawnBlob(map, "mana_obelisk", offset, -1, false, Vec2f(0.0f, 4.0f)); break;
+
+			case map_colors::platform_32:     autotile(offset); spawnBlob(map, "magicplatform", offset, 2, false, Vec2f_zero); 		break;
+			case map_colors::platform_40:     autotile(offset); spawnBlob(map, "magicplatform", offset, 3, false, Vec2f_zero); 		break;
+			case map_colors::platform_48:     autotile(offset); spawnBlob(map, "magicplatform", offset, 4, false, Vec2f_zero); 		break;
+			case map_colors::platform_56:     autotile(offset); spawnBlob(map, "magicplatform", offset, 5, false, Vec2f_zero); 		break;
+			case map_colors::platform_64:     autotile(offset); spawnBlob(map, "magicplatform", offset, 6, false, Vec2f_zero); 		break;
+			case map_colors::platform_72:     autotile(offset); spawnBlob(map, "magicplatform", offset, 7, false, Vec2f_zero); 		break;
+			case map_colors::platform_80:     autotile(offset); spawnBlob(map, "magicplatform", offset, 8, false, Vec2f_zero); 		break;
+			case map_colors::platform_88:     autotile(offset); spawnBlob(map, "magicplatform", offset, 9, false, Vec2f_zero); 		break;
+			case map_colors::platform_96:     autotile(offset); spawnBlob(map, "magicplatform", offset, 10, false, Vec2f_zero); 		break;
+			case map_colors::platform_104:    autotile(offset); spawnBlob(map, "magicplatform", offset, 11, false, Vec2f_zero); 		break;
+			case map_colors::platform_112:    autotile(offset); spawnBlob(map, "magicplatform", offset, 12, false, Vec2f_zero); 		break;
+			case map_colors::platform_120:    autotile(offset); spawnBlob(map, "magicplatform", offset, 13, false, Vec2f_zero); 		break;
+			case map_colors::platform_128:    autotile(offset); spawnBlob(map, "magicplatform", offset, 14, false, Vec2f_zero); 		break;
 			
+			case map_colors::s_platform_32:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 2, false, Vec2f_zero);  break;
+			case map_colors::s_platform_40:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 3, false, Vec2f_zero);  break;
+			case map_colors::s_platform_48:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 4, false, Vec2f_zero);  break;
+			case map_colors::s_platform_56:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 5, false, Vec2f_zero);  break;
+			case map_colors::s_platform_64:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 6, false, Vec2f_zero);  break;
+			case map_colors::s_platform_72:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 7, false, Vec2f_zero);  break;
+			case map_colors::s_platform_80:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 8, false, Vec2f_zero);  break;
+			case map_colors::s_platform_88:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 9, false, Vec2f_zero);  break;
+			case map_colors::s_platform_96:   autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 10, false, Vec2f_zero); break;
+			case map_colors::s_platform_104:  autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 11, false, Vec2f_zero); break;
+			case map_colors::s_platform_112:  autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 12, false, Vec2f_zero); break;
+			case map_colors::s_platform_120:  autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 13, false, Vec2f_zero); break;
+			case map_colors::s_platform_128:  autotile(offset); spawnBlob(map, "magicplatformsmall", offset, 14, false, Vec2f_zero); break;
+
+			case map_colors::i_platform_32:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 2, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_40:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 3, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_48:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 4, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_56:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 5, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_64:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 6, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_72:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 7, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_80:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 8, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_88:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 9, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_96:    autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 10, false, 0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_104:   autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 11, false, 0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_112:   autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 12, false, 0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_120:   autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 13, false, 0, Vec2f(0, -1)); break;
+			case map_colors::i_platform_128:   autotile(offset); spawnBlobCustomData(map, "magicplatform", offset, 14, false, 0, Vec2f(0, -1)); break;
+
+			case map_colors::i_s_platform_32:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 2, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_40:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 3, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_48:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 4, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_56:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 5, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_64:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 6, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_72:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 7, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_80:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 8, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_88:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 9, false,  0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_96:   autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 10, false, 0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_104:  autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 11, false, 0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_112:  autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 12, false, 0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_120:  autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 13, false, 0, Vec2f(0, -1)); break;
+			case map_colors::i_s_platform_128:  autotile(offset); spawnBlobCustomData(map, "magicplatformsmall", offset, 14, false, 0, Vec2f(0, -1)); break;
+
 			// Flora
 			case map_colors::tree:
 			case map_colors::tree + (1 << 4):
@@ -658,6 +714,17 @@ CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position, s16 
 CBlob@ spawnBlob(CMap@ map, const string& in name, int offset, u8 team = 255, bool attached_to_map = false, Vec2f posOffset = Vec2f_zero, s16 angle = 0)
 {
 	return spawnBlob(map, name, team, getSpawnPosition(map, offset) + posOffset, angle, attached_to_map);
+}
+
+CBlob@ spawnBlobCustomData(CMap@ map, const string& in name, int offset, u8 team = 255, bool attached_to_map = false, s16 angle = 0, Vec2f customData = Vec2f_zero)
+{
+	CBlob@ b = spawnBlob(map, name, team, getSpawnPosition(map, offset), angle, attached_to_map);
+	if (b !is null)
+	{
+		b.set_Vec2f("spawn_customData", customData);
+	}
+
+	return b;
 }
 
 CBlob@ spawnVehicle(CMap@ map, const string& in name, int offset, int team = -1)

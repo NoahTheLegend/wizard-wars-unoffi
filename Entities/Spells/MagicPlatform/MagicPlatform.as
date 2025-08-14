@@ -23,6 +23,19 @@ void onInit(CBlob@ this)
 
     this.set_bool("small", this.getName() == "magicplatformsmall");
     this.getSprite().SetRelativeZ(5.0f);
+
+    f32 height = 32.0f;
+    if (this.getTeamNum() > 1)
+    {
+        // map prop
+        height += (this.getTeamNum() - 2) * 8.0f;
+        this.Tag("extra_damage");
+        this.AddScript("IgnoreDamage.as");
+        this.server_setTeamNum(3);
+    }
+
+    this.set_f32("speed_reduction", height / 128.0f);
+    this.set_f32("height", height);
 }
 
 const f32 max_dist = 32.0f;
@@ -46,6 +59,11 @@ void onTick(CBlob@ this)
     Vec2f init_pos = this.get_Vec2f("init_pos");
     Vec2f vel = this.getVelocity();
 
+    if (this.hasTag("extra_damage"))
+    {
+        init_pos.y += Maths::Sin(this.getTickSinceCreated() * (0.033f / this.get_f32("speed_reduction"))) * this.get_f32("height") * (this.get_bool("inversed") ? -1 : 1);
+    }
+
     if (isClient() && getGameTime() % (v_fastrender ? 2 : 1) == 0)
     {
         CParticle@ p = ParticleAnimated(this.getSprite().getConsts().filename, Vec2f_lerp(pos, pos + vel, getInterpolationFactor()) - Vec2f(0, 2), Vec2f_zero, 0, 1.0f, v_fastrender ? 15 : 5, 0.0f, true);
@@ -63,16 +81,22 @@ void onTick(CBlob@ this)
         }
     }
 
-    if (!isServer()) return;
-
     if (this.getTickSinceCreated() == 0)
     {
+        bool inversed = this.get_Vec2f("spawn_customData").y == -1;
+        this.set_bool("inversed", inversed);
+
         Vec2f pos = this.getPosition();
         Vec2f init_pos = pos;
         
         this.set_Vec2f("init_pos", init_pos);
+        if (isServer()) this.Sync("init_pos", true);
+
         this.setPosition(init_pos + Vec2f(0, 1 + XORRandom(31)*0.1f));
     }
+
+    this.setPosition(Vec2f(init_pos.x, pos.y));
+    if (!isServer()) return;
 
     u8 t = 4;
     if (getGameTime() % t == 0)
@@ -96,11 +120,6 @@ void onTick(CBlob@ this)
         }
     }
 
-    if (this.hasTag("extra_damage"))
-    {
-        init_pos.y += Maths::Sin(this.getTickSinceCreated() * 0.05f) * 32.0f;
-    }
-
     f32 mod = Maths::Lerp(this.get_f32("push_mod"), 2.0f, push_lerp);
     this.set_f32("push_mod", mod);
 
@@ -113,13 +132,12 @@ void onTick(CBlob@ this)
 
     s8 s = pos.y < init_pos.y ? 1 : -1;
     f32 dist_factor = Maths::Clamp(dir_len / max_dist, 0.0f, 5.0);
-    f32 damp_range = 4.0f;
+    f32 damp_range = 16.0f;
 
     if (Maths::Abs(pos.y - init_pos.y) < damp_range)
     {
-        this.setVelocity(Vec2f(vel.x, vel.y * 0.75f));
+        this.setVelocity(Vec2f(vel.x, vel.y * 0.9f));
     }
-    this.setPosition(Vec2f(init_pos.x, pos.y));
 
     f32 mass = this.getMass();
     if (IsFinite(dist_factor) && IsFinite(mod) && IsFinite(mass))
