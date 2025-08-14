@@ -12,7 +12,6 @@ void onInit(CBlob@ this)
 	//dont collide with edge of the map
 	this.getShape().SetGravityScale(0.0f);
 	this.getShape().getConsts().mapCollisions = false;
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	Vec2f[] old_pos;
 	old_pos.push_back(this.getPosition());
