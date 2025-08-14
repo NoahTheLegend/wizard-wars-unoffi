@@ -179,7 +179,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         {
 			if (manaInfo.mana < manaInfo.maxMana)
             {
-				manaInfo.mana = Maths::Min(manaInfo.mana + this.get_u32("mana_amount"), manaInfo.maxMana);
+				manaInfo.mana = Maths::Min(manaInfo.mana + this.get_s32("mana_amount"), manaInfo.maxMana);
 			}
 		}
 

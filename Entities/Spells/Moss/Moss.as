@@ -401,7 +401,11 @@ bool IsTileCaptured(CMap@ map, Vec2f pos, const bool[][]@ &in captured_tiles)
 	if (tilespace.x < 0 || tilespace.x >= map.tilemapwidth || tilespace.y < 0 || tilespace.y >= map.tilemapheight)
 		return false;
 
-	return captured_tiles[uint(tilespace.x)][uint(tilespace.y)];
+	if (captured_tiles.size() <= tilespace.x || captured_tiles[tilespace.x].size() <= tilespace.y)
+		return false;
+
+	captured_tiles[tilespace.x][tilespace.y] = capture;
+	return true;
 }
 
 void onTick(CSprite@ sprite)
