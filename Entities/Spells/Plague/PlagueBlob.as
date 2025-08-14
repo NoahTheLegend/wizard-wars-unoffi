@@ -28,7 +28,6 @@ void onInit(CBlob@ this)
     this.SetFacingLeft(XORRandom(2) == 0);
     if (!isClient()) return;
 
-    this.getSprite().SetVisible(false);
     this.getSprite().PlaySound("PlagueBlobCreate.ogg", 0.75f, 1.25f + XORRandom(10) * 0.01f);
     const Vec2f frameSize(32, 32);
 
@@ -64,7 +63,7 @@ void onInit(CBlob@ this)
         p.damping = 0.925f;
 		p.Z = -100.0f;
 		p.lighting = false;
-		//p.setRenderStyle(RenderStyle::additive);
+		p.setRenderStyle(RenderStyle::additive);
     }
 }
 
