@@ -64,7 +64,7 @@ void onInit(CBlob@ this)
         p.damping = 0.925f;
 		p.Z = -100.0f;
 		p.lighting = false;
-		p.setRenderStyle(RenderStyle::additive);
+		//p.setRenderStyle(RenderStyle::additive);
     }
 }
 

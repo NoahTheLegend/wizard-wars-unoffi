@@ -3,7 +3,7 @@
 #include "MagicCommon.as";
 #include "SpellUtils.as";
 
-const f32 explosion_radius = 24.0f;
+const f32 explosion_radius = 32.0f;
 void onInit(CBlob@ this)
 {
 	this.Tag("projectile");
