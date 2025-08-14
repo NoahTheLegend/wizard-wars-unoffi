@@ -54,8 +54,11 @@ void ReselectSpell(CRules@ this)
 bool need_sky_check = true;
 void onRestart(CRules@ this)
 {
-	bool[][] captured_tiles;
-	this.set("moss_captured_tiles", @captured_tiles);
+	if (isServer())
+	{
+		bool[][] captured_tiles;
+		this.set("moss_captured_tiles", @captured_tiles);
+	}
 
 	ReselectSpell(this);
 

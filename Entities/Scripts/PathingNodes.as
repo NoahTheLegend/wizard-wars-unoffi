@@ -1,3 +1,10 @@
+// Gingerbeard @ January 16th, 2025
+// Edited by NoahTheLegend
+
+#define SERVER_ONLY
+#include "PathingNodesCommon.as";
+
+
 // Helper function to check if a position is a critical "corner" for navigation.
 bool isCorner(const bool[]@ solid_neighbors)
 {
@@ -190,12 +197,6 @@ void InitializeNodeMap(CRules@ this)
     HighLevelNode@[] node_update = nodeMap;
     this.push("queued_node_updates", node_update);
 }
-
-// Gingerbeard @ January 16th, 2025
-// Edited by NoahTheLegend
-
-#define SERVER_ONLY
-#include "PathingNodesCommon.as";
 
 void onInit(CRules@ this)
 {
