@@ -50,8 +50,6 @@ bool IsFinite(f32 value)
 
 void onTick(CBlob@ this)
 {
-    if (!isServer()) return;
-
     if (this.get_u8("dispelled") >= (this.get_bool("small") ? 1 : 2))
     {
         this.Tag("mark_for_death");
