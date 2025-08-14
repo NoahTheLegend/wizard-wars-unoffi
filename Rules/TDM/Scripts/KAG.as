@@ -80,21 +80,21 @@ void onRestart(CRules@ this)
 
 void onTick(CRules@ this)
 {
-	if (isServer())
-	{
-		for (u8 i = 0; i < getPlayerCount(); i++)
-		{
-			CPlayer@ p = getPlayer(i);
-			if (p is null) continue;
+	//if (isServer())
+	//{
+	//	for (u8 i = 0; i < getPlayerCount(); i++)
+	//	{
+	//		CPlayer@ p = getPlayer(i);
+	//		if (p is null) continue;
 
-			CBlob@ blob = p.getBlob();
-			if (blob is null) continue;
-			if (blob.hasTag("dead")) continue; //don't do this for dead players
-			
-			//blob.server_Hit(blob, blob.getPosition(), Vec2f_zero, 0.0f, Hitters::fall, true);
-			blob.server_SetHealth(blob.getHealth());
-		}
-	}
+	//		CBlob@ blob = p.getBlob();
+	//		if (blob is null) continue;
+	//		if (blob.hasTag("dead")) continue; //don't do this for dead players
+	//		
+	//		//blob.server_Hit(blob, blob.getPosition(), Vec2f_zero, 0.0f, Hitters::fall, true);
+	//		//blob.server_SetHealth(blob.getHealth());
+	//	}
+	//}
 
 	//TODO: figure out a way to optimise so we don't need to keep running this hook
 	if (need_sky_check)
