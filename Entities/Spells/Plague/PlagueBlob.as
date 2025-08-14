@@ -17,6 +17,11 @@ void onInit(CBlob@ this)
     this.getSprite().SetRelativeZ(580.0f);
     this.getSprite().setRenderStyle(RenderStyle::additive);
 
+    this.getShape().getConsts().collideWhenAttached = true;
+	this.getShape().SetGravityScale( 0.25f );
+	this.getShape().getConsts().bullet = true;
+	this.getShape().SetRotationsAllowed(false);
+
     this.set_f32("acceleration", 0);
     this.set_f32("last_angle_diff", 0);
     this.server_SetTimeToDie(1);
