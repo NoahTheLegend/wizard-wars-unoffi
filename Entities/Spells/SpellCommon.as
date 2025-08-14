@@ -3120,7 +3120,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -997077766://magicarrows
 		{
-			if(this.hasScript("CastMagicArrows.as"))
+			if( this.hasScript("CastMagicArrows.as"))
 			{
 				return;
 			}
@@ -3129,7 +3129,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			f32 orbDamage = 0.25f;
 			u8 delay = 5;
 
-			switch(charge_state)
+			switch (charge_state)
 			{
 				case minimum_cast:
 				case medium_cast:
@@ -3158,7 +3158,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				amount += 2;
 			}
 
-			if(!this.hasScript("CastMagicArrows.as"))
+			if (!this.hasScript("CastMagicArrows.as"))
 			{
 				this.set_u8("magicarrows_amount", amount);
 				this.set_u8("magicarrows_current", amount);
@@ -6666,7 +6666,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case complete_cast:
 				case super_cast:
 				{
-					if (isServer()) Plague(this, !this.get_bool("plague"));
+					Plague(this, !this.get_bool("plague"));
 					return; //Fireward self, doesn't send projectile
 				}
 				break;
