@@ -402,7 +402,7 @@ class DamageTakenMessage : HoverMessage
 	{
 		DamageTakenMessage@ message = cast<DamageTakenMessage>(other);
 
-		damage += message.damage;
+		if (message !is null) damage += message.damage;
 		return this;
 	}
 }
@@ -436,7 +436,7 @@ class HealTakenMessage : HoverMessage
 	{
 		HealTakenMessage@ message = cast<HealTakenMessage>(other);
 
-		heal += message.heal;
+		if (message !is null) heal += message.heal;
 		return this;
 	}
 }
@@ -470,7 +470,7 @@ class DamageDealtMessage : HoverMessage
 	{
 		DamageDealtMessage@ message = cast<DamageDealtMessage>(other);
 
-		damage += message.damage;
+		if (message !is null) damage += message.damage;
 		return this;
 	}
 }
@@ -504,8 +504,8 @@ class HealDealtMessage : HoverMessage
 	HoverMessage@ try_merge(HoverMessage@ other) override
 	{
 		HealDealtMessage@ message = cast<HealDealtMessage>(other);
-
-		heal += message.heal;
+		
+		if (message !is null) heal += message.heal;
 		return this;
 	}
 }
