@@ -10,7 +10,6 @@ const f32 max_speed = 8.0f;
 
 void onTick(CBlob@ this)
 {
-    if (!isServer()) return;
     if (!this.get_bool("plague")) return;
     
     u16 plague_follow_id;
@@ -119,6 +118,8 @@ void onTick(CBlob@ this)
 
 CBlob@ createPlagueBlob(CBlob@ this)
 {
+    if (!isServer()) return;
+
     CBlob@ blob = server_CreateBlob("plagueblob", this.getTeamNum(), this.getPosition() + Vec2f(follow_distance / 4 + XORRandom(follow_distance/2), 0).RotateBy(XORRandom(360)));
     if (blob !is null)
     {
