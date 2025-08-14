@@ -51,6 +51,7 @@ void updateCoinMessage(CPlayer@ player)
 	const string prop_name = "old coin count " + username;
 
 	CRules@ rules = getRules();
+	if (rules is null) return;
 
 	if (rules.exists(prop_name))
 	{

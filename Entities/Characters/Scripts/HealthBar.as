@@ -233,9 +233,12 @@ void onRender(CRules@ this)
 				{
 					CPlayer@ local = getLocalPlayer();
 					if (local is null) break;
-					
+
+					CRules@ rules = getRules();
+					if (rules is null) return;
+
 					// Show mana
-					if (blob.getTeamNum() == local.getTeamNum() || local.getTeamNum() == getRules().getSpectatorTeamNum())
+					if (blob.getTeamNum() == local.getTeamNum() || local.getTeamNum() == rules.getSpectatorTeamNum())
 					{
 						Vec2f pos2d = blob.getScreenPos() + Vec2f(0, 40);
 						Vec2f dim = Vec2f(24, 8);

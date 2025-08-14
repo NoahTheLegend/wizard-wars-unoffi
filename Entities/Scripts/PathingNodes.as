@@ -240,7 +240,7 @@ bool onMapTileCollapse(CMap@ map, u32 index)
 {
 	HighLevelNode@[]@ nodeMap;
 	CRules@ rules = getRules();
-	if (!rules.get("node_map", @nodeMap)) return true;
+	if (rules is null || !rules.get("node_map", @nodeMap)) return true;
 
 	Vec2f position = map.getTileWorldPosition(index);
 	HighLevelNode@[] node_updates;

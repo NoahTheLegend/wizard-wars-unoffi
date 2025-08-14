@@ -127,7 +127,8 @@ class WWPlayerClassButton
 			rightPage.name = _configFilename + "_rightPage";
 			rightPage.setLevel(ContainerLevel::PAGE_FRAME);
 
-			string iconTexture = getRules().get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
+			CRules@ rules = getRules();
+			string iconTexture = rules !is null && rules.get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
 
 			// position empty frame
 			@selectedSpellIcon = @Icon(iconTexture, Vec2f(page_size.x / 2 - 32, 54), Vec2f(16, 16), 0, 2.0f);
@@ -325,7 +326,8 @@ class WWPlayerClassButton
 			if (gridSize >= iconOffsetBackground.y)
 				iconOffsetBackground.y = 0;
 
-			const string iconTexture = getRules().get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
+			CRules@ rules = getRules();
+			const string iconTexture = rules !is null && rules.get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
 
 			for (uint col = 0; col < rowCount; col++)
 			{
@@ -502,13 +504,13 @@ class WWPlayerClassButtonList : GenericGUIItem
 		style = _style;
 
 		DebugColor = SColor(155,0,0,0);
-		CRules@ rules = getRules();
 	}
 
 	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0, string _modName = "Default", 
 		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>(), string _imageName = classIconsImage, Vec2f _size = classIconSize)
 	{
-		_imageName = getRules().get_bool("book_old_spell_icons") ? "ClassButtonsHud.png": "ClassButtons.png"; // hardcoded rn
+		CRules@ rules = getRules();
+		_imageName = rules !is null && rules.get_bool("book_old_spell_icons") ? "ClassButtonsHud.png": "ClassButtons.png"; // hardcoded rn
 
 		WWPlayerClassButton@ classButton = @WWPlayerClassButton(_name, _desc, _configFilename, _classID, _cost, _imageName, _icon, _rarity, _modName, position, _size, _specialties, _stats);
 		list.push_back(classButton);
@@ -695,7 +697,8 @@ void SwapButtonHandler(int x, int y, int button, IGUIItem@ sender) //Button clic
 	params.write_string(selectedClass);
 	
 	CRules@ rules = getRules();
-	rules.SendCommand(rules.getCommandID("swap classes"), params);
+	if (rules !is null)
+		rules.SendCommand(rules.getCommandID("swap classes"), params);
 
 	Sound::Play2D("MenuSelect5.ogg", 0.75f, 0);
 }
@@ -823,7 +826,8 @@ void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button cli
 				playerClassButtons.list[c].attributes.clear();
 				playerClassButtons.list[c].attributes = sSpell.attributes;
 
-				string attributesTexture = getRules().get_bool("book_old_spell_icons") ? "SpellAttributeIconsHud.png" : "SpellAttributeIcons.png";
+				CRules@ rules = getRules();
+				string attributesTexture = rules !is null && rules.get_bool("book_old_spell_icons") ? "SpellAttributeIconsHud.png" : "SpellAttributeIcons.png";
 				for (u8 i = 0; i < playerClassButtons.list[c].attributes.size(); i++)
 				{
 					playerClassButtons.list[c].attributes[i].icon = attributesTexture;
@@ -973,7 +977,8 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 	bool hotbarClicked = false;
 	int spellsLength = classSpells.length;
 
-	const string iconTexture = getRules().get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
+	CRules@ rules = getRules();
+	const string iconTexture = rules !is null && rules.get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
 	Vec2f primaryPos = helpWindow.position + Vec2f(16.0f, 0.0f) + offset;
 
 	for (uint i = 0; i < spells_maxcount; i++)

@@ -104,7 +104,8 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		return;
 
 	//warmup
-	CRules @rules = getRules();
+	CRules@ rules = getRules();
+	if (rules is null) return;
 
 	if (rules.isWarmup() || rules.isMatchRunning())
 	{

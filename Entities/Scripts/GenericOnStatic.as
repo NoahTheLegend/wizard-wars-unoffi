@@ -13,7 +13,7 @@ void UpdateNearbyNodes(CBlob@ this)
 {
 	HighLevelNode@[]@ nodeMap;
 	CRules@ rules = getRules();
-	if (!rules.get("node_map", @nodeMap)) return;
+	if (rules is null || !rules.get("node_map", @nodeMap)) return;
 
 	HighLevelNode@[][]@ queued_node_updates;
 	if (!rules.get("queued_node_updates", @queued_node_updates)) return;

@@ -34,8 +34,12 @@ void onInit(CBlob@ this)
 	this.Tag("fall damage reduction");
 
 	CMap@ map = getMap();
+
+	CRules@ rules = getRules();
+	if (rules is null) return;
+
 	bool[][]@ captured_tiles;
-	getRules().get("moss_captured_tiles", @captured_tiles);
+	rules.get("moss_captured_tiles", @captured_tiles);
 
 	this.SetFacingLeft(XORRandom(2) == 0);
 	CSprite@ sprite = this.getSprite();
@@ -174,8 +178,9 @@ void onTick(CBlob@ this)
 
 		if (isServer())
 		{
+			CRules@ rules = getRules();
 			bool[][]@ captured_tiles;
-			if (getRules().get("moss_captured_tiles", @captured_tiles))
+			if (rules !is null && rules.get("moss_captured_tiles", @captured_tiles))
 			{
 				SetTile(getMap(), this.getPosition(), true, captured_tiles);
 			}
@@ -255,8 +260,11 @@ void Grow(CBlob@ this, int power)
 	CMap@ map = getMap();
 	if (map is null) return;
 
+	CRules@ rules = getRules();
+	if (rules !is null) return;
+
 	bool[][]@ captured_tiles;
-	if (!getRules().get("moss_captured_tiles", @captured_tiles)) return;
+	if (!rules.get("moss_captured_tiles", @captured_tiles)) return;
 
 	Vec2f floor_offset = getFloorOffset(this.getPosition());
 	floor_offset.x = Maths::Round(floor_offset.x);
@@ -412,6 +420,9 @@ void onTick(CSprite@ sprite)
 	CBlob@ this = sprite.getBlob();
 	if (this is null) return;
 
+	this.Tag("mark_for_death");
+	return;
+
 	bool grown = this.get_bool("grown");
 	bool has_flowers = this.get_bool("has_flowers");
 
@@ -521,8 +532,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 
 void onDie(CBlob@ this)
 {
+	CRules@ rules = getRules();
+	if (rules is null) return;
+
 	bool[][]@ captured_tiles;
-	if (getRules().get("moss_captured_tiles", @captured_tiles))
+	if (rules.get("moss_captured_tiles", @captured_tiles))
 	{
 		SetTile(getMap(), this.getPosition(), false, captured_tiles);
 	}

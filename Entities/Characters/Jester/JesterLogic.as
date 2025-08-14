@@ -148,7 +148,9 @@ void ManageSpell( CBlob@ this, JesterInfo@ jester, PlayerPrefsInfo@ playerPrefsI
 
         is_aux2 = true;
     }
-	if (isClient() && getRules().get_bool("showHelp"))
+	CRules@ rules = getRules();
+	if (rules is null) return;
+	if (isClient() && rules.get_bool("showHelp"))
 	{
 		is_pressed = false;
 		just_pressed = false;
@@ -310,7 +312,8 @@ void ManageSpell( CBlob@ this, JesterInfo@ jester, PlayerPrefsInfo@ playerPrefsI
         }
     }
 	
-	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
+	if (rules is null) return;
+	if ( !is_pressed && rules.get_bool("spell_number_selection") )
 	{
 		if (JesterParams::spells.length == 0) 
 		{
@@ -327,7 +330,7 @@ void ManageSpell( CBlob@ this, JesterInfo@ jester, PlayerPrefsInfo@ playerPrefsI
 		int currHotkey = playerPrefsInfo.primaryHotkeyID;
 		int nextHotkey =  playerPrefsInfo.hotbarAssignments_Jester.length;
 		
-		CRules@ rules = getRules();
+		
 		if (rules !is null && rules.hasTag("update_spell_selected")
 			&& rules.exists("reset_spell_id") && rules.get_u16("reset_spell_id") > 0)
 		{

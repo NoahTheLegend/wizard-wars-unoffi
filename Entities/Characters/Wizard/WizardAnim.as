@@ -145,7 +145,9 @@ void onTick( CSprite@ this )
 
 	// animations
 	int spellsLength = WizardParams::spells.length;
-	bool firing = (blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2)) && !getRules().get_bool("showHelp");
+	CRules@ rules = getRules();
+	if (rules is null) return;
+	bool firing = (blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2)) && !rules.get_bool("showHelp");
 
 	const bool left = blob.isKeyPressed(key_left);
 	const bool right = blob.isKeyPressed(key_right);

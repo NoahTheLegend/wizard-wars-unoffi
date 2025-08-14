@@ -652,6 +652,7 @@ class HoverMessages
 HoverMessages@ get_messages()
 {
 	CRules@ rules = getRules();
+	if (rules is null) return null;
 
 	HoverMessages@ messages;
 	rules.get("hover messages", @messages);

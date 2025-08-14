@@ -226,8 +226,11 @@ class BrainPath
 	{
 		waypoints.clear();
 
+		CRules@ rules = getRules();
+		if (rules is null) return;
+
 		HighLevelNode@[]@ nodeMap;
-		if (!getRules().get("node_map", @nodeMap)) 
+		if (!rules.get("node_map", @nodeMap)) 
 		{
 			return;
 		}
@@ -399,8 +402,11 @@ class BrainPath
 	// Can sometimes fail on particularly complex paths due to optimizations
 	bool canPath(Vec2f&in start, Vec2f&in target)
 	{
+		CRules@ rules = getRules();
+		if (rules is null) return false;
+
 		HighLevelNode@[]@ nodeMap;
-		if (!getRules().get("node_map", @nodeMap)) return false;
+		if (!rules.get("node_map", @nodeMap)) return false;
 
 		HighLevelNode@ startNode = HighLevelNode(alignToPathGrid(start), flags);
 		HighLevelNode@ targetNode = HighLevelNode(alignToPathGrid(target), flags);

@@ -165,7 +165,8 @@ shared class TDMSpawns : RespawnSystem
 			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 			if (playerBlob !is null)
 			{
-				if (!player.hasTag("first_join") && getRules().isWarmup())
+				CRules@ rules = getRules();
+				if (rules !is null && !player.hasTag("first_join") && rules.isWarmup())
 				{
 					player.Tag("first_join");
 				}
