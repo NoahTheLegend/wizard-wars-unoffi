@@ -50,20 +50,6 @@ bool IsFinite(f32 value)
 
 void onTick(CBlob@ this)
 {
-    if (this.get_u8("dispelled") >= (this.get_bool("small") ? 1 : 2))
-    {
-        this.Tag("mark_for_death");
-    }
-
-    Vec2f pos = this.getPosition();
-    Vec2f init_pos = this.get_Vec2f("init_pos");
-    Vec2f vel = this.getVelocity();
-
-    if (this.hasTag("extra_damage"))
-    {
-        init_pos.y += Maths::Sin(this.getTickSinceCreated() * (0.0225f / this.get_f32("speed_reduction"))) * this.get_f32("height") * (this.get_bool("inversed") ? -1 : 1);
-    }
-
     if (isClient() && getGameTime() % (v_fastrender ? 2 : 1) == 0)
     {
         CParticle@ p = ParticleAnimated(this.getSprite().getConsts().filename, Vec2f_lerp(pos, pos + vel, getInterpolationFactor()) - Vec2f(0, 2), Vec2f_zero, 0, 1.0f, v_fastrender ? 15 : 5, 0.0f, true);
@@ -81,6 +67,22 @@ void onTick(CBlob@ this)
         }
     }
 
+    if (!isServer()) return;
+
+    if (this.get_u8("dispelled") >= (this.get_bool("small") ? 1 : 2))
+    {
+        this.Tag("mark_for_death");
+    }
+
+    Vec2f pos = this.getPosition();
+    Vec2f init_pos = this.get_Vec2f("init_pos");
+    Vec2f vel = this.getVelocity();
+
+    if (this.hasTag("extra_damage"))
+    {
+        init_pos.y += Maths::Sin(this.getTickSinceCreated() * (0.0225f / this.get_f32("speed_reduction"))) * this.get_f32("height") * (this.get_bool("inversed") ? -1 : 1);
+    }
+
     if (this.getTickSinceCreated() == 0)
     {
         bool inversed = this.get_Vec2f("spawn_customData").y == -1;
@@ -90,7 +92,7 @@ void onTick(CBlob@ this)
         Vec2f init_pos = pos;
         
         this.set_Vec2f("init_pos", init_pos);
-        if (isServer()) this.Sync("init_pos", true);
+        this.Sync("init_pos", true);
 
         this.setPosition(init_pos + Vec2f(0, 1 + XORRandom(31)*0.1f));
     }
