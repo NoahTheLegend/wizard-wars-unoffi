@@ -64,7 +64,7 @@ void onTick(CBlob@ this)
         init_pos.y += Maths::Sin(this.getTickSinceCreated() * (0.0225f / this.get_f32("speed_reduction"))) * this.get_f32("height") * (this.get_bool("inversed") ? -1 : 1);
     }
 
-    if (isClient() && getGameTime() % (v_fastrender ? 2 : 1) == 0)
+    if (isClient() && this.getTickSinceCreated() > 3 && getGameTime() % (v_fastrender ? 2 : 1) == 0)
     {
         CParticle@ p = ParticleAnimated(this.getSprite().getConsts().filename, Vec2f_lerp(pos, pos + vel, getInterpolationFactor()) - Vec2f(0, 2), Vec2f_zero, 0, 1.0f, v_fastrender ? 15 : 5, 0.0f, true);
         if (p !is null)
