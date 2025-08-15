@@ -19,13 +19,16 @@ const f32 heal_amount = 1.5f;
 
 void onInit(CBlob@ this)
 {
-    this.Tag("counterable");
+   // this.Tag("counterable");
 	this.Tag("phase through spells");
 	this.Tag("no trampoline collision");
 	this.Tag("cantparry");
 	this.Tag("ignore_effects");
 	this.Tag("hold_gravestone");
 	this.Tag("follower");
+
+	this.set_u8("dispelled", 0);
+	this.Tag("multi_dispell");
 
 	this.Tag("ignore_scoreboard");
 	this.Tag("player");
@@ -65,6 +68,11 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (this.get_u8("dispelled") >= 2)
+    {
+        this.Tag("mark_for_death");
+    }
+
 	Vec2f aimpos = getControls().getMouseWorldPos();
 	Vec2f pos = this.getPosition();
 

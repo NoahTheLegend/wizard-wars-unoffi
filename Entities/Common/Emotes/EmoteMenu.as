@@ -193,9 +193,6 @@ void onSetPlayer( CRules@ this, CBlob@ blob, CPlayer@ player )//Selects the spel
             case Warlock:
                 spell = WarlockParams::spells[i];
             break;
-
-            default:
-                print("EmoteMenu Unknown error");
         }
         if(spell.typeName == "")//No empty spells in the spell wheel
         {
@@ -282,12 +279,12 @@ void onTick(CRules@ rules)
     bool usespellwheel = rules.get_bool("usespellwheel");
     WheelMenu@ menu;
 
-    if(usespellwheel == true)
+    if (usespellwheel == true)
     {
         @menu = get_wheel_menu("spells");
-        if(menu.entries == null || menu.entries.length() == 0)
+        if (menu.entries == null || menu.entries.length() == 0)
         {
-            print("In EmoteMenu.as spell length is equal to zero");
+            if (getGameTime()%30==0) print("In EmoteMenu.as spell length is equal to zero");
             return;
         }
 

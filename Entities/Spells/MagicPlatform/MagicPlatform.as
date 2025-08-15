@@ -175,7 +175,7 @@ void onEndCollision(CBlob@ this, CBlob@ blob)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-    return blob.hasTag("flesh") && blob.getPosition().y < this.getPosition().y - 10;
+    return (blob.getName() == "ice_prison" || blob.hasTag("flesh")) && blob.getPosition().y < this.getPosition().y - 10;
 }
 
 void onDie(CBlob@ this)
