@@ -24,8 +24,8 @@ void main()
 
     float aspect = screen_width / screen_height;
 
-
-    for (int i = 0; i < 15 && i < count; i++)
+    int count_int = int(count);
+    for (int i = 0; i < 15 && i < count_int; i++)
     {
         vec2 center = vec2(blackholes[i].x, blackholes[i].y);
         float radius = blackholes[i].intensity * zoom;
