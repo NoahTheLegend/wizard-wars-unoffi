@@ -124,12 +124,7 @@ void onInit(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	if (getControls().isKeyPressed(KEY_KEY_R))
-	{
-		this.server_Die();
-		return;
-	}
-
+	print(""+this.getPosition()+" "+this.getTimeToDie());
 	const u32 tick = this.getTickSinceCreated();
 	if (this.getCurrentScript().tickFrequency != 1 || tick % 30 == 0)
 	{
@@ -264,7 +259,11 @@ void Grow(CBlob@ this, int power)
 	if (rules !is null) return;
 
 	bool[][]@ captured_tiles;
-	if (!rules.get("moss_captured_tiles", @captured_tiles)) return;
+	if (!rules.get("moss_captured_tiles", @captured_tiles))
+	{
+		print("Failed to get captured tiles");
+		return;
+	}
 
 	Vec2f floor_offset = getFloorOffset(this.getPosition());
 	floor_offset.x = Maths::Round(floor_offset.x);
@@ -407,9 +406,6 @@ bool IsTileCaptured(CMap@ map, Vec2f pos, const bool[][]@ &in captured_tiles)
 {
 	Vec2f tilespace(Maths::Floor(pos.x / 8), Maths::Floor(pos.y / 8));
 	if (tilespace.x < 0 || tilespace.x >= map.tilemapwidth || tilespace.y < 0 || tilespace.y >= map.tilemapheight)
-		return false;
-
-	if (captured_tiles.size() <= tilespace.x || captured_tiles[tilespace.x].size() <= tilespace.y)
 		return false;
 
 	return captured_tiles[uint(tilespace.x)][uint(tilespace.y)];

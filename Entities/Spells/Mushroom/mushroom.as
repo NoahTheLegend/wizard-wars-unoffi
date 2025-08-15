@@ -70,6 +70,8 @@ void onTick(CBlob@ this)
 {
     if (this.getTickSinceCreated() == 1)
     {
+        this.getSprite().PlaySound("WizardShoot.ogg", 1.5f);
+    
         CBlob@[] bs;
         getMap().getBlobsInRadius(this.getPosition(), this.getRadius(), @bs);
 

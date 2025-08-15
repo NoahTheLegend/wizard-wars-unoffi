@@ -77,7 +77,7 @@ namespace DruidParams
 			SpellCategory::debuff, SpellType::other, 25, 45, 5, 128.0f, false, 1, DruidSpellAttributesCollection[DruidSpells::VINE_TRAP]),
 
 		Spell("foresttunerain", "Forest Tune", 143, "Scatter and forward sharp foliage in the air towards the targets.",
-			SpellCategory::offensive, SpellType::other, 32, 45, 6, 180.0f, true, 0, DruidSpellAttributesCollection[DruidSpells::FOREST_TUNE]),
+			SpellCategory::offensive, SpellType::other, 35, 48, 6, 180.0f, true, 0, DruidSpellAttributesCollection[DruidSpells::FOREST_TUNE]),
 
 		Spell("moss", "Mossy Veil", 144, "Grow spreading moss on the ground that decreases fall damage when you land on it. The flowers growing nearby will increase your speed and decrease for enemy. Spores might help the flowers to grow faster.",
 			SpellCategory::utility, SpellType::other, 24, 60, 25, 180.0f, true, 1, DruidSpellAttributesCollection[DruidSpells::MOSSY_VEIL]),

@@ -136,7 +136,12 @@ void onTick( CBlob@ this)
 
 				if (other is this)
 				{continue;} //lets not run away from / try to eat ourselves...
-				
+
+				if (other.hasTag("ignore_effects"))
+				{
+					continue;
+				}
+
 				bool sameTeam = this.getTeamNum() == other.getTeamNum();
 				
 				switch(targetType) //does action according to targetting type
