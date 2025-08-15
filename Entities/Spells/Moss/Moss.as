@@ -124,7 +124,6 @@ void onInit(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	print(""+this.getPosition()+" "+this.getTimeToDie());
 	const u32 tick = this.getTickSinceCreated();
 	if (this.getCurrentScript().tickFrequency != 1 || tick % 30 == 0)
 	{
@@ -256,7 +255,7 @@ void Grow(CBlob@ this, int power)
 	if (map is null) return;
 
 	CRules@ rules = getRules();
-	if (rules !is null) return;
+	if (rules is null) return;
 
 	bool[][]@ captured_tiles;
 	if (!rules.get("moss_captured_tiles", @captured_tiles))
@@ -408,6 +407,9 @@ bool IsTileCaptured(CMap@ map, Vec2f pos, const bool[][]@ &in captured_tiles)
 	if (tilespace.x < 0 || tilespace.x >= map.tilemapwidth || tilespace.y < 0 || tilespace.y >= map.tilemapheight)
 		return false;
 
+	if (captured_tiles.size() <= tilespace.x || captured_tiles[tilespace.x].size() <= tilespace.y)
+		return false;
+
 	return captured_tiles[uint(tilespace.x)][uint(tilespace.y)];
 }
 
@@ -415,9 +417,6 @@ void onTick(CSprite@ sprite)
 {
 	CBlob@ this = sprite.getBlob();
 	if (this is null) return;
-
-	this.Tag("mark_for_death");
-	return;
 
 	bool grown = this.get_bool("grown");
 	bool has_flowers = this.get_bool("has_flowers");
