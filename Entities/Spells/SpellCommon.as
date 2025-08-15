@@ -181,7 +181,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				return;
 
 			u8 delay = 30;
-			u8 power = 10 + XORRandom(4);
+			u8 power = 20 + XORRandom(4);
 			u8 increment = 8;
 			u8 ttd = 45;
 
@@ -195,7 +195,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case super_cast:
 				{
 					delay = 20;
-					power = 15+XORRandom(4);
+					power += 8+XORRandom(6);
 					increment = 4;
 					ttd += 15;
 				}
@@ -203,7 +203,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			if (this.hasTag("extra_damage"))
 			{
-				power += 5;
+				power += 10;
 				delay = 10;
 				increment = Maths::Max(2, increment - 2);
 				ttd += 15;
