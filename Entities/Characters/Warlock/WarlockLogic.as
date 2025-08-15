@@ -646,7 +646,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			CBlob@ demon = demons[i];
 			if (demon !is null)
 			{
-				demon.set_u16("charges", damage * 5); // for 1 hp damage we restore 1 charges
+				demon.add_u16("charges", Maths::Round(damage * 5)); // for 1 hp damage we restore 1 charges
 				demon.Sync("charges", true);
 			}
 		}

@@ -436,19 +436,19 @@ void laserEffects(CBlob@ this, int id)
 
     v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-s, -s) * mod);
     v_uv.push_back(Vec2f(0, 0));
-    v_col.push_back(SColor(alpha, 255, 255, 255));
+    v_col.push_back(SColor(alpha, 150, 255, 255));
 
     v_pos.push_back(this.getInterpolatedPosition() + Vec2f(s, -s) * mod);
     v_uv.push_back(Vec2f(1, 0));
-    v_col.push_back(SColor(alpha, 255, 255, 255));
+    v_col.push_back(SColor(alpha, 150, 255, 255));
 
     v_pos.push_back(this.getInterpolatedPosition() + Vec2f(s, s) * mod);
     v_uv.push_back(Vec2f(1, 1));
-    v_col.push_back(SColor(alpha, 255, 255, 255));
+    v_col.push_back(SColor(alpha, 150, 255, 255));
 
     v_pos.push_back(this.getInterpolatedPosition() + Vec2f(-s, s) * mod);
     v_uv.push_back(Vec2f(0, 1));
-    v_col.push_back(SColor(alpha, 255, 255, 255));
+    v_col.push_back(SColor(alpha, 150, 255, 255));
 
     Render::QuadsColored(rendname, z, v_pos, v_uv, v_col);
 }
