@@ -80,7 +80,7 @@ namespace DruidParams
 			SpellCategory::offensive, SpellType::other, 35, 48, 6, 180.0f, true, 0, DruidSpellAttributesCollection[DruidSpells::FOREST_TUNE]),
 
 		Spell("moss", "Mossy Veil", 144, "Grow spreading moss on the ground that decreases fall damage when you land on it. The flowers growing nearby will increase your speed and decrease for enemy. Spores might help the flowers to grow faster.",
-			SpellCategory::utility, SpellType::other, 24, 60, 25, 180.0f, true, 1, DruidSpellAttributesCollection[DruidSpells::MOSSY_VEIL]),
+			SpellCategory::utility, SpellType::other, 24, 60, 14, 180.0f, true, 1, DruidSpellAttributesCollection[DruidSpells::MOSSY_VEIL]),
 		
 		Spell("", "", 0, "Empty spell.",
 			SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f, DruidSpellAttributesCollection[DruidSpells::EMPTY_SPELL_DRUID])
