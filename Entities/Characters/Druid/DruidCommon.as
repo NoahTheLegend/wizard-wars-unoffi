@@ -56,7 +56,7 @@ namespace DruidParams
 			SpellCategory::summoning, SpellType::other, 12, 20, 0, 96.0f, true, 1, DruidSpellAttributesCollection[DruidSpells::DANCING_SHROOM]),
 		
 		Spell("boulder_throw", "Rock Throw", 35, "Throws a heavy rock that is highly affected by gravity.",
-			SpellCategory::offensive, SpellType::other, 25, 35, 2, 16.0f, true, 0, DruidSpellAttributesCollection[DruidSpells::ROCK_THROW]),
+			SpellCategory::offensive, SpellType::other, 20, 35, 1, 16.0f, true, 0, DruidSpellAttributesCollection[DruidSpells::ROCK_THROW]),
 				
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
 			SpellCategory::debuff, SpellType::other, 20, 20, 0, 360.0f, true, 0, DruidSpellAttributesCollection[DruidSpells::SLOW_DRUID]), 
