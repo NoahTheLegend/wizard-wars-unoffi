@@ -20,7 +20,7 @@ namespace WarlockParams
 
 	const ::f32 shoot_max_vel = 8.0f;
 	const ::f32 MAX_ATTACK_DIST = 500.0f;
-	const ::s32 MAX_MANA = 75;
+	const ::s32 MAX_MANA = 70;
 	const ::s32 MANA_REGEN = 0;
 	const ::f32 HEALTH_COST_PER_1_MANA = 0.03f; // 0.2f is 1 HP
 	const ::f32 MANA_PER_1_DAMAGE = 2;
@@ -35,8 +35,8 @@ namespace WarlockParams
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
 				SpellCategory::special, SpellType::other, 15, 6, 0, 270.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::TELEPORT_WARLOCK]), 
 			
-		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-				SpellCategory::special, SpellType::other, 15, 10, 0, 64.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::COUNTER_SPELL_WARLOCK]),
+		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures. You can not use health for this spell.",
+				SpellCategory::special, SpellType::other, 10, 10, 0, 64.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::COUNTER_SPELL_WARLOCK]),
 			
 		Spell("leech", "Leech", 25, "Fire a short-ranged arc of dark energy which steals the life-force from foes and revitalizes you.",
 				SpellCategory::offensive, SpellType::other, 25, 25, 8, 180.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::LEECH_WARLOCK]),
@@ -45,7 +45,7 @@ namespace WarlockParams
 				SpellCategory::offensive, SpellType::healthcost, 1, 40, 6, 256.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::TOME_OF_BLOOD]),
 
 		Spell("warp_field", "Sigil of Warp", 140, "Open a shroud on map that shrinks the reality in an area. Teleporting inside will open a portal at random location. Can be dispelled by anyone.",
-				SpellCategory::utility, SpellType::other, 30, 50, 15, 256.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::SIGIL_OF_WARP]),
+				SpellCategory::utility, SpellType::other, 40, 50, 15, 256.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::SIGIL_OF_WARP]),
 
 		Spell("chronomantic_teleport", "Chronomantic Teleport", 141, "Teleports you to a random location on the map. When overcharged, teleports you to where you were at 5 seconds ago.",
 				SpellCategory::utility, SpellType::healthcost, 3, 20, 10, 16.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::CHRONOMANTIC_TELEPORT]),
@@ -60,7 +60,7 @@ namespace WarlockParams
 				SpellCategory::debuff, SpellType::other, 5, 25, 2, 8.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::PLAGUE]),
 
 		Spell("shadowburst", "Shadow Burst", 142, "Materialize several shadow orbs that shatter on impact. When colliding with an enemy, another projectile is created behind.",
-				SpellCategory::offensive, SpellType::other, 10, 20, 6, 180.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::SHADOW_BURST]),
+				SpellCategory::offensive, SpellType::other, 15, 20, 6, 180.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::SHADOW_BURST]),
 
 		Spell("shadowspear", "Shadow Spear", 147, "Create several consecutive shadow spears that follow the target. Only one spear can deal damage and steal some of the enemy's mana in the form of an orb. Counterspelling the mana orb will restore mana to the caster. Anyone but the orb owner will receive twice more mana.",
 				SpellCategory::offensive, SpellType::other, 15, 35, 12, 256.0f, 64.0f, true, 2, WarlockSpellAttributesCollection[WarlockSpells::SHADOW_SPEAR]),

@@ -22,6 +22,7 @@ void onInit(CBlob@ this)
 	this.set_s8("shardID",-1);
 	this.set_u32("deadTimer",0);
 	this.Tag("barrier");
+	this.Tag("shard_barrier");
 }
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )

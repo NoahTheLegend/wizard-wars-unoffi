@@ -12,8 +12,10 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
         CBlob@ ownerBlob = damageOwner.getBlob();
         if (ownerBlob !is null)
         {
+            bool mana_burning = ownerBlob.get_u16("manaburn") > 0;
+
             ManaInfo@ manaInfo;
-            if (ownerBlob.get("manaInfo", @manaInfo))
+            if (!mana_burning && ownerBlob.get("manaInfo", @manaInfo))
             {
                 manaInfo.mana += damage * 10 * WarlockParams::MANA_PER_1_DAMAGE;
                 if (manaInfo.mana > manaInfo.maxMana)

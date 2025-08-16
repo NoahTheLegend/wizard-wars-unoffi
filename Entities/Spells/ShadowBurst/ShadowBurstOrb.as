@@ -277,7 +277,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f p1, V
 		if (isServer())
 		{
 			f32 damage = this.get_f32("damage");
-			if (blob.hasTag("barrier")) damage *= 10;
+			if (blob.hasTag("shard_barrier")) damage *= 10;
 
 			this.server_Hit(blob, blob.getPosition(), this.getVelocity(), damage, Hitters::explosion, true);
 		}

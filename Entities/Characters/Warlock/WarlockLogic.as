@@ -207,9 +207,11 @@ void ManageSpell( CBlob@ this, WarlockInfo@ warlock, PlayerPrefsInfo@ playerPref
 	f32 mod = 1.0f;
 	if (this.hasTag("carnage_effect")) mod = 2.0f;
 
+	bool counter_spell = spell.typeName == "counter_spell";
 	f32 wizHealth = this.getHealth();
+
 	bool enough_health = spell.type == SpellType::healthcost ? wizHealth >= spell.mana : wizHealth >= spell.mana * WarlockParams::HEALTH_COST_PER_1_MANA * 0.5f;
-	bool canCastSpell = ((spell.type == SpellType::healthcost ? wizHealth * 10 : wizMana) >= spell.mana || enough_health) && playerPrefsInfo.spell_cooldowns[spellID] <= 0;
+	bool canCastSpell = ((spell.type == SpellType::healthcost ? wizHealth * 10 : wizMana) >= spell.mana || (enough_health && !counter_spell)) && playerPrefsInfo.spell_cooldowns[spellID] <= 0;
 
     if (is_pressed && canCastSpell) 
     {
