@@ -4,7 +4,7 @@
 
 const int positions_save_time_in_seconds = 15;
 const u8 old_positions_save_threshold = 1;
-const f32 darkritual_lifesteal_mod = 1.5f;
+const f32 darkritual_lifesteal_mod = 1.0f;
 
 namespace WarlockParams
 {
@@ -51,7 +51,7 @@ namespace WarlockParams
 				SpellCategory::utility, SpellType::healthcost, 3, 20, 10, 16.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::CHRONOMANTIC_TELEPORT]),
 
 		Spell("poisonsurge", "Toxic Bolt", 137, "Unleash a bolt of toxic sludge that splits into smaller, non-poisoned spheres after a short delay.",
-				SpellCategory::offensive, SpellType::other, 35, 40, 5, 256.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::TOXIC_BOLT]),
+				SpellCategory::offensive, SpellType::other, 35, 40, 8, 256.0f, true, 0, WarlockSpellAttributesCollection[WarlockSpells::TOXIC_BOLT]),
 
 		Spell("corruptionshard", "Corruption Shard", 135, "Create a venomous shard releasing poison and fear aura periodically. After a short while, the shard will explode and restore some of your health and mana.",
 				SpellCategory::summoning, SpellType::other, 10, 40, 8, 128.0f, true, 1, WarlockSpellAttributesCollection[WarlockSpells::CORRUPTION_SHARD]),
