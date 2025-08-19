@@ -46,23 +46,6 @@ void onTick(CBlob@ this)
         f32 maxRange = this.get_f32("max_range");
         u16 debuffTime = this.get_u16("debuff_time");
 
-        for (u16 i = 0; i < bs.length; i++)
-        {
-            CBlob@ b = bs[i];
-
-            if (this.getDistanceTo(b) > maxRange || b.getTeamNum() == this.getTeamNum())
-                continue;
-
-            if (this.hasTag("alt_state"))
-            {
-                Fear(b, debuffTime);
-            }
-            else
-            {
-                Poison(b, debuffTime);
-            }
-        }
-
         if (getGameTime() > this.get_u32("alt_counter"))
         {
             if (this.hasTag("alt_state"))
@@ -72,6 +55,23 @@ void onTick(CBlob@ this)
 
             this.Sync("alt_state", true);
             this.set_u32("alt_counter", getGameTime() + this.get_u32("alt_delay"));
+
+            for (u16 i = 0; i < bs.length; i++)
+            {
+                CBlob@ b = bs[i];
+
+                if (this.getDistanceTo(b) > maxRange || b.getTeamNum() == this.getTeamNum())
+                    continue;
+
+                if (this.hasTag("alt_state"))
+                {
+                    Fear(b, debuffTime);
+                }
+                else
+                {
+                    Poison(b, debuffTime);
+                }
+            }
 
             CBitStream params;
             this.SendCommand(this.getCommandID("sfx"), params);

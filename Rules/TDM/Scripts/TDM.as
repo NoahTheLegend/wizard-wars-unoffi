@@ -140,7 +140,7 @@ shared class TDMSpawns : RespawnSystem
 			}
 			
 			PlayerPrefsInfo@ playerPrefsInfo;
-			if (player.get( "playerPrefsInfo", @playerPrefsInfo ) && playerPrefsInfo !is null)
+			if (player.get("playerPrefsInfo", @playerPrefsInfo ) && playerPrefsInfo !is null)
 			{
 				p_info.blob_name = playerPrefsInfo.classConfig;
 
@@ -154,6 +154,7 @@ shared class TDMSpawns : RespawnSystem
 							&& arr[0] != "")
 						{
 							p_info.blob_name = arr[0];
+							playerPrefsInfo.classConfig = p_info.blob_name;
 						}
 					}
 				}

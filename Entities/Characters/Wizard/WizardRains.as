@@ -111,12 +111,12 @@ class WizardRain
         }
         else if (type == WizardRainTypes::stellarcollapse)
         {
-            objectsAmount = 4;
+            objectsAmount = 6;
             if (level == WizardParams::extra_ready)
-                objectsAmount += 2;
+                objectsAmount += 3;
             if (damagebuff)
             {
-                objectsAmount += 2;
+                objectsAmount += 3;
                 // todo: extra behavior
             }
             time = 1;
@@ -220,10 +220,10 @@ class WizardRain
             }
             else if (type == WizardRainTypes::stellarcollapse)
             {
-                f32 gap = damagebuff ? 48.0f : 32.0f;
+                f32 gap = damagebuff ? 32.0f : 64.0f;
                 f32 area_width = initobjectsAmount * gap;
 
-                f32 explosion_radius = level == 5 ? 32.0f : 48.0f;
+                f32 explosion_radius = level == 5 ? 48.0f : 32.0f;
                 f32 damage = 2.5f + XORRandom(11) * 0.1f;
                 u32 explosion_delay = damagebuff ? 8 : 4 + XORRandom(4);
 
@@ -266,6 +266,7 @@ class WizardRain
 
                         blob.Init();
                         blob.setAngleDegrees(90);
+                        blob.SetDamageOwnerPlayer(this.getPlayer());
 
                         blob.set_f32("initial_offset", offset.x);
                         blob.set_f32("explosion_radius", explosion_radius);

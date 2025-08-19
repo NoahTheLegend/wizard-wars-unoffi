@@ -281,34 +281,33 @@ void makeHealParticles(CBlob@ this, const f32 velocity = 1.0f, const int smallpa
 
 void Revive(CBlob@ blob)
 {			
-	int playerId = blob.get_u16( "owner_player" );
-	CPlayer@ deadPlayer = getPlayerByNetworkId( playerId );
+	int playerId = blob.get_u16("owner_player");
+	CPlayer@ deadPlayer = getPlayerByNetworkId(playerId);
 	
-	if( isServer() && deadPlayer !is null )
+	if (isServer() && deadPlayer !is null)
 	{
 		PlayerPrefsInfo@ playerPrefsInfo;
-		if ( !deadPlayer.get( "playerPrefsInfo", @playerPrefsInfo ) || playerPrefsInfo is null )
+		if (!deadPlayer.get("playerPrefsInfo", @playerPrefsInfo ) || playerPrefsInfo is null)
 		{
 			return;
 		}
 	
-		CBlob @newBlob = server_CreateBlob( playerPrefsInfo.classConfig, deadPlayer.getTeamNum(), blob.getPosition() );		
-		if( newBlob !is null )
+		CBlob@ newBlob = server_CreateBlob(playerPrefsInfo.classConfig, deadPlayer.getTeamNum(), blob.getPosition());		
+		if (newBlob !is null)
 		{
 			f32 health = newBlob.getHealth();
 			f32 initHealth = newBlob.getInitialHealth();
 	
-			newBlob.server_SetPlayer( deadPlayer );
-			newBlob.server_SetHealth( initHealth*0.2f );
+			newBlob.server_SetPlayer(deadPlayer);
+			newBlob.server_SetHealth(initHealth*0.2f);
 			
 			ManaInfo@ manaInfo;
-			if ( newBlob.get( "manaInfo", @manaInfo ) ) 
+			if (newBlob.get("manaInfo", @manaInfo)) 
 			{
 				manaInfo.mana = 0;
 			}			
 			
 			makeReviveParticles(newBlob);
-			
 			blob.Tag("mark_for_death");
 		}
 	}

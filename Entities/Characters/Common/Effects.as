@@ -118,7 +118,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
                 if (link !is null && this.getDistanceTo(link) < connection_dist
                     && link.getHealth()/link.getInitialHealth() > min_connection_health_ratio)
                 {
-                    if (!(link.exists("dmgconnection") && link.get_u16("dmgconnection") > 0))
+                    if (!(link.exists("dmgconnection") && link.get_u16("dmgconnection") > 0) && customData != 255)
                     {
                         f32 transfer_dmg = damage*connection_dmg_transfer;
 

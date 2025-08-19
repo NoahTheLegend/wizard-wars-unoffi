@@ -247,7 +247,11 @@ class StatusBar
         // clear effects / debuffs from dispell hook, this hook is supposed to ensure first doesnt break and to update the duration
         s16 burn_timer = blob.get_s16("burn timer");
         u16 wet_timer = blob.get_u16("wet timer");
-        u16 freeze_timer = 0; AttachmentPoint@ ap = blob.isAttached() ? blob.getAttachments().getAttachmentPoint("PICKUP2") : null; if (blob.isAttached() && ap !is null && ap.getOccupied() !is null) freeze_timer = ap.getOccupied().getTimeToDie() * 30;
+        
+        u16 freeze_timer = 0;
+        AttachmentPoint@ ap = blob.isAttached() ? blob.getAttachments().getAttachmentPoint("PICKUP2") : null;
+        if (blob.isAttached() && ap !is null && ap.getOccupied() !is null) freeze_timer = ap.getOccupied().getTimeToDie() * 30;
+        
         u16 poison_timer = poison > 10 ? poison : poison != 0 ? 1 : 0;
         u16 damage_boost_timer = 0; u32 timer = blob.hasTag("extra_damage") ? blob.get_u32("damage_boost") : 0; if (blob.hasTag("extra_damage") && timer >= gt) damage_boost_timer = timer - gt;
         u16 focus_timer = disabled_for_classes[disabled_row].find(SPELL_INDEX::FOCUS) != -1 ? 0 : (blob.get_u16("focus") > MIN_FOCUS_TIME * getTicksASecond() || blob.get_u32("overload mana regen") > getGameTime()) ? 1 : 0;
