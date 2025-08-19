@@ -8,7 +8,7 @@ const int[] classesHealth = {
 	80, // shaman
 	100, // paladin
 	80, // jester
-	75  // warlock
+	80  // warlock
 };
 
 const string[] specialties_names = {
