@@ -6406,8 +6406,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				f32 heal_amount = 1.0f; // 7.5 hp
 				int mana_amount = 25;
 				f32 max_range = 96.0f;
-				int alt_delay = 210;
-				int debuff_time = 120;
+				int alt_delay = 150;
+				int debuff_time = 150;
 
 				int height = getLandHeight(aimpos);
 				if (height != 0 && !found)
@@ -6426,8 +6426,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 								alive_time = 12.5f * 30;
 								heal_amount = 1.25f;
 								max_range = 128.0f;
-								alt_delay = 120;
-								debuff_time = 150;
+								alt_delay = 90;
+								debuff_time = 180;
 
 								break;
 							}
@@ -6444,7 +6444,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 								heal_amount = 1.5f;
 								mana_amount = 35;
 								alt_delay = 45;
-								debuff_time = 180;
+								debuff_time = 210;
 							}
 
 							tot.SetDamageOwnerPlayer(this.getPlayer());
