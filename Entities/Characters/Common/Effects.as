@@ -1,12 +1,5 @@
-// Listener file for different effects, spells and operations that can't be
-// utilized through StatusEffects.as and with adding an own script
-// onHit() inputs 0 damage entry in an added script
-// everything else that would go in additional script is added here as well.
-// Still spaghetti code, however taking into account how different the stuff we add,
-// its not that time consuming at least
-
-#include "Hitters.as"
-#include "PaladinCommon.as"
+#include "Hitters.as";
+#include "PaladinCommon.as";
 
 Random _sprk_r2(12345);
 
@@ -118,7 +111,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
                 if (link !is null && this.getDistanceTo(link) < connection_dist
                     && link.getHealth()/link.getInitialHealth() > min_connection_health_ratio)
                 {
-                    if (!(link.exists("dmgconnection") && link.get_u16("dmgconnection") > 0) && customData != 255)
+                    if (!(link.exists("dmgconnection") && link.get_u16("dmgconnection") > 0) && customData != Hitters::fall)
                     {
                         f32 transfer_dmg = damage*connection_dmg_transfer;
 
