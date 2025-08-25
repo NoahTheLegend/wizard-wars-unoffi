@@ -37,7 +37,7 @@ namespace WizardParams
 			SpellCategory::offensive, SpellType::other, 15, 30, 3, 360.0f, true, 0, WizardSpellAttributesCollection[WizardSpellAttributes::FROST_BALL]),			
 		
 		Spell("heal", "Lesser Heal", 14, "Salves the least of your allies' wounds to restore a moderate portion of their health. Fully charge in order to heal yourself with less efficiency.",
-			SpellCategory::heal, SpellType::other, 18, 35, 0, 360.0f, false, 0, WizardSpellAttributesCollection[WizardSpellAttributes::HEAL]), 			 
+			SpellCategory::heal, SpellType::other, 18, 35, 0, 360.0f, true, 0, WizardSpellAttributesCollection[WizardSpellAttributes::HEAL]), 			 
 		
 		Spell("firebomb", "Fireball", 11, "Throw a high velocity condensed ball of flames that explodes on contact with enemies, igniting them. Has a minimum engagement distance of about 4 blocks.",
 			SpellCategory::offensive, SpellType::other, 30, 40, 0, 360.0f, true, 0, WizardSpellAttributesCollection[WizardSpellAttributes::FIREBOMB]), 			 

@@ -239,7 +239,7 @@ void onTick(CBlob@ this)
 							extraDamage += 0.25f;
 						}
 						Vec2f attackVector = Vec2f(1, 0).RotateBy(attackAngle);
-						f32 heal = 0.075f + (XORRandom(50) * 0.001f);
+						f32 heal = 0.05f;
 						if (getGameTime() % 5 == 0 && target.getTeamNum() != this.getTeamNum())
 						{
 							if (isServer())

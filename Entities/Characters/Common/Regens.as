@@ -147,12 +147,12 @@ void onTick(CBlob@ this)
 
         u8 adjustedManaRegenRate = this.get_s32("mana regen rate");
 
-        if (this.get_bool("manatohealth") && !mana_burning)
+        if (false && this.get_bool("manatohealth") && !mana_burning) // disabled
         {
             if (this.isMyPlayer())
 			{
 				CBitStream params;
-				params.write_f32((adjustedManaRegenRate*mana_to_health_ratio+health_per_regen)*0.1f);
+				params.write_f32((adjustedManaRegenRate * mana_to_health_ratio + health_per_regen) * 0.1f);
 				this.SendCommand(this.getCommandID("request_heal"), params);
 			}
         }

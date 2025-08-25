@@ -20,10 +20,10 @@ namespace WarlockParams
 
 	const ::f32 shoot_max_vel = 8.0f;
 	const ::f32 MAX_ATTACK_DIST = 500.0f;
-	const ::s32 MAX_MANA = 80;
+	const ::s32 MAX_MANA = 100;
 	const ::s32 MANA_REGEN = 0;
 	const ::f32 HEALTH_COST_PER_1_MANA = 0.02f; // 0.2f is 1 HP
-	const ::f32 MANA_PER_1_DAMAGE = 2;
+	const ::f32 MANA_PER_1_DAMAGE = 3.5f;
 	
 	const ::string[] zombieTypes = {"zombie", "skeleton", "greg", "wraith"};
 	

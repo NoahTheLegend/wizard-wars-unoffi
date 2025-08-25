@@ -1885,13 +1885,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				break;
 				case complete_cast:
 				{
-					this.set_u8("bloodbolts", 4);
+					this.set_u8("bloodbolts", 5);
 					this.set_u8("bloodbolt_delay", 2);
 				}
 				break;
 				case super_cast:
 				{
-					this.set_u8("bloodbolts", 6);
+					this.set_u8("bloodbolts", 8);
 
 					this.set_u8("bloodbolt_delay", 1);
 					this.set_bool("static", false);
@@ -5125,7 +5125,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -774033844://hallowedbarrier
 		{
-			u8 amount = 3;
+			u8 amount = 5;
 			u16 effectTime = 1800;
 
 			switch(charge_state)
@@ -5134,20 +5134,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case medium_cast:
 				{
 					effectTime = 900;
-					amount = 4;
+					amount = 7;
 				}
 				break;
 				case complete_cast:
 				{
 					effectTime = 1350;
-					amount = 5;
+					amount = 9;
 				}
 				break;
 				
 				case super_cast:
 				{
 					effectTime = 1800;
-					amount = 6;
+					amount = 12;
 				}
 				break;
 
@@ -5156,7 +5156,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			if (this.hasTag("extra_damage"))
 			{
-				amount += 2;
+				amount += 5;
 			}
 
 			Barrier(this, effectTime, amount);
@@ -6570,6 +6570,22 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -1702569748: // chronomantic teleport
 		{
+			bool failedCast = false;
+			if ( this.get_u16("slowed") > 0 )	//cannot teleport while slowed
+			{ failedCast = true; }
+
+			if (failedCast)
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+				return;
+			}
+
 			if (isServer())
 			{
 				CBitStream params;
