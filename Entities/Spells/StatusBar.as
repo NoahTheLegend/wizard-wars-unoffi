@@ -347,6 +347,9 @@ class StatusBar
             if (active[type] == 255)
                 return; // status not active, nothing to do
 
+            if (s[active[type]] is null)
+                return;
+
             s[active[type]].duration = 0; // set duration to 0 to fade out
             if (s[active[type]].active)
                 return;
