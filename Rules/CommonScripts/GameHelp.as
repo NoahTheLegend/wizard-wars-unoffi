@@ -1531,7 +1531,8 @@ void onRender(CRules@ this)
 
 	f32 tick = 2;
 	#ifdef STAGING
-	tick = f32(v_fpslimit) / 60;
+	if(v_fpslimit > 0)
+		tick = maths::max(2, f32(v_fpslimit) / 60);
 	#endif
 
 	active_time = showHelp ? active_time + 1.0f / tick : 0;
