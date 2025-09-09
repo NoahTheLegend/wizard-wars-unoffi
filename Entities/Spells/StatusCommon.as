@@ -160,7 +160,7 @@ shared string[] TOOLTIPS()
         "Entropist Sidewind: ignore collisions, increased movement speed",
         "Entropist Burn: free spells, diminished spell cast time, losing 30 mana per second",
         "Aura (Tau): take less damage and transfer some of it to the linked ally when nearby",
-        "Aura (Sigma): regenerating health, increases damage taken, disables mana gain",
+        "Aura (Sigma): 200% heal taken, increases damage taken, disables mana gain",
         "Aura (Omega): restores mana on hit, returns some of the damage split between enemies nearby",
         "Hallowed Barrier: decreases damage taken",
         "Humility: disable healing",
