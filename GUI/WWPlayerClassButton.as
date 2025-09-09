@@ -423,7 +423,7 @@ class WWPlayerClassButton
 	{
 		f32 factor = 2; // vanilla build is capped at 60 fps
 		#ifdef STAGING
-		factor = maths::max(2 ,f32(v_fpslimit) / 30);
+		factor = Maths::Max(2 ,f32(v_fpslimit) / 30);
 		#endif
 		tickrate++;
 
@@ -455,7 +455,7 @@ class WWPlayerClassButton
 
 		f32 factor = 1;
 		#ifdef STAGING
-		factor = maths::max(1 ,f32(v_fpslimit) / 60);
+		factor = Maths::Max(1 ,f32(v_fpslimit) / 60);
 		#endif
 
 		f32 df = classDescriptionFadeFactor * getRenderDeltaTime() * 60.0f;
