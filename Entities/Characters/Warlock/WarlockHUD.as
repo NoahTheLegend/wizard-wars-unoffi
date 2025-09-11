@@ -200,6 +200,9 @@ void onTick( CSprite@ this )
 u8 cursorType = 255;
 void ManageCursors(CBlob@ this, Spell@ spell = null)
 {
+	if (this is null) return;
+	if (getHUD() is null) return;
+
 	// set cursor
 	if (getHUD().hasButtons()) 
 	{
