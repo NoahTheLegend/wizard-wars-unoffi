@@ -1147,8 +1147,11 @@ class Label : GenericGUIItem
 		_customData = _cd;
 	}
 
-	void drawSelf(){
+	void drawSelf()
+	{
+		if (font == "") font = "hud";
 		GUI::SetFont(font);
+
 		if (centered) GUI::DrawTextCentered(label, position, color);
 		else GUI::DrawText(label, position, color);
 		GenericGUIItem::drawSelf();
