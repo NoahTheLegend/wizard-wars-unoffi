@@ -344,9 +344,19 @@ class StatusBar
     {
         if (duration == 0) // remove
         {
+            // validate type and active array bounds
+            if (type >= active.size())
+                return;
+
+            // validate that the status is active
             if (active[type] == 255)
                 return; // status not active, nothing to do
 
+            // validate s array bounds
+            if (active[type] >= s.size())
+                return;
+
+            // validate that the status object exists
             if (s[active[type]] is null)
                 return;
 
