@@ -4,8 +4,18 @@
 #include "EmotesCommon.as"
 #include "Hitters.as"
 
+void dumbFix(int id)
+{
+	GUI::SetFont("menu");
+}
+
 void onInit(CRules@ this)
 {
+	if (isClient())
+	{
+		int cb_cli_id = Render::addScript(RenderLayer::layer_posthud, "KAG.as", "dumbFix", 0)
+	}
+
 	getNet().legacy_cmd = true;
 	LoadDefaultMapLoaders();
 	LoadDefaultGUI();
