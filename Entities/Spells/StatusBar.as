@@ -372,6 +372,7 @@ class StatusBar
         {
             if (active[type] == 255 || override_add)
             {
+                if (type >= StatusType::TOTAL) return; // invalid type
                 if (active[type] == 255) s.push_back(STATUSES[type]);
                 addStatus(type, duration);
             }
