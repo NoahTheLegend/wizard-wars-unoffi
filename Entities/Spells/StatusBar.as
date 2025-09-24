@@ -377,7 +377,9 @@ class StatusBar
             }
             else
             {
+                if (active[type] >= s.size()) return; // out of bounds
                 if (active[type] == 255) return; // status is not active, nothing to do
+                if (s[active[type]] is null) return; // status object doesn't exist, nothing to do
                 s[active[type]].duration = duration; // update duration
             }
         }
