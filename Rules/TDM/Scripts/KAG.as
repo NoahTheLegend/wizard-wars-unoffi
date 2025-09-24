@@ -13,7 +13,7 @@ void onInit(CRules@ this)
 {
 	if (isClient())
 	{
-		int cb_cli_id = Render::addScript(RenderLayer::layer_posthud, "KAG.as", "dumbFix", 0)
+		int cb_cli_id = Render::addScript(Render::ScriptLayer::layer_posthud, "KAG.as", "dumbFix", 0);
 	}
 
 	getNet().legacy_cmd = true;
