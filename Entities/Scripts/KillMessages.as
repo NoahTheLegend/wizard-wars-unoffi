@@ -291,7 +291,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 		}
 
 		// hover message
-        /*
+        
 		if (killer !is null)
 		{
 			CBlob@ killerblob = killer.getBlob();
@@ -346,7 +346,6 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 				add_message(AssistMessage(victim));
 			}
 		}
-        */
 	}
 }
 
