@@ -4691,7 +4691,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			f32 orbspeed = necro_shoot_speed * 0.75f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
-			f32 orbDamage = 1.0f * extraDamage;
+			f32 orbDamage = 2.0f * extraDamage;
 
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 			Vec2f orbVel = (aimpos - orbPos);
