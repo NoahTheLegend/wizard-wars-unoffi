@@ -16,12 +16,13 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
 	shape.SetGravityScale(0.0f);
 	shape.getConsts().mapCollisions = false;
-	shape.getConsts().net_threshold_multiplier = 0.25f;
+	shape.getConsts().net_threshold_multiplier = 1.25f;
 
 	this.set_netid("owner",0);
 	this.set_s8("shardID",-1);
 	this.set_u32("deadTimer",0);
 	this.Tag("barrier");
+	this.Tag("shard_barrier");
 }
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )

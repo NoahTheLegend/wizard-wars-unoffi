@@ -5,7 +5,6 @@ void onInit(CBlob@ this)
 {
 	this.Tag("counterable");
 	this.Tag("projectile");
-	this.Tag("counterable");
 	this.Tag("phase through spells");
 
 	this.addCommandID("shoot_sfx");
@@ -131,7 +130,7 @@ void onTick(CBlob@ this)
 	sparks(this.getPosition() + this.getVelocity() * 4, 1, this);
 }
 
-void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	if (blob is null && solid)
 	{

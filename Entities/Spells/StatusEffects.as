@@ -1,4 +1,6 @@
-//Status Effects
+#include "Hitters.as";
+#include "HittersWW.as";
+#include "StatusEffects.as";
 #include "RunnerCommon.as"
 #include "MagicCommon.as";
 #include "SplashWater.as";
@@ -7,9 +9,9 @@
 #include "SpellUtils.as";
 #include "EffectsCollection.as";
 #include "PaladinCommon.as";
+#include "PlayerPrefsCommon.as";
 
 Random _r(94712);
-
 void onTick(CBlob@ this)
 {
 	if (getGameTime() < 30) return;
@@ -26,15 +28,22 @@ void onTick(CBlob@ this)
 	}
 	else this.Untag("extra_damage");
 
+	bool has_prefs = false;
+	PlayerPrefsInfo@ playerPrefs;
+	if (this.getPlayer() !is null && this.getPlayer().get("playerPrefsInfo", @playerPrefs))
+	{
+		has_prefs = true;
+	}
+
 	CSprite@ thisSprite = this.getSprite();
 
 	//FREEZE
 	bool isFrozen = this.get_bool("frozen");
 	bool isInIce = this.isAttachedToPoint("PICKUP2");
 
-	if ( isFrozen && !isInIce )
+	if (isFrozen && !isInIce)
 		this.set_bool("frozen", false);	
-	else if ( isInIce )
+	else if (isInIce)
 	{
 		this.set_bool("frozen", true);
 	
@@ -92,7 +101,19 @@ void onTick(CBlob@ this)
 		{				
 			this.set_u16("healblock", 0);
 		}
-		
+		else if (this.get_u16("poisoned") > 0 && (!this.exists("plague") || !this.get_bool("plague")))
+		{
+			this.set_u16("poisoned", 0);
+		}
+		else if (this.get_u16("silenced") > 0)
+		{
+			this.set_u16("silenced", 0);
+		}
+		else if (this.get_u16("feared") > 0)
+		{
+			this.set_u16("feared", 0);
+		}
+
 		if (antidebuff == 0)
 		{
 			thisSprite.PlaySound("HasteOff.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
@@ -141,6 +162,207 @@ void onTick(CBlob@ this)
 		}
 	}
 
+	//POISON
+	u16 poisoned = this.get_u16("poisoned");
+	if (poisoned > 0)
+	{
+		poisoned--;
+		this.set_u16("poisoned", poisoned);
+
+		int threshold = this.exists("plague") && this.get_bool("plague") ? poisonThreshold * 2 : poisonThreshold;
+		if (isServer() && this.getTickSinceCreated() % threshold == 0)
+		{
+			u16 last_id = this.exists("last_poison_owner_id") ? this.get_u16("last_poison_owner_id") : 0;
+			CBlob@ hitter = last_id > 0 ? getBlobByNetworkID(last_id) : this;
+			if (hitter !is null)
+			{
+				hitter.server_Hit(this, this.getPosition(), Vec2f_zero, poisonDamage, HittersWW::poison, true);
+			}
+		}
+
+		if (poisoned % 5 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{		
+				if (getNet().isClient())
+				{
+					const f32 rad = 7.0f;
+					Vec2f random = Vec2f( XORRandom(128)-64, XORRandom(128)-64 ) * 0.015625f * rad;
+					CParticle@ p = ParticleAnimated("ToxicGas.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(50)-25), 1.0f, 2 + XORRandom(3), -0.08f, true);
+					if (p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+						p.setRenderStyle(RenderStyle::additive);
+						if (XORRandom(2) == 0)
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+
+						p.deadeffect = -1;
+					}
+				}
+			}
+		}
+
+		if (poisoned == 0)
+		{
+			thisSprite.PlaySound("PoisonClean"+XORRandom(2)+".ogg", 1.25, 1.0f + XORRandom(10)*0.01f);
+
+			this.set_u16("last_poison_owner_id", 0);
+			this.Sync("last_poison_owner_id", true);
+			this.Sync("poisoned", true);
+		}
+	}
+
+	//DARKRITUAL
+	u16 darkritual = this.get_u16("darkritual_effect_time");
+	if (darkritual > 0)
+	{
+		darkritual--;
+
+		if (isClient() && darkritual % 3 == 0)
+		{
+			ParticleBloodSplat(this.getPosition() + Vec2f(XORRandom(121)*0.1f, 0).RotateBy(XORRandom(360)), false);
+
+			for (int i = 0; i < 4; i++)
+			{
+				const f32 rad = 10.0f;
+				Vec2f random = Vec2f(XORRandom(96)-48, XORRandom(64)-32 ) * 0.015625f * rad;
+				CParticle@ p = ParticleAnimated("BloodDrops.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
+				if (p !is null)
+				{
+					p.bounce = 0;
+    				p.fastcollision = true;
+
+					if (XORRandom(2) == 0)
+						p.Z = 10.0f;
+					else
+						p.Z = -10.0f;
+
+					p.deadeffect = -1;
+				}
+			}
+		}
+
+		if (darkritual == 1 && isServer())
+		{
+			f32 darkRitualDamage = this.get_f32("darkritual_self_damage");
+			this.server_Hit(this, this.getPosition(), Vec2f_zero, darkRitualDamage, Hitters::crush, true);
+		}
+
+		this.set_u16("darkritual_effect_time", darkritual);
+	}
+
+	//CARNAGE
+	if (this.hasTag("carnage_effect"))
+	{
+
+	}
+
+	//SILENCE
+	u16 silenced = this.get_u16("silenced");
+	if (silenced > 0)
+	{
+		silenced--;
+		this.set_u16("silenced", silenced);
+
+		if (has_prefs && getGameTime() % 5 == 0)
+		{
+			for (u8 i = 0; i < playerPrefs.spell_cooldowns.size(); i++)
+			{
+				//if (i != 1)
+				{
+					playerPrefs.spell_cooldowns[i] = 10;
+				}
+			}
+		}
+		
+		if (silenced % 3 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{
+				if (getNet().isClient())
+				{
+					const f32 rad = 6.0f;
+					Vec2f random = Vec2f(XORRandom(16) + 16, 0).RotateBy(XORRandom(360));
+					Vec2f rNorm = random;
+					rNorm.Normalize();
+					Vec2f ppos = this.getPosition() + this.getVelocity() + random;
+					CParticle@ p = ParticleAnimated(XORRandom(5) == 0 ? "Track1.png" : "Swirl1.png", ppos, -rNorm * random.Length() * 0.06f, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.01f, true);
+					if (p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+						if ( XORRandom(2) == 0 )
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+
+						p.colour = SColor(175 + XORRandom(25), 180+XORRandom(35), 25+XORRandom(55), 220+XORRandom(35));
+						p.forcecolor = SColor(175 + XORRandom(25), 180+XORRandom(35), 25+XORRandom(55), 220+XORRandom(35));
+						p.deadeffect = -1;
+					}
+				}
+			}
+		}
+		
+		if (silenced == 0)
+		{
+			thisSprite.PlaySound("SilenceOff.ogg", 0.75f, 1.0f + XORRandom(11) * 0.01f);
+			this.Sync("silenced", true);
+		}
+	}
+
+	//FEAR
+	u16 feared = this.get_u16("feared");
+	if (feared > 0)
+	{
+		feared--;
+		this.set_u16("feared", feared);
+
+		this.setKeyPressed(this.isFacingLeft() ? key_left : key_right, true);
+		if (has_prefs && XORRandom(100) == 0)
+		{
+			thisSprite.PlaySound("/MigrantScream", 1.0f, 1.0f + XORRandom(11) * 0.01f);
+		}
+
+		if (feared % 2 == 0)
+		{
+			for (int i = 0; i < 1; i++)
+			{
+				if (getNet().isClient())
+				{
+					const f32 rad = 6.0f;
+					Vec2f random = Vec2f(XORRandom(16) + 16, 0).RotateBy(XORRandom(360));
+					Vec2f rNorm = random;
+					rNorm.Normalize();
+					Vec2f ppos = this.getPosition() + this.getVelocity() + random;
+					CParticle@ p = ParticleAnimated(XORRandom(5) == 0 ? "Track1.png" : "Swirl1.png", ppos, -rNorm * random.Length() * 0.06f, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.01f, true);
+					if (p !is null)
+					{
+						p.bounce = 0;
+    					p.fastcollision = true;
+						if ( XORRandom(2) == 0 )
+							p.Z = 10.0f;
+						else
+							p.Z = -10.0f;
+
+						p.colour = SColor(180, 80+XORRandom(40), 10+XORRandom(40), 40+XORRandom(40));
+						p.forcecolor = SColor(180, 80+XORRandom(40), 10+XORRandom(40), 40+XORRandom(40));
+						p.deadeffect = -1;
+					}
+				}
+			}
+		}
+
+		if (feared == 0)
+		{
+			thisSprite.PlaySound("FearOff.ogg", 0.8f, 0.9f + XORRandom(16) * 0.01f);
+			this.Sync("feared", true);
+		}
+	}
+
 	//WET
 	bool waterbarrier = this.get_bool("waterbarrier");
 	u16 wet = this.get_u16("wet timer");
@@ -163,7 +385,7 @@ void onTick(CBlob@ this)
 			{		
 				if(getNet().isClient())
 				{
-					const f32 rad = 6.0f;
+					const f32 rad = 8.0f;
 					Vec2f random = Vec2f(XORRandom(96)-48, XORRandom(64)-32 ) * 0.015625f * rad;
 					CParticle@ p = ParticleAnimated("WaterDrops1.png", this.getPosition() + random, Vec2f(0,0), float(XORRandom(360)), 1.0f, 2 + XORRandom(3), 0.2f, true);
 					if (p !is null)
@@ -175,6 +397,8 @@ void onTick(CBlob@ this)
 							p.Z = 10.0f;
 						else
 							p.Z = -10.0f;
+
+						p.deadeffect = -1;
 					}
 				}
 			}
@@ -482,8 +706,9 @@ void onTick(CBlob@ this)
 					#endif
 					pos -= Vec2f(6,0);
 				}
+				
 				CParticle@ p = ParticleAnimated(afterimageFile, pos, Vec2f_zero, 0, 1.0f, 5, 0.0f, false);
-				if ( p !is null)
+				if (p !is null)
 				{
 					p.bounce = 0;
 					p.Z = -10.0f;
@@ -983,6 +1208,37 @@ void onTick(CBlob@ this)
 
 			thisSprite.RemoveSpriteLayer("water_ward"); //Ward sprite removal
 			this.RemoveScript("WaterBarrierWard.as");
+		}
+	}
+
+	//PLAGUE
+	{
+		bool plague = this.get_bool("plague");
+		u32 originplaguetiming = this.get_u32("originplaguetiming");
+		u32 plaguetiming = this.get_u32("plagueiming");
+		u32 disableplaguetiming = this.get_u32("disableplaguetiming");
+		u8 ticks_for_disable = 1;
+
+		if (plague && this.getTickSinceCreated() % 5 == 0)
+		{
+			if (!this.hasScript("PlagueWard.as"))
+			{
+				this.AddScript("PlagueWard.as");
+			}
+
+			Poison(this, 10, this, 0);
+		}
+
+		//disable
+	    if (!plague && this.hasScript("PlagueWard.as"))
+		{
+			this.RemoveScript("PlagueWard.as");
+			CBlob@ plagueBlob = getBlobByNetworkID(this.get_u16("plague_follower"));
+			if (plagueBlob !is null)
+			{
+				plagueBlob.server_Die();
+				this.set_u16("plague_follower", 0);
+			}
 		}
 	}
 

@@ -1,5 +1,6 @@
-#include "Hitters.as";	   
-#include "/Entities/Common/Attacks/LimitedAttacks.as";
+#include "Hitters.as";
+#include "HittersWW.as";
+#include "LimitedAttacks.as";
 
 const f32 RANGE = 2000.0f;
 const f32 DAMAGE = 0.6f;
@@ -24,7 +25,7 @@ void onInit( CBlob @ this )
 	
 	CShape@ shape = this.getShape();
 	//shape.SetStatic(true);
-	shape.SetGravityScale( 0.0f );
+	shape.SetGravityScale(0.0f);
 	shape.SetRotationsAllowed(false);
 	
 	ShapeConsts@ consts = shape.getConsts();
@@ -35,7 +36,6 @@ void onInit( CBlob @ this )
 	thisSprite.PlaySound("lightning_impact.ogg", 5.0f, 1.0f + XORRandom(5)/10.0f);
 	
 	this.set_bool("initialized", false);
-	
 	this.server_SetTimeToDie(LIFETIME);
 }
 
@@ -98,8 +98,8 @@ void updateLaserPositions(CBlob@ this)
 					f32 damage = DAMAGE;
 					if (hitBlob.get_u16("wet timer") > 0) damage *= 1.33f;
 					if (hitBlob.hasTag("barrier")) damage *= 0.5f;
-					this.server_Hit(hitBlob, hi.hitpos, Vec2f(0,1), damage, Hitters::explosion, true);
-					
+					this.server_Hit(hitBlob, hi.hitpos, Vec2f(0,1), damage, HittersWW::electricity, true);
+
 					damageDealt = true;
 				}
 			}

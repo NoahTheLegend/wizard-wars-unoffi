@@ -4,8 +4,13 @@
 #include "SpellHashDecoder.as";
 #include "HoverMessage.as";
 #include "PaladinCommon.as";
+#include "HoverMessage.as";
 
 Random _spell_common_r(26784);
+
+const u16 defaultPoisonTime = 300; // 10 seconds
+const u8  poisonThreshold = 60; // 2 seconds
+const f32 poisonDamage = 0.2f; // 1 HP
 
 void Freeze(CBlob@ blob, f32 frozenTime)
 {	
@@ -212,7 +217,7 @@ void SummonZombie(CBlob@ this, string name, Vec2f pos, int team)
 	}
 }
 
-void Heal( CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool sound = true, f32 particles_factor = 1.0f)
+void Heal(CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool sound = true, f32 particles_factor = 1.0f)
 {
 	f32 health = blob.getHealth();
 	f32 initHealth = blob.getInitialHealth();
@@ -233,21 +238,17 @@ void Heal( CBlob@ this, CBlob@ blob, f32 healAmount, bool flash = true, bool sou
         SetScreenFlash( 75, 0, 225, 0 );
 	}
 
-	if (this.getDamageOwnerPlayer() is getLocalPlayer() && blob !is getLocalPlayerBlob())
+	if (this.getDamageOwnerPlayer() is getLocalPlayer())
 	{
 		CRules@ rules = getRules();
 		if (rules !is null && rules.get_bool("hovermessages_enabled"))
 			add_message(HealDealtMessage(healAmount));
-
-		// crashes the game!
-		//if (getRules().get_bool("hovermessages_enabled"))
-		//	add_message(HealDealtMessage(healAmount));
 	}
 	
 	if (isClient())
 	{
 		if (sound) blob.getSprite().PlaySound("Heal.ogg", 0.8f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );
-		makeHealParticles(blob, 1.0f, 12 * particles_factor, sound);
+		if (particles_factor > 0) makeHealParticles(blob, 1.0f, 12 * particles_factor, sound);
 	}
 }
 
@@ -280,34 +281,33 @@ void makeHealParticles(CBlob@ this, const f32 velocity = 1.0f, const int smallpa
 
 void Revive(CBlob@ blob)
 {			
-	int playerId = blob.get_u16( "owner_player" );
-	CPlayer@ deadPlayer = getPlayerByNetworkId( playerId );
+	int playerId = blob.get_u16("owner_player");
+	CPlayer@ deadPlayer = getPlayerByNetworkId(playerId);
 	
-	if( isServer() && deadPlayer !is null )
+	if (isServer() && deadPlayer !is null)
 	{
 		PlayerPrefsInfo@ playerPrefsInfo;
-		if ( !deadPlayer.get( "playerPrefsInfo", @playerPrefsInfo ) || playerPrefsInfo is null )
+		if (!deadPlayer.get("playerPrefsInfo", @playerPrefsInfo ) || playerPrefsInfo is null)
 		{
 			return;
 		}
 	
-		CBlob @newBlob = server_CreateBlob( playerPrefsInfo.classConfig, deadPlayer.getTeamNum(), blob.getPosition() );		
-		if( newBlob !is null )
+		CBlob@ newBlob = server_CreateBlob(playerPrefsInfo.classConfig, deadPlayer.getTeamNum(), blob.getPosition());		
+		if (newBlob !is null)
 		{
 			f32 health = newBlob.getHealth();
 			f32 initHealth = newBlob.getInitialHealth();
 	
-			newBlob.server_SetPlayer( deadPlayer );
-			newBlob.server_SetHealth( initHealth*0.2f );
+			newBlob.server_SetPlayer(deadPlayer);
+			newBlob.server_SetHealth(initHealth*0.2f);
 			
 			ManaInfo@ manaInfo;
-			if ( newBlob.get( "manaInfo", @manaInfo ) ) 
+			if (newBlob.get("manaInfo", @manaInfo)) 
 			{
 				manaInfo.mana = 0;
 			}			
 			
 			makeReviveParticles(newBlob);
-			
 			blob.Tag("mark_for_death");
 		}
 	}
@@ -375,6 +375,52 @@ void UnholyRes(CBlob@ blob)
 	ParticleZombieLightning( blob.getPosition() );
 }
 
+void CreateDemonicPact(CBlob@ this, CBlob@ gravestone)
+{
+	if (!isServer()) return;
+	if (gravestone is null) return;
+
+	CBlob@ book = server_CreateBlob("demonrevivebook", this.getTeamNum(), gravestone.getPosition());
+	if (book !is null)
+	{
+		book.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+		book.set_u16("follow_id", gravestone.getNetworkID());
+		if (this.hasTag("extra_damage")) book.Tag("extra_damage");
+	}
+}
+
+void DemonicPact(CBlob@ this, CBlob@ gravestone)
+{
+	if (this is null || gravestone is null) return;
+
+	int playerId = gravestone.get_u16("owner_player");
+	CPlayer@ deadPlayer = getPlayerByNetworkId(playerId);
+
+	CPlayer@ damageOwner = this.getDamageOwnerPlayer();
+	if (isServer() && deadPlayer !is null && damageOwner.getNetworkID() != playerId)
+	{
+		CBlob@ newBlob = server_CreateBlob(this.hasTag("extra_damage") ? "demonbig" :"demon", deadPlayer.getTeamNum(), gravestone.getPosition());
+		if (newBlob !is null)
+		{
+			newBlob.server_SetPlayer(deadPlayer);
+			newBlob.SetDamageOwnerPlayer(damageOwner);
+			newBlob.set_u16("ownerplayer_id", damageOwner !is null ? damageOwner.getNetworkID() : 0);
+
+			ManaInfo@ manaInfo;
+			if (newBlob.get("manaInfo", @manaInfo))
+			{
+				manaInfo.mana = 0;
+			}
+
+			makeReviveParticles(newBlob);
+			newBlob.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+		}
+	}
+		
+	gravestone.getSprite().PlaySound("Summon2.ogg", 0.8f, 0.75f);
+	ParticleZombieLightning(gravestone.getPosition());
+}
+
 void makeReviveParticles(CBlob@ this, const f32 velocity = 1.0f, const int smallparticles = 12, const bool sound = true)
 {
 	if ( !isClient() ){
@@ -440,16 +486,18 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 			}
 
 			bool sameTeam = b.getTeamNum() == caster.getTeamNum();
-			
 			bool countered = false;
 			bool retribution = false;
-			
+
 			// spells
-			if ( b.hasTag("counterable") && (!sameTeam || b.hasTag("alwayscounter")) )
+			if (b.hasTag("counterable") && (!sameTeam || b.hasTag("alwayscounter")))
 			{
 				b.Untag("exploding");
 				b.Tag("just_countered");
 				b.Tag("mark_for_death");
+				b.Tag("counterspelled");
+				b.set_u16("countered_by_id", caster.getNetworkID());
+				
 				if (b.getName() == "plant_aura")
 				{retribution = true;}
 					
@@ -464,6 +512,13 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
+			if ( b.get_u16("poisoned") > 0 && (!b.exists("plague") || !b.get_bool("plague")) && sameTeam )
+			{
+				b.set_u16("poisoned", 1);
+				b.Sync("poisoned", true);
+
+				countered = true;
+			}
 			if (b.get_u16("confused") > 0 && sameTeam)
 			{
 				b.set_u16("confused", 1);
@@ -471,21 +526,35 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
-			if ( b.get_u16("manaburn") > 0 && sameTeam )
+			if (b.get_u16("manaburn") > 0 && sameTeam)
 			{				
 				b.set_u16("manaburn", 1);
 				b.Sync("manaburn", true);
 					
 				countered = true;
 			}
-			if ( b.get_u16("healblock") > 0 && sameTeam )
-			{				
+			if (b.get_u16("healblock") > 0 && sameTeam)
+			{
 				b.set_u16("healblock", 1);
 				b.Sync("healblock", true);
 					
 				countered = true;
 			}
-			
+			if (b.get_u16("silenced") > 0 && sameTeam)
+			{
+				b.set_u16("silenced", 1);
+				b.Sync("silenced", true);
+
+				countered = true;
+			}
+			if (b.get_u16("feared") > 0 && sameTeam)
+			{
+				b.set_u16("feared", 1);
+				b.Sync("feared", true);
+
+				countered = true;
+			}
+
 			// enemy buffs
 			if (
 			(b.get_u16("hastened") > 0
@@ -504,61 +573,61 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 				if(b.get_u16("hastened") > 0)
 				{
 					b.set_u16("hastened", 1);
-					b.Sync("hastened", true);
+					if (isServer()) b.Sync("hastened", true);
 				}
 
 				if(b.get_u16("regen") > 0)
 				{
 					b.set_u16("regen", 1);
-					b.Sync("regen", true);
+					if (isServer()) b.Sync("regen", true);
 				}
 
 				if(b.get_u16("fireProt") > 0)
 				{
 					b.set_u16("fireProt", 1);
-					b.Sync("fireProt", true);
+					if (isServer()) b.Sync("fireProt", true);
 				}
 
 				if(b.get_u16("airblastShield") > 0)
 				{
 					b.set_u16("airblastShield", 1);
-					b.Sync("airblastShield", true);
+					if (isServer()) b.Sync("airblastShield", true);
 				}
 
 				if(b.get_u16("stoneSkin") > 0)
 				{
 					b.set_u16("stoneSkin", 1);
-					b.Sync("stoneSkin", true);
+					if (isServer()) b.Sync("stoneSkin", true);
 				}
 
 				if (b.get_bool("waterbarrier"))
 				{
 					b.set_bool("waterbarrier", false);
-					b.Sync("waterbarrier", true);
+					if (isServer()) b.Sync("waterbarrier", true);
 				}
 
 				if (b.get_bool("damageaura"))
 				{
 					b.set_bool("damageaura", false);
-					b.Sync("damageaura", true);
+					if (isServer()) b.Sync("damageaura", true);
 				}
 
 				if (b.get_u16("dmgconnection") > 0)
 				{
 					b.set_u16("dmgconnection", 1);
-					b.Sync("dmgconnection", true);
+					if (isServer()) b.Sync("dmgconnection", true);
 				}
 
 				if (b.get_u16("cdreduction") > 0)
 				{
 					b.set_u16("cdreduction", 1);
-					b.Sync("cdreduction", true);
+					if (isServer()) b.Sync("cdreduction", true);
 				}
 
 				if (b.get_u16("antidebuff") > 0)
 				{
 					b.set_u16("antidebuff", 1);
-					b.Sync("antidebuff", true);
+					if (isServer()) b.Sync("antidebuff", true);
 				}
 					
 				countered = true;
@@ -573,12 +642,12 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 					
 				countered = true;
 			}
-			else if(!sameTeam && (b.hasTag("multi_despell")))
+			else if(!sameTeam && (b.hasTag("multi_dispell")))
 			{
-				b.add_u8("despelled",1);
+				b.add_u8("dispelled",1);
 				countered = true;
 			}
-			if ( retribution)
+			if (retribution)
 			{
 				/*ManaInfo@ manaInfo;
 				if (!caster.get( "manaInfo", @manaInfo )) {
@@ -635,39 +704,95 @@ void counterSpell( CBlob@ caster , Vec2f aimpos, Vec2f thispos)
 	
 }
 
-void Slow( CBlob@ blob, u16 slowTime )
-{	
-	if ( blob.get_u16("hastened") > 0 )
+void Slow(CBlob@ blob, u16 slowTime)
+{
+	if (blob.get_u16("hastened") > 0)
 	{
 		blob.set_u16("hastened", 1);
-		blob.Sync("hastened", true);
+		if (isServer()) blob.Sync("hastened", true);
 	}
 	else
 	{
-		blob.set_u16("slowed", slowTime);
-		blob.Sync("slowed", true);
-		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
+		blob.set_u16("slowed", Maths::Max(slowTime, blob.get_u16("slowed")));
+		if (isServer()) blob.Sync("slowed", true);
+
+		blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
 	}
+}
+
+void Silence(CBlob@ blob, u16 silenceTime)
+{
+	if (blob.get_u16("silenced") == 0)
+	{
+		blob.getSprite().PlaySound("SilenceOn.ogg", 0.7f, 1.0f + XORRandom(11) * 0.01f);
+	}
+
+	blob.set_u16("silenced", Maths::Max(silenceTime, blob.get_u16("silenced")));
+	if (isServer()) blob.Sync("silenced", true);
+}
+
+void Fear(CBlob@ blob, u16 fearTime)
+{
+	if (blob.get_u16("feared") == 0)
+	{
+		blob.getSprite().PlaySound("FearOn.ogg", 0.8f, 1.0f + XORRandom(11) * 0.01f);
+	}
+	
+	blob.set_u16("feared", Maths::Max(fearTime, blob.get_u16("feared")));
+	if (isServer()) blob.Sync("feared", true);
+}
+
+void Shapeshift(CBlob@ this, CBlob@ blob, u16 time)
+{	
+	if (isServer())
+	{
+		CBitStream params;
+		params.write_bool(false);
+		params.write_u16(this.getNetworkID());
+		params.write_u16(blob.getNetworkID());
+
+		CRules@ rules = getRules();
+		if (rules is null) return;
+
+		rules.SendCommand(rules.getCommandID("shapeshift_gatherstats"), params);
+	}
+}
+
+void Poison(CBlob@ blob, u16 poisonTime = defaultPoisonTime, CBlob@ hitter = null, f32 sound_volume = 1.0f)
+{
+	if (hitter !is null)
+	{
+		blob.set_u16("last_poison_owner_id", hitter.getNetworkID());
+		if (isServer()) blob.Sync("last_poison_owner_id", true);
+	}
+
+	if (blob.get_u16("poisoned") == 0) blob.getSprite().PlaySound("SlowOn.ogg", 0.6f * sound_volume, 0.75f + XORRandom(1)/10.0f);
+
+	blob.set_u16("poisoned", Maths::Max(poisonTime, blob.get_u16("poisoned")));
+	if (isServer()) blob.Sync("poisoned", true);
 }
 
 void Confuse( CBlob@ blob, u16 confuseTime )
 {	
-	blob.set_u16("confused", confuseTime);
-	blob.Sync("confused", true);
-	blob.getSprite().PlaySound("confuseOn.ogg", 0.8f, 1.0f + XORRandom(1)/10.0f);
+	blob.set_u16("confused", Maths::Max(confuseTime, blob.get_u16("confused")));
+	if (isServer()) blob.Sync("confused", true);
+
+	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.0f);
 }
 
 void ManaBurn( CBlob@ blob, u16 burnTime )
 {	
-	blob.set_u16("manaburn", burnTime);
-	blob.Sync("manaburn", true);
+	blob.set_u16("manaburn", Maths::Max(burnTime, blob.get_u16("manaburn")));
+	if (isServer()) blob.Sync("manaburn", true);
+
 	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.15f + XORRandom(1)/10.0f);
 }
 
 void HealBlock( CBlob@ blob, u16 hbTime )
 {
-	blob.set_u16("healblock", hbTime);
-	blob.Sync("healblock", true);
+	blob.set_u16("healblock", Maths::Max(hbTime, blob.get_u16("healblock")));
+	if (isServer()) blob.Sync("healblock", true);
+
 	blob.getSprite().PlaySound("SlowOn.ogg", 0.8f, 1.35f + XORRandom(1)/10.0f);
 	blob.getSprite().PlaySound("sidewind_init", 0.5f, 0.8f);
 }
@@ -677,12 +802,12 @@ void Haste( CBlob@ blob, u16 hasteTime )
 	if ( blob.get_u16("slowed") > 0 )
 	{
 		blob.set_u16("slowed", 1);
-		blob.Sync("slowed", true);
+		if (isServer()) blob.Sync("slowed", true);
 	}
 	else
 	{
-		blob.set_u16("hastened", hasteTime);
-		blob.Sync("hastened", true);
+		blob.set_u16("hastened", Maths::Max(hasteTime, blob.get_u16("hastened")));
+		if (isServer()) blob.Sync("hastened", true);
 		if(isClient())
 		{blob.getSprite().PlaySound("HasteOn.ogg", 0.8f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
 	}
@@ -690,18 +815,19 @@ void Haste( CBlob@ blob, u16 hasteTime )
 
 void Regen( CBlob@ blob, u16 regenTime )
 {	
-	blob.set_u16("regen", regenTime);
-	blob.Sync("regen", true);
+	blob.set_u16("regen", Maths::Max(regenTime, blob.get_u16("regen")));
+	if (isServer()) blob.Sync("regen", true);
+
 	blob.getSprite().PlaySound("Heal.ogg", 0.75f, 1.15f + XORRandom(1)/10.0f);
 }
 
 void CooldownReduce(CBlob@ blob, u16 time, f32 power)
 {	
-	blob.set_u16("cdreduction", time);
-	blob.Sync("cdreduction", true);
+	blob.set_u16("cdreduction", Maths::Max(time, blob.get_u16("cdreduction")));
+	if (isServer()) blob.Sync("cdreduction", true);
 
 	blob.set_f32("majestyglyph_cd_reduction", glyph_cooldown_reduction);
-	blob.Sync("majestyglyph_cd_reduction", true);
+	if (isServer()) blob.Sync("majestyglyph_cd_reduction", true);
 
 	blob.getSprite().PlaySound("negentropySound.ogg", 0.75f, 2.5f + XORRandom(1)/10.0f);
 	blob.getSprite().PlaySound("SlowOff.ogg", 0.75f, 1.5f + XORRandom(1)/10.0f);
@@ -709,16 +835,17 @@ void CooldownReduce(CBlob@ blob, u16 time, f32 power)
 
 void AntiDebuff(CBlob@ blob, u16 time)
 {	
-	blob.set_u16("antidebuff", time);
-	blob.Sync("antidebuff", true);
+	blob.set_u16("antidebuff", Maths::Max(time, blob.get_u16("antidebuff")));
+	if (isServer()) blob.Sync("antidebuff", true);
 
 	blob.getSprite().PlaySound("PlantShotLaunch.ogg", 1.0f, 1.0f + XORRandom(16)*0.01f);
 }
 
 void Sidewind( CBlob@ blob, u16 windTime )
 {	
-	blob.set_u16("sidewinding", windTime);
-	blob.Sync("sidewinding", true);
+	blob.set_u16("sidewinding", Maths::Max(windTime, blob.get_u16("sidewinding")));
+	if (isServer()) blob.Sync("sidewinding", true);
+
 	if(isClient())
 	{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
 }
@@ -770,7 +897,7 @@ void DamageToMana(CBlob@ blob, bool enable)
 
 void Barrier(CBlob@ blob, u16 time, u8 amount)
 {
-	if(isClient())
+	if (isClient())
 	{
 		CSprite@ sprite = blob.getSprite();
 		
@@ -796,15 +923,15 @@ void Barrier(CBlob@ blob, u16 time, u8 amount)
 
 void AirblastShield( CBlob@ blob, u16 airshieldTime )
 {	
-	blob.set_u16("airblastShield", airshieldTime);
-	blob.Sync("airblastShield", true);
+	blob.set_u16("airblastShield", Maths::Max(airshieldTime, blob.get_u16("airblastShield")));
+	if (isServer()) blob.Sync("airblastShield", true);
 	//if(isClient())
 	//{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
 }
 void FireWard( CBlob@ blob, u16 firewardTime )
 {	
-	blob.set_u16("fireProt", firewardTime);
-	blob.Sync("fireProt", true);
+	blob.set_u16("fireProt", Maths::Max(firewardTime, blob.get_u16("fireProt")));
+	if (isServer()) blob.Sync("fireProt", true);
 	//if(isClient())
 	//{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
 }
@@ -812,9 +939,9 @@ void FireWard( CBlob@ blob, u16 firewardTime )
 void Connect(CBlob@ blob, u16 time, u16 link_id)
 {
 	blob.set_u16("dmgconnection_id", link_id);
-	blob.Sync("dmgconnection_id", true);
+	if (isServer()) blob.Sync("dmgconnection_id", true);
 	blob.set_u16("dmgconnection", time);
-	blob.Sync("dmgconnection", true);
+	if (isServer()) blob.Sync("dmgconnection", true);
 
 	if (isClient())
 	{
@@ -827,20 +954,30 @@ void WaterBarrier(CBlob@ blob, bool enable)
 	blob.set_u32("waterbarriertiming", getGameTime());
 	blob.set_u32("originwaterbarrier", getGameTime());
 	blob.set_bool("waterbarrier", enable);
-	blob.Sync("waterbarrier", true);
+	if (isServer()) blob.Sync("waterbarrier", true);
+}
+
+void Plague(CBlob@ blob, bool enable)
+{
+	blob.set_u32("plaguetiming", getGameTime());
+	blob.set_u32("originplaguetiming", getGameTime());
+
+	blob.set_bool("plague", enable);
+	if (isServer()) blob.Sync("plague", true);
 }
 
 void StoneSkin( CBlob@ blob, u16 stoneskinTime )
 {	
 	blob.set_u16("stoneSkin", stoneskinTime);
-	blob.Sync("stoneSkin", true);
+	if (isServer()) blob.Sync("stoneSkin", true);
+	
 	//if(isClient())
 	//{blob.getSprite().PlaySound("sidewind_init.ogg", 2.5f, 1.0f + (0.2f * _spell_common_r.NextFloat()) );}
 }
 
-void manaShot( CBlob@ blob, u8 manaUsed, u8 casterMana, bool silent = false, const u8 direct_restore = 0)
+void manaShot(CBlob@ blob, u8 manaUsed, u8 casterMana, bool silent = false, const u8 direct_restore = 0)
 {	
-	if(blob !is null)
+	if (blob !is null)
 	{
 		ManaInfo@ manaInfo;
 		if (!blob.get( "manaInfo", @manaInfo )) {return;}
@@ -970,4 +1107,42 @@ int closestBlobIndex(CBlob@ this, CBlob@[] blobs, bool friendly)
 	}
     
     return bestIndex;
+}
+
+CBlob@ client_getNearbySpellTarget(CBlob@ this, f32 spell_range, f32 max_grab_range)
+{
+	CControls@ c = getControls();
+	if (c is null) return null;
+	if (!this.isMyPlayer()) return null;
+
+	CBlob@[] playerblobs;
+	getBlobsByTag("player", @playerblobs);
+
+	Vec2f aimPos = getDriver().getWorldPosFromScreenPos(c.getMouseScreenPos());
+	Vec2f endPoint = this.get_Vec2f("spell blocked pos");
+
+	f32 range = 99999.0f;
+	CBlob@ targetBlob = null;
+
+	for (int i = 0; i < playerblobs.length; i++)
+	{
+		CBlob@ playerblob = playerblobs[i];
+		if (playerblob is null
+			|| playerblob.getTeamNum() == this.getTeamNum()
+			|| playerblob.hasTag("dead")
+			|| (playerblob.getPosition() - endPoint).Length() >= max_grab_range) continue;
+
+		f32 dist = (aimPos - playerblob.getPosition()).Length();
+		if (dist < max_grab_range && dist < range)
+		{
+			bool rayCast = getMap().rayCastSolidNoBlobs(endPoint, playerblob.getPosition());
+			if (!rayCast)
+			{
+				range = dist;
+				@targetBlob = @playerblob;
+			}
+		}
+	}
+
+	return targetBlob;
 }

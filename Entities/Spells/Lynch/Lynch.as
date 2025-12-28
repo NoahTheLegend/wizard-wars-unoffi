@@ -49,7 +49,7 @@ const u8 anim_time = 3;
 
 void onTick(CBlob@ this)
 {
-    if (this.get_u8("despelled") >= 2) this.Tag("mark_for_death");
+    if (this.get_u8("dispelled") >= 2) this.Tag("mark_for_death");
     if (this.getTickSinceCreated() < 16 * anim_time) return;
     
     f32 rad = this.getRadius() * 2 + 4.0f;

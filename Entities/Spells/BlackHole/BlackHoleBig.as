@@ -12,8 +12,8 @@ void onInit(CBlob@ this)
 	this.server_SetTimeToDie(LIFETIME);
 	this.getShape().SetGravityScale(0.0);
 	this.Tag("black hole");
-	this.Tag("multi_despell");
-	this.set_u8("despelled", 0);
+	this.Tag("multi_dispell");
+	this.set_u8("dispelled", 0);
 	
 	this.server_setTeamNum(-1);
 	this.set_f32("mod", 1.0f);
@@ -28,7 +28,6 @@ void onInit(CSprite@ this)
 	this.SetEmitSound( "EnergyLoop1.ogg" );
 	this.SetEmitSoundSpeed(0.5f);
 	this.SetEmitSoundPaused( false );
-	this.ScaleBy(Vec2f(2,2));
 }
 
 void onTick(CSprite@ this)
@@ -53,7 +52,7 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if(this.get_u8("despelled") >= 2)
+	if(this.get_u8("dispelled") >= 2)
     {
         this.Tag("mark_for_death");
     }

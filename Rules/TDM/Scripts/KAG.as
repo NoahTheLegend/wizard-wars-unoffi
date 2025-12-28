@@ -54,6 +54,8 @@ void ReselectSpell(CRules@ this)
 bool need_sky_check = true;
 void onRestart(CRules@ this)
 {
+	this.Tag("update_moss");
+
 	ReselectSpell(this);
 
 	//map borders
@@ -74,6 +76,24 @@ void onRestart(CRules@ this)
 
 void onTick(CRules@ this)
 {
+	if (this.hasTag("update_moss"))
+	{
+		this.Untag("update_moss");
+
+		bool[][] captured_tiles;
+		this.set("moss_captured_tiles", @captured_tiles);
+
+		CMap@ map = getMap();
+		if (map !is null)
+		{
+			captured_tiles.resize(map.tilemapwidth);
+			for (u32 i = 0; i < captured_tiles.size(); i++)
+			{
+				captured_tiles[i].resize(map.tilemapheight);
+			}
+		}
+	}
+
 	if (isServer())
 	{
 		for (u8 i = 0; i < getPlayerCount(); i++)
@@ -86,8 +106,10 @@ void onTick(CRules@ this)
 			if (blob.hasTag("dead")) continue; //don't do this for dead players
 			
 			blob.server_Hit(blob, blob.getPosition(), Vec2f_zero, 0.0f, Hitters::fall, true);
+			//blob.server_SetHealth(blob.getHealth());
 		}
 	}
+
 	//TODO: figure out a way to optimise so we don't need to keep running this hook
 	if (need_sky_check)
 	{

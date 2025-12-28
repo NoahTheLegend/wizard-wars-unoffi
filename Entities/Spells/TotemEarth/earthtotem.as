@@ -8,10 +8,10 @@ void onInit(CBlob@ this)
     //this.Tag("counterable");
     this.Tag("totem");
     this.Tag("cantparry");
-    this.set_u8("despelled", 0);
+    this.set_u8("dispelled", 0);
     this.set_u16("fire_delay", 120);
     this.set_f32("max_dist", 64.0f);
-    this.Tag("multi_despell");
+    this.Tag("multi_dispell");
 
     this.Tag("exploding");
     this.set_string("custom_explosion_sound", "OrbExplosion.ogg");
@@ -57,7 +57,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 void onTick(CBlob@ this)
 {
-    if(this.get_u8("despelled") >= 2 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
+    if(this.get_u8("dispelled") >= 2 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
         this.Tag("mark_for_death");
     }

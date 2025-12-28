@@ -18,7 +18,7 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 				helper.setAssists(helper.getAssists() + 1);
 			}
 
-			if (victim !is null && blob.getName() != "wraith" && blob.getName() != "knight")
+			if (victim !is null && !blob.hasTag("ignore_scoreboard"))
 			{
 				victim.setDeaths(victim.getDeaths() + 1);
 				// temporary until we have a proper score system

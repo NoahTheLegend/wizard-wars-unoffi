@@ -1,13 +1,12 @@
 
-#include "Hitters2.as";
+#include "HittersWW.as";
 #include "TeamColour.as";
 #include "MakeDustParticle.as";
 
 const float STANDARD_SPEED = 32.0f;
-
-void onInit( CBlob@ this )
+void onInit(CBlob@ this)
 {
-    this.set_u8("custom_hitter", Hitters2::orb);
+    this.set_u8("custom_hitter", HittersWW::orb);
 	this.Tag("exploding");
 	this.Tag("projectile");
 	this.Tag("die_in_divine_shield");
@@ -22,11 +21,11 @@ void onInit( CBlob@ this )
 	
 	this.Tag("counterable");
 	
-	this.set_f32("explosive_radius", 60.0f );
+	this.set_f32("explosive_radius", 60.0f);
 	this.set_f32("explosive_damage", 3.0f);
 	this.set_f32("map_damage_radius", 30.0f);
 	this.set_f32("map_damage_ratio", -1.0f); //heck no!
-	this.set_u32("last smoke puff", 0 );
+	this.set_u32("last smoke puff", 0);
 
 	this.addCommandID("aimpos sync");
 }	

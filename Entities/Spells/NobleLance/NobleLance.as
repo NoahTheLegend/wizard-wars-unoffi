@@ -80,7 +80,7 @@ void onTick(CBlob@ this)
 			this.set_Vec2f("target_pos", p.getBlob().getPosition());
 		}
 	}
-	if (vel.Length() >= 1.0f) this.setAngleDegrees(-this.getVelocity().Angle() + (back?180:0));
+	if (vel.Length() >= 1.0f && isServer()) this.setAngleDegrees(-this.getVelocity().Angle() + (back?180:0));
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)

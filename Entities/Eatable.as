@@ -14,7 +14,7 @@ void onInit(CBlob@ this)
 void Heal(CBlob@ this, CBlob@ blob)
 {
 	bool exists = getBlobByNetworkID(this.getNetworkID()) !is null;
-	if (getNet().isServer() && blob.hasTag("player") && blob.getHealth() < blob.getInitialHealth() && !this.hasTag("healed") && exists)
+	if (getNet().isServer() && blob.hasTag("player") && !blob.hasTag("ignore_effects") && blob.getHealth() < blob.getInitialHealth() && !this.hasTag("healed") && exists)
 	{
 		CBitStream params;
 		params.write_u16(blob.getNetworkID());

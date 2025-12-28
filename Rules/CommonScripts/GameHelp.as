@@ -1,4 +1,5 @@
 #define CLIENT_ONLY
+
 #include "ActorHUDStartPos.as"
 #include "TeamColour.as"
 #include "IslandsCommon.as"
@@ -8,13 +9,25 @@
 #include "WWPlayerClassButton.as";
 #include "WheelMenuCommon.as";
 #include "Tutorial.as";
+#include "MagicCommon.as";
+
+const Vec2f menuSize = Vec2f(800, 538);
+const string classIconsImage = "GUI/ClassIconsLarge.png";
+const string classIconsImageHud = "GUI/ClassIconsLargeHud.png";
 
 bool showHelp = true;
+f32 active_time = 0;
+
 bool previous_showHelp = true;
 bool justJoined = true;
 bool page1 = true;
+
 const int slotsSize = 6;
 f32 boxMargin = 50.0f;
+string selectedClass = classes[0];
+int selectedClassID = 255;
+const SColor col_text = SColor(255, 91, 45, 18);
+
 //key names
 const string party_key = getControls().getActionKeyKeyName( AK_PARTY );
 const string inv_key = getControls().getActionKeyKeyName( AK_INVENTORY );
@@ -28,44 +41,9 @@ const string map_key = getControls().getActionKeyKeyName( AK_MAP );
 const string zoomIn_key = getControls().getActionKeyKeyName( AK_ZOOMIN );
 const string zoomOut_key = getControls().getActionKeyKeyName( AK_ZOOMOUT );
 
-const string lastChangesInfo = "";
-const string textInfo = 
-		"- Default Basic Controls:\n" +
-		" [ " + action1_key + " ] Hold and release to fire your selected primary spell.\n"+
-		" [ " + action2_key + " ]  Hold and release to fire your secondary spell.\n"+
-		" [ " + action3_key + " ]  Hold and release to fire your auxiliary1 spell.\n"+
-		" [ " + taunts_key + " ]  Hold and release to fire your auxiliary2 spell.\n"+
-		" [ MIDDLE MOUSE ]  Cancels currently charging spell.\n"+
-		" [ " + zoomIn_key + " ], [ " + zoomOut_key + " ]  zoom in/out.\n"+
-		"\n- Basic Gameplay:\n" +
-		"  *Use mana to cast deadly spells and curses at enemies.\n"+
-		"  *Touch mana obelisks to regenerate your mana faster. They contain a finite amount of mana that slowly regenerates over time.\n"+
-		"  *Stay alive! You can heal yourself and allies with certain spells and even bring them back from the dead!\n"+
-		"  *Eliminate all members of the enemy team to win.\n"+
-		"\n- WIZARD WARS FAQ:\n\n"+
-		" * How do I choose my primary spell???\n"+
-		"Tap the '1' through '5' emote keys to select a spell from the bottom row of the hotbar (located bottom left of your screen). Tap the same key multiple times to go up a row.\n\n"+
-		" * How do I swap out my secondary and auxiliary spells?\n"+
-		"You must use the hotbar customization panel, located in the classes menu. See the next question for how it's used.\n\n"+
-		" * How do I customize my spells hotbar?\n"+
-		"First, go to the help screen by pressing F1. Next, go to the classes menu. Now, select the class that you want to customize spells for. Click on the spell button you wish to assign to a key, and click a location on the hotbar representation below it.\n\n"+
-		" * How do I figure out what these spells do?\n"+
-		"You can read spell descriptions by selecting a spell in the classes menu menu.\n\n"+
-		" * How do I turn off this awesome music?! It's too good for my ears!!!\n"+
-		"The in-game music is played through KAG's built-in jukebox system. Turn it off just like you would for the default music by going to your 'ESC' settings menu. Still, I recommend putting that shit on full blast to get the best experience!\n\n"+
-		" * How do I use some of my spells? They get stuck in mid air or do nothing!\n"+
-		"Press your SHIFT key.\n";
-
-const Vec2f windowDimensions = Vec2f(1000,600); //temp
-
 //----KGUI ELEMENTS----\\
 	Window@ helpWindow;
-	Label@ introText;
-	Label@ infoText;
-	Label@ helpText;
-	Label@ changeText;
 	Label@ resetSpellText;
-	Label@ particleText;
     Label@ itemDistanceText;
     Label@ hoverDistanceText;
 	Button@ infoBtn;
@@ -74,150 +52,522 @@ const Vec2f windowDimensions = Vec2f(1000,600); //temp
 	Button@ barNumBtn;
 	Button@ startCloseBtn;
     Button@ toggleSpellWheelBtn;
+	Button@ toggleSpellHealthConsumeScreenFlash;
+	Button@ resetShowClassDescriptions;
 	Button@ toggleHoverMessagesBtn;
 	Button@ oneDimensionalSpellbar;
+	Button@ bookSpellIcons;
 	ScrollBar@ resetSpell;
 	Button@ achievementBtn;
 	Button@ classesBtn;
     Button@ togglemenuBtn;
     Button@ toggleHotkeyEmotesBtn;
 	Rectangle@ optionsFrame;
+	Rectangle@[] optionsFramePages;
+	Rectangle@ guideFrame;
+	Rectangle@ classesFrame;
 	Icon@ helpIcon;
+	Icon@ canvasIcon;
 	Icon@ spellHelpIcon;
 	Icon@ spellAssignHelpIcon;
-	ScrollBar@ particleCount;
     ScrollBar@ itemDistance;
     ScrollBar@ hoverDistance;
 
 bool isGUINull()
 {
-	if ( helpWindow is null
-		|| introText is null
-		|| infoText is null
-		|| helpText is null
-		|| changeText is null
-		|| particleText is null
-        || itemDistanceText is null
-        || hoverDistanceText is null
-		|| infoBtn is null
-		|| introBtn is null
-		|| optionsBtn is null
-		|| classesBtn is null
-        || togglemenuBtn is null
-        || toggleHotkeyEmotesBtn is null
-		|| barNumBtn is null
-		|| startCloseBtn is null
-        || toggleSpellWheelBtn is null
-		|| toggleHoverMessagesBtn is null
-		|| oneDimensionalSpellbar is null
-		|| resetSpellText is null
-		|| resetSpell is null
-		|| achievementBtn is null
-		|| optionsFrame is null
-		|| helpIcon is null
-		|| spellHelpIcon is null
-		|| spellAssignHelpIcon is null
-		|| particleCount is null
-        || itemDistance is null
-        || hoverDistance is null )
-	{
-		return true;
-	}
+	if (helpWindow is null) { warn("debug: helpWindow is null"); return true; }
+	if (itemDistanceText is null) { warn("debug: itemDistanceText is null"); return true; }
+	if (hoverDistanceText is null) { warn("debug: hoverDistanceText is null"); return true; }
+	if (infoBtn is null) { warn("debug: infoBtn is null"); return true; }
+	if (introBtn is null) { warn("debug: introBtn is null"); return true; }
+	if (optionsBtn is null) { warn("debug: optionsBtn is null"); return true; }
+	if (classesBtn is null) { warn("debug: classesBtn is null"); return true; }
+	if (togglemenuBtn is null) { warn("debug: togglemenuBtn is null"); return true; }
+	if (toggleHotkeyEmotesBtn is null) { warn("debug: toggleHotkeyEmotesBtn is null"); return true; }
+	if (barNumBtn is null) { warn("debug: barNumBtn is null"); return true; }
+	if (startCloseBtn is null) { warn("debug: startCloseBtn is null"); return true; }
+	if (toggleSpellWheelBtn is null) { warn("debug: toggleSpellWheelBtn is null"); return true; }
+	if (toggleSpellHealthConsumeScreenFlash is null) { warn("debug: toggleSpellHealthConsumeScreenFlash is null"); return true; }
+	if (resetShowClassDescriptions is null) { warn("debug: resetShowClassDescriptions is null"); return true; }
+	if (toggleHoverMessagesBtn is null) { warn("debug: toggleHoverMessagesBtn is null"); return true; }
+	if (oneDimensionalSpellbar is null) { warn("debug: oneDimensionalSpellbar is null"); return true; }
+	if (bookSpellIcons is null) { warn("debug: bookSpellIcons is null"); return true; }
+	if (resetSpellText is null) { warn("debug: resetSpellText is null"); return true; }
+	if (resetSpell is null) { warn("debug: resetSpell is null"); return true; }
+	if (achievementBtn is null) { warn("debug: achievementBtn is null"); return true; }
+	if (optionsFrame is null) { warn("debug: optionsFrame is null"); return true; }
+	if (guideFrame is null) { warn("debug: guideFrame is null"); return true; }
+	if (classesFrame is null) { warn("debug: classesFrame is null"); return true; }
+	if (helpIcon is null) { warn("debug: helpIcon is null"); return true; }
+	if (canvasIcon is null) { warn("debug: canvasIcon is null"); return true; }
+	if (spellHelpIcon is null) { warn("debug: spellHelpIcon is null"); return true; }
+	if (spellAssignHelpIcon is null) { warn("debug: spellAssignHelpIcon is null"); return true; }
+	if (itemDistance is null) { warn("debug: itemDistance is null"); return true; }
+	if (hoverDistance is null) { warn("debug: hoverDistance is null"); return true; }
 	
 	return false;
 }
-	
-void onInit( CRules@ this )
+
+void onInit(CRules@ this)
 {
 	this.set_bool("GUI initialized", false);
 
 	this.addCommandID("join");
 	this.addCommandID("updateBAchieve");
-	
-	u_showtutorial = true;// for ShowTipOnDeath to work
-
+	u_showtutorial = true; // for ShowTipOnDeath to work
 
 	string configstr = "../Cache/WizardWars_KGUI.cfg";
-	ConfigFile cfg = ConfigFile( configstr );
+	ConfigFile cfg = ConfigFile(configstr);
 	if (!cfg.exists("Version"))
 	{
-		cfg.add_string("Version","KGUI 2.3");
+		cfg.add_string("Version", "KGUI 2.3");
 		cfg.saveFile("WizardWars_KGUI.cfg");
 	}
 }
 
-void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button click handler for KGUI
-	if(sender is infoBtn){
-		changeText.isEnabled = false;
-		infoText.isEnabled = true;
-		introText.isEnabled = false;
+void PlayFlipSound()
+{
+	#ifdef STAGING
+	Sound::Play2D("PageFlip"+XORRandom(5)+".ogg", 1.0f, 0.0f);
+	return;
+	#endif
+
+	Sound::Play2D("PageFlip"+XORRandom(5)+".ogg", 0.5f, 0.0f);
+}
+
+// todo: bind this handler with spells menu handler in the inner frame
+void classFrameClickHandler(int x, int y, int button, IGUIItem@ sender)
+{
+	if (sender is null || playerClassButtons is null) return;
+	
+	if (sender._customData > 100)
+	{
+		int classIndex = sender._customData - 101; // 0 is empty, 1 is wizard and so on
+		int copyId = classIndex - 1;
+		if (copyId >= 0 && copyId < classes.size())
+		{
+			selectedClass = classes[copyId];
+			selectedClassID = copyId;
+		}
+
+		Rectangle@ leftPage = cast<Rectangle>(classesFrame.getChild("classFrameLeftPage"));
+		if (leftPage is null) return;
+
+		Rectangle@ rightPage = cast<Rectangle>(classesFrame.getChild("classFrameRightPage"));
+		if (rightPage is null) return;
+
+		Label@ title0 = cast<Label@>(leftPage.getChild("classFrameLeftPageTitle0"));
+		if (title0 is null) return;
+
+		Label@ title1 = cast<Label@>(leftPage.getChild("classFrameLeftPageTitle1"));
+		if (title1 is null) return;
+
+		Label@ description = cast<Label@>(leftPage.getChild("classFrameLeftPageDescription"));
+		if (description is null) return;
+
+		Button@ swapButton = cast<Button@>(rightPage.getChild("classFrameSwapButton"));
+		if (swapButton is null) return;
+
+		Icon@ ornament = cast<Icon@>(leftPage.getChild("classFrameLeftPageOrnament"));
+		if (ornament is null) return;
+
+		Icon@ bottomOrnament = cast<Icon@>(leftPage.getChild("classFrameLeftPageBottomOrnament"));
+		if (bottomOrnament is null) return;
+
+		Icon@ leftPageIntroOrnament0 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament0"));
+		if (leftPageIntroOrnament0 is null) return;
+
+		Icon@ leftPageIntroOrnament1 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament1"));
+		if (leftPageIntroOrnament1 is null) return;
+
+		Icon@ leftPageIntroOrnament2 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament2"));
+		if (leftPageIntroOrnament2 is null) return;
+
+		Icon@ leftPageIntroOrnament3 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament3"));
+		if (leftPageIntroOrnament3 is null) return;
+
+		Icon@ leftPageIntroOrnament4 = cast<Icon@>(leftPage.getChild("classFrameLeftPageIntroOrnament4"));
+		if (leftPageIntroOrnament4 is null) return;
+
+		Label@ stat0 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat0"));
+		if (stat0 is null) return;
+
+		Label@ stat1 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat1"));
+		if (stat1 is null) return;
+
+		Label@ stat2 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat2"));
+		if (stat2 is null) return;
+
+		Label@ stat3 = cast<Label@>(leftPage.getChild("classFrameLeftPageStat3"));
+		if (stat3 is null) return;
+
+		Rectangle@ classList = cast<Rectangle>(rightPage.getChild("classList"));
+		if (classList !is null)
+		{
+			for (int i = 0; i < classList._customData; i++)
+			{
+				Button@ reference = cast<Button@>(classList.getChild("classButton_" + i));
+				if (reference !is null)
+				{
+					Icon@ selectedReference = cast<Icon@>(reference.getChild("selectedReference"));
+					if (selectedReference !is null)
+					{
+						selectedReference.color = SColor(i == classIndex - 1 ? 255 : i < classes.length ? 100 : 0, 255, 255, 255);
+					}
+				}
+			}
+		}
+
+		PlayFlipSound();
+
+		title0.font = "DragonFire_56";
+		title1.font = "DragonFire_24";
+		description.font = "KingThingsPetrockLight_22";
+
+		if (classIndex == 0)
+		{
+			title0.font = "DragonFire_32";
+			title1.font = "DragonFire_18";
+			description.font = "DragonFire_12";
+			
+			title0.setText("Hey!");
+			title1.setText("This hasn' t been made yet. . .");
+
+			u8[] added;
+			u8[] random_offsets;
+			for (u8 i = 0; i < 3; i++)
+			{
+				added.push_back(XORRandom(symbol_lines.length));
+				random_offsets.push_back(XORRandom(110));
+			}
+
+			ornament.isEnabled = false;
+			bottomOrnament.isEnabled = false;
+
+			leftPageIntroOrnament0.isEnabled = false;
+			leftPageIntroOrnament1.isEnabled = false;
+			leftPageIntroOrnament2.isEnabled = false;
+			leftPageIntroOrnament3.isEnabled = false;
+			leftPageIntroOrnament4.isEnabled = false;
+
+			stat0.isEnabled = false;
+			stat1.isEnabled = false;
+			stat2.isEnabled = false;
+			stat3.isEnabled = false;
+
+			string text = CombineSymbols(added, random_offsets);
+			description.setText(text);
+			description.setPosition(Vec2f(description.localPosition.x, 120));
+		}
+		else if (classIndex < classTitles.size() + 1)
+		{
+			classIndex--;
+
+			description.setPosition(Vec2f(description.localPosition.x, 178));
+			ornament.isEnabled = true;
+			bottomOrnament.isEnabled = true;
+
+			leftPageIntroOrnament0.isEnabled = false;
+			leftPageIntroOrnament1.isEnabled = false;
+			leftPageIntroOrnament3.isEnabled = false;
+			leftPageIntroOrnament4.isEnabled = false;
+
+			leftPageIntroOrnament2.isEnabled = true;
+			setPageStats(classIndex, stat0, stat1, stat2, stat3);
+
+			leftPageIntroOrnament2.localPosition = Vec2f(classIndex == 9
+													? leftPageIntroOrnament0.localPosition.x - 44
+													: leftPageIntroOrnament0.localPosition.x - 28, 360);
+
+			title0.setText(classTitles[classIndex]);
+			title1.setText(classSubtitles[classIndex]);
+			description.setText(description.textWrap(classDescriptions[classIndex]));
+		}
+	}
+	else
+	{
+		Sound::Play("MenuSelect2.ogg");
+	}
+}
+
+void setPageStats(int classIndex, Label@ leftPageStat0, Label@ leftPageStat1, Label@ leftPageStat2, Label@ leftPageStat3)
+{
+	string hp = "Health: " + classesHealth[classIndex];
+	string mana = "Mana: ";
+	string extra = "";
+	string manaregen = "Regen: ";
+	string per_second = " / second";
+
+	switch (classIndex)
+	{
+		case 0: // wizard
+		{
+			mana += WizardParams::MAX_MANA;
+			manaregen += WizardParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 1: // necromancer
+		{
+			mana += NecromancerParams::MAX_MANA;
+			manaregen += NecromancerParams::MANA_REGEN + per_second;
+		}
+		break;
+		
+		case 2: // druid
+		{
+			mana += DruidParams::MAX_MANA;
+			manaregen += DruidParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 3: // swordcaster
+		{
+			mana += SwordCasterParams::MAX_MANA;
+			manaregen += SwordCasterParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 4: // entropist
+		{
+			mana += EntropistParams::MAX_MANA;
+			manaregen += EntropistParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 5: // priest
+		{
+			mana += PriestParams::MAX_MANA;
+			manaregen += PriestParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 6: // shaman
+		{
+			mana += ShamanParams::MAX_MANA;
+			manaregen += ShamanParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 7: // paladin
+		{
+			mana += PaladinParams::MAX_MANA;
+			manaregen += PaladinParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 8: // jester
+		{
+			mana += JesterParams::MAX_MANA;
+			manaregen += JesterParams::MANA_REGEN + per_second;
+		}
+		break;
+
+		case 9: // warlock
+		{
+			mana += WarlockParams::MAX_MANA;
+			manaregen = "Mana steal: " + WarlockParams::MANA_PER_1_DAMAGE+" / 1 DMG";
+			extra = "Life cast: " + (WarlockParams::HEALTH_COST_PER_1_MANA * 10 * 5 / 2) + " HP / 5 Mana";
+		}
+		break;
+	}
+
+	leftPageStat0.setText(hp);
+	leftPageStat1.setText(mana);
+	leftPageStat2.setText(extra);
+	leftPageStat3.setText(manaregen);
+
+	leftPageStat0.isEnabled = true;
+	leftPageStat1.isEnabled = true;
+	leftPageStat2.isEnabled = true;
+	leftPageStat3.isEnabled = true;
+}
+
+void iconClickHandler(int x, int y, int button, IGUIItem@ sender)
+{
+	if (sender is null) return;
+
+	Button@ buttonSender = cast<Button@>(sender);
+	if (buttonSender is null) return;
+
+	Icon@ icon = cast<Icon@>(buttonSender.getChild("iconback"));
+	if (icon is null) return;
+
+	int cd = buttonSender._customData;
+	icon.index = cd + 2;
+}
+
+void iconHoverHandler(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Button@ button = cast<Button@>(item);
+	if (button is null) return;
+
+	Icon@ icon = cast<Icon@>(button.getChild("iconback"));
+	if (icon is null) return;
+
+	int cd = icon._customData;
+	icon.index = (hover) ? cd + 1 : cd;
+}
+
+void classHoverHandler(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Button@ button = cast<Button@>(item);
+	if (button is null) return;
+
+	Icon@ icon = cast<Icon@>(button.getChild("iconback"));
+	if (icon is null) return;
+
+	int cd = icon._customData;
+	icon.index = (hover) ? cd + 1 : cd;
+}
+
+void referenceHoverHandler(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	int classIndex = item._customData - 101;
+	int copyId = classIndex - 1;
+
+	Button@ button = cast<Button@>(item);
+	if (button is null) return;
+
+	Icon@ icon = cast<Icon@>(button.getChild("selectedReference"));
+	if (icon is null) return;
+
+	bool selected = copyId == selectedClassID;
+	icon.color = SColor(hover || selected ? 255 : 100, 255, 255, 255);
+}
+
+void ButtonClickHandler(int x, int y, int button, IGUIItem@ sender)
+{
+	canvasIcon.isEnabled = true;
+	if (sender.level == ContainerLevel::PAGE) PlayFlipSound();
+
+	ResetClassesFrame();
+
+	togglemenuBtn.isEnabled = true;
+	togglemenuBtn.toggled = true;
+
+	if (sender is infoBtn)
+	{
+		canvasIcon.isEnabled = false;
+
 		helpIcon.isEnabled = false;
-		spellHelpIcon.isEnabled = false;
-		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
+		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
+		guideFrame.isEnabled = false;
 	}
-	if(sender is introBtn){
-		changeText.isEnabled = false;
-		infoText.isEnabled = false;
-		introText.isEnabled = true;
+
+	if (sender is introBtn)
+	{
+		canvasIcon.isEnabled = false;
+
 		helpIcon.isEnabled = true;
-		spellHelpIcon.isEnabled = false;
-		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
+		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
+		guideFrame.isEnabled = false;
 	}
-	if(sender is optionsBtn){
-		changeText.isEnabled = false;
-		infoText.isEnabled = false;
-		introText.isEnabled = false;
+
+	if (sender is optionsBtn)
+	{
 		helpIcon.isEnabled = false;
-		spellHelpIcon.isEnabled = true;
-		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = true;
+		classesFrame.isEnabled = false;
 		shipAchievements.isEnabled = false;
 		playerClassButtons.isEnabled = false;
+		guideFrame.isEnabled = false;
 	}
-	if(sender is achievementBtn){
-		changeText.isEnabled = false;
-		infoText.isEnabled = false;
-		introText.isEnabled = false;
+
+	if (sender is classesBtn)
+	{
 		helpIcon.isEnabled = false;
-		spellHelpIcon.isEnabled = false;
-		spellAssignHelpIcon.isEnabled = false;
 		optionsFrame.isEnabled = false;
-		shipAchievements.isEnabled = true;
-		playerClassButtons.isEnabled = false;
-	}
-	if(sender is classesBtn){
-		changeText.isEnabled = false;
-		infoText.isEnabled = false;
-		introText.isEnabled = false;
-		helpIcon.isEnabled = false;
-		spellHelpIcon.isEnabled = false;
-		spellAssignHelpIcon.isEnabled = true;
-		optionsFrame.isEnabled = false;
+		classesFrame.isEnabled = true;
 		shipAchievements.isEnabled = false;
+		playerClassButtons.isEnabled = false;
+		guideFrame.isEnabled = false;
+	}
+
+	if (sender.name == "spellsMenu") // class frame button
+	{
 		playerClassButtons.isEnabled = true;
+		int id = classes.find(selectedClass);
+
+		if (id != -1)
+		{
+			classDescriptionFade = 0;
+			classDescriptionOpenTimer = 0;
+
+			showClassDescription = canShowClassDescription(id);
+			playerClassButtons.list[id].classDescriptionButton.isEnabled = showClassDescription;
+			playerClassButtons.list[id].classDescriptionButton._customData = id;
+			playerClassButtons.list[id].classDescriptionText.setText(playerClassButtons.list[id].classDescriptionText.textWrap(classTips[id]));
+
+			playerClassButtons.list[id].classFrame.isEnabled = true;
+			playerClassButtons.list[id].leftPage.isEnabled = true;
+			playerClassButtons.list[id].rightPage.isEnabled = true;
+			playerClassButtons.list[id].classButton.toggled = true;
+		}
+
+		helpIcon.isEnabled = false;
+		optionsFrame.isEnabled = false;
+		classesFrame.isEnabled = false;
+		shipAchievements.isEnabled = false;
+		guideFrame.isEnabled = false;
+		
+		togglemenuBtn.isEnabled = false;
+		togglemenuBtn.toggled = false;
 	}
-    if(sender is togglemenuBtn){
+	if (sender.name == "guideMenu") // class frame button
+	{
+		guideFrame.isEnabled = true;
+
+		helpIcon.isEnabled = false;
+		optionsFrame.isEnabled = false;
+		classesFrame.isEnabled = false;
+		shipAchievements.isEnabled = false;
+		playerClassButtons.isEnabled = false;
+	}
+
+	//if (sender is achievementBtn)
+	//{
+	//	helpIcon.isEnabled = false;
+	//	spellAssignHelpIcon.isEnabled = false;
+	//	optionsFrame.isEnabled = false;
+	//	classesFrame.isEnabled = false;
+	//	shipAchievements.isEnabled = true;
+	//	playerClassButtons.isEnabled = false;
+	//}
+
+    if (sender is togglemenuBtn)
+	{
         showHelp = !showHelp;
     }
 
-	if (sender is barNumBtn){
+	if (sender is barNumBtn)
+	{
 		barNumBtn.toggled = !barNumBtn.toggled;
 		getRules().set_bool("spell_number_selection", barNumBtn.toggled);
 
 		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
 		barNumBtn.saveBool("Bar Numbers",barNumBtn.toggled,"WizardWars");
 	}
-	if (sender is startCloseBtn){
+
+	if (sender is startCloseBtn)
+	{
 		startCloseBtn.toggled = !startCloseBtn.toggled;
 		startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
 		startCloseBtn.saveBool("Start Closed",!startCloseBtn.toggled,"WizardWars");
 	}
+
     if (sender is toggleSpellWheelBtn)
     {
         toggleSpellWheelBtn.toggled = !toggleSpellWheelBtn.toggled;
@@ -229,14 +579,42 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
             getRules().set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
         }
     }
+
+	if (sender is toggleSpellHealthConsumeScreenFlash)
+	{
+		toggleSpellHealthConsumeScreenFlash.toggled = !toggleSpellHealthConsumeScreenFlash.toggled;
+		toggleSpellHealthConsumeScreenFlash.desc = (toggleSpellHealthConsumeScreenFlash.toggled) ? "HP consume red flash - ON" : "HP consume red flash - OFF";
+		toggleSpellHealthConsumeScreenFlash.saveBool("Spell health consume screen flash", toggleSpellHealthConsumeScreenFlash.toggled,"WizardWars");
+		
+		if (toggleSpellHealthConsumeScreenFlash.toggled)
+		{
+			getRules().set_bool("spell_health_consume_screen_flash", true);
+		}
+		else
+		{
+			getRules().set_bool("spell_health_consume_screen_flash", false);
+		}
+	}
+
+	if (sender is resetShowClassDescriptions)
+	{
+		Sound::Play("MenuSelect2.ogg");
+		setCachedClassesSeen(false);
+		showClassDescription = false;
+		classDescriptionFade = 0;
+		classDescriptionOpenTimer = 0;
+		//print("debug: reset class descriptions");
+	}
+
 	if (sender is toggleHoverMessagesBtn)
     {
         toggleHoverMessagesBtn.toggled = !toggleHoverMessagesBtn.toggled;
 		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
-		toggleHoverMessagesBtn.saveBool("Hover Messages Active", toggleHoverMessagesBtn.toggled,"WizardWars");
+		toggleHoverMessagesBtn.saveBool("Hover Messages Active", toggleHoverMessagesBtn.toggled, "WizardWars");
         
         getRules().set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
     }
+	
 	if (sender is oneDimensionalSpellbar)
     {
         oneDimensionalSpellbar.toggled = !oneDimensionalSpellbar.toggled;
@@ -246,7 +624,37 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
         getRules().set_bool("one_row_spellbar", oneDimensionalSpellbar.toggled);
     }
 
-    //getRules().set_bool("no_hotkey_emotes", true); // toggleHotkeyEmotesBtn
+	if (sender is bookSpellIcons)
+	{
+		bookSpellIcons.toggled = !bookSpellIcons.toggled;
+		bookSpellIcons.desc = (bookSpellIcons.toggled) ? "Low contrast spell icons - ON" : "Low contrast spell icons - OFF";
+		bookSpellIcons.saveBool("Book Spell Icons", bookSpellIcons.toggled, "WizardWars");
+
+		getRules().set_bool("book_old_spell_icons", bookSpellIcons.toggled);
+
+		Rectangle@ classesFrameRightPage = cast<Rectangle>(classesFrame.getChild("classFrameRightPage"));
+		if (classesFrameRightPage !is null)
+		{
+			Rectangle@ classList = cast<Rectangle>(classesFrameRightPage.getChild("classList"));
+			if (classList !is null)
+			{
+				string tex_name = getRules().get_bool("book_old_spell_icons") ? classIconsImageHud : classIconsImage;
+				for (int i = 0; i < classList._customData; i++)
+				{
+					Button@ reference = cast<Button@>(classList.getChild("classButton_" + i));
+					if (reference !is null)
+					{
+						Icon@ icon = cast<Icon@>(reference.getChild("classButtonIcon"));
+						if (icon !is null)
+						{
+							icon.iconName = tex_name;
+						}
+					}
+				}
+			}
+		}
+		initClasses();
+	}
 
     if (sender is toggleHotkeyEmotesBtn)
     {
@@ -258,14 +666,113 @@ void ButtonClickHandler(int x , int y , int button, IGUIItem@ sender){ //Button 
     }
 }
 
-void SliderClickHandler(int dType ,Vec2f mPos, IGUIItem@ sender){
-	//if (sender is test){test.slide();}
+void ResetClassesFrame()
+{
+	for (int i = 0; i < playerClassButtons.list.length; i++)
+	{
+		playerClassButtons.list[i].classFrame.isEnabled = false;
+		playerClassButtons.list[i].leftPage.isEnabled = false;
+		playerClassButtons.list[i].rightPage.isEnabled = false;
+		playerClassButtons.list[i].classButton.toggled = false;
+		playerClassButtons.list[i].classButton.render_one_more_time = true;
+		playerClassButtons.list[i].classDescriptionButton.isEnabled = false;
+		playerClassButtons.list[i].classDescriptionText.setText("");
+	}
 }
 
-void onTick( CRules@ this )
+const int OPTIONS_SCROLLER_ITEMS_PER_GROUP = 2;
+void OptionsScrollerClickHandler(int x, int y, int button, IGUIItem@ sender)
+{
+    if (sender is null || optionsFramePages.length <= OPTIONS_SCROLLER_ITEMS_PER_GROUP)
+    {
+        return;
+    }
+
+	PlayFlipSound();
+
+    int numGroups = (optionsFramePages.length + OPTIONS_SCROLLER_ITEMS_PER_GROUP - 1) / OPTIONS_SCROLLER_ITEMS_PER_GROUP;
+    int currentGroup = optionsFrame._customData;
+
+    if (sender._customData == 0)
+    {
+        currentGroup--;
+        if (currentGroup < 0)
+        {
+            currentGroup = numGroups - 1;
+        }
+    }
+    else if (sender._customData == 1)
+    {
+        currentGroup++;
+        if (currentGroup >= numGroups)
+        {
+            currentGroup = 0;
+        }
+    }
+
+    optionsFrame._customData = currentGroup;
+    updateOptionsScroller();
+}
+
+void updateOptionsScroller()
+{
+    int currentGroup = optionsFrame._customData;
+    int startIndex = currentGroup * OPTIONS_SCROLLER_ITEMS_PER_GROUP;
+
+    for (int i = 0; i < optionsFramePages.length; i++)
+    {
+        optionsFramePages[i].isEnabled = false;
+    }
+
+    for (int i = 0; i < OPTIONS_SCROLLER_ITEMS_PER_GROUP; i++)
+    {
+        int pageIndex = startIndex + i;
+        
+        if (pageIndex < optionsFramePages.length)
+        {
+            optionsFramePages[pageIndex].isEnabled = true;
+        }
+    }
+}
+
+void SliderClickHandler(int dType ,Vec2f mPos, IGUIItem@ sender)
+{
+	
+}
+
+void BookMarkHoverStateHandler(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Button@ sender = cast<Button@>(item);
+	if (sender is null) return;
+	
+	Icon@ icon = cast<Icon@>(item.getChild("iconback"));
+	if (icon is null) return;
+
+	int cd = icon._customData;
+	Vec2f pos = icon.localPosition;
+
+	f32 drop = sender._customData;
+	Vec2f offset = Vec2f(0, cd >= 0 ? cd + drop : cd - drop);
+
+	Label@ label = cast<Label@>(icon.getChild("label"));
+	if (hover)
+	{
+		icon.localPosition = pos + offset;
+		if (label !is null) label.isEnabled = true;
+	}
+	else
+	{
+		icon.localPosition = pos - offset;
+		if (label !is null) label.isEnabled = false;
+	}
+}
+
+void onTick(CRules@ this)
 {
 	bool initialized = this.get_bool("GUI initialized");
-	if ( !initialized || isGUINull() )		//this little trick is so that the GUI shows up on local host 
+	if ((!initialized || isGUINull()))		//this little trick is so that the GUI shows up on local host 
 	{
         ConfigFile cfg;
         
@@ -273,16 +780,15 @@ void onTick( CRules@ this )
         u16 hoverDistance_value = 6;
 		u16 resetSpell_value = 0;
 
-        if(cfg.loadFile("../Cache/WW_OptionsMenu.cfg"))//Load file, if file exists
+        if (cfg.loadFile("../Cache/WW_OptionsMenu.cfg"))//Load file, if file exists
         {
             print("options loaded");
-            if(cfg.exists("item_distance"))//Value already set?
+            if (cfg.exists("item_distance"))//Value already set?
             {
                 print("default set");
                 itemDistance_value = cfg.read_u16("item_distance");//Set default
-                print(""+itemDistance_value);
             }
-            if(cfg.exists("hover_distance"))//Value already set?
+            if (cfg.exists("hover_distance"))//Value already set?
             {
                 hoverDistance_value = cfg.read_u16("hover_distance");//Set default
             }
@@ -294,216 +800,536 @@ void onTick( CRules@ this )
 			this.set_u16("reset_spell_id", resetSpell_value);
         }
 
-		CFileImage@ image = CFileImage( "GameHelp.png" );
-		Vec2f imageSize = Vec2f( image.getWidth(), image.getHeight() );
-		AddIconToken( "$HELP$", "GameHelp.png", imageSize, 0 );
-	
-		//---KGUI setup---\\
-		@helpIcon = @Icon("GameHelp.png",Vec2f(40,40),imageSize,0,1.0f);
-		@spellHelpIcon = @Icon("SpellHelp.png",Vec2f(300,40),Vec2f(450,420),0,0.5f);
-		spellHelpIcon.isEnabled = false;
-		@spellAssignHelpIcon = @Icon("SpellAssignHelp.png",Vec2f(270,40),Vec2f(500,430),0,0.5f);
-		spellAssignHelpIcon.isEnabled = false;
-
-		@helpWindow = @Window(Vec2f(200,-530),Vec2f(800,530));
+		// main window
+		@helpWindow = @Window(Vec2f(getDriver().getScreenWidth() / 2 - menuSize.x / 2, -menuSize.y), menuSize);
 		helpWindow.name = "Help Window";
+		helpWindow.nodraw = true;
+		helpWindow.setLevel(ContainerLevel::WINDOW);
 
-		@infoText  = @Label(Vec2f(20,40),Vec2f(780,34),"",SColor(255,0,0,0),false);
-		infoText.setText(infoText.textWrap(textInfo));
-		@infoBtn = @Button(Vec2f(0,495),Vec2f(100,30),"How to Play",SColor(255,255,255,255));
-		infoBtn.addClickListener(ButtonClickHandler);
+		// intro background
+		{
+			CFileImage@ image = CFileImage("GameHelp.png");
+			Vec2f imageSize = Vec2f(image.getWidth(), image.getHeight());
 
-		@changeText  = @Label(Vec2f(20,40),Vec2f(780,34),"",SColor(255,0,0,0),false);
-		changeText.setText(changeText.textWrap(lastChangesInfo));
+			AddIconToken("$HELP$", "GameHelp.png", imageSize, 0);
+			@helpIcon = @Icon("GameHelp.png", Vec2f(0, 0), imageSize, 0, 0.5f);
+			helpIcon.setLevel(ContainerLevel::PAGE);
+		}
 
-		@introText  = @Label(Vec2f(280,10),Vec2f(780,15),"",SColor(255,0,0,0),false);
-		introText.setText(introText.textWrap("    Welcome to Wizard Wars!\n(Press F1 to close this window)"));
-		@introBtn = @Button(Vec2f(160,495),Vec2f(100,30),"Home Page",SColor(255,255,255,255));
-		introBtn.addClickListener(ButtonClickHandler);
+		// background
+		{
+			CFileImage@ image = CFileImage("MenuCanvas.png");
+			Vec2f imageSize = Vec2f(image.getWidth(), image.getHeight());
 
-		@helpText  = @Label(Vec2f(6,10),Vec2f(100,34),"",SColor(255,0,0,0),false);
-		helpText.setText(helpText.textWrap(lastChangesInfo));
+			AddIconToken("$CANVAS$", "MenuCanvas.png", imageSize, 0);
+			@canvasIcon = @Icon("MenuCanvas.png", Vec2f(0, 0), Vec2f(imageSize.x, imageSize.y), 0, 0.5f);
 
-		@optionsBtn = @Button(Vec2f(265,495),Vec2f(100,30),"Options",SColor(255,255,255,255));
-		optionsBtn.addClickListener(ButtonClickHandler);
-		
-		@barNumBtn = @Button(Vec2f(10,10),Vec2f(200,30),"",SColor(255,255,255,255));
-		barNumBtn.addClickListener(ButtonClickHandler);
-		
-		@startCloseBtn = @Button(Vec2f(10,50),Vec2f(200,30),"",SColor(255,255,255,255));
-		startCloseBtn.addClickListener(ButtonClickHandler);
+			canvasIcon.isEnabled = false;
+			canvasIcon.setLevel(ContainerLevel::BACKGROUND);
+		}
 
-        @toggleSpellWheelBtn = @Button(Vec2f(10,90),Vec2f(200,30),"",SColor(255,255,255,255));
-		toggleSpellWheelBtn.addClickListener(ButtonClickHandler);
-
-		@toggleHoverMessagesBtn = @Button(Vec2f(10,240),Vec2f(200,30),"",SColor(255,255,255,255));
-		toggleHoverMessagesBtn.addClickListener(ButtonClickHandler);
-		
-		@oneDimensionalSpellbar = @Button(Vec2f(10,280),Vec2f(200,30),"",SColor(255,255,255,255));
-		oneDimensionalSpellbar.addClickListener(ButtonClickHandler);
-
-		@resetSpell = @ScrollBar(Vec2f(10,340),160,16,true,resetSpell_value);
-		@resetSpellText = @Label(Vec2f(10,320),Vec2f(100,10),"Reset spell on restart: ",SColor(255,0,0,0),false);
-		resetSpell.addSlideEventListener(SliderClickHandler);
-
-        @toggleHotkeyEmotesBtn = @Button(Vec2f(10,50),Vec2f(200,30),"",SColor(255,255,255,255));
-		toggleHotkeyEmotesBtn.addClickListener(ButtonClickHandler);
-
-		@achievementBtn = @Button(Vec2f(370,495),Vec2f(120,30),"Achievements",SColor(255,255,255,255));
-		achievementBtn.addClickListener(ButtonClickHandler);
-		
-		@classesBtn = @Button(Vec2f(495,495),Vec2f(120,30),"Classes Menu",SColor(255,255,255,255));
-		classesBtn.addClickListener(ButtonClickHandler);
-
-        @togglemenuBtn = @Button(Vec2f(702,6),Vec2f(90,30),"Exit Menu",SColor(255,255,255,255));//How do close menu? durp. The pain i have gone through has warrented this.
-		togglemenuBtn.addClickListener(ButtonClickHandler);
-
-		@optionsFrame = @Rectangle(Vec2f(20,10),Vec2f(760,490), SColor(0,0,0,0));
-
-        @particleCount = @ScrollBar(Vec2f(10,105),80,4,true,2);
-		@particleText = @Label(Vec2f(10,90),Vec2f(100,10),"Particle counts:",SColor(255,0,0,0),false);
-		particleCount.addSlideEventListener(SliderClickHandler);
-
-		@itemDistance = @ScrollBar(Vec2f(10,150),160,10,true, itemDistance_value);
-		@itemDistanceText = @Label(Vec2f(10,130),Vec2f(100,10),"Wheel radius:",SColor(255,0,0,0),false);
-		itemDistance.addSlideEventListener(SliderClickHandler);
-
-        @hoverDistance = @ScrollBar(Vec2f(10,200),160,10,true, hoverDistance_value);
-		@hoverDistanceText = @Label(Vec2f(10,180),Vec2f(100,10),"Wheel deselect radius:",SColor(255,0,0,0),false);
-		hoverDistance.addSlideEventListener(SliderClickHandler);
+		Icon@ top0 = @Icon( "MenuCanvasBookmarkLayerTop0.png", 	 Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
+		top0.setLevel(ContainerLevel::BACKGROUND);
 
 		//---KGUI Parenting---\\
-		helpWindow.addChild(introText);
-		helpWindow.addChild(helpIcon);
-		helpWindow.addChild(infoText);
-		helpWindow.addChild(changeText);
-		helpWindow.addChild(introBtn);
-		//helpWindow.addChild(infoBtn);
-		helpWindow.addChild(optionsBtn);
+		// helpWindow
+		{
+			// disabled for now
+			@infoBtn = @Button(Vec2f(0,495),Vec2f(100,30),"How to Play",SColor(0,0,0,0));
+			infoBtn.nodraw = true;
+			infoBtn.setLevel(ContainerLevel::PAGE);
+			infoBtn.addClickListener(ButtonClickHandler);
+			infoBtn.isEnabled = false;
+
+			// page icons
+			{
+				// layers
+				Icon@ bottom0 = @Icon( "MenuCanvasBookmarkLayerBottom0.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
+				Icon@ bottom1 = @Icon( "MenuCanvasBookmarkLayerBottom1.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
+				Icon@ bottom2 = @Icon( "MenuCanvasBookmarkLayerBottom2.png", Vec2f(0, 0), Vec2f(menuSize.x, menuSize.y), 0, 0.5f);
+
+				bottom0.setLevel(ContainerLevel::BACKGROUND);
+				bottom1.setLevel(ContainerLevel::BACKGROUND);
+				bottom2.setLevel(ContainerLevel::BACKGROUND);
+
+				Vec2f buttonSize = Vec2f(104, 52);
+				Vec2f iconSize = Vec2f(96, 32);
+
+				Vec2f posHome = Vec2f(78, 492);
+				Vec2f posSettings = Vec2f(215, 488);
+				Vec2f posClasses = Vec2f(610, 486);
+				Vec2f posClose = Vec2f(661, -12);
+
+				int dropIntro = 13;
+				int dropSettings = 7;
+				int dropClasses = 15;
+				int dropClose = 9;
+
+				@introBtn = @Button(posHome, buttonSize, "Home", SColor(0,0,0,0));
+				introBtn.nodraw = true;
+				introBtn._customData = dropIntro;
+				introBtn.setLevel(ContainerLevel::PAGE);
+				introBtn.addClickListener(ButtonClickHandler);
+
+				Icon@ introBtnBackground = @Icon("BookMarks.png", Vec2f_zero, iconSize, 2, 0.5f);
+				introBtnBackground.name = "iconback";
+				introBtn.addHoverStateListener(BookMarkHoverStateHandler);
+
+				Label@ introBtnLabel = @Label(Vec2f(iconSize.x/2-1, 7), iconSize, "Home", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				introBtnLabel.name = "label";
+				introBtnLabel.isEnabled = false;
+				introBtnBackground.addChild(introBtnLabel);
+				introBtn.addChild(introBtnBackground);
+
+				@optionsBtn = @Button(posSettings, buttonSize, "Options", SColor(0,0,0,0));
+				optionsBtn.nodraw = true;
+				optionsBtn._customData = dropSettings;
+				optionsBtn.setLevel(ContainerLevel::PAGE);
+				optionsBtn.addClickListener(ButtonClickHandler);
+				
+				Icon@ optionsBtnBackground = @Icon("BookMarks.png", Vec2f_zero, iconSize, 3, 0.5f);
+				optionsBtnBackground.name = "iconback";
+				optionsBtn.addHoverStateListener(BookMarkHoverStateHandler);
+				optionsBtn.addChild(optionsBtnBackground);
+
+				Label@ optionsBtnLabel = @Label(Vec2f(iconSize.x/2-1, 6), iconSize, "Options", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				optionsBtnLabel.name = "label";
+				optionsBtnLabel.isEnabled = false;
+				optionsBtnBackground.addChild(optionsBtnLabel);
+				optionsBtn.addChild(optionsBtnBackground);
+
+				@classesBtn = @Button(posClasses, buttonSize, "Classes", SColor(0,0,0,0));
+				classesBtn.nodraw = true;
+				classesBtn._customData = dropClasses;
+				classesBtn.setLevel(ContainerLevel::PAGE);
+				classesBtn.addClickListener(ButtonClickHandler);
+
+				Icon@ classesBtnBackground = @Icon("BookMarks.png", Vec2f_zero, iconSize, 1, 0.5f);
+				classesBtnBackground.name = "iconback";
+				classesBtn.addHoverStateListener(BookMarkHoverStateHandler);
+				classesBtn.addChild(classesBtnBackground);
+
+				Label@ classesBtnLabel = @Label(Vec2f(iconSize.x/2-2, 7), iconSize, "Classes", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				classesBtnLabel.name = "label";
+				classesBtnLabel.isEnabled = false;
+				classesBtnBackground.addChild(classesBtnLabel);
+				classesBtn.addChild(classesBtnBackground);
+
+				@togglemenuBtn = @Button(posClose, buttonSize, "Exit (F1)", SColor(0,0,0,0));
+				togglemenuBtn.nodraw = true;
+				togglemenuBtn._customData = dropClose;
+				togglemenuBtn.addClickListener(ButtonClickHandler);
+				togglemenuBtn.setLevel(ContainerLevel::PAGE);
+
+				Icon@ togglemenuBtnBackground = @Icon("BookMarks.png", Vec2f_zero, iconSize, 4, 0.5f);
+				togglemenuBtnBackground.name = "iconback";
+				togglemenuBtnBackground._customData = -1;
+				togglemenuBtn.addHoverStateListener(BookMarkHoverStateHandler);
+				togglemenuBtn.addChild(togglemenuBtnBackground);
+
+				Label@ togglemenuBtnLabel = @Label(Vec2f(iconSize.x/2-2, 18), iconSize, "Exit (F1)", SColor(235, 255, 255, 255), true, "Wizardry_18");
+				togglemenuBtnLabel.name = "label";
+				togglemenuBtnLabel.isEnabled = false;
+				togglemenuBtnBackground.addChild(togglemenuBtnLabel);
+				togglemenuBtn.addChild(togglemenuBtnBackground);
+
+				@achievementBtn = @Button(Vec2f(370, 495), buttonSize, "Achievements", SColor(0,0,0,0));
+				achievementBtn.nodraw = true;
+				achievementBtn.setLevel(ContainerLevel::PAGE);
+				achievementBtn.addClickListener(ButtonClickHandler);
+				achievementBtn.isEnabled = false; // disabled for now
+
+				helpWindow.addChild(helpIcon);
+				helpWindow.addChild(canvasIcon);
+
+				helpWindow.addChild(introBtn);
+				helpWindow.addChild(bottom2);
+
+				helpWindow.addChild(classesBtn);
+				helpWindow.addChild(bottom1);
+				
+				helpWindow.addChild(optionsBtn);
+				helpWindow.addChild(bottom0);
+
+				helpWindow.addChild(togglemenuBtn);
+				// add top after classses
+	
+				//helpWindow.addChild(achievementBtn);
+				helpWindow.addChild(playerClassButtons);
+			}
+		}
+
+		// guide
+		@guideFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
+		guideFrame._customData = 0; // page index
+		guideFrame.setLevel(ContainerLevel::PAGE);
+		helpWindow.addChild(guideFrame);
+
+		// options
+		@optionsFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
+		optionsFrame._customData = 0; // page index
+		optionsFrame.setLevel(ContainerLevel::PAGE);
+		{
+			f32 button_width = 250.0f;
+			f32 left_margin = 45.0f;
+			f32 top_margin = 20.0f;
+
+			f32 bottom_margin_button = 40.0f;
+			f32 bottom_margin_text = 20.0f;
+			f32 bottom_margin_slider = 30.0f;
+
+			Vec2f page_size = Vec2f(menuSize.x / 2 - 40, menuSize.y - 40);
+			Rectangle@ optionsFramePage0 = @Rectangle(Vec2f(0, 0), page_size, SColor(0, 0, 0, 0));
+			
+			if (optionsFramePage0 !is null)
+			{
+				f32 current_y = top_margin;
+
+				@barNumBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				barNumBtn.addClickListener(ButtonClickHandler);
+
+				@startCloseBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				startCloseBtn.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@toggleHotkeyEmotesBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				toggleHotkeyEmotesBtn.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@toggleSpellWheelBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				toggleSpellWheelBtn.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@itemDistanceText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Wheel radius:", SColor(255,0,0,0), false);
+				current_y += bottom_margin_text;
+
+				@itemDistance = @ScrollBar(Vec2f(left_margin, current_y), 160, 10, true, itemDistance_value);
+				itemDistance.addSlideEventListener(SliderClickHandler);
+				current_y += bottom_margin_slider;
+
+				@hoverDistanceText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Wheel deselect radius:", SColor(255,0,0,0), false);
+				current_y += bottom_margin_text;
+
+				@hoverDistance = @ScrollBar(Vec2f(left_margin, current_y), 160, 10, true, hoverDistance_value);
+				hoverDistance.addSlideEventListener(SliderClickHandler);
+				current_y += bottom_margin_slider;
+
+				@toggleHoverMessagesBtn = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				toggleHoverMessagesBtn.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@oneDimensionalSpellbar = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				oneDimensionalSpellbar.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@resetSpellText = @Label(Vec2f(left_margin, current_y), Vec2f(100, 10), "Reset spell on restart: ", SColor(255,0,0,0), false);
+				current_y += bottom_margin_text;
+
+				@resetSpell = @ScrollBar(Vec2f(left_margin, current_y), 160, 16, true, resetSpell_value);
+				resetSpell.addSlideEventListener(SliderClickHandler);
+				current_y += bottom_margin_slider;
+
+				@toggleSpellHealthConsumeScreenFlash = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				toggleSpellHealthConsumeScreenFlash.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				@resetShowClassDescriptions = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "Reset Class Descriptions", SColor(255,255,255,255));
+				resetShowClassDescriptions.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				optionsFramePage0.addChild(barNumBtn);
+        		optionsFramePage0.addChild(toggleSpellWheelBtn);
+				optionsFramePage0.addChild(toggleSpellHealthConsumeScreenFlash);
+				optionsFramePage0.addChild(resetShowClassDescriptions);
+				optionsFramePage0.addChild(toggleHoverMessagesBtn);
+				optionsFramePage0.addChild(oneDimensionalSpellbar);
+        		optionsFramePage0.addChild(toggleHotkeyEmotesBtn);
+        		optionsFramePage0.addChild(itemDistance);
+				optionsFramePage0.addChild(itemDistanceText);
+        		optionsFramePage0.addChild(hoverDistance);
+				optionsFramePage0.addChild(hoverDistanceText);
+				optionsFramePage0.addChild(resetSpellText);
+				optionsFramePage0.addChild(resetSpell);
+			}
+
+			Rectangle@ optionsFramePage1 = @Rectangle(Vec2f(page_size.x + 20, 0), page_size, SColor(0, 0, 0, 0));
+			if (optionsFramePage1 !is null)
+			{
+				f32 current_y = top_margin;
+				
+				@bookSpellIcons = @Button(Vec2f(left_margin, current_y), Vec2f(button_width, 30), "", SColor(255,255,255,255));
+				bookSpellIcons.addClickListener(ButtonClickHandler);
+				current_y += bottom_margin_button;
+
+				optionsFramePage1.addChild(bookSpellIcons);
+			}
+
+			optionsFrame.addChild(optionsFramePage0);
+			optionsFrame.addChild(optionsFramePage1);
+			optionsFramePages.push_back(optionsFramePage0);
+			optionsFramePages.push_back(optionsFramePage1);
+
+			//Rectangle@ test1 = @Rectangle(Vec2f(0, 0), page_size, SColor(125, 0, 255, 255));
+			//test1.setLevel(ContainerLevel::PAGE_FRAME);
+			//optionsFrame.addChild(test1);
+			//optionsFramePages.push_back(test1);
+
+			if (optionsFramePages.length > OPTIONS_SCROLLER_ITEMS_PER_GROUP)
+			{
+				Button@ scroller_left = @Button(Vec2f(-90, 255), Vec2f(40, 20), "Previous", SColor(255, 255, 255, 255));
+				scroller_left._customData = 0;
+				scroller_left.addClickListener(OptionsScrollerClickHandler);
+
+				Button@ scroller_right = @Button(Vec2f(menuSize.x, 255), Vec2f(40, 20), "Next", SColor(255, 255, 255, 255));
+				scroller_right._customData = 1;
+				scroller_right.addClickListener(OptionsScrollerClickHandler);
+
+				optionsFrame.addChild(scroller_left);
+				optionsFrame.addChild(scroller_right);
+			}
+		}
+
+		updateOptionsScroller();
 		helpWindow.addChild(optionsFrame);
-		helpWindow.addChild(achievementBtn);
-		helpWindow.addChild(classesBtn);
-        helpWindow.addChild(togglemenuBtn);
-		optionsFrame.addChild(barNumBtn);
-        optionsFrame.addChild(toggleSpellWheelBtn);
-		optionsFrame.addChild(toggleHoverMessagesBtn);
-		optionsFrame.addChild(oneDimensionalSpellbar);
-        optionsFrame.addChild(toggleHotkeyEmotesBtn);
-		helpWindow.addChild(spellHelpIcon);
+
+		setCachedStates(this);
+		initClasses();
+		helpWindow.addChild(top0);
+
+		// class selection page
+		@classesFrame = @Rectangle(Vec2f(20, 10), Vec2f(760, 490), SColor(0, 0, 0, 0));
+		classesFrame.isEnabled = false; 
+		classesFrame.setLevel(ContainerLevel::PAGE);
+		{
+			Vec2f page_size = Vec2f(menuSize.x / 2 - 40, menuSize.y - 40);
+
+			Rectangle@ leftPage = @Rectangle(Vec2f(0, 0), page_size - Vec2f(20, 0), SColor(0, 0, 0, 0));
+			leftPage.name = "classFrameLeftPage";
+			leftPage.setLevel(ContainerLevel::PAGE_FRAME);
+
+			Label@ title0 = @Label(Vec2f(page_size.x / 2 + 2, 50), Vec2f(100, 32), "Wizard Wars", col_text, true, "DragonFire_40");
+			Label@ title1 = @Label(Vec2f(page_size.x / 2 + 4, 90), Vec2f(100, 32), "Bestiary", col_text, true, "DragonFire_32");
+			
+			title0.name = "classFrameLeftPageTitle0";
+			title1.name = "classFrameLeftPageTitle1";
+
+			string leftPageDesc = " This is the place where you can see info about the classes.\nSelect one and press the \"Select\" button on the right page.\n\n You might also want to rebind your hotbar spells - check out the \"Spells\" section and follow the tips there.\n\n There is also a very useful \"Guides\" section for new players, so just in case, i would advise you to join the spectator team and read, that will help a lot!\n                     (press ESC -> Change Team)";
+			Label@ description = @Label(Vec2f(30, 150), Vec2f(page_size.x - 60, page_size.y - 150),
+				leftPageDesc, col_text, false, "KingThingsPetrockLight_22");
+			description.name = "classFrameLeftPageDescription";
+			description.setText(description.textWrap(description.label));
+
+			Icon@ leftPageDescOrnament = @Icon("OrnamentMid.png", Vec2f(page_size.x / 2 - 66, 120), Vec2f(128, 48), 0, 0.5f, false);
+			leftPageDescOrnament.name = "classFrameLeftPageOrnament";
+			leftPageDescOrnament.isEnabled = false;
+
+			Icon@ leftPageBottomOrnament = @Icon("OrnamentStraightWide.png", Vec2f(24, page_size.y - 64), Vec2f(336, 32), 0, 0.5f, false);
+			leftPageBottomOrnament.name = "classFrameLeftPageBottomOrnament";
+			leftPageBottomOrnament.isEnabled = false;
+
+			Icon@ leftPageIntroOrnament0 = @Icon("Ornaments48x48.png", Vec2f(page_size.x / 2 - 15.5f, 102), Vec2f(48, 48), 0, 0.5f, false);
+			leftPageIntroOrnament0.name = "classFrameLeftPageIntroOrnament0";
+			leftPageIntroOrnament0.isEnabled = true;
+
+			Icon@ leftPageIntroOrnament1 = @Icon("Ornaments48x48.png", Vec2f(page_size.x - 65, 24), Vec2f(48, 48), 4, 0.5f, false);
+			leftPageIntroOrnament1.name = "classFrameLeftPageIntroOrnament1";
+			leftPageIntroOrnament1.isEnabled = false; // disabled
+
+			Icon@ leftPageIntroOrnament2 = @Icon("Ornaments48x48.png", Vec2f(leftPageIntroOrnament0.localPosition.x - 28, 360), Vec2f(48, 48), 8, 1.0f, false);
+			leftPageIntroOrnament2.name = "classFrameLeftPageIntroOrnament2";
+			leftPageIntroOrnament2.isEnabled = false;
+
+			Vec2f leftPageStat0Pos = Vec2f(96, leftPageIntroOrnament2.localPosition.y + 32);
+			Label@ leftPageStat0 = @Label(leftPageStat0Pos, Vec2f(100, 10), "", col_text, true, "KingThingsPetrockLight_18");
+			Label@ leftPageStat1 = @Label(leftPageStat0Pos + Vec2f(0, 24), Vec2f(100, 10), "", col_text, true, "KingThingsPetrockLight_18");
+			Label@ leftPageStat2 = @Label(leftPageStat0Pos + Vec2f(180, 0), Vec2f(100, 10), "", col_text, true, "KingThingsPetrockLight_18");
+			Label@ leftPageStat3 = @Label(leftPageStat0Pos + Vec2f(180, 24), Vec2f(100, 10), "", col_text, true, "KingThingsPetrockLight_18");
+
+			leftPageStat0.name = "classFrameLeftPageStat0";
+			leftPageStat1.name = "classFrameLeftPageStat1";
+			leftPageStat2.name = "classFrameLeftPageStat2";
+			leftPageStat3.name = "classFrameLeftPageStat3";
+
+			Icon@ leftPageIntroOrnament3 = @Icon("OrnamentLine0.png", Vec2f(32, 122), Vec2f(336, 32), 0, 1.0f, true, Vec2f(128, 16));
+			leftPageIntroOrnament3.name = "classFrameLeftPageIntroOrnament3";
+			leftPage.addChild(leftPageIntroOrnament3);
+
+			Icon@ leftPageIntroOrnament4 = @Icon("OrnamentLine1.png", Vec2f(219, 122), Vec2f(336, 32), 0, 1.0f, true, Vec2f(128, 16));
+			leftPageIntroOrnament4.name = "classFrameLeftPageIntroOrnament4";
+			leftPage.addChild(leftPageIntroOrnament4);
+
+			Icon@ leftPageOrnamentStatSeparator = @Icon("Ornaments48x48.png", Vec2f(page_size.x / 2 - 16, 150), Vec2f(48, 48), 0, 0.5f, false);
+
+			leftPage.addChild(title0);
+			leftPage.addChild(title1);
+			leftPage.addChild(description);
+			leftPage.addChild(leftPageStat0);
+			leftPage.addChild(leftPageStat1);
+			leftPage.addChild(leftPageStat2);
+			leftPage.addChild(leftPageStat3);
+			leftPage.addChild(leftPageDescOrnament);
+			leftPage.addChild(leftPageBottomOrnament);
+			leftPage.addChild(leftPageIntroOrnament0);
+			leftPage.addChild(leftPageIntroOrnament1);
+			leftPage.addChild(leftPageIntroOrnament2);
+
+			Rectangle@ rightPage = @Rectangle(Vec2f(menuSize.x / 2, 0), page_size, SColor(0, 0, 0, 0));
+			rightPage.name = "classFrameRightPage";
+			rightPage.setLevel(ContainerLevel::PAGE_FRAME);
+
+			// classes' icons
+			Rectangle@ classList = @Rectangle(Vec2f(40, 40), Vec2f(page_size.x - 80, page_size.y - 100), SColor(0, 0, 0, 0));
+			classList.name = "classList";
+			Vec2f grid = Vec2f(4, 4);
+
+			Vec2f last_icon_size = Vec2f(0, 0);
+			u8 rnd_seed = XORRandom(10);
+			classList._customData = grid.x * grid.y;
+			for (u8 i = 0; i < grid.x * grid.y; i++)
+			{
+				Button@ reference;
+				if (i < playerClassButtons.list.length)
+				{
+					WWPlayerClassButton@ WWClassButton = @playerClassButtons.list[i];
+					if (WWClassButton is null) continue;
+
+					@reference = @Button(Vec2f(0, 0), iconSize, "", SColor(0, 0, 0, 0));
+					reference.nodraw = true;
+					reference.addHoverStateListener(referenceHoverHandler);
+
+					string tex_name = getRules().get_bool("book_old_spell_icons") ? classIconsImageHud : classIconsImage;
+					Icon@ icon = @Icon(tex_name, Vec2f_zero, Vec2f(128, 128), i, 1.0f, true, Vec2f(64, 64));
+					icon.name = "classButtonIcon";
+					reference.addChild(icon);
+
+					if (i == playerClassButtons.list.length - 1)
+					{
+						last_icon_size = reference.size;
+					}
+				}
+				else
+				{
+					@reference = @Button(Vec2f(0, 0), last_icon_size, "", SColor(255, 125, 125, 125));
+				}
+				reference.name = "classButton_" + i;
+				reference._customData = i < playerClassButtons.list.length ? i + 102 : 101; // 100 is reserved for "info" redirect button
+				reference.addClickListener(classFrameClickHandler);
+				reference.setPosition(Vec2f(
+					(i % int(grid.x)) * (classList.size.x / grid.x),
+					(i / int(grid.x)) * (classList.size.y / grid.y)
+				));
+
+				if (i >= playerClassButtons.list.length)
+				{
+					Icon@ icon = @Icon("Paper"+((rnd_seed+i) % 4 + 4)+".png", Vec2f(0, 0), Vec2f(120, 112), 0, 1.0f, true, reference.size);
+					reference.nodraw = true;
+					reference.addChild(icon);
+				}
+
+				Icon@ selectedReference = @Icon("PaperButton.png", Vec2f(0, 0), Vec2f(24, 24), 0, 1.0f, true, reference.size);
+				selectedReference.name = "selectedReference";
+				selectedReference.isEnabled = true;
+				selectedReference.color = SColor(i >= playerClassButtons.list.length ? 0 : 100, 255, 255, 255);
+
+				reference.addChild(selectedReference);
+				classList.addChild(reference);
+			}
+			rightPage.addChild(classList);
+
+			Vec2f buttonSize = Vec2f(92, 64);
+			Button@ swapButton = @Button(Vec2f(32, page_size.y - 92), buttonSize, "", SColor(0, 0, 0, 0));
+			swapButton.nodraw = true;
+			swapButton._customData = 0; // icon idle index
+			swapButton.name = "classFrameSwapButton";
+			swapButton.addClickListener(iconClickHandler);
+			swapButton.addHoverStateListener(iconHoverHandler);
+			swapButton.addClickListener(SwapButtonHandler);
+
+			Icon@ swapIcon = @Icon("BookButtons.png", Vec2f(0, swapButton.size.y / 2 - 32), Vec2f(112, 48), 0, 1.0f, true, buttonSize);
+			swapIcon.name = "iconback";
+			swapButton.addChild(swapIcon);
+			rightPage.addChild(swapButton);
+
+			Label@ swapLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "Select", SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
+			swapLabel.name = "swapLabel";
+			swapLabel.localPosition = Vec2f(swapButton.size.x / 2 - 3, swapButton.size.y / 2 - 4);
+			swapButton.addChild(swapLabel);
+
+			Button@ spellsMenu = @Button(Vec2f(swapButton.localPosition.x + swapButton.size.x + 8, page_size.y - 92), buttonSize, "Spells", SColor(0, 0, 0, 0));
+			spellsMenu.setLevel(ContainerLevel::PAGE);
+			spellsMenu.nodraw = true;
+			spellsMenu._customData = 0;
+			spellsMenu.name = "spellsMenu";
+			spellsMenu.addClickListener(iconClickHandler);
+			spellsMenu.addHoverStateListener(iconHoverHandler);
+			spellsMenu.addClickListener(ButtonClickHandler);
+
+			Icon@ spellsMenuIcon = @Icon("BookButtons.png", Vec2f(0, spellsMenu.size.y / 2 - 32), Vec2f(112, 48), 0, 1.0f, true, buttonSize);
+			spellsMenuIcon.name = "iconback";
+			spellsMenu.addChild(spellsMenuIcon);
+			rightPage.addChild(spellsMenu);
+
+			Label@ spellsMenuLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "Spells", SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
+			spellsMenuLabel.name = "spellsMenuLabel";
+			spellsMenuLabel.localPosition = Vec2f(spellsMenu.size.x / 2 - 3, spellsMenu.size.y / 2 - 4);
+			spellsMenu.addChild(spellsMenuLabel);
+
+			Button@ guideMenu = @Button(Vec2f(spellsMenu.localPosition.x + spellsMenu.size.x + 8, page_size.y - 92), buttonSize, "Guide", SColor(0, 0, 0, 0));
+			guideMenu.setLevel(ContainerLevel::PAGE);
+			guideMenu.nodraw = true;
+			guideMenu._customData = 0;
+			guideMenu.name = "guideMenu";
+			guideMenu.addClickListener(iconClickHandler);
+			guideMenu.addHoverStateListener(iconHoverHandler);
+			guideMenu.addClickListener(ButtonClickHandler);
+
+			Icon@ guideMenuIcon = @Icon("BookButtons.png", Vec2f(0, guideMenu.size.y / 2 - 32), Vec2f(112, 48), 0, 1.0f, true, buttonSize);
+			guideMenuIcon.name = "iconback";
+			guideMenu.addChild(guideMenuIcon);
+			rightPage.addChild(guideMenu);
+
+			Label@ guideMenuLabel = @Label(Vec2f(0, 0), Vec2f(100, 10), "Guide", SColor(255, 255, 255, 255), true, "KingThingsPetrockLight_18");
+			guideMenuLabel.name = "guideMenuLabel";
+			guideMenuLabel.localPosition = Vec2f(guideMenu.size.x / 2 - 3, guideMenu.size.y / 2 - 4);
+			guideMenu.addChild(guideMenuLabel);
+
+			classesFrame.addChild(leftPage);
+			classesFrame.addChild(rightPage);
+		}
+		helpWindow.addChild(classesFrame);
+
+		// rework this, keeping as leftover for now
+		@spellAssignHelpIcon = @Icon("SpellAssignHelp.png", Vec2f(270, 40), Vec2f(500, 430), 0, 0.5f);
+		spellAssignHelpIcon.isEnabled = false;
+
+		@spellHelpIcon = @Icon("SpellHelp.png", Vec2f(300, 40), Vec2f(450, 420), 0, 0.5f);
+		spellHelpIcon.isEnabled = false;
+		
+		helpWindow.addChild(spellHelpIcon); // rework both
 		helpWindow.addChild(spellAssignHelpIcon);
-        
-        optionsFrame.addChild(itemDistance);
-		optionsFrame.addChild(itemDistanceText);
-        optionsFrame.addChild(hoverDistance);
-		optionsFrame.addChild(hoverDistanceText);
-		optionsFrame.addChild(resetSpellText);
-		optionsFrame.addChild(resetSpell);
-
-		showHelp = startCloseBtn.getBool("Start Closed","WizardWars");
-		startCloseBtn.toggled = !startCloseBtn.getBool("Start Closed","WizardWars");
-		startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
-        
-		toggleSpellWheelBtn.toggled = toggleSpellWheelBtn.getBool("Spell Wheel Active","WizardWars");
-		toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - ON" : "Spell Wheel - OFF";
-        WheelMenu@ menu = get_wheel_menu("spells");
-        if (menu != null){
-            this.set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
-        }
-		
-		toggleHoverMessagesBtn.toggled = toggleHoverMessagesBtn.getBool("Hover Messages Active","WizardWars");
-		toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
-        this.set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
-
-		oneDimensionalSpellbar.toggled = oneDimensionalSpellbar.getBool("Spell bar in 1 row","WizardWars");
-		oneDimensionalSpellbar.desc = (oneDimensionalSpellbar.toggled) ? "Spell bar in 1 row - ON" : "Spell bar in 1 row - OFF";
-        this.set_bool("one_row_spellbar", oneDimensionalSpellbar.toggled);
-
-        toggleHotkeyEmotesBtn.toggled = toggleHotkeyEmotesBtn.getBool("Hotkey Emotes","WizardWars");
-		toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - ON" : "Emotes - OFF";
-        this.set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
-
-		barNumBtn.toggled = barNumBtn.getBool("Bar Numbers","WizardWars");
-		this.set_bool("spell_number_selection", barNumBtn.toggled);
-		
-		barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
-		optionsFrame.isEnabled = false;
-		changeText.isEnabled = false;
-		infoText.isEnabled = false;
 
 		intitializeAchieves();
-		helpWindow.addChild(shipAchievements);	
-		
-		intitializeClasses();
-		helpWindow.addChild(playerClassButtons);
+		//helpWindow.addChild(shipAchievements);	
 
-        updateOptionSliderValues();//Takes slider values and sets other settings
+        updateOptionSliderValues(); // takes slider values and sets other settings
+		setCachedClassesSeen();
 		
 		this.set_bool("GUI initialized", true);
 		print("GUI has been initialized");
 	}
 
 	CControls@ controls = getControls();
-	if ( controls.isKeyJustPressed( KEY_F1 ) )
-	{
-		showHelp = !showHelp;
-	}
-
-	CPlayer@ player = getLocalPlayer();  
-	if ( player is null ) return;
-	string name = player.getUsername();
-	u16 pBooty = 0;
-	pBooty = this.get_u16( "booty" + name );
-	if (this.get_bool("join")){
-		shipAchievements.unlockByName("First Join");
-		shipAchievements.increaseCondition("Ten Joins", 1.0f);
-		shipAchievements.increaseCondition("Keeps Coming Back", 1.0f);
-		this.set_bool("join",false);
-	}
-
-	if (this.get_bool("winner")){
-		if (this.get_f32("coreHP") <= 5)shipAchievements.unlockByName("Close Call");
-		if (this.get_f32("coreHP") == 100)shipAchievements.unlockByName("Flawless");
-		shipAchievements.unlockByName("Winner");
-		shipAchievements.increaseCondition("Champion", 1.0f);
-		shipAchievements.increaseCondition("Unstoppable", 1.0f);
-		this.set_bool("winner",false);
-	}
-
-	if (pBooty > oldBooty && !this.get_bool("bootyAchieve") ){
-		float amount = pBooty-oldBooty;
-		shipAchievements.increaseCondition("Treasure", amount);
-		shipAchievements.increaseCondition("Hoarder", amount);
-		shipAchievements.increaseCondition("Plundering", amount);
-		shipAchievements.increaseCondition("Motherload", amount);
-	}else if ((pBooty - oldBooty) != 0 && this.get_bool("bootyAchieve")) {this.set_bool("bootyAchieve",false);}
-	oldBooty=pBooty;
-
-	if (shipAchievements.needsUpdate)
-	{
-		string[]@ tokens = shipAchievements.playerChooser.current.label.split("'");
-		if (shipAchievements.playerChooser.current.label.substr(0,4) == "Your" ){tokens[0] = getLocalPlayer().getUsername();}
-		CPlayer@ requestPlayer = getPlayerByUsername(tokens[0]);
-		CBitStream params;
-		params.write_string(tokens[0]);
-		params.write_string(getLocalPlayer().getUsername());
-		this.SendCommand(this.getCommandID("requestAchieves"),params);
-	}
+	if (controls.isKeyJustPressed(KEY_F1)) showHelp = !showHelp;
 	
-	//playerClassButtons.unlockByName("Wizard");
-	if (playerClassButtons.needsUpdate)
-	{
-		string[]@ tokens = playerClassButtons.playerChooser.current.label.split("'");
-		if (playerClassButtons.playerChooser.current.label.substr(0,4) == "Your" ){tokens[0] = getLocalPlayer().getUsername();}
-		CPlayer@ requestPlayer = getPlayerByUsername(tokens[0]);
-		CBitStream params;
-		params.write_string(tokens[0]);
-		params.write_string(getLocalPlayer().getUsername());
-		this.SendCommand(this.getCommandID("requestClasses"),params);
-	}
+	CPlayer@ player = getLocalPlayer();  
+	if (player is null) return;
 
-    if(previous_showHelp != showHelp)//Menu just closed or opened
+	UpdateClassHotbar();
+
+	string name = player.getUsername();
+    if (previous_showHelp != showHelp)
     {
-        if(previous_showHelp)//Menu closed
+        if(previous_showHelp)
         {
             ConfigFile cfg;
             cfg.loadFile("../Cache/WW_OptionsMenu.cfg");
@@ -518,13 +1344,57 @@ void onTick( CRules@ this )
         }
     }
 
-    if(showHelp)//Only do if the help menu is open
+    if (showHelp)
     {
         updateOptionSliderValues();
     }
 
+    bool previous_showHelp = showHelp; // must be last
+	this.set_bool("showHelp", showHelp);
+}
 
-    bool previous_showHelp = showHelp;//Must be last
+void setCachedStates(CRules@ this)
+{
+	showHelp = startCloseBtn.getBool("Start Closed", "WizardWars");
+
+	startCloseBtn.toggled = !startCloseBtn.getBool("Start Closed","WizardWars");
+	startCloseBtn.desc = (startCloseBtn.toggled) ? "Start Help Closed Enabled" : "Start Help Closed Disabled";
+    
+	toggleSpellWheelBtn.toggled = toggleSpellWheelBtn.getBool("Spell Wheel Active","WizardWars");
+	toggleSpellWheelBtn.desc = (toggleSpellWheelBtn.toggled) ? "Spell Wheel - ON" : "Spell Wheel - OFF";
+
+    WheelMenu@ menu = get_wheel_menu("spells");
+    if (menu != null){
+        this.set_bool("usespellwheel", toggleSpellWheelBtn.toggled);
+    }
+
+	toggleSpellHealthConsumeScreenFlash.toggled = toggleSpellHealthConsumeScreenFlash.getBool("Spell health consume screen flash","WizardWars");
+	toggleSpellHealthConsumeScreenFlash.desc = (toggleSpellHealthConsumeScreenFlash.toggled) ? "HP consume red flash - ON" : "HP consume red flash - OFF";
+	this.set_bool("spell_health_consume_screen_flash", toggleSpellHealthConsumeScreenFlash.toggled);
+
+	resetShowClassDescriptions.desc = "Reset class descriptions";
+
+	toggleHoverMessagesBtn.toggled = toggleHoverMessagesBtn.getBool("Hover Messages Active","WizardWars");
+	toggleHoverMessagesBtn.desc = (toggleHoverMessagesBtn.toggled) ? "Hover Messages - ON" : "Hover Messages - OFF";
+    this.set_bool("hovermessages_enabled", toggleHoverMessagesBtn.toggled);
+
+	oneDimensionalSpellbar.toggled = oneDimensionalSpellbar.getBool("Spell bar in 1 row","WizardWars");
+	oneDimensionalSpellbar.desc = (oneDimensionalSpellbar.toggled) ? "Spell bar in 1 row - ON" : "Spell bar in 1 row - OFF";
+    this.set_bool("one_row_spellbar", oneDimensionalSpellbar.toggled);
+
+	bookSpellIcons.toggled = bookSpellIcons.getBool("Book Spell Icons", "WizardWars");
+	bookSpellIcons.desc = (bookSpellIcons.toggled) ? "Low contrast spell icons - ON" : "Low contrast spell icons - OFF";
+    this.set_bool("book_old_spell_icons", bookSpellIcons.toggled);
+
+    toggleHotkeyEmotesBtn.toggled = toggleHotkeyEmotesBtn.getBool("Hotkey Emotes","WizardWars");
+	toggleHotkeyEmotesBtn.desc = (toggleHotkeyEmotesBtn.toggled) ? "Emotes - ON" : "Emotes - OFF";
+    this.set_bool("hotkey_emotes", toggleHotkeyEmotesBtn.toggled);
+
+	barNumBtn.toggled = barNumBtn.getBool("Bar Numbers","WizardWars");
+	this.set_bool("spell_number_selection", barNumBtn.toggled);
+	
+	barNumBtn.desc = (barNumBtn.toggled) ? "Spell Bar - ON" : "Spell Bar - OFF";
+	optionsFrame.isEnabled = false;
 }
 
 void updateOptionSliderValues()
@@ -587,91 +1457,84 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 				}
 			}
 		}
-	}		
-	/*else if (this.getCommandID("announce class unlock") == cmd)
-	{
-		string playerName = params.read_string(), className = params.read_string();
-		client_AddToChat("***"+playerName+" has unlocked the class \""+className+"\"!***", SColor(255,0,196,155));
-	}*/
-	else if (this.getCommandID("requestClasses") == cmd)
-	{	
-		CPlayer@ sendFrom = getPlayerByUsername(params.read_string()),sendTo = getPlayerByUsername(params.read_string());
-		if(sendFrom.isMyPlayer()){
-			CBitStream toSend;
-			toSend.write_string(sendTo.getUsername());
-			for (int i = 0; i < playerClassButtons.list.length; i++){
-				print(" gained for "+playerClassButtons.list[i].name);
-			}
-			this.SendCommand(this.getCommandID("sendClasses"),toSend);
-		}
-	}	
-	else if (this.getCommandID("sendClasses") == cmd)
-	{
-		CPlayer@ sendTo = getPlayerByUsername(params.read_string());
-		if (sendTo.isMyPlayer()){
-			for (int i = 0; i < playerClassButtons.list.length; i++){
-				playerClassButtons.list[i].gained = params.read_bool();
-				print(" gained for "+playerClassButtons.list[i].name);
-			}
-		}
 	}
+	// the command was removed	
+	//else if (this.getCommandID("requestClasses") == cmd)
+	//{	
+	//	CPlayer@ sendFrom = getPlayerByUsername(params.read_string()),sendTo = getPlayerByUsername(params.read_string());
+	//	if(sendFrom.isMyPlayer()){
+	//		CBitStream toSend;
+	//		toSend.write_string(sendTo.getUsername());
+	//		for (int i = 0; i < playerClassButtons.list.length; i++){
+	//			print(" gained for "+playerClassButtons.list[i].name);
+	//		}
+	//		this.SendCommand(this.getCommandID("sendClasses"),toSend);
+	//	}
+	//}	
+	//else if (this.getCommandID("sendClasses") == cmd)
+	//{
+	//	CPlayer@ sendTo = getPlayerByUsername(params.read_string());
+	//	if (sendTo.isMyPlayer()){
+	//		for (int i = 0; i < playerClassButtons.list.length; i++){
+	//			playerClassButtons.list[i].gained = params.read_bool();
+	//			print(" gained for "+playerClassButtons.list[i].name);
+	//		}
+	//	}
+	//}
 }
 
-//a work in progress
-void onRender( CRules@ this )
+void onRender(CRules@ this)
 {
 	CPlayer@ player = getLocalPlayer();
-	if ( player is null )
+	if (player is null)
 		return;
 
 	//renderTutorial(this);
-	
-	if (shipAchievements.displaying)
-	{
-		shipAchievements.display();
-	}
 	
 	if (playerClassButtons.displaying)
 	{
 		playerClassButtons.display();
 	}
 
+	if (resetSpell !is null)
 	{
-		if (resetSpell is null) return;
 		string temp = "First spell selection: "+resetSpell.value;
 		if (resetSpell.value == 0) temp = "First spell selection: none";
 
 		resetSpellText.setText(temp);
 	}
 
-	if (particleCount is null) return;
-	string temp = "Particle count: ";
-	if (particleCount.value == 0){
-		temp += "None";
-	} else if (particleCount.value == 1){
-		temp += "Low";
-	} else if (particleCount.value == 2){
-		temp += "Medium";
-	} else{
-		temp += "High";
-	}
-	particleText.setText(temp);
+	Driver@ driver = getDriver();
+	if (driver is null) return;
+	if (helpWindow is null) return;
 
-	int minHelpYPos = -530;
-	int maxHelpYPos = 48;
-	int scrollSpeed = 40;
-	
-	if ( helpWindow.position.y != minHelpYPos )
+	f32 screen_height = driver.getScreenHeight();
+	int minHelpYPos = -menuSize.y - 1;
+	int maxHelpYPos = screen_height / 2 - Maths::Clamp(helpWindow.size.y, 0, screen_height) / 2 - 80;
+
+	if (helpWindow.position.y != minHelpYPos)
 		helpWindow.draw();
 	
-	if (showHelp && helpWindow.position.y < maxHelpYPos) //controls opening and closing the gui
+	f32 df = 0.33f * getRenderDeltaTime() * 60.0f;
+	if (showHelp && helpWindow.position.y < maxHelpYPos) // controls opening and closing the gui
 	{
-		helpWindow.position = Vec2f( helpWindow.position.x,  Maths::Min(helpWindow.position.y + scrollSpeed, maxHelpYPos) );
+		helpWindow.position = Vec2f(helpWindow.position.x, Maths::Lerp(helpWindow.position.y, maxHelpYPos, df));
+		if (Maths::Abs(Maths::Abs(helpWindow.position.y) - Maths::Abs(maxHelpYPos)) <= 1) helpWindow.position = Vec2f(helpWindow.position.x, maxHelpYPos);
+		
+		helpWindow.localPosition = helpWindow.position;
 	}
-	if (!showHelp && helpWindow.position.y > minHelpYPos)
+	else if (!showHelp && helpWindow.position.y > minHelpYPos)
 	{
-		helpWindow.position = Vec2f( helpWindow.position.x, Maths::Max( helpWindow.position.y - scrollSpeed, minHelpYPos) );
+		helpWindow.position = Vec2f(helpWindow.position.x, Maths::Lerp(helpWindow.position.y, minHelpYPos, df * 2));
+		helpWindow.localPosition = helpWindow.position;
 	}
+
+	f32 tick = 2;
+	#ifdef STAGING
+	tick = Maths::Max(2, f32(v_fpslimit) / 60);
+	#endif
+
+	active_time = showHelp ? active_time + 1.0f / tick : 0;
 
 	bool initialized = this.get_bool("GUI initialized");
 	if (!initialized) return;

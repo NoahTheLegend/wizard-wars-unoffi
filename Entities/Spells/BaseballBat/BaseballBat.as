@@ -6,14 +6,14 @@ void onInit(CBlob@ this)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;	 // we have our own map collision
 	consts.bullet = true;
-	consts.net_threshold_multiplier = 0.25f;
+	consts.net_threshold_multiplier = 1.25f;
 	shape.SetGravityScale(0.0f);
 
 	this.Tag("projectile");
 	this.Tag("die_in_divine_shield");
 	this.Tag("cantparry");
-	this.set_u8("despelled", 0);
-	this.Tag("multi_despell");
+	this.set_u8("dispelled", 0);
+	this.Tag("multi_dispell");
 
 	this.set_f32("hit_power", 0);
 	this.set_f32("angle_diff", 0);
@@ -36,7 +36,7 @@ const f32 swing_deatheffect_power = 2.5f;
 
 void onTick(CBlob@ this)
 {
-	if(this.get_u8("despelled") >= 2)
+	if(this.get_u8("dispelled") >= 2)
     {
         this.Tag("mark_for_death");
 		return;

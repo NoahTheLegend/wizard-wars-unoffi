@@ -3,144 +3,68 @@
 #include "PlatinumCommon.as";
 #include "StatusCommon.as";
 #include "AttributeCommon.as";
-//#include "UnlocksCommon.as";
+#include "WWPlayerClassesCommon.as";
+#include "MagicCommon.as";
+
+#include "WizardCommon.as";
+#include "NecromancerCommon.as";
+#include "DruidCommon.as";
+#include "SwordCasterCommon.as";
+#include "EntropistCommon.as";
+#include "PriestCommon.as";
+#include "ShamanCommon.as";
+#include "PaladinCommon.as";
+#include "JesterCommon.as";
+#include "WarlockCommon.as";
 
 string classesVersion = "1";
 u32 lastHotbarPressTime = 0;
-const u8 max_classes_on_page = 8;
 
 string tooltip = "";
 Tooltip@[] tooltips_fetcher;
 
+const Vec2f iconSize = Vec2f(64, 64);
+const Vec2f classIconSize = Vec2f(64, 96);
+
+const f32 gridSize = 40.0f;
+const f32 sectionGap = 12.0f;
+
+const Vec2f descriptionButtonOffset = Vec2f(menuSize.x / 2 - 154, 256); // offset from parent
+const Vec2f descriptionButtonOffsetOut = Vec2f(0, 280); // offset added
+const Vec2f descriptionButtonSize = Vec2f(menuSize.x / 2 - 72, 128);
+const Vec2f descriptionButtonSizeExtra = Vec2f(0, 32);
+
 //----KGUI ELEMENTS----\\
 WWPlayerClassButtonList playerClassButtons;
-
-const string[] specialties_names = {
-	"Fire - might ignite enemies","Water - extinguishes fire","Earth - physical damage","Air - high knockback","Nature - organic spells","Electricity - deals more damage to wet enemies",
-	"Ice - might freeze or deal more damage to wet enemies","Holy - holy spells","Unholy - unholy spells","Poison - poisonous spells","","",
-	"","","","","","",
-	"Heal - restore health of allies and self","Support - wide variety of buffs","Summoner - create NPCs or sentries","AoE - Area of Effect spells","Control - some spells can control your enemies","Versatile - good at offense and defense",
-	"Impacter - damage dealer",	"Agility - movement spells","Map control - deny large area on the map for short amount of time","Tank - great survivability","Life stealer - some spells might heal you on hit","Mana dependency - core spells require plenty of mana to cast",
-	"Cheap spells - spamming those is not a bad decision","Life force - some spells might consume you health instead of mana",			"",			"",			"",	""
-};
-
-const u8[] specialties_wizard = {24, 0, 5, 6, 21, 22, 23, 29};
-const u8[] specialties_necromancer = {20, 8, 21, 22, 26, 28};
-const u8[] specialties_druid = {18, 2, 4, 19, 22, 26, 30};
-const u8[] specialties_swordcaster = {25, 21, 22, 24, 30};
-const u8[] specialties_entropist = {29, 3, 21, 23, 24, 25, 26};
-const u8[] specialties_priest = {18, 0, 7, 19, 21, 22, 26};
-const u8[] specialties_shaman = {0, 1, 2, 5, 6, 18, 20, 26};
-const u8[] specialties_paladin = {27, 7, 19, 24, 29};
-const u8[] specialties_jester = {23, 19, 21, 22, 25, 26};
-const u8[] specialties_warlock = {24};
-
-const string[] stats_labels =
-{
-	"", 							// center
-	"D", 							// top
-	"A", 							// top right
-	"S", 							// right
-	"H", 							// bottom right
-	"E", 							// bottom
-	"V", 							// bottom left
-	"A", 							// left
-	"M" 							// top left
-};
-
-const string[] stats_names =
-{
-	"Difficulty",
-	"Damage",
-	"Area of Effect",
-	"Support",
-	"Healing",
-	"Endurability",
-	"Versatility",
-	"Agility",
-	"Mana"
-};
-
-
-const u8[][] STATS =
-{
-  // C D A S H E V A M
-	{2,2,2,1,0,1,0,1,0}, 				// wizard
-	{0,1,2,1,0,1,0,0,2}, 				// necromancer
-	{0,0,0,2,2,2,1,1,2}, 				// druid
-	{1,2,1,0,0,1,0,2,1}, 				// swordcaster
-	{2,2,1,0,0,2,1,2,0}, 				// entropist
-	{1,1,2,2,2,1,0,0,1}, 				// priest
-	{0,1,1,1,1,1,2,1,2}, 				// shaman
-	{1,1,0,2,1,2,2,0,1}, 				// paladin
-	{2,2,1,1,0,1,2,1,0}, 				// jester
-	{3,0,0,0,0,0,0,0,0}					// warlock
-};
-
-const string[] diff_levels =
-{
-	"EASY",
-	"MEDIUM",
-	"HARD",
-	"COMPLEXLY HARD"
-};
-
-const Vec2f[] stat_labels_offsets =
-{
-	Vec2f(0,0), 					// center
-	Vec2f(0,-26), 					// top
-	Vec2f(20, -20), 				// top right
-	Vec2f(26, 0), 					// right
-	Vec2f(20, 20), 					// bottom right
-	Vec2f(0, 26), 					// bottom
-	Vec2f(-20, 20), 				// bottom left
-	Vec2f(-26, 0), 					// left
-	Vec2f(-21, -20) 				// top left
-};
-
-const SColor[] stats_middle_color =
-{
-	SColor(255, 55, 255, 55), 		// green
-	SColor(255, 255, 255, 55), 		// yellow
-	SColor(255, 255, 55, 55), 		// red
-	SColor(255, 255, 125, 255)		// pink
-};
-
-const SColor[] stats_color =
-{
-	SColor(255, 255, 55, 55), 		// red
-	SColor(255, 255, 155, 55), 		// orange
-	SColor(255, 255, 255, 55), 		// yellow
-	SColor(255, 55, 255, 55), 		// green
-	SColor(255, 55, 255, 255), 		// cyan
-	SColor(255, 55, 55, 255), 		// blue
-	SColor(255, 255, 125, 255), 	// pink
-	SColor(255, 185, 70, 225) 		// purple
-};
-
 class WWPlayerClassButton 
 {
 	int classID;
 	string name, modName, description, configFilename;
-	Icon@ rarity, display;
-	Button@ classButton, swapButton;
+	Icon@ display, selectedSpellIcon, selectedSpellSketch;
+
+	Button@ classButton;
 	ProgressBar@ condition;
 	
-	Rectangle@ classFrame;
+	Rectangle@ classFrame, leftPage, rightPage;
 	Button@[] spellButtons;
-	Label@ desc, conLbl, spellDescText;
+	
+	Label@ desc, conLbl, spellDescText, selectedSpellName, selectedSpellDescription;
 	u32 classCost;
-
-	Rectangle@ specialties_bg;
-	bool gained, hasCon = false;
 
 	u8[] specialties;
 	u8[] stats;
 
 	uint tickrate;
 	Attribute@[] attributes;
+	Rectangle@ attributesContainer;
+
+	Button@ classDescriptionButton;
+	Icon@ classDescriptionBackground;
+	Label@ classDescriptionText;
+
+	int iconCount;
 	
-	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, int _size, u8[] _specialties, u8[] _stats)
+	WWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, string _imageName, int _icon, int _rarity, string _modName, Vec2f _pos, Vec2f _size, u8[] _specialties, u8[] _stats)
 	{
 		name = _name;
 		modName = _modName;
@@ -149,91 +73,316 @@ class WWPlayerClassButton
 		classID = _classID;
 		classCost = _cost;
 
-		@classButton = @Button(_pos,Vec2f(200,46),"",SColor(255,255,255,255));
-		@desc = @Label(Vec2f(44,5),Vec2f(114,38),_name,SColor(255,0,0,0),false);
-		classButton.addChild(desc);
-		switch(_size)
-		{
-			case 1: {@display = @Icon(_imageName,Vec2f(9,9),Vec2f(32,32),_icon,0.44f);break;}
-			case 2: {@display = @Icon(_imageName,Vec2f(9,9),Vec2f(114,114),_icon,0.13f);break;}
-			default: {@display = @Icon(_imageName,Vec2f(9,9),Vec2f(16,16),_icon,0.87f);}
-		}
-		classButton.addChild(display);
-		@rarity = @Icon("GUI/Rarity.png",Vec2f(5,5),Vec2f(18,18),_rarity,1.0f);
-		
 		specialties = _specialties;
 		stats = _stats;
 		tickrate = 0;
-		
-		//gained = checkUnlocked();
-		
-		classButton.name = _configFilename;
-		classButton.addClickListener(ClassButtonHandler);
-		
-		@classFrame = @Rectangle(Vec2f(232,0),Vec2f(760,490), SColor(0,0,0,0));
-		playerClassButtons.addChild(classFrame);
-		
-		@swapButton = @Button(Vec2f(0,-24), Vec2f(200,24), "Respawn as "+_name, SColor(255,255,255,255));
-		swapButton.name = _configFilename;
-		classFrame.addChild(swapButton);
-		swapButton.addClickListener(SwapButtonHandler);
-		
-		Label@ classDescText = @Label(Vec2f(0,16), Vec2f(480,34), "", SColor(255,0,0,0), false);
-		classDescText.setText(classDescText.textWrap(_desc));
-		classFrame.addChild(classDescText);
-		
-		Spell[] spells;
-		if ( _configFilename == "wizard" )
-			spells = WizardParams::spells;
-		else if ( _configFilename == "druid" )
-			spells = DruidParams::spells;
-		else if ( _configFilename == "necromancer" )
-			spells = NecromancerParams::spells;
-		else if ( _configFilename == "swordcaster" )
-			spells = SwordCasterParams::spells;
-		else if ( _configFilename == "entropist" )
-			spells = EntropistParams::spells;
-		else if ( _configFilename == "priest" )
-			spells = PriestParams::spells;
-		else if ( _configFilename == "shaman" )
-			spells = ShamanParams::spells;
-		else if ( _configFilename == "paladin" )
-			spells = PaladinParams::spells;
-		else if ( _configFilename == "jester" )
-			spells = JesterParams::spells;
-		else if ( _configFilename == "warlock" )
-			spells = WarlockParams::spells;
 
-		int spellsLength = spells.length;
-		for (uint i = 0; i < spellsLength; i++)
+		iconCount = 0;
+
+		// top side
+		// class button and its frame (view)
+		Vec2f page_size = Vec2f(menuSize.x / 2 - 140, menuSize.y - 80);
 		{
-			f32 gridSize = 48.0f;
-			Vec2f offset;
-			if ( i < 10 )
-				offset = Vec2f(gridSize*i,0);
+			@classButton = @Button(_pos + Vec2f(0, 0), _size, "", SColor(255, 255, 255, 255));
+			@display = @Icon(_imageName, Vec2f(0, -8), Vec2f(128, 192), classID, 1.0f, true, Vec2f(64, 96));
+
+			display._customData = display.localPosition.y;
+			display.name = "iconback";
+
+			classButton.nodraw = true;
+			classButton.addHoverStateListener(BookMarkHoverStateHandler);
+
+			classButton.addChild(display);
+			classButton.name = _configFilename;
+			classButton.addClickListener(ClassButtonHandler);
+
+			@classFrame = @Rectangle(Vec2f(0, 0), page_size + Vec2f(page_size.x, 0), SColor(0,0,0,0));
+			playerClassButtons.addChild(classFrame);
+
+			Icon@ ornamentPage = @Icon("OrnamentPageLight.png", Vec2f(6, 36), Vec2f(800, 538), 0, 0.5f);
+			classFrame.addChild(ornamentPage);
+			
+			@leftPage = @Rectangle(Vec2f(85, 58), page_size, SColor(0, 0, 0, 0));
+			leftPage.name = _configFilename + "_leftPage";
+			leftPage.setLevel(ContainerLevel::PAGE_FRAME);
+
+			@spellDescText = @Label(Vec2f(4, 402), Vec2f(480, 32), "Select a spell and click on the hotbar. Right click to clear.", col_text, false, "DragonFire_12");
+			leftPage.addChild(spellDescText);
+
+			Label@ offensiveTitle = @Label(Vec2f(page_size.x / 2, 30), Vec2f(480, 32), classTitles[classID]+" Spells", col_text, true, "KingThingsPetrockLight_32");
+			leftPage.addChild(offensiveTitle);
+
+			Icon@ ornamentLine0 = @Icon("OrnamentLine0.png", Vec2f(4, offensiveTitle.localPosition.y + 18), Vec2f(336, 32), 0, 1.0f, true, Vec2f(272, 32));
+			ornamentLine0.name = "ornamentLine0";
+			leftPage.addChild(ornamentLine0);
+
+			Label@ hotbarTitle = @Label(Vec2f(page_size.x / 2, 52 + sectionGap * 4 + gridSize * 4), Vec2f(480, 32), "Hotbar", col_text, true, "KingThingsPetrockLight_32");
+			leftPage.addChild(hotbarTitle);
+
+			Icon@ ornamentLine1 = @Icon("OrnamentLine1.png", Vec2f(4, hotbarTitle.localPosition.y + 14), Vec2f(336, 32), 0, 1.0f, true, Vec2f(272, 32));
+			ornamentLine1.name = "ornamentLine1";
+			leftPage.addChild(ornamentLine1);
+
+			@rightPage = @Rectangle(Vec2f(leftPage.localPosition.x + 112 + page_size.x, leftPage.localPosition.y), page_size, SColor(0, 0, 0, 0));
+			rightPage.name = _configFilename + "_rightPage";
+			rightPage.setLevel(ContainerLevel::PAGE_FRAME);
+
+			CRules@ rules = getRules();
+			string iconTexture = rules !is null && rules.get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
+
+			// position empty frame
+			@selectedSpellIcon = @Icon(iconTexture, Vec2f(page_size.x / 2 - 32, 54), Vec2f(16, 16), 0, 2.0f);
+			@selectedSpellName = @Label(Vec2f(page_size.x / 2, 30), Vec2f(page_size.x, 32), "Select a spell", col_text, true, "KingThingsPetrockLight_32");
+			@selectedSpellDescription = @Label(Vec2f(10, 124), Vec2f(page_size.x + 24, 32), "Description", col_text, false, "KingThingsPetrockLight_18");
+
+			Icon@ ornamentLine2 = @Icon("OrnamentCurvyWide.png", Vec2f(-6, hotbarTitle.localPosition.y + 13), Vec2f(336, 48), 0, 1.0f, true, Vec2f(272, 48));
+			ornamentLine2.name = "ornamentLine2";
+			ornamentLine2.isEnabled = false;
+			rightPage.addChild(ornamentLine2);
+
+			@selectedSpellSketch = @Icon("SpellSketch6.png", Vec2f(0, ornamentLine2.localPosition.y + 48), Vec2f(128, 64), 0, 1.0f);
+			selectedSpellSketch.isEnabled = false;
+			rightPage.addChild(selectedSpellSketch);
+
+			selectedSpellIcon.isEnabled = false;
+			selectedSpellDescription.isEnabled = false;
+
+			if (classID == 0 || classID == 2 || classID == 4 || classID == 5 || classID == 7)
+			{
+				string tex = "OrnamentSun.png";
+				Icon@ placeholder = @Icon(tex, Vec2f(page_size.x / 2 - 64, page_size.y / 2 - 64 - 20), Vec2f(64, 64), 0, 1.0f);
+				placeholder.name = "placeholder_" + iconCount;
+				iconCount++;
+				rightPage.addChild(placeholder);
+			}
 			else
-				offset = Vec2f(gridSize*(i-10),gridSize);
-			
-			spellButtons.push_back( @Button(Vec2f(0,100) + offset, Vec2f(gridSize,gridSize), "", SColor(255,255,255,255)) );
-			spellButtons[i].name = spells[i].name;
-			
-			Icon@ spellIcon = @Icon("SpellIcons.png", Vec2f(8,8), Vec2f(16,16) , spells[i].iconFrame, 1.0f);
-			spellButtons[i].addChild(spellIcon);
-			spellButtons[i].addClickListener(SpellButtonHandler);
-			
-			classFrame.addChild(spellButtons[i]);
+			{
+				string text = "OrnamentMoon.png";
+				Icon@ placeholder = @Icon(text, Vec2f(page_size.x / 2 - 92, page_size.y / 2 - 92 - 12), Vec2f(92, 92), 0, 1.0f);
+				placeholder.name = "placeholder_" + iconCount;
+				iconCount++;
+				rightPage.addChild(placeholder); 
+			}
+
+			@classDescriptionButton = @Button(descriptionButtonOffset, descriptionButtonSize, "", SColor(255, 255, 255, 255));
+			@classDescriptionBackground = @Icon("Paper"+XORRandom(2)+".png", Vec2f_zero, Vec2f(240, 96), 0, 1.0f, true, Vec2f(descriptionButtonSize.x, descriptionButtonSize.y * (classID == 8 ? 1.75f : 1.5f)));
+			@classDescriptionText = @Label(Vec2f(24, 32), Vec2f(descriptionButtonSize.x - 24, descriptionButtonSize.y), "", col_text, false, "KingThingsPetrockLight_18");
+
+			classDescriptionBackground._customData = classID;
+			classDescriptionButton.addClickListener(ClassDescriptionButtonHandler);
+			classDescriptionButton.isEnabled = false;
+			classDescriptionButton.nodraw = true;
+			//classDescriptionBackground.isEnabled = false;
+
+			helpWindow.pushToFirst(classDescriptionButton);
+			classDescriptionButton.addChild(classDescriptionBackground);
+			classDescriptionButton.addChild(classDescriptionText);
+			classDescriptionText.name = "classDescriptionText";
+
+			Rectangle@ container = @Rectangle(Vec2f(8, page_size.y - 192), Vec2f(page_size.x - 16, 32), SColor(0, 0, 0, 0));
+			container.name = "attributesContainer";
+			container.isEnabled = false;
+			rightPage.addChild(container);
+
+			rightPage.addChild(selectedSpellIcon);
+			rightPage.addChild(selectedSpellName);
+			rightPage.addChild(selectedSpellDescription);
+
+			classFrame.isEnabled = false;
+			leftPage.isEnabled = false;
+			rightPage.isEnabled = false;
+
+			classFrame.addChild(leftPage);
+			classFrame.addChild(rightPage);
 		}
 
+		// left page
+		// class spells
+		Spell[] spells;
+		{
+			int classIndex = classes.find(_configFilename);
+			switch(classIndex)
+			{
+				case 0:
+					spells = WizardParams::spells;
+					break;
+				case 1:
+					spells = NecromancerParams::spells;
+					break;
+				case 2:
+					spells = DruidParams::spells;
+					break;
+				case 3:
+					spells = SwordCasterParams::spells;
+					break;
+				case 4:
+					spells = EntropistParams::spells;
+					break;
+				case 5:
+					spells = PriestParams::spells;
+					break;
+				case 6:
+					spells = ShamanParams::spells;
+					break;
+				case 7:
+					spells = PaladinParams::spells;
+					break;
+				case 8:
+					spells = JesterParams::spells;
+					break;
+				case 9:
+					spells = WarlockParams::spells;
+					break;
+				default:
+					break;
+			}
+
+			// spells selection grid divided by sections:
+			array<uint> offensiveSpells, utilitySpells;
+			
+			int spellsLength = spells.length;
+			Vec2f offset = Vec2f(page_size.x/2 - (gridSize * 3), 72);
+
+			// offensive, summoning, debuff
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::offensive)
+					offensiveSpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::summoning)
+					offensiveSpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::debuff)
+					offensiveSpells.push_back(i);
+			}
+
+			// special > utility > defensive > support > heal
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::special)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::heal)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::support)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::defensive)
+					utilitySpells.push_back(i);
+			}
+			for (uint i = 0; i < spellsLength; i++)
+			{
+				if (spells[i].category == SpellCategory::utility)
+					utilitySpells.push_back(i);
+			}
+
+			Vec2f offensiveOffset = offset;
+			Vec2f utilityOffset = offensiveOffset + Vec2f(0, (Maths::Ceil(offensiveSpells.length / 6.0f) * gridSize) + (utilitySpells.size() > 0 ? sectionGap : 0));
+
+			addSpellSection(offensiveSpells, offensiveOffset, spells, gridSize);
+			addSpellSection(utilitySpells, utilityOffset, spells, gridSize);
+		}
+
+		//setSpecialties();
+	}
+
+	void addSpellSection(array<uint>@ spellIndices, Vec2f sectionOffset, Spell[] &in spells, f32 gridSize)
+	{
+		uint numRows = Maths::Ceil(spellIndices.length / 6.0f);
+		for (uint row = 0; row < numRows; row++)
+		{
+			uint startIdx = row * 6;
+			uint endIdx = Maths::Min(startIdx + 6, spellIndices.length);
+			uint rowCount = endIdx - startIdx;
+
+			f32 rowGap = 2.0f;
+			f32 colGap = 2.0f;
+
+			f32 rowOffsetX = 0;
+			if (rowCount < 6)
+			{
+				rowOffsetX = ((6 - rowCount) * (gridSize + colGap)) * 0.5f;
+			}
+
+			f32 iconScale = 1.0f;
+			Vec2f iSize = Vec2f(16, 16);
+			Vec2f bSize = Vec2f(24, 24);
+
+			Vec2f iconOffset = getIconOffset(iSize);
+			Vec2f iconOffsetBackground = getIconOffset(bSize);
+			if (gridSize >= iconOffsetBackground.x)
+				iconOffsetBackground.x = 0;
+			if (gridSize >= iconOffsetBackground.y)
+				iconOffsetBackground.y = 0;
+
+			CRules@ rules = getRules();
+			const string iconTexture = rules !is null && rules.get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
+
+			for (uint col = 0; col < rowCount; col++)
+			{
+				uint idx = startIdx + col;
+				uint i = spellIndices[idx];
+				Vec2f offset = sectionOffset
+					+ Vec2f(rowOffsetX + col * (gridSize + colGap), row * (gridSize + rowGap));
+
+				Button@ button = @Button(offset, Vec2f(gridSize, gridSize), "", SColor(255,234,205,163));
+				button.nodraw = true;
+				button.addHoverStateListener(paperButtonHover);
+
+				Icon@ background = @Icon("PaperButton.png", iconOffsetBackground, bSize, 0, 1.0f, true, Vec2f(gridSize, gridSize));
+				background.name = "background";
+				button.addChild(background);
+
+				spellButtons.push_back(button);
+				spellButtons[spellButtons.length - 1].name = spells[i].name;
+
+				Icon@ spellIcon = @Icon(iconTexture, iconOffset, iSize, spells[i].iconFrame, iconScale);
+				spellButtons[spellButtons.length - 1].addChild(spellIcon);
+				spellButtons[spellButtons.length - 1].addClickListener(SpellButtonHandler);
+
+				spellButtons[spellButtons.length - 1]._customData = i;
+				leftPage.addChild(spellButtons[spellButtons.length - 1]);
+			}
+		}
+	}
+
+	Vec2f getIconOffset(Vec2f iSize)
+	{
+		f32 iconScale = 1.0f;
+		Vec2f iOffset = Vec2f(
+			(gridSize - iSize.x * iconScale) * 0.5f - iSize.x / 2,
+			(gridSize - iSize.y * iconScale) * 0.5f - iSize.y / 2
+		);
+
+		return iOffset;
+	}
+
+	void setSpecialties()
+	{
+		Label@ specialtiesText = @Label(Vec2f(8, 26), Vec2f(160, 33.5f), "Specialties: ", SColor(255, 255, 255, 255), false);
+		rightPage.addChild(specialtiesText);
+
 		Vec2f firstIconPos = Vec2f(6 + (0 == 0 ? 0 : 12), 12) + (0 == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-6, -6);
-		Vec2f lastIconPos = Vec2f(194 + 40 * specialties.size() + (specialties.size() == 0 ? 0 : 12), 12) + (specialties.size() == 0 ? Vec2f_zero : Vec2f(8,8)) + Vec2f(-70, 22);
+		Vec2f lastIconPos = Vec2f(494, 42);
 		
-		classFrame.addChild(@Rectangle(firstIconPos, lastIconPos + Vec2f(16,16), SColor(255,66,72,75)));
-		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(2,2), lastIconPos + Vec2f(12,12), SColor(255,151,167,146)));
-		classFrame.addChild(@Rectangle(firstIconPos + Vec2f(4,4), lastIconPos + Vec2f(8,8), SColor(255,108,119,110)));
-		
+		rightPage.addChild(@Rectangle(firstIconPos, lastIconPos + Vec2f(16,16), SColor(255,66,72,75)));
+		rightPage.addChild(@Rectangle(firstIconPos + Vec2f(2,2), lastIconPos + Vec2f(12,12), SColor(255,151,167,146)));
+		rightPage.addChild(@Rectangle(firstIconPos + Vec2f(4,4), lastIconPos + Vec2f(8,8), SColor(255,108,119,110)));
+
 		for (u8 i = 0; i < stats.size(); i++)
 		{
-			Vec2f pos = Vec2f(98 + 40 * i + 12, 10);
+			Vec2f pos = Vec2f(98 + 40 * i + 11, 10);
 			int frame = 47;
 
 			u8 row = 12;
@@ -242,10 +391,10 @@ class WWPlayerClassButton
 			if (i > 0) frame += i + level * row;
 			SColor col = i == 0 ? stats_middle_color[level] : stats_color[i-1];
 
-			Icon@ temp = @Icon("Specializations.png", Vec2f(104, 12), Vec2f(16,16), frame, 1.5f);
+			Icon@ temp = @Icon("Specializations.png", Vec2f(104, 11), Vec2f(16,16), frame, 1.5f);
 			temp.color = col;
 
-			classFrame.addChild(temp);
+			rightPage.addChild(temp);
 		}
 
 		for (u8 i = 0; i < stats.size(); i++)
@@ -258,7 +407,7 @@ class WWPlayerClassButton
 
 			Label@ statLabel = @Label(pos + stat_labels_offsets[i] - centering, Vec2f(16,16), stats_labels[i], SColor(255,255,255,255), true, "default", seed);
 			statLabel.addHoverStateListener(statHover);
-			classFrame.addChild(statLabel);
+			rightPage.addChild(statLabel);
 		}
 
 		for (u8 i = 1; i < specialties.size() + 1; i++)
@@ -266,25 +415,16 @@ class WWPlayerClassButton
 			Vec2f pos = Vec2f(104 + 40 * i + 12, 11);
 			Icon@ temp = @Icon("Specializations.png", pos + Vec2f(8,8), Vec2f(16, 16), specialties[i - 1], 1.0f);
 			temp.addHoverStateListener(iconHover);
-			classFrame.addChild(temp);
+			rightPage.addChild(temp);
 		}
-
-		Label@ specialtiesText = @Label(Vec2f(8, 26), Vec2f(160, 33.5f), "Specialties: ", SColor(255, 255, 255, 255), false);
-		classFrame.addChild(specialtiesText);
-
-		@spellDescText = @Label(Vec2f(0,200), Vec2f(480,34), "Select a spell above to see its description.", SColor(255,0,0,0), false);
-		classFrame.addChild(spellDescText);
-		
-		Label@ hotbarHelpText = @Label(Vec2f(0,408), Vec2f(480,34), "", SColor(255,0,0,0), false);
-		hotbarHelpText.setText(hotbarHelpText.textWrap("HOW TO ASSIGN HOTKEYS: Select a spell at the top of the page and click a location in the hotbar directly above this hint")); 
-		classFrame.addChild(hotbarHelpText);
-		
-		classFrame.isEnabled = false;
 	}
 
 	void update()
 	{
-		f32 factor = f32(v_fpslimit) / 30;
+		f32 factor = 2; // vanilla build is capped at 60 fps
+		#ifdef STAGING
+		factor = Maths::Max(2, f32(v_fpslimit) / 30);
+		#endif
 		tickrate++;
 
 		if (tickrate % factor != 0)
@@ -302,251 +442,196 @@ class WWPlayerClassButton
             attributes[i].tick();
         }
 	}
-	
+
+	void renderClassDescriptions()
+	{
+		if (!classFrame.isEnabled)
+		{
+			classDescriptionFade = 0;
+			classDescriptionOpenTimer = 0;
+
+			return;
+		}
+
+		f32 factor = 1;
+		#ifdef STAGING
+		factor = Maths::Max(1, f32(v_fpslimit) / 60);
+		#endif
+
+		f32 df = classDescriptionFadeFactor * getRenderDeltaTime() * 60.0f;
+
+		bool start = classDescriptionOpenTimer < 90;
+		f32 fade = start ? 0 : Maths::Lerp(classDescriptionFade, showClassDescription ? 1.0f : 0.0f, df);
+		classDescriptionOpenTimer += 1.0f / factor;
+
+		classDescriptionFade = fade;
+		classDescriptionText.color = SColor(255 * fade, col_text.getRed(), col_text.getGreen(), col_text.getBlue());
+
+		Vec2f thisOffset = descriptionButtonOffset;
+		Vec2f bottomOffset = descriptionButtonOffsetOut;
+		Vec2f lerped_offset = !start && showClassDescription
+			? bottomOffset * fade + thisOffset
+			: thisOffset;
+
+		classDescriptionButton.setPosition(Vec2f(lerped_offset.x, lerped_offset.y));
+	}
+
 	void draw(Vec2f pos)
 	{
+		if (classButton.toggled || classButton.render_one_more_time) renderClassDescriptions();
+
 		classButton.position = pos;
 		classButton.draw();
+
+		classButton.render_one_more_time = false;
 	}
 }
 
 class WWPlayerClassButtonList : GenericGUIItem
 {
 	WWPlayerClassButton@[] list;
-	int style, timer = 0, page = 1, ApP, totalPages;
-	GUIContainer@ tipAnchor = @GUIContainer(Vec2f(0,0),Vec2f(200,46)), pageAnchor = @GUIContainer(Vec2f(0,0),Vec2f(110,30));
-	Window@ dropDownW = @Window(Vec2f(getScreenWidth()-400,-150),Vec2f(250,200),3);
-	Button@ nextP = @Button(Vec2f(-540,-20),Vec2f(100,40),"->",SColor(255,255,255,255)), prevP = @Button(Vec2f(-640,-20),Vec2f(100,40),"<-",SColor(255,255,255,255));
-	Label@ pageNum = @Label(Vec2f(-568,28),Vec2f(30,10),"PAGE 1",SColor(255,0,0,0),false);
-	Label dropDownL;
-	Icon dropDownD,dropDownR;
-	Icon@ dropDownT = @Icon("GUI/achievement_get.png",Vec2f(45,3),Vec2f(157,25),0,0.5f);
-	List@ playerChooser = @List(Vec2f(0,0),Vec2f(300,30));
-	Button@ playerChooserArrow = @Button(Vec2f(-322,-430),Vec2f(30,30),"V",SColor(255,255,255,255));
-	bool displaying = false, needsUpdate = false, hoverDet = false;
+
+	int style;
+	int timer = 0;
+	bool displaying = false;
+	bool needsUpdate = false;
 	u8[] specialties;
-
+	
 	//Styles: 0 = mini|1= small\\
-	WWPlayerClassButtonList(Vec2f _position,Vec2f _size,int _style){
+	WWPlayerClassButtonList(Vec2f _position, Vec2f _size, int _style){
 
-		super(_position,_size);
+		super(_position, _size);
 		style = _style;
+
 		DebugColor = SColor(155,0,0,0);
-		CRules@ rules = getRules();
-		pageAnchor.addChild(nextP);
-		nextP.locked = true;
-		pageAnchor.addChild(pageNum);
-		pageAnchor.addChild(prevP);
-		prevP.locked = true;
-		playerChooserArrow.locked = true;
-		ApP = max_classes_on_page;
-		//rules.addCommandID("announce class unlock");
-		rules.addCommandID("requestClasses");
-		rules.addCommandID("sendClasses");
-		playerChooser.setCurrentItem("Your Classes");
 	}
 
-	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0,string _modName = "Default", 
-		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>, string _imageName = "GUI/ClassIcons.png", int _size = 1)
+	void registerWWPlayerClassButton(string _name, string _desc, string _configFilename, int _classID, int _cost, int _icon = 0, int _rarity = 0, string _modName = "Default", 
+		u8[] _specialties = array<u8>(), u8[] _stats = array<u8>(), string _imageName = classIconsImage, Vec2f _size = classIconSize)
 	{
+		CRules@ rules = getRules();
+		_imageName = rules !is null && rules.get_bool("book_old_spell_icons") ? "ClassButtonsHud.png": "ClassButtons.png"; // hardcoded rn
+
 		WWPlayerClassButton@ classButton = @WWPlayerClassButton(_name, _desc, _configFilename, _classID, _cost, _imageName, _icon, _rarity, _modName, position, _size, _specialties, _stats);
 		list.push_back(classButton);
-		totalPages = (list.length / ApP)+1;
-		if (totalPages > 1)nextP.locked = false;
-		pageNum.setText("PAGE "+page);
-		this.specialties = _specialties;
+
+		specialties = _specialties;
 	}
 	
-	/*void unlockByName(string _name)
-	{
-	
-		CRules@ rules = getRules();
-		CPlayer@ player = getLocalPlayer();
-		string playerName;  
-		bool temp;
-		if ( player is null ){ playerName = "Unknown Player";}
-		else {playerName = player.getUsername();}
-		for(int i = 0; i < list.length; i++)
-		{
-			if(list[i].name == _name && !list[i].checkUnlocked())
-			{
-				if (playerChooser.current.label != "Your Classes") temp = list[i].gained;
-				list[i].Unlock();
-				if (playerChooser.current.label != "Your Classes") list[i].gained = temp;
-				startDisplay(list[i]);
-				CBitStream params;
-				params.write_string(playerName);
-				params.write_string(list[i].name);
-				rules.SendCommand(rules.getCommandID("announce class unlock"),params);
-			}
-		}
-		
-	}*/
-	
-
 	void startDisplay(WWPlayerClassButton@ classButton)
 	{
-		Icon rarity  = classButton.rarity;//Required for a linux fix (on asu's build) caused by .rarity and others being const
-		Icon display = classButton.display;//^
-		Label desc   = classButton.desc;// ^
-		dropDownR = rarity;
-		dropDownR.localPosition = classButton.rarity.localPosition + Vec2f(0,30);
-		dropDownD = display;
-		dropDownD.localPosition = classButton.display.localPosition + Vec2f(0,30);
-		dropDownL = desc;
-		dropDownL.localPosition = classButton.desc.localPosition + Vec2f(0,30);
-		dropDownL.size = classButton.desc.size + Vec2f(110,0);
-		dropDownL.setText(dropDownL.label + "\n"+ dropDownL.textWrap(classButton.description));
-		dropDownW.clearChildren();
-		dropDownW.addChild(dropDownD);
-		dropDownW.addChild(dropDownR);
-		dropDownW.addChild(dropDownL);
-		dropDownW.addChild(dropDownT);
+		Icon display = classButton.display; // ^
+
 		displaying = true;
 	}
+	void display(){}
 
-	void display()
+	void drawSelf()
 	{
-		if(dropDownW.position.y < 0 && timer < 10){ dropDownW.position = dropDownW.position + Vec2f(0,10);}
-		else{ timer++;}
-		if (timer > 80 && dropDownW.position.y > -150){ dropDownW.position = dropDownW.position - Vec2f(0,10);}
-		else if (timer > 80){ displaying = false; timer = 0;}
-		dropDownW.draw();
-	}
-
-	void drawSelf(){
-		hoverDet = false;
-		if (nextP.isClickedWithLButton)clickerHandle(nextP);
-		if (prevP.isClickedWithLButton)clickerHandle(prevP);
 		if (style == 1) renderSmall();
-		if (playerChooser.isClickedWithLButton)clickerHandle(playerChooser);
-		if (playerChooser.anchor.isClickedWithLButton) {needsUpdate = true;playerChooser.anchor.isClickedWithLButton=false;}
-		pageAnchor.position = position + Vec2f(size.x-60,size.y);
-		pageAnchor.draw();
-		if (hoverDet && !playerChooser.open) tipAnchor.draw();
-
 		GenericGUIItem::drawSelf();
 	}
 
 	void renderSmall()
 	{
 		needsUpdate = false;
-		int counterH = 0, counterV = 0, i = ApP * (page-1);
 
-		for(i; i < list.length; i++){
-			if (50*counterV+46 > size.y) {counterH++;counterV= 0;}
-			if (204*counterH+200 > size.x) break;
-			if (i>=page*ApP) break;
+		int classesPerRow = 12;
+		int spacingX = iconSize.x + 4;
+		int spacingY = iconSize.y;
+		int startY = -32;
 
-			list[i].draw(position+Vec2f((204*counterH),(50*counterV)-20));
-			GUI::DrawRectangle(list[i].classButton.position, list[i].classButton.position+list[i].classButton.size,SColor(0,150,150,150));
-			counterV++;
-		}
-	}
+		for (int i = 0; i < list.length; i++)
+		{
+			int row = i / classesPerRow;
+			int col = i % classesPerRow;
 
-	void clickerHandle(IGUIItem@ sender){ //Internal click handler to operate playerchooser, and page buttons
-		if(sender is nextP){
-			page +=1;
-			if (page == totalPages) sender.locked = true;
-			if (prevP.locked) prevP.locked = false;
-			pageNum.setText("PAGE "+page);
-		}
-		if (sender is prevP){
-			page -=1;
-			if (page == 1) sender.locked = true;
-			if (nextP.locked ) nextP.locked = false;
-			pageNum.setText("PAGE "+page);
-		}
-		if (sender is playerChooser){
-			playerChooser.resetList();
-			int count = getPlayerCount();
-			for(int i = 0; i < count; i++){
-				CPlayer@ player = getPlayer(i);
-				if (player.isMyPlayer()){playerChooser.addItem("Your Classes");}
-				else {playerChooser.addItem(player.getUsername()+"'s Classes");}
-			}
-			playerChooser.open = true;
+			f32 offset = i >= 5 ? 88.0f : 40.0f;
+			Vec2f classPos = position + Vec2f(col * spacingX + offset, row * spacingY + startY);
+			list[i].draw(classPos);
 		}
 	}
 }
 
-void intitializeClasses()
+void initClasses()
 {
 	string configstr = "../Cache/WizardWars_Classes"+classesVersion+".cfg";
 	ConfigFile cfg = ConfigFile(configstr);
+
 	if (!cfg.exists("Version")){cfg.add_string("Version","Classes 1.2");
 		cfg.saveFile("WizardWars_Classes"+classesVersion+".cfg");}
-	playerClassButtons = WWPlayerClassButtonList(Vec2f(50,40),Vec2f(700,400),1);
+
+	playerClassButtons = WWPlayerClassButtonList(Vec2f(0, -32), menuSize, 1);
 	playerClassButtons.isEnabled = false;
 	
 	playerClassButtons.registerWWPlayerClassButton("Wizard", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 75" +
-													"     Mana: 150" +
-													"     Mana rate: 3 mana/sec", 
+													"     Mana: " + WizardParams::MAX_MANA +
+													"     Mana rate: " + WizardParams::MANA_REGEN + " mana/sec", 
 													"wizard", 0, 0, 2, 5, "WizardWars", specialties_wizard, STATS[0]);
 	
 	playerClassButtons.registerWWPlayerClassButton("Necromancer", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 100" +
-													"     Mana: 100" +
-													"     Mana rate: 4 mana/sec", 
+													"     Mana: " + NecromancerParams::MAX_MANA +
+													"     Mana rate: " + NecromancerParams::MANA_REGEN + " mana/sec", 
 													"necromancer", 1, 0, 3, 5, "WizardWars", specialties_necromancer, STATS[1]);
 
 	playerClassButtons.registerWWPlayerClassButton("Druid", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 70" +
-													"     Mana: 150" +
-													"     Mana rate: 4 mana/sec",
-													"druid", 3, 20, 4, 0, "WizardWars", specialties_druid, STATS[2]);
+													"     Mana: " + DruidParams::MAX_MANA +
+													"     Mana rate: " + DruidParams::MANA_REGEN + " mana/sec",
+													"druid", 2, 20, 4, 0, "WizardWars", specialties_druid, STATS[2]);
 													
 	playerClassButtons.registerWWPlayerClassButton("Swordcaster", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 90" +
-													"     Mana: 100" +
-													"     Mana rate: 3 mana/sec",
-													"swordcaster", 4, 0, 5, 0, "WizardWars", specialties_swordcaster, STATS[3]);
+													"     Mana: " + SwordCasterParams::MAX_MANA +
+													"     Mana rate: " + SwordCasterParams::MANA_REGEN + " mana/sec",
+													"swordcaster", 3, 0, 5, 0, "WizardWars", specialties_swordcaster, STATS[3]);
 	playerClassButtons.registerWWPlayerClassButton("Entropist", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 75" +
-													"     Mana: 200" +
-													"     Mana rate: 2 mana/sec",
-													"entropist", 5, 0, 6, 0, "WizardWars", specialties_entropist, STATS[4]);
+													"     Mana: " + EntropistParams::MAX_MANA +
+													"     Mana rate: " + EntropistParams::MANA_REGEN + " mana/sec",
+													"entropist", 4, 0, 6, 0, "WizardWars", specialties_entropist, STATS[4]);
 
 	playerClassButtons.registerWWPlayerClassButton("Priest", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 80" +
-													"     Mana: 150" +
-													"     Mana rate: 4 mana/sec",
-													"priest", 6, 0, 7, 0, "WizardWars", specialties_priest, STATS[5]);
+													"     Mana: " + PriestParams::MAX_MANA +
+													"     Mana rate: " + PriestParams::MANA_REGEN + " mana/sec",
+													"priest", 5, 0, 7, 0, "WizardWars", specialties_priest, STATS[5]);
 
 	playerClassButtons.registerWWPlayerClassButton("Shaman", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 80" +
-													"     Mana: 125" +
-													"     Mana rate: 4 mana/sec",
-													"shaman", 7, 0, 8, 0, "WizardWars", specialties_shaman, STATS[6]);
+													"     Mana: " + ShamanParams::MAX_MANA +
+													"     Mana rate: " + ShamanParams::MANA_REGEN + " mana/sec",
+													"shaman", 6, 0, 8, 0, "WizardWars", specialties_shaman, STATS[6]);
 
 	playerClassButtons.registerWWPlayerClassButton("Paladin", 
 													"\nSpecialties: \n\n" +
 													"\n     Health: 100" +
-													"     Mana: 250" +
-													"     Mana rate: 3 mana/sec",
-													"paladin", 8, 0, 9, 0, "WizardWars", specialties_paladin, STATS[7]);
+													"     Mana: " + PaladinParams::MAX_MANA +
+													"     Mana rate: " + PaladinParams::MANA_REGEN + " mana/sec",
+													"paladin", 7, 0, 9, 0, "WizardWars", specialties_paladin, STATS[7]);
 
 	playerClassButtons.registerWWPlayerClassButton("Jester", 
 													"\nSpecialties: \n\n" + 
 													"\n     Health: 80" +
-													"     Mana: 150" +
-													"     Mana rate: 3 mana/sec",
-													"jester", 9, 0, 10, 0, "WizardWars", specialties_jester, STATS[8]);
+													"     Mana: " + JesterParams::MAX_MANA +
+													"     Mana rate: " + JesterParams::MANA_REGEN + " mana/sec",
+													"jester", 8, 0, 10, 0, "WizardWars", specialties_jester, STATS[8]);
 	
 	playerClassButtons.registerWWPlayerClassButton("Warlock", 
 													"\nSpecialties: \n\n" + 
 													"\n   Health: 80" +
-													"     Life Mana: 50" +
-													"     Mana restoration: 1 mana / 1 dmg",
-													"warlock", 10, 0, 11, 0, "WizardWars", specialties_warlock, STATS[9]);
+													"     Life Mana: " + WarlockParams::MAX_MANA +
+													"     Mana restoration: " + WarlockParams::MANA_PER_1_DAMAGE + " mana / 1 dmg",
+													"warlock", 9, 0, 11, 0, "WizardWars", specialties_warlock, STATS[9]);
 }
 
 void statHover(bool hover, IGUIItem@ item)
@@ -569,7 +654,7 @@ void statHover(bool hover, IGUIItem@ item)
 			tooltip = text + (textIndex == 0 ? ": " + diff_levels[level] : "");
 		}
 	}
-	else if (text == tooltip) 
+	else
 	{
 		tooltip = "";
 	}
@@ -596,10 +681,10 @@ void iconHover(bool hover, IGUIItem@ item)
 	}
 }
 
-void SwapButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
+void SwapButtonHandler(int x, int y, int button, IGUIItem@ sender) //Button click handler for KGUI
 { 
 	CPlayer@ localPlayer = getLocalPlayer();
-	if ( localPlayer is null )
+	if (localPlayer is null)
 		return;
 		
 	string playerName = localPlayer.getUsername();
@@ -609,130 +694,166 @@ void SwapButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button cl
 
 	CBitStream params;
 	params.write_u16(callerID);
-	params.write_string(sender.name);
+	params.write_string(selectedClass);
 	
 	CRules@ rules = getRules();
-	rules.SendCommand(rules.getCommandID("swap classes"), params);
+	if (rules !is null)
+		rules.SendCommand(rules.getCommandID("swap classes"), params);
 
-	Sound::Play("MenuSelect2.ogg");	
+	Sound::Play2D("MenuSelect5.ogg", 0.75f, 0);
 }
-/*
-void UnlockButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
-{ 
-	CPlayer@ localPlayer = getLocalPlayer();
-	if ( localPlayer is null )
-		return;
-	
-	string playerName = localPlayer.getUsername();
-	for(int i = 0; i < playerClassButtons.list.length; i++)
-	{
-		Button@ iButton = playerClassButtons.list[i].classButton;
-		if ( iButton.toggled == true )
-		{
-			CBitStream params;
-			params.write_string(playerName);
-			params.write_u16(i);
-			
-			CRules@ rules = getRules();
-			rules.SendCommand(rules.getCommandID("buy unlock"), params);
-			
-			u32 clientPlatinum = client_getPlayerPlatinum(playerName);
-			if ( clientPlatinum >= playerClassButtons.list[i].classCost )
-				playerClassButtons.list[i].gained = true;
-		}
-	}
 
-	Sound::Play( "MenuSelect2.ogg" );	
-}
-*/
-
-void ClassButtonHandler(int x , int y , int button, IGUIItem@ sender)	//Button click handler for KGUI
-{ 
+void ClassButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button click handler for KGUI
+{
 	// toggle buttons accordingly
 	for (int i = 0; i < playerClassButtons.list.length; i++)
 	{
-		Button@ iButton = playerClassButtons.list[i].classButton;	
+		Button@ iButton = playerClassButtons.list[i].classButton;
 		if (iButton.name == sender.name)
 		{
-			if ( iButton.toggled == false )
-				Sound::Play("MenuSelect2.ogg");
-			
-			iButton.toggled = true;
+			PlayFlipSound();
+
+			if (!playerClassButtons.list[i].classFrame.isEnabled)
+			{
+				classDescriptionFade = 0;
+				classDescriptionOpenTimer = 0;
+
+				int c = playerClassButtons.list[i].classID;
+				showClassDescription = canShowClassDescription(c);
+				
+				playerClassButtons.list[i].classDescriptionButton.isEnabled = showClassDescription;
+				playerClassButtons.list[i].classDescriptionButton._customData = c;
+				playerClassButtons.list[i].classDescriptionText.setText(playerClassButtons.list[i].classDescriptionText.textWrap(classTips[c]));
+			}
+
 			playerClassButtons.list[i].classFrame.isEnabled = true;
+			playerClassButtons.list[i].leftPage.isEnabled = true;
+			playerClassButtons.list[i].rightPage.isEnabled = true;
+			iButton.toggled = true;
+			selectedClass = iButton.name;
 		}
 		else
 		{
 			iButton.toggled = false;
+			iButton.render_one_more_time = true;
+
 			playerClassButtons.list[i].classFrame.isEnabled = false;
+			playerClassButtons.list[i].leftPage.isEnabled = false;
+			playerClassButtons.list[i].rightPage.isEnabled = false;
+			playerClassButtons.list[i].classDescriptionButton.isEnabled = false;
+			playerClassButtons.list[i].classDescriptionText.setText("");
 		}
 	}	
+}
+
+void paperButtonHover(bool hover, IGUIItem@ item)
+{
+	if (item is null) return;
+
+	Icon@ sender = cast<Icon>(item.getChild("background"));
+	if (sender is null) return;
+
+	sender.index = hover ? 1 : 0;
 }
 
 void SpellButtonHandler(int x, int y, int button, IGUIItem@ sender)	//Button click handler for KGUI
 { 
 	CPlayer@ localPlayer = getLocalPlayer();
-	if (localPlayer is null )
+	if (localPlayer is null)
 	{
 		return;
 	}
 	
 	PlayerPrefsInfo@ playerPrefsInfo;
-	if (!localPlayer.get( "playerPrefsInfo", @playerPrefsInfo )) 
+	if (!localPlayer.get("playerPrefsInfo", @playerPrefsInfo)) 
 	{
 		return;
 	}
 
 	// toggle buttons accordingly
 	bool buttonToggled = false;
+	int cd = sender._customData;
+
 	for (int c = 0; c < playerClassButtons.list.length; c++)
 	{
-		playerClassButtons.list[c].attributes.clear();
-
-		Button@ cButton = playerClassButtons.list[c].classButton;	
+		Button@ cButton = playerClassButtons.list[c].classButton;
 		for (int s = 0; s < playerClassButtons.list[c].spellButtons.length; s++)
 		{
 			Button@ sButton = playerClassButtons.list[c].spellButtons[s];
 			if (sButton.name == sender.name && playerClassButtons.list[c].classFrame.isEnabled)
 			{
-				SetCustomSpell(localPlayer, s);
-			
-				if (sButton.toggled == false && sender.name != "") 
-					Sound::Play("MenuSelect2.ogg");
-				
+				SetCustomSpell(localPlayer, cd);
+
+				if (sButton.toggled == false && sender.name != "")
+					PlayFlipSound();
+
 				sButton.toggled = true;
 				Spell sSpell;
-				if ( cButton.name == "wizard" )
-					sSpell = WizardParams::spells[Maths::Min( s,(WizardParams::spells.length-1) )];
-				else if ( cButton.name == "druid" )
-					sSpell = DruidParams::spells[Maths::Min( s,(DruidParams::spells.length-1) )];
-				else if ( cButton.name == "necromancer" )
-					sSpell = NecromancerParams::spells[Maths::Min( s,(NecromancerParams::spells.length-1) )];
-				else if ( cButton.name == "swordcaster" )
-					sSpell = SwordCasterParams::spells[Maths::Min( s,(SwordCasterParams::spells.length-1) )];
-				else if ( cButton.name == "entropist" )
-					sSpell = EntropistParams::spells[Maths::Min( s,(EntropistParams::spells.length-1) )];
-				else if ( cButton.name == "priest" )
-					sSpell = PriestParams::spells[Maths::Min( s,(PriestParams::spells.length-1) )];
-				else if ( cButton.name == "shaman" )
-					sSpell = ShamanParams::spells[Maths::Min( s,(ShamanParams::spells.length-1) )];
-				else if ( cButton.name == "paladin" )
-					sSpell = PaladinParams::spells[Maths::Min( s,(PaladinParams::spells.length-1) )];
-				else if ( cButton.name == "jester" )
-					sSpell = JesterParams::spells[Maths::Min( s,(JesterParams::spells.length-1) )];
-				else if ( cButton.name == "warlock" )
-					sSpell = WarlockParams::spells[Maths::Min( s,(WarlockParams::spells.length-1) )];
+				if (cButton.name == "wizard")
+					sSpell = WizardParams::spells[Maths::Min(cd, WizardParams::spells.length - 1)];
+				else if (cButton.name == "druid")
+					sSpell = DruidParams::spells[Maths::Min(cd, DruidParams::spells.length - 1)];
+				else if (cButton.name == "necromancer")
+					sSpell = NecromancerParams::spells[Maths::Min(cd, NecromancerParams::spells.length - 1)];
+				else if (cButton.name == "swordcaster")
+					sSpell = SwordCasterParams::spells[Maths::Min(cd, SwordCasterParams::spells.length - 1)];
+				else if (cButton.name == "entropist")
+					sSpell = EntropistParams::spells[Maths::Min(cd, EntropistParams::spells.length - 1)];
+				else if (cButton.name == "priest")
+					sSpell = PriestParams::spells[Maths::Min(cd, PriestParams::spells.length - 1)];
+				else if (cButton.name == "shaman")
+					sSpell = ShamanParams::spells[Maths::Min(cd, ShamanParams::spells.length - 1)];
+				else if (cButton.name == "paladin")
+					sSpell = PaladinParams::spells[Maths::Min(cd, PaladinParams::spells.length - 1)];
+				else if (cButton.name == "jester")
+					sSpell = JesterParams::spells[Maths::Min(cd, JesterParams::spells.length - 1)];
+				else if (cButton.name == "warlock")
+					sSpell = WarlockParams::spells[Maths::Min(cd, WarlockParams::spells.length - 1)];
+				
+				playerClassButtons.list[c].selectedSpellSketch.iconName = "SpellSketch"+sSpell.iconFrame+".png";
+				playerClassButtons.list[c].selectedSpellIcon.index = sSpell.iconFrame;
+				playerClassButtons.list[c].selectedSpellName.setText(sSpell.name);
 
-				playerClassButtons.list[c].spellDescText.setText(playerClassButtons.list[c].spellDescText.textWrap("-- " + sSpell.name + " --" + 
-																													"\n     " + sSpell.spellDesc + 
-																													"\n  Mana cost: " + sSpell.mana));
+				string statsText = (sSpell.type == SpellType::healthcost ? "Health cost: " : "Mana cost: ") + sSpell.mana;
+				playerClassButtons.list[c].selectedSpellDescription.setText(playerClassButtons.list[c].selectedSpellDescription.textWrap(sSpell.spellDesc + "\n\n" + statsText));
+
+				playerClassButtons.list[c].selectedSpellIcon.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellSketch.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellName.isEnabled = true;
+				playerClassButtons.list[c].selectedSpellDescription.isEnabled = true;
+
+				//set attributes
+				playerClassButtons.list[c].attributes.clear();
 				playerClassButtons.list[c].attributes = sSpell.attributes;
+
+				CRules@ rules = getRules();
+				string attributesTexture = rules !is null && rules.get_bool("book_old_spell_icons") ? "SpellAttributeIconsHud.png" : "SpellAttributeIcons.png";
+				for (u8 i = 0; i < playerClassButtons.list[c].attributes.size(); i++)
+				{
+					playerClassButtons.list[c].attributes[i].icon = attributesTexture;
+				}
+				
+				for (u8 i = 0; i < playerClassButtons.list[c].iconCount; i++)
+				{
+					Icon@ icon = cast<Icon>(playerClassButtons.list[c].rightPage.getChild("placeholder_" + i));
+					if (icon !is null)
+					{
+						icon.isEnabled = false;
+					}
+				}
+
+				Icon@ ornamentLine2 = cast<Icon>(playerClassButtons.list[c].rightPage.getChild("ornamentLine2"));
+				if (ornamentLine2 !is null) ornamentLine2.isEnabled = true;
+
+				Rectangle@ attributesContainer = cast<Rectangle>(playerClassButtons.list[c].rightPage.getChild("attributesContainer"));
+				if (attributesContainer !is null) attributesContainer.isEnabled = true;
 			}
 			else
 			{
 				sButton.toggled = false;
 			}
 		}
-	}	
+	}
 }
 
 void RenderClassMenus()
@@ -746,9 +867,9 @@ void RenderClassMenus()
 		return;
 	}
 
+	GUI::SetFont("hud");
 	if (tooltip != "")
 	{
-		GUI::SetFont("hud");
 		Vec2f mouseScreenPos = getControls().getInterpMouseScreenPos();
 		Vec2f dim;
 		GUI::GetTextDimensions(tooltip, dim);
@@ -774,17 +895,29 @@ void RenderClassMenus()
 		Button@ iButton = s.classButton;
 		if (iButton.toggled == true)
 		{
+			Rectangle@ container = cast<Rectangle>(s.rightPage.getChild("attributesContainer"));
+			if (container is null) continue;
+
 			s.update();
 			if (s.attributes.size() > 0)
 			{
-				// draw attributes
-				Vec2f start_pos = s.spellButtons[s.spellButtons.size() - 1].position + Vec2f(8, 102);
-				Vec2f attributesPos = start_pos;
+				Vec2f attributesPos = container.position;
+				f32 gap = 4;
+				f32 totalWidth = 0.0f;
 
+				gap += 20;
 				for (u8 i = 0; i < s.attributes.size(); i++)
 				{
-					s.attributes[i].pos = attributesPos - Vec2f((s.attributes[i].dim.x + 12) * i, 16);
-					s.attributes[i].render(s.attributes[i].pos, 1.0f, tooltips_fetcher);
+					totalWidth += s.attributes[i].dim.x;
+					if (i > 0) totalWidth += gap;
+				}
+				f32 startX = attributesPos.x + (container.size.x - totalWidth) * 0.5f;
+				for (u8 i = 0; i < s.attributes.size(); i++)
+				{
+					Vec2f attrPos = Vec2f(startX, attributesPos.y + 16);
+					s.attributes[i].pos = attrPos;
+					s.attributes[i].render(attrPos, 1.0f, tooltips_fetcher);
+					startX += s.attributes[i].dim.x + gap;
 				}
 
 				GUI::SetFont("hud");
@@ -822,18 +955,32 @@ void RenderClassMenus()
 	}
 }
 
+bool was_left_click = false;
+bool was_right_click = false;
+void UpdateClassHotbar()
+{
+	CControls@ controls = getControls();
+	was_left_click = controls.isKeyJustPressed(KEY_LBUTTON);
+	was_right_click = controls.isKeyJustPressed(KEY_RBUTTON);
+}
+
+const Spell emptySpell = Spell("", "", 0, "Empty spell", SpellCategory::other, SpellType::other, 0, 0, 0, 0.0f, WizardSpellAttributesCollection[WizardSpellAttributes::ORB]);
+
 const u8 spells_maxcount = 15;
 void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, string className, u8[] hotbarAssignments, Spell[] classSpells)
 {
 	CControls@ controls = localPlayer.getControls();
 	Vec2f mouseScreenPos = controls.getMouseScreenPos();
 
-	Vec2f offset = Vec2f(264.0f, 350.0f);
-	bool canCustomizeHotbar = controls.mousePressed1 && controls.lastKeyPressTime != lastHotbarPressTime;
+	Vec2f offset = Vec2f(120, 330);
+	bool canCustomizeHotbar = was_left_click || was_right_click;
 	bool hotbarClicked = false;
 	int spellsLength = classSpells.length;
 
+	CRules@ rules = getRules();
+	const string iconTexture = rules !is null && rules.get_bool("book_old_spell_icons") ? "SpellIconsHud.png" : "SpellIcons.png";
 	Vec2f primaryPos = helpWindow.position + Vec2f(16.0f, 0.0f) + offset;
+
 	for (uint i = 0; i < spells_maxcount; i++)
 	{
 		u8 primarySpellID = Maths::Min(hotbarAssignments[i], spellsLength - 1);
@@ -842,77 +989,96 @@ void RenderClassHotbar(CPlayer@ localPlayer, PlayerPrefsInfo@ playerPrefsInfo, s
 		if (i < 5)
 		{
 			GUI::DrawFramedPane(primaryPos + Vec2f(0, 64) + Vec2f(32, 0) * i, primaryPos + Vec2f(32, 96) + Vec2f(32, 0) * i);
-			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 64) + Vec2f(32, 0) * i);
+			GUI::DrawIcon(iconTexture, spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 64) + Vec2f(32, 0) * i);
 			GUI::DrawText("" + ((i + 1) % 10), primaryPos + Vec2f(8, -16) + Vec2f(32, 0) * i, color_white);
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 80) + Vec2f(32, 0) * i)).Length() < 16.0f)
 			{
-				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				if (was_left_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				else if (was_right_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.spell_cooldowns.size() - 1, className); // 255 = empty spell
 				hotbarClicked = true;
 			}
 		}
 		else if (i < 10)
 		{
 			GUI::DrawFramedPane(primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5), primaryPos + Vec2f(32, 64) + Vec2f(32, 0) * (i - 5));
-			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5));
+			GUI::DrawIcon(iconTexture, spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(0, 32) + Vec2f(32, 0) * (i - 5));
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 48) + Vec2f(32, 0) * (i - 5))).Length() < 16.0f)
 			{
-				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				if (was_left_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				else if (was_right_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 				hotbarClicked = true;
 			}
 		}
 		else
 		{
 			GUI::DrawFramedPane(primaryPos + Vec2f(32, 0) * (i - 10), primaryPos + Vec2f(32, 32) + Vec2f(32, 0) * (i - 10));
-			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(32, 0) * (i - 10));
+			GUI::DrawIcon(iconTexture, spell.iconFrame, Vec2f(16, 16), primaryPos + Vec2f(32, 0) * (i - 10));
 			if (canCustomizeHotbar && (mouseScreenPos - (primaryPos + Vec2f(16, 16) + Vec2f(32, 0) * (i - 10))).Length() < 16.0f)
 			{
-				assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				if (was_left_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.customSpellID, className);
+				else if (was_right_click)
+					assignHotkey(localPlayer, i, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 				hotbarClicked = true;
 			}
 		}
 	}
-	GUI::DrawText("Primary - " + controls.getActionKeyKeyName(AK_ACTION1), primaryPos + Vec2f(0, -32), color_white);
 
 	Vec2f secondaryPos = helpWindow.position + Vec2f(192.0f, 0.0f) + offset;
 	u8 secondarySpellID = Maths::Min(hotbarAssignments[spells_maxcount], spellsLength - 1);
 	Spell secondarySpell = classSpells[secondarySpellID];
 	GUI::DrawFramedPane(secondaryPos, secondaryPos + Vec2f(32, 32));
-	GUI::DrawIcon("SpellIcons.png", secondarySpell.iconFrame, Vec2f(16, 16), secondaryPos);
+	GUI::DrawIcon(iconTexture, secondarySpell.iconFrame, Vec2f(16, 16), secondaryPos);
 	if (canCustomizeHotbar && (mouseScreenPos - (secondaryPos + Vec2f(16, 16))).Length() < 16.0f)
 	{
-		assignHotkey(localPlayer, spells_maxcount, playerPrefsInfo.customSpellID, className);
+		if (was_left_click)
+			assignHotkey(localPlayer, spells_maxcount, playerPrefsInfo.customSpellID, className);
+		else if (was_right_click)
+			assignHotkey(localPlayer, spells_maxcount, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 		hotbarClicked = true;
 	}
 	GUI::SetFont("default");
-	GUI::DrawText("Secondary - " + controls.getActionKeyKeyName(AK_ACTION2), secondaryPos + Vec2f(32, 8), color_white);
+	GUI::DrawText("A1", secondaryPos + Vec2f(32, 8), color_white);
 
 	Vec2f aux1Pos = helpWindow.position + Vec2f(192.0f, 64.0f) + offset;
 	u8 aux1SpellID = Maths::Min(hotbarAssignments[16], spellsLength - 1);
 	Spell aux1Spell = classSpells[aux1SpellID];
 	GUI::DrawFramedPane(aux1Pos, aux1Pos + Vec2f(32, 32));
-	GUI::DrawIcon("SpellIcons.png", aux1Spell.iconFrame, Vec2f(16, 16), aux1Pos);
+	GUI::DrawIcon(iconTexture, aux1Spell.iconFrame, Vec2f(16, 16), aux1Pos);
 	if (canCustomizeHotbar && (mouseScreenPos - (aux1Pos + Vec2f(16, 16))).Length() < 16.0f)
 	{
-		assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, className);
+		if (was_left_click)
+			assignHotkey(localPlayer, 16, playerPrefsInfo.customSpellID, className);
+		else if (was_right_click)
+			assignHotkey(localPlayer, 16, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 		hotbarClicked = true;
 	}
-	GUI::DrawText("Auxiliary1 - " + controls.getActionKeyKeyName(AK_ACTION3), aux1Pos + Vec2f(32, 8), color_white);
+	GUI::DrawText("A2", aux1Pos + Vec2f(32, 8), color_white);
 
-	Vec2f aux2Pos = helpWindow.position + Vec2f(364.0f, 0.0f) + offset;
+	Vec2f aux2Pos = helpWindow.position + Vec2f(224.0f, 32.0f) + offset;
 	u8 aux2SpellID = Maths::Min(hotbarAssignments[17], spellsLength - 1);
 	Spell aux2Spell = classSpells[aux2SpellID];
 	GUI::DrawFramedPane(aux2Pos, aux2Pos + Vec2f(32, 32));
-	GUI::DrawIcon("SpellIcons.png", aux2Spell.iconFrame, Vec2f(16, 16), aux2Pos);
+	GUI::DrawIcon(iconTexture, aux2Spell.iconFrame, Vec2f(16, 16), aux2Pos);
 	if (canCustomizeHotbar && (mouseScreenPos - (aux2Pos + Vec2f(16, 16))).Length() < 16.0f)
 	{
-		assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, className);
+		if (was_left_click)
+			assignHotkey(localPlayer, 17, playerPrefsInfo.customSpellID, className);
+		else if (was_right_click)
+			assignHotkey(localPlayer, 17, playerPrefsInfo.spell_cooldowns.size() - 1, className);
 		hotbarClicked = true;
 	}
-	GUI::DrawText("Auxiliary2 - " + controls.getActionKeyKeyName(AK_TAUNTS), aux2Pos + Vec2f(32, 8), color_white);
+	GUI::DrawText("A3", aux2Pos + Vec2f(-20, 8), color_white);
 	
 	if (canCustomizeHotbar && hotbarClicked)
 	{
+		if (controls.lastKeyPressTime != lastHotbarPressTime) Sound::Play2D("MenuSelect5.ogg", 0.5f, 0.0f);
 		lastHotbarPressTime = controls.lastKeyPressTime;
-		Sound::Play("MenuSelect1.ogg");
+		was_left_click = false;
+		was_right_click = false;
 	}
 }

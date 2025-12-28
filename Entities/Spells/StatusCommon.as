@@ -1,3 +1,5 @@
+#include "WarlockCommon.as";
+
 shared Vec2f getScreenSize()
 {
     return getDriver().getScreenDimensions();
@@ -86,6 +88,11 @@ shared enum StatusType
     PALADIN_MAJESTY =           19,
     PALADIN_WISDOM =            20,
     CONFUSED =                  21,
+    PLAGUE =                    22,
+    SILENCED =                  23,
+    FEAR =                      24,
+    CARNAGE =                   25,
+    DARKRITUAL =                26,
 
     TOTAL
 };
@@ -124,7 +131,12 @@ shared u8[] TOOLTIPS_SPECIFIC()
         StatusSpecific::DEBUFF, // PALADIN_HUMILITY
         StatusSpecific::BUFF, // PALADIN_MAJESTY
         StatusSpecific::BUFF, // PALADIN_WISDOM
-        StatusSpecific::CONTROL // CONFUSED
+        StatusSpecific::CONTROL, // CONFUSED
+        StatusSpecific::OTHER, // PLAGUE
+        StatusSpecific::CONTROL, // SILENCED
+        StatusSpecific::CONTROL, // FEAR
+        StatusSpecific::BUFF, // CARNAGE
+        StatusSpecific::OTHER // DARKRITUAL
     };
     
     return arr;
@@ -148,13 +160,18 @@ shared string[] TOOLTIPS()
         "Entropist Sidewind: ignore collisions, increased movement speed",
         "Entropist Burn: free spells, diminished spell cast time, losing 30 mana per second",
         "Aura (Tau): take less damage and transfer some of it to the linked ally when nearby",
-        "Aura (Sigma): restore health instead of mana, increases damage taken, disables mana replenishment at obelisks",
-        "Aura (Omega): restore mana on hit, returns some of the damage split between enemies nearby",
+        "Aura (Sigma): 200% heal taken, increases damage taken, disables mana gain",
+        "Aura (Omega): restores mana on hit, returns some of the damage split between enemies nearby",
         "Hallowed Barrier: decreases damage taken",
         "Humility: disable healing",
-        "Majesty: decreased spells cooldown",
+        "Majesty: decreased spell cooldown",
         "Wisdom: wipe some of negative effects",
-        "Confused: reversed controls"
+        "Confused: reversed controls",
+        "Plague: permanently poisoned, taking damage poisons the enemy",
+        "Silenced: unable to cast spells, except teleport",
+        "Fear: constantly running",
+        "Carnage: decreased spell cast time, spells won't have cooldown on cast",
+        "Dark Ritual: spells gain "+Maths::Round(darkritual_lifesteal_mod * 100.0f)+"% lifesteal, you get damaged after effect"
     };
     
     return arr;
@@ -178,7 +195,7 @@ shared class Status
     s8 active_fade;
     f32 blink_sine;
 
-    Status(u8 _type, Vec2f _dim, string _icon, int _duration, f32 _scale = 1.0f)
+    Status(u8 _type, Vec2f _dim, string _icon, int _duration, f32 _scale = 1.0f, bool _super = false)
     {
         type = _type;
         pos = Vec2f_zero;
@@ -187,8 +204,12 @@ shared class Status
         duration = _duration;
         scale = _scale;
 
-        string[] tooltips = TOOLTIPS();
-        @tooltip = @Tooltip(type, tooltips[type], Vec2f_zero, dim * scale);
+        if (!_super)
+        {
+            string[] tooltips = TOOLTIPS();
+            @tooltip = @Tooltip(type, tooltips[type], Vec2f_zero, dim * scale);
+        }
+
         tooltip_fade = 0;
         cursor_focus_time = 0;
         hover = false;
@@ -221,6 +242,7 @@ shared class Status
         {
             tooltip.fade = Maths::Lerp(tooltip.fade, f32(tooltip_fade) / f32(max_fade), df * 2);
             tooltip.pos = pos;
+            tooltip.desc_seconds = Maths::Round(duration * 10.0f / 30.0f) / 10;
         }
         
         active_fade = Maths::Clamp(active_fade + (duration > 0 ? 1 : -1), 0, max_fade);
@@ -279,6 +301,7 @@ shared class Tooltip
     f32 fade;
     Vec2f text_dim;
     SColor tooltip_col;
+    int desc_seconds;
 
     Tooltip(u8 _type, string _text, Vec2f _pos, Vec2f _dim)
     {
@@ -288,6 +311,7 @@ shared class Tooltip
         dim = _dim;
         fade = 0.0f;
         tooltip_col = getTooltipColor(type);
+        desc_seconds = 0;
     }
 
     void render()
@@ -296,13 +320,19 @@ shared class Tooltip
             return;
 
         GUI::SetFont("menu");
+
+        string seconds = desc_seconds > 0 ? " " + desc_seconds + "s" : "";
+        Vec2f seconds_dim;
+        GUI::GetTextDimensions(seconds, seconds_dim);
+
         GUI::GetTextDimensions(text, text_dim);
+        text_dim.x += seconds_dim.x;
         
         Vec2f tooltip_pos = pos - Vec2f(text_dim.x / 2 - dim.x + 4, text_dim.y + 8);
         GUI::DrawPane(tooltip_pos, tooltip_pos + text_dim + Vec2f(8, 8), SColor(uint8(200 * fade), 55, 55, 55));
 
         tooltip_col.setAlpha(uint8(255 * fade));
-        GUI::DrawText(text, tooltip_pos + Vec2f(2, 2), tooltip_col);
+        GUI::DrawText(text + seconds, tooltip_pos + Vec2f(2, 2), tooltip_col);
         GUI::SetFont("default");
     }
 

@@ -11,6 +11,18 @@ void onInit(CSprite@ this)
     if (blob is null)
         return;
 
+    u8 dr = 0;
+    if (blob.getName() == "necromancer") dr = 1;
+    if (blob.getName() == "druid") dr = 2;
+    if (blob.getName() == "swordcaster") dr = 3;
+    if (blob.getName() == "entropist") dr = 4;
+    if (blob.getName() == "priest") dr = 5;
+    if (blob.getName() == "shaman") dr = 6;
+    if (blob.getName() == "paladin") dr = 7;
+    if (blob.getName() == "jester") dr = 8;
+    if (blob.getName() == "warlock") dr = 9;
+    blob.set_u8("disabled_row", dr);
+
     // init empty to avoid jank memory values
     blob.set_s16("burn timer", 0);
     blob.set_u16("wet timer", 0);
@@ -34,6 +46,11 @@ void onInit(CSprite@ this)
     blob.set_u16("cdreduction", 0);
     blob.set_u16("antidebuff", 0);
     blob.set_u16("confused", 0);
+    blob.set_bool("plague", false);
+    blob.set_u16("silenced", 0);
+    blob.set_u16("feared", 0);
+    // carnage is tag
+    blob.set_u16("darkritual_effect_time", 0);
 
     setBar(blob);
 }
@@ -74,67 +91,6 @@ void onTick(CSprite@ this)
     {
         setBar(blob);
     }
-
-    /*
-    if (getControls().isKeyJustPressed(KEY_KEY_H))
-    {
-        blob.add_u8("iter", 1);
-        
-        if(blob.get_u8("iter")==1)  blob.set_u16("poisoned", 240);
-        if(blob.get_u8("iter")==2)  blob.set_u16("wet timer", 9000);
-        if(blob.get_u8("iter")==3)  blob.set_s16("burn timer", 9000);
-        if(blob.get_u8("iter")==4)  blob.set_u16("hastened", 9000);
-        if(blob.get_u8("iter")==5)  blob.set_u16("slowed", 9000);
-        if(blob.get_u8("iter")==6)  blob.set_u16("airblastShield", 9000);
-        if(blob.get_u8("iter")==7)  blob.set_u32("damage_boost", getGameTime() + 9000);
-        if(blob.get_u8("iter")==8)  blob.set_u16("focus", 9000);
-        if(blob.get_u8("iter")==9)  blob.set_u32("overload mana regen", getGameTime() + 9000);
-        if(blob.get_u8("iter")==10) blob.set_u16("fireProt", 9000);
-        if(blob.get_u8("iter")==11) blob.set_u16("regen", 9000);
-        if(blob.get_u8("iter")==12) blob.set_u16("manaburn", 9000);
-        if(blob.get_u8("iter")==13) blob.set_u16("sidewinding", 9000);
-        if(blob.get_u8("iter")==14) blob.set_bool("burnState", true);
-        if(blob.get_u8("iter")==15) blob.set_u16("dmgconnection", 9000);
-        if(blob.get_u8("iter")==16) blob.set_bool("manatohealth", true);
-        if(blob.get_u8("iter")==17) blob.set_bool("damagetomana", true);
-        if(blob.get_u8("iter")==18) blob.set_u16("hallowedbarrier", 9000);
-        if(blob.get_u8("iter")==19) blob.set_u16("healblock", 9000);
-        if(blob.get_u8("iter")==20) blob.set_u16("cdreduction", 9000);
-        if(blob.get_u8("iter")==21) blob.set_u16("antidebuff", 9000);
-        if(blob.get_u8("iter")==22) blob.set_u16("confused", 9000);
-        if (blob.get_u8("iter") == 22)
-        {
-            blob.set_u8("iter", 0);
-        }
-    }
-    else if (getControls().isKeyJustPressed(KEY_KEY_J))
-    {
-        blob.set_u16("poisoned", 0);
-        blob.set_u16("wet timer", 0);
-        blob.set_s16("burn timer", 0);
-        blob.set_u16("hastened", 0);
-        blob.set_u16("slowed", 0);
-        blob.set_u16("airblastShield", 0);
-        blob.set_u32("damage_boost", 0);
-        blob.set_u16("focus", 0);
-        blob.set_u32("overload mana regen", 0);
-        blob.set_u16("fireProt", 0);
-        blob.set_u16("regen", 0);
-        blob.set_u16("manaburn", 0);
-        blob.set_u16("sidewinding", 0);
-        blob.set_bool("burnState", false);
-        blob.set_u16("dmgconnection", 0);
-        blob.set_bool("manatohealth", false);
-        blob.set_bool("damagetomana", false);
-        blob.set_u16("hallowedbarrier", 0);
-        blob.set_u16("healblock", 0);
-        blob.set_u16("cdreduction", 0);
-        blob.set_u16("antidebuff", 0);
-        blob.set_u16("confused", 0);
-    }
-
-    if (blob.get_u16("poisoned") > 0) blob.sub_u16("poisoned", 1);
-    */
 }
 
 void onRender(CSprite@ this)
@@ -156,6 +112,50 @@ void onRender(CSprite@ this)
 
     bar.render();
 }
+
+enum SPELL_INDEX
+{
+    BURN,
+    WET,
+    FREEZE,
+    POISON,
+    DAMAGE_BOOST,
+    FOCUS,
+    HASTE,
+    SLOW,
+    AIRBLAST_SHIELD,
+    FIREPROOF_SHIELD,
+    HEAL,
+    MANABURN,
+    ENTROPIST_SIDEWIND,
+    ENTROPIST_BURN_STATE,
+    PALADIN_TAU,
+    PALADIN_SIGMA,
+    PALADIN_OMEGA,
+    PALADIN_BARRIERS,
+    HUMILITY,
+    MAJESTY,
+    WISDOM,
+    CONFUSED,
+    PLAGUE,
+    SILENCED,
+    FEAR,
+    CARNAGE
+};
+
+u8[][] disabled_for_classes =
+        {
+            {SPELL_INDEX::CARNAGE}, // wizard
+            {SPELL_INDEX::CARNAGE}, // necromancer
+            {SPELL_INDEX::CARNAGE}, // druid
+            {SPELL_INDEX::CARNAGE}, // swordcaster
+            {SPELL_INDEX::CARNAGE}, // entropist
+            {SPELL_INDEX::CARNAGE}, // priest
+            {SPELL_INDEX::CARNAGE}, // shaman
+            {SPELL_INDEX::CARNAGE}, // paladin
+            {SPELL_INDEX::CARNAGE}, // jester
+            {SPELL_INDEX::FOCUS} // warlock
+        };
 
 class StatusBar
 {
@@ -240,14 +240,21 @@ class StatusBar
         ManaInfo@ manaInfo;
         if (!blob.get("manaInfo", @manaInfo))
             return;
-    
-        // clear effects / debuffs from despell hook, this hook is supposed to ensure first doesnt break and to update the duration
+
+        u8 disabled_row = blob.get_u8("disabled_row");
+        u16 poison = blob.get_u16("poisoned");
+
+        // clear effects / debuffs from dispell hook, this hook is supposed to ensure first doesnt break and to update the duration
         s16 burn_timer = blob.get_s16("burn timer");
         u16 wet_timer = blob.get_u16("wet timer");
-        u16 freeze_timer = 0; AttachmentPoint@ ap = blob.isAttached() ? blob.getAttachments().getAttachmentPoint("PICKUP2") : null; if (blob.isAttached() && ap !is null && ap.getOccupied() !is null) freeze_timer = ap.getOccupied().getTimeToDie() * 30;
-        u16 poison_timer = blob.get_u16("poisoned");
+        
+        u16 freeze_timer = 0;
+        AttachmentPoint@ ap = blob.isAttached() ? blob.getAttachments().getAttachmentPoint("PICKUP2") : null;
+        if (blob.isAttached() && ap !is null && ap.getOccupied() !is null) freeze_timer = ap.getOccupied().getTimeToDie() * 30;
+        
+        u16 poison_timer = poison > 10 ? poison : poison != 0 ? 1 : 0;
         u16 damage_boost_timer = 0; u32 timer = blob.hasTag("extra_damage") ? blob.get_u32("damage_boost") : 0; if (blob.hasTag("extra_damage") && timer >= gt) damage_boost_timer = timer - gt;
-        u16 focus_timer = (blob.get_u16("focus") > MIN_FOCUS_TIME * getTicksASecond() || blob.get_u32("overload mana regen") > getGameTime()) ? 1 : 0;
+        u16 focus_timer = disabled_for_classes[disabled_row].find(SPELL_INDEX::FOCUS) != -1 ? 0 : (blob.get_u16("focus") > MIN_FOCUS_TIME * getTicksASecond() || blob.get_u32("overload mana regen") > getGameTime()) ? 1 : 0;
         u16 haste_timer = blob.get_u16("hastened");
         u16 slow_timer = blob.get_u16("slowed");
         u16 airblast_shield_timer = blob.get_u16("airblastShield");
@@ -264,6 +271,11 @@ class StatusBar
         u16 majesty_timer = blob.get_u16("cdreduction");
         u16 wisdom_timer = blob.get_u16("antidebuff");
         u16 confused_timer = blob.get_u16("confused");
+        u16 plague_timer = blob.get_bool("plague") ? 1 : 0;
+        u16 silenced_timer = blob.get_u16("silenced");
+        u16 feared_timer = blob.get_u16("feared");
+        u16 carnage_timer = blob.hasTag("carnage_effect") ? 1 : 0;
+        u16 darkritual_effect_time = blob.get_u16("darkritual_effect_time");
 
         handleStatus(StatusType::IGNITED,                   burn_timer);
         handleStatus(StatusType::WET,                       wet_timer);
@@ -280,13 +292,18 @@ class StatusBar
         handleStatus(StatusType::ENTROPIST_SIDEWIND,        entropist_sidewind);
         handleStatus(StatusType::ENTROPIST_BURN,            burn_state_count);
         handleStatus(StatusType::PALADIN_TAU,               paladin_tau_timer);
-        handleStatus(StatusType::PALADIN_SIGMA,            paladin_sigma_timer);
+        handleStatus(StatusType::PALADIN_SIGMA,             paladin_sigma_timer);
         handleStatus(StatusType::PALADIN_OMEGA,             paladin_omega_timer);
         handleStatus(StatusType::PALADIN_HOLY_BARRIER,      paladin_barriers_timer);
         handleStatus(StatusType::PALADIN_HUMILITY,          humility_timer);
         handleStatus(StatusType::PALADIN_MAJESTY,           majesty_timer);
         handleStatus(StatusType::PALADIN_WISDOM,            wisdom_timer);
         handleStatus(StatusType::CONFUSED,                  confused_timer);
+        handleStatus(StatusType::PLAGUE,                    plague_timer);
+        handleStatus(StatusType::SILENCED,                  silenced_timer);
+        handleStatus(StatusType::FEAR,                      feared_timer);
+        handleStatus(StatusType::CARNAGE,                   carnage_timer);
+        handleStatus(StatusType::DARKRITUAL,                darkritual_effect_time);
     }
 
     u8 getHoveredStatus()
@@ -327,8 +344,21 @@ class StatusBar
     {
         if (duration == 0) // remove
         {
+            // validate type and active array bounds
+            if (type >= active.size())
+                return;
+
+            // validate that the status is active
             if (active[type] == 255)
                 return; // status not active, nothing to do
+
+            // validate s array bounds
+            if (active[type] >= s.size())
+                return;
+
+            // validate that the status object exists
+            if (s[active[type]] is null)
+                return;
 
             s[active[type]].duration = 0; // set duration to 0 to fade out
             if (s[active[type]].active)
@@ -342,12 +372,15 @@ class StatusBar
         {
             if (active[type] == 255 || override_add)
             {
+                if (type >= StatusType::TOTAL) return; // invalid type
                 if (active[type] == 255) s.push_back(STATUSES[type]);
                 addStatus(type, duration);
             }
             else
             {
+                if (active[type] >= s.size()) return; // out of bounds
                 if (active[type] == 255) return; // status is not active, nothing to do
+                if (s[active[type]] is null) return; // status object doesn't exist, nothing to do
                 s[active[type]].duration = duration; // update duration
             }
         }

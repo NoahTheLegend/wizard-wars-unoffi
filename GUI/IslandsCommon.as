@@ -41,11 +41,6 @@ shared class IslandBlock
 
 Island@ getIsland( const int colorIndex )
 {
-	Island[]@ islands;
-	if (getRules().get( "islands", @islands ))
-		if (colorIndex > 0 && colorIndex <= islands.length){
-			return islands[colorIndex-1];
-		}
 	return null;
 }
 

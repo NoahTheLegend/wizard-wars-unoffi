@@ -68,13 +68,10 @@ void onTick(CBlob@ this)
 void onInit(CSprite@ this)
 {
     this.ScaleBy(Vec2f(0.25f, 0.25f));
+    #ifdef STAGING
     this.setRenderStyle(RenderStyle::additive);
-    //{
-    //    CSpriteLayer@ s = this.addSpriteLayer("circle", "team_color_circle.png", 100, 100);
-    //    s.setRenderStyle(RenderStyle::Style::light);
-    //    s.ScaleBy(Vec2f(1.562f, 1.562f));
-    //    s.SetRelativeZ(-2);
-    //}
+    #endif
+
     {
         CSpriteLayer@ s = this.addSpriteLayer("l0","flameCircleLayers.png",200,200);
         s.SetRelativeZ(55);
@@ -139,7 +136,9 @@ void onInit(CSprite@ this)
         {
             l.RotateBy(XORRandom(360), Vec2f_zero);
             l.SetVisible(false);
+            #ifdef STAGING
             l.setRenderStyle(RenderStyle::additive);
+            #endif
         }
     }
 
@@ -199,7 +198,7 @@ void onTick(CSprite@ this)
         f32 speed = b.hasTag("fullCharge") ? 4 : 3;
         speed *= Maths::Min(1.5f, b.getTickSinceCreated() / 30.0f);
 
-        this.RotateByDegrees(speed / (b.get_u8("despelled") + 1) ,Vec2f(0,0));
+        this.RotateByDegrees(speed / (b.get_u8("dispelled") + 1) ,Vec2f(0,0));
         if (reverse) this.ScaleBy(Vec2f(0.935f, 0.935f));
 
         u16 netid = b.getNetworkID();

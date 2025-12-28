@@ -3,6 +3,7 @@
 
 #define SERVER_ONLY
 
+#include "MagicCommon.as";
 #include "TDM_Structs.as";
 #include "RulesCore.as";
 #include "RespawnSystem.as";
@@ -139,7 +140,7 @@ shared class TDMSpawns : RespawnSystem
 			}
 			
 			PlayerPrefsInfo@ playerPrefsInfo;
-			if ( player.get( "playerPrefsInfo", @playerPrefsInfo ) && playerPrefsInfo !is null )
+			if (player.get("playerPrefsInfo", @playerPrefsInfo ) && playerPrefsInfo !is null)
 			{
 				p_info.blob_name = playerPrefsInfo.classConfig;
 
@@ -153,16 +154,20 @@ shared class TDMSpawns : RespawnSystem
 							&& arr[0] != "")
 						{
 							p_info.blob_name = arr[0];
+							playerPrefsInfo.classConfig = p_info.blob_name;
 						}
 					}
 				}
 			}
-				
-			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 
+			if (player.isBot())
+				p_info.blob_name = "knight";
+			
+			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 			if (playerBlob !is null)
 			{
-				if (!player.hasTag("first_join") && getRules().isWarmup())
+				CRules@ rules = getRules();
+				if (rules !is null && !player.hasTag("first_join") && rules.isWarmup())
 				{
 					player.Tag("first_join");
 				}

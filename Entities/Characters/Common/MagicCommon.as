@@ -4,13 +4,32 @@
 
 const u8 MIN_FOCUS_TIME = 5; //in seconds
 const u16 wet_renew_time = 5*30;
+const string[] classes = {"wizard", "necromancer", "druid", "swordcaster", "entropist", "priest", "shaman", "paladin", "jester", "warlock"};
 
 namespace SpellType
 {
 	enum type
 	{
 		summoning,
-		other
+		other,
+		healthcost,
+		total
+	};
+}
+
+namespace SpellCategory
+{
+	enum type
+	{
+		other,
+		special,
+		offensive,
+		defensive,
+		debuff,
+		support,
+		summoning,
+		utility,
+		heal
 	};
 }
 
@@ -19,16 +38,19 @@ shared class Spell
 	string typeName;
 	string name;
 	string icon;
-	u16 iconFrame;
 	string spellDesc;
+	
+	u16 iconFrame;
+	u8 category;
 	u8 type;
-	s32 mana;
+	f32 mana;
 
 	s32 fullChargeTime;
 	s32 readyTime;
 	s32 cooldownTime;
 
 	f32 range;
+	f32 target_grab_range;
 	s32 ready_time;
 
 	s32 cast_period;
@@ -37,23 +59,26 @@ shared class Spell
 	s32 full_cast_period;
 
 	bool needs_full;
-	bool grounded;
+	u8 target_type;
 
-	int[] effect_types;
+	uint[] effect_types;
 	Attribute@[] attributes;
+	uint[] empty;
 
-	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_type,
-		s32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range,
-		bool fully_loaded = false, bool is_grounded = false, int[] _effect_types = -1)
+	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_category, u8 i_type,
+		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range,
+		bool fully_loaded = false, u8 _target_type = 0, uint[] _effect_types = empty)
 	{
 		typeName = i_typeName;
 		name = i_name;
 		iconFrame = i_iconFrame;
 		spellDesc = i_spellDesc;
+		category = i_category;
 		type = i_type;
 		mana = i_mana;
 		cooldownTime = i_cooldownTime;
 		range = i_range;
+		target_grab_range = 64.0f;
 
 		cast_period = i_cast_period;
 		cast_period_1 = cast_period/3;
@@ -67,7 +92,87 @@ shared class Spell
 		}
 
 		needs_full = fully_loaded;
-		grounded = is_grounded;
+		target_type = _target_type;
+
+		#ifndef STAGING
+		validateVanilla();
+		#endif
+	}
+
+	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_category, u8 i_type,
+		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range, f32 c_range,
+		bool fully_loaded = false, u8 _target_type = 0, uint[] _effect_types = empty)
+	{
+		typeName = i_typeName;
+		name = i_name;
+		iconFrame = i_iconFrame;
+		spellDesc = i_spellDesc;
+		category = i_category;
+		type = i_type;
+		mana = i_mana;
+		cooldownTime = i_cooldownTime;
+		range = i_range;
+		target_grab_range = c_range;
+
+		cast_period = i_cast_period;
+		cast_period_1 = cast_period/3;
+		cast_period_2 = 2*cast_period/3;
+		full_cast_period = cast_period*3;
+
+		effect_types = _effect_types;
+		for (u8 i = 0; i < effect_types.size(); i++)
+		{
+			attributes.push_back(makeAttribute(effect_types[i]));
+		}
+
+		needs_full = fully_loaded;
+		target_type = _target_type;
+
+		#ifndef STAGING
+		validateVanilla();
+		#endif
+	}
+
+	Spell(string i_typeName, string i_name, u16 i_iconFrame, string i_spellDesc, u8 i_category, u8 i_type,
+		f32 i_mana, s32 i_cast_period, s32 i_cooldownTime, f32 i_range, uint[] _effect_types = empty)
+	{
+		typeName = i_typeName;
+		name = i_name;
+		iconFrame = i_iconFrame;
+		spellDesc = i_spellDesc;
+		category = i_category;
+		type = i_type;
+		mana = i_mana;
+		cooldownTime = i_cooldownTime;
+		range = i_range;
+		target_grab_range = 64.0f;
+
+		cast_period = i_cast_period;
+		cast_period_1 = cast_period/3;
+		cast_period_2 = 2*cast_period/3;
+		full_cast_period = cast_period*3;
+
+		effect_types = _effect_types;
+		for (u8 i = 0; i < effect_types.size(); i++)
+		{
+			attributes.push_back(makeAttribute(effect_types[i]));
+		}
+
+		needs_full = false;
+		target_type = 0;
+
+		#ifndef STAGING
+		validateVanilla();
+		#endif
+	}
+
+	void validateVanilla()
+	{
+		if (iconFrame < 0 || iconFrame >= 512)
+		{
+			error("Invalid icon frame: " + iconFrame + " for spell " + typeName);
+			iconFrame = 0;
+		}
 	}
 };
 

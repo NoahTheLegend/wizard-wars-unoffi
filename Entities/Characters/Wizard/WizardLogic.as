@@ -47,7 +47,7 @@ void onInit( CBlob@ this )
 	this.getShape().SetRotationsAllowed(false);
     this.addCommandID("freeze");
     this.addCommandID("spell");
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	this.getShape().getConsts().net_threshold_multiplier = 1.5f;
 	
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right | CBlob::map_collide_up | CBlob::map_collide_nodeath);
 	this.getCurrentScript().removeIfTag = "dead";
@@ -122,8 +122,23 @@ void ManageSpell( CBlob@ this, WizardInfo@ wizard, PlayerPrefsInfo@ playerPrefsI
 
         is_aux2 = true;
     }
+
+	CRules@ rules = getRules();
+	if (rules is null) return;
+	if (isClient() && rules.get_bool("showHelp"))
+	{
+		is_pressed = false;
+		just_pressed = false;
+		just_released = false;
+
+		is_secondary = false;
+		is_aux1 = false;
+		is_aux2 = false;
+
+		casting_key = "a1";
+	}
+
 	this.set_string("casting_key", casting_key);
-	
 	Spell spell = WizardParams::spells[spellID];
 
 	//raycast arrow
@@ -236,9 +251,16 @@ void ManageSpell( CBlob@ this, WizardInfo@ wizard, PlayerPrefsInfo@ playerPrefsI
 				castSpellID = playerPrefsInfo.hotbarAssignments_Wizard[Maths::Min(15,hotbarLength-1)];
 			else
 				castSpellID = playerPrefsInfo.primarySpellID;
+            CBlob@ target = spell.target_type == 2 ? client_getNearbySpellTarget(this, spell.range, spell.target_grab_range) : null;
+
+			u16 targetID = 0;
+			if (target !is null) targetID = target.getNetworkID();
+
             params.write_u8(castSpellID);
             params.write_Vec2f(spellPos);
 			params.write_Vec2f(pos);
+			params.write_Vec2f(this.getAimPos());
+			params.write_u16(targetID);
             this.SendCommand(this.getCommandID("spell"), params);
 			
 			int spell_cd_time = WizardParams::spells[castSpellID].cooldownTime * getTicksASecond();
@@ -278,7 +300,8 @@ void ManageSpell( CBlob@ this, WizardInfo@ wizard, PlayerPrefsInfo@ playerPrefsI
         }
     }
 	
-	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
+	if (rules is null) return;
+	if ( !is_pressed && rules.get_bool("spell_number_selection") )
 	{
 		if (WizardParams::spells.length == 0) 
 		{
@@ -295,7 +318,7 @@ void ManageSpell( CBlob@ this, WizardInfo@ wizard, PlayerPrefsInfo@ playerPrefsI
 		int currHotkey = playerPrefsInfo.primaryHotkeyID;
 		int nextHotkey =  playerPrefsInfo.hotbarAssignments_Wizard.length;
 		
-		CRules@ rules = getRules();
+		
 		if (rules !is null && rules.hasTag("update_spell_selected")
 			&& rules.exists("reset_spell_id") && rules.get_u16("reset_spell_id") > 0)
 		{
@@ -354,7 +377,7 @@ void ManageSpell( CBlob@ this, WizardInfo@ wizard, PlayerPrefsInfo@ playerPrefsI
 		this.set_bool("spell selected", true);
 }
 
-void onTick( CBlob@ this )
+void onTick(CBlob@ this)
 {
 	if(getNet().isServer())
 	{
@@ -433,7 +456,9 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         Spell spell = WizardParams::spells[spellID];
         Vec2f aimpos = params.read_Vec2f();
 		Vec2f thispos = params.read_Vec2f();
-        CastSpell(this, charge_state, spell, aimpos, thispos);
+        Vec2f serverAimPos = params.read_Vec2f();
+		u16 targetID = params.read_u16();
+        CastSpell(this, charge_state, spell, aimpos, thispos, targetID);
 		
 		manaInfo.mana -= spell.mana;
     }

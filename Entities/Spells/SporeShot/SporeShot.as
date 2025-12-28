@@ -1,4 +1,5 @@
 #include "Hitters.as"
+#include "HittersWW.as"
 
 const f32 AOE = 12.0f;//radius
 const int min_detonation_time = 6;
@@ -36,7 +37,6 @@ void onTick(CBlob@ this)
 		this.SetLightRadius(24.0f);
 		this.SetLightColor(SColor(255, 211, 121, 224));
 		this.set_string("custom_explosion_sound", "SporeShotExplosion.ogg");
-		this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
 		this.getSprite().SetZ(1000.0f);
 
 		//makes a stupid annoying sound
@@ -142,7 +142,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 		causeSparks = true;
 	}
 
-	if( blob !is null && isEnemy(this, blob) )
+	if (blob !is null && isEnemy(this, blob))
 	{
 		causeSparks = true;
 		if (this.getTickSinceCreated() > min_detonation_time)	

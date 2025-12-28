@@ -1,4 +1,6 @@
+#include "PlayerPrefsCommon.as";
 
+const u8 mossy_golem_cooldown = 8; // in seconds
 
 void onInit(CBlob@ this)
 {
@@ -6,18 +8,115 @@ void onInit(CBlob@ this)
     this.set_s32("nextSpore",getGameTime());
     this.Tag("counterable");
     this.Tag("totem");
+
+    this.addCommandID("set_cooldown");
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+    if (cmd == this.getCommandID("set_cooldown"))
+    {
+        u16 owner_id;
+        if (!params.saferead_u16(owner_id)) return;
+
+        CPlayer@ owner = getPlayerByNetworkId(owner_id);
+        if (owner !is null)
+        {
+            if (isClient())
+            {
+                for (int i = 0; i < 8+XORRandom(5); i++)
+                {
+                    Vec2f vel(1.0f + XORRandom(10)*0.1f, 0);
+                    vel.RotateBy(XORRandom(360));
+
+                    CParticle@ p = ParticleAnimated(CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+                                                    this.getPosition(), 
+                                                    vel, 
+                                                    float(XORRandom(360)), 
+                                                    1.0f, 
+                                                    4 + XORRandom(8), 
+                                                    0.0f, 
+                                                    false );
+
+                    if (p !is null)
+                    {
+                        p.fastcollision = true;
+                        p.scale = 1.0f - XORRandom(51) * 0.01f;
+                        p.damping = 0.925f;
+                        p.Z = 750.0f;
+                        p.colour = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+                        p.forcecolor = SColor(255, 100+XORRandom(55), 200+XORRandom(55), 125+XORRandom(35));
+                        p.setRenderStyle(RenderStyle::additive);
+                    }
+                }
+
+                CPlayer@ owner = this.getDamageOwnerPlayer();
+		        if (owner !is null)
+		        {
+		        	PlayerPrefsInfo@ playerPrefsInfo;
+		        	if (!owner.get("playerPrefsInfo", @playerPrefsInfo))
+		        	{
+		        		return;
+		        	}
+
+		        	playerPrefsInfo.spell_cooldowns[9] = mossy_golem_cooldown*30;
+		        }
+            }
+        }
+    }
 }
 
 void onTick(CBlob@ this)
 {
+    if (this.getTickSinceCreated() == 1)
+    {
+        this.getSprite().PlaySound("WizardShoot.ogg", 1.5f);
+    
+        CBlob@[] bs;
+        getMap().getBlobsInRadius(this.getPosition(), this.getRadius(), @bs);
 
-    if(this.getTickSinceCreated() > this.get_s32("aliveTime"))
+        for (u32 i = 0; i < bs.length; i++)
+        {
+            CBlob@ blob = bs[i];
+
+            if (blob !is null && blob.getTeamNum() == this.getTeamNum() && blob.getName() == "moss")
+            {
+                CPlayer@ owner = blob.getDamageOwnerPlayer();
+                if (owner !is null && owner is this.getDamageOwnerPlayer())
+                {
+                    if (isServer())
+                    {
+                        CBlob@ mossy_golem = server_CreateBlob("mossygolem", this.getTeamNum(), this.getPosition() - Vec2f(0, 4));
+                        if (mossy_golem !is null)
+                        {
+                            mossy_golem.SetFacingLeft(XORRandom(2) == 0);
+                            mossy_golem.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+                            mossy_golem.server_SetTimeToDie(18+XORRandom(8)*0.1f);
+
+                            mossy_golem.set_u16("owner_id", this.getDamageOwnerPlayer().getNetworkID());
+                            mossy_golem.Tag("mg_owner" + this.getDamageOwnerPlayer().getNetworkID());
+                        }
+
+                        CBitStream params;
+                        params.write_u16(this.getDamageOwnerPlayer().getNetworkID());
+                        this.SendCommand(this.getCommandID("set_cooldown"), params);
+
+                        this.Tag("mark_for_death");
+                    }
+                }
+            }
+        }
+    }
+
+    if (this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
         this.Tag("mark_for_death");
     }
 
-    if(getGameTime() >= this.get_s32("nextSpore"))
+    if (getGameTime() >= this.get_s32("nextSpore"))
     {
+        this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
+
         createSporeshot(this);
         this.set_s32("nextSpore",getGameTime() + 150);
     }

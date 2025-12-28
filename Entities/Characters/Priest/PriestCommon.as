@@ -24,67 +24,65 @@ namespace PriestParams
 
 	const ::Spell[] spells = 
 	{
-		//Spell("orb", "Orb", 6, "Fire a basic orb which ricochets off of most surfaces until impacting an enemy and exploding, dealing minor damage.",
-		//	SpellType::other, 3, 30, 0, 360.0f),
 		Spell("epicorbmain", "Orbiting Orbs", 74, "Summons magic orbs rotating around its center. Amount of orbs scales with charge.",
-				SpellType::other, 8, 30, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
+			SpellCategory::offensive, SpellType::other, 8, 25, 0, 360.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::ORBITING_ORBS]),
 			
 		Spell("teleport", "Teleport to Target", 40, "Point to any visible position and teleport there.",
-				SpellType::other, 20, 6, 0, 270.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT}),
+			SpellCategory::special, SpellType::other, 20, 6, 0, 270.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::TELEPORT_PRIEST]),
 
 		Spell("counter_spell", "Counter Spell", 16, "Destroy all spells around you. Also able to severely damage summoned creatures.",
-			SpellType::other, 20, 10, 0, 64.0f, true),
+			SpellCategory::special, SpellType::other, 20, 10, 0, 64.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::COUNTER_SPELL_PRIEST]),
 
 		Spell("haste", "Haste", 20, "Give your allies some added speed and maneuverability. Fully charge to hasten yourself.",
-				SpellType::other, 10, 15, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_MOVEMENT, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
+			SpellCategory::support, SpellType::other, 10, 15, 0, 360.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::HASTE_PRIEST]),
 			 
 		Spell("revive", "Revive", 15, "Fully bring trusty allies back from the dead by aiming a reviving missile at their gravestone.",
-				SpellType::other, 90, 60, 15, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_REVIVE}),
+			SpellCategory::support, SpellType::other, 90, 60, 15, 256.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::REVIVE_PRIEST]),
 
 		Spell("slow", "Slow", 19, "Deprive a player of his speed and ability to teleport for a few moments.",
-				SpellType::other, 20, 20, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_CONTROL}), 
+			SpellCategory::debuff, SpellType::other, 20, 20, 0, 360.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::SLOW_PRIEST]), 
 
 		Spell("mana_transfer", "Mana Transfer", 48, "Transfers mana equivalent to the target's regen. Generates 1 extra mana if overcharged.",
-				SpellType::other, 7, 15, 0, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_ALLYEFFECT}),
+			SpellCategory::support, SpellType::other, 7, 15, 0, 360.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::MANA_TRANSFER]),
 
 		Spell("regen", "Regeneration", 70, "Applies a slight healing, that lasts some time.",
-				SpellType::other, 25, 45, 0, 360.0f, false, false, array<int> = {SpellAttribute::SPELL_HEAL, SpellAttribute::SPELL_CASTEREFFECT, SpellAttribute::SPELL_ALLYEFFECT}),
+			SpellCategory::heal, SpellType::other, 25, 45, 0, 360.0f, false, 0, PriestSpellAttributesCollection[PriestSpells::REGENERATION]),
 
 		Spell("holystrike", "Holy Strike", 65, "Summons a piercing shard, which shatters into smaller shards after time.",
-				SpellType::other, 30, 60, 6, 270.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
-							
+			SpellCategory::offensive, SpellType::other, 30, 60, 6, 270.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::HOLY_STRIKE]),
+						
 		Spell("divineshield", "Divine Shield", 66, "Covers a moderate area with reflecting and powerful barrier. Some spells can phase through it. Lifetime scales with charge.",
-				SpellType::other, 75, 120, 30, 96.0f, true, false, array<int> = {SpellAttribute::SPELL_BARRIER}),
-				
+			SpellCategory::defensive, SpellType::other, 75, 120, 30, 96.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::DIVINE_SHIELD]),
+			
 		Spell("beam", "Divine Beam", 67, "Continuously damages enemies or heals teammates in beam area. Hold LMB after casting to keep firing. Pushes enemies when overcharged. Merges into a bigger beam when second is cast.",
-				SpellType::other, 5, 15, 2, 128.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HEAL}),
-							
+			SpellCategory::offensive, SpellType::other, 5, 15, 2, 128.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::DIVINE_BEAM]),
+						
 		Spell("fireorbs", "Sacrilege Fire", 68, "Summons a smiting ball to spin around you. Press [SHIFT] to launch it at the aim position.",
-				SpellType::other, 30, 30, 0, 32.0f, true, false, array<int> = {SpellAttribute::SPELL_PROJECTILE, SpellAttribute::SPELL_HOMING_CURSOR}),	
+			SpellCategory::offensive, SpellType::other, 30, 30, 0, 32.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::SACRILEGE_FIRE]),	
 
 		Spell("singularity", "Singularity", 69, "Summons an essence of stars, which explodes with colossal power after some time. Takes less time to explode if overchaged. Can not be denied. Does not pierce blocks.",
-				SpellType::other, 60, 45, 15, 360.0f, true),
+			SpellCategory::offensive, SpellType::other, 60, 45, 15, 360.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::SINGULARITY]),
 
 		Spell("fiery_star", "Fiery Stars", 58, "Launch a several concetrated fire elements at your enemies. Overcharge to store them at aim position.",
-				SpellType::other, 25, 35, 1, 256.0f, false, false, array<int> = {SpellAttribute::SPELL_PROJECTILE}),
-							
-		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP. If there is no such target, heals yourself.",
-				SpellType::other, 40, 60, 18, 16.0f, true, false, array<int> = {SpellAttribute::SPELL_HEAL, SpellAttribute::SPELL_MOVEMENT}),
+			SpellCategory::offensive, SpellType::other, 25, 35, 1, 256.0f, false, 0, PriestSpellAttributesCollection[PriestSpells::FIERY_STARS]),
+						
+		Spell("emergencyteleport", "Emergency Teleport", 71, "Teleports you to the most damaged teammate and heals both. Heal scales with target's lost HP.",
+			SpellCategory::heal, SpellType::other, 40, 60, 25, 16.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::EMERGENCY_TELEPORT]),
 
 		Spell("damageaura", "Damage Aura", 72, "Improves spells of nearby allies, at cost of making you slower.\nCast again to disable the spell.",
-				SpellType::other, 10, 30, 5, 16.0f, true, false, array<int> = {SpellAttribute::SPELL_ALLYEFFECT}),
+			SpellCategory::support, SpellType::other, 10, 30, 5, 16.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::DAMAGE_AURA]),
 
 		Spell("manaburn", "Mana Burn", 73, "Slowly burns enemy mana and disables their mana regeneration.",
-				SpellType::other, 30, 65, 10, 360.0f, true, false, array<int> = {SpellAttribute::SPELL_CONTROL}),
+			SpellCategory::debuff, SpellType::other, 30, 65, 10, 360.0f, true, 0, PriestSpellAttributesCollection[PriestSpells::MANA_BURN_PRIEST]),
 
 		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+			SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f, PriestSpellAttributesCollection[PriestSpells::EMPTY_SPELL_PRIEST1]),
 
 		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f),
+			SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f, PriestSpellAttributesCollection[PriestSpells::EMPTY_SPELL_PRIEST2]),
 
 		Spell("", "", 0, "Empty spell.",
-				SpellType::other, 1, 1, 0, 0.0f)				
+			SpellCategory::other, SpellType::other, 1, 1, 0, 0.0f, PriestSpellAttributesCollection[PriestSpells::EMPTY_SPELL_PRIEST3])
 	};
 }
 
@@ -102,4 +100,4 @@ class PriestInfo
 		spells_cancelling = false;
 		pulse_amount = 3;
 	}
-}; 
+};

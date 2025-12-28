@@ -6,6 +6,7 @@
 #include "SpellHashDecoder.as";
 #include "EffectMissileEnum.as";
 #include "SpellUtils.as";
+#include "WarpCommon.as";
 
 const int minimum_cast = NecromancerParams::cast_1;
 const int medium_cast = NecromancerParams::cast_2;
@@ -13,7 +14,7 @@ const int complete_cast = NecromancerParams::cast_3;
 const int super_cast = NecromancerParams::extra_ready;
 const float necro_shoot_speed = NecromancerParams::shoot_max_vel;
 
-void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimpos , Vec2f thispos)
+void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimpos, Vec2f thispos, u16 targetID, int mana_taken = 0, f32 health_taken = 0)
 {	//To get a spell hash to add more spells type this in the console (press home in game)
 	//print('cfg_name'.getHash()+'');
 	//As an example with the meteor spell, i'd type out
@@ -24,6 +25,21 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		f32 extraDamage = this.hasTag("extra_damage") ? 1.3f : 1.0f;
 		f32 orbDamage = X.Xf * extraDamage;
 	*/
+
+	u8 spell_mode = spell.target_type;
+
+	bool has_target = false;
+	CBlob@ spell_target = null;
+	
+	if (spell_mode == 2)
+	{
+		CBlob@ target = getBlobByNetworkID(targetID);
+		if (target !is null)
+		{
+			has_target = true;
+			@spell_target = @target;
+		}
+	}
 
 	if(isClient())
 	{
@@ -44,7 +60,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 	f32 aim_angle = aimVector.Angle();
 
-	switch(spellName.getHash())
+	switch (spellName.getHash())
 	{
 		case -825046729: //mushroom
 		{
@@ -86,10 +102,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					CBlob@ sentry = server_CreateBlob("mushroom",this.getTeamNum(),Vec2f(aimpos.x,height) );
 					sentry.SetDamageOwnerPlayer(this.getPlayer());
 					sentry.set_s32("aliveTime",charge_state == 5 ? 1200 : 900); //if full charge last longer
-					if (this.hasTag("extra_damage"))
-					{
-						sentry.Tag("extra_damage");
-					}
+					if (this.hasTag("extra_damage")) sentry.Tag("extra_damage");
 				}
 			}
 			else
@@ -157,7 +170,103 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 				
 				manaInfo.mana += spell.mana;
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			}
+		}
+		break;
+
+		case -162326189: // moss veil
+		{
+			if (!isServer())
+				return;
+
+			u8 delay = 30;
+			u8 power = 20 + XORRandom(4);
+			u8 increment = 8;
+			u8 ttd = 45;
+
+			switch (charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+
+				case super_cast:
+				{
+					delay = 20;
+					power += 8+XORRandom(6);
+					increment = 4;
+					ttd += 15;
+				}
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				power += 10;
+				delay = 10;
+				increment = Maths::Max(2, increment - 2);
+				ttd += 15;
+			}
+
+			Vec2f tilespace(int(aimpos.x / 8), int(aimpos.y / 8));
+			Vec2f worldspace = tilespace * 8 + Vec2f(4, 4);
+			Vec2f spawnpos = Vec2f_zero;
+			
+			CMap@ map = getMap(); // standard map check (very bad actually, todo: rewrite to raycasts)
+			if (map is null)
+			{return;}
+
+			for (int i = 0; i < 50; i++)
+			{
+				if (!map.isTileSolid(worldspace + Vec2f(0, i * 8)) && map.isTileSolid(worldspace + Vec2f(0, i * 8 + 8)))
+				{
+					spawnpos = worldspace + Vec2f(0, i * 8);
+					spawnpos = Vec2f(Maths::Floor(spawnpos.x / 8) * 8 + 4, Maths::Floor(spawnpos.y / 8) * 8 + 4);
+					break;
+				}	
+			}
+
+			CBlob@[] blobs;
+			map.getBlobsInRadius(spawnpos, 3.5f, @blobs);
+			for (int i = 0; i < blobs.length; i++)
+			{
+				CBlob@ blob = blobs[i];
+				if (blob is null || !blob.hasTag("moss"))
+					continue;
+
+				if (blob.getName() == "moss")
+				    spawnpos = Vec2f_zero; // don't spawn if there's already a moss blob in the area
+			}
+
+			if (spawnpos != Vec2f_zero)
+			{
+				CBlob@ newblob = server_CreateBlob("moss", this.getTeamNum(), spawnpos);
+				if (newblob !is null)
+				{
+					newblob.SetDamageOwnerPlayer(this.getPlayer());
+					newblob.set_u16("grow_delay", delay);
+					newblob.set_u8("grow_power", power);
+					newblob.set_u8("grow_delay_increment", increment);
+					newblob.server_SetTimeToDie(ttd);
+					
+					if (this.getPlayer() !is null)
+					{
+						u16 netid = this.getPlayer().getNetworkID();
+						newblob.set_u16("owner_id", netid);
+					}
+
+					newblob.Tag("first");
+				}
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
 				
+				manaInfo.mana += spell.mana;
 				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 			}
 		}
@@ -474,6 +583,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 1463630946://spikeorb
 		{
+			this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
 			if (!isServer()){
            		return;
 			}
@@ -514,6 +624,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case 829656850: //sporeshot
 		{
+			this.getSprite().PlaySound("WizardShoot.ogg", 1.0f);
 			if (!isServer()){
            		return;
 			}
@@ -546,7 +657,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			orbVel.Normalize();
 			orbVel *= orbspeed;
 
-			CBlob@ orb = server_CreateBlob( "sporeshot" );
+			CBlob@ orb = server_CreateBlob("sporeshot");
 			if (orb !is null)
 			{
 				orb.set_f32("damage", orbDamage);
@@ -800,7 +911,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 1961711901://nature's helpers
+		case 1961711901://nature's helpers / bees
 		{
 			if (isClient())
 			{
@@ -1511,6 +1622,34 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
+
+		case -1131525233: //magicplatform
+		{
+			this.getSprite().PlaySound("EnergySound1.ogg", 0.8f, 0.95f + XORRandom(11) * 0.01f);	
+			f32 ttd = 30.0f;
+
+			if (charge_state == super_cast)
+			{
+				ttd += 15.0f;
+			}
+
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob(charge_state == super_cast ? "magicplatform" : "magicplatformsmall", this.getTeamNum(), aimpos);
+				if (orb !is null)
+				{
+					if (this.hasTag("extra_damage"))
+					{
+						orb.Tag("extra_damage");
+						ttd += 15;
+					}
+
+					orb.server_SetTimeToDie(ttd);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+				}
+			}
+		}
+		break;
 		
 		case 652962395:	//healing_plant
 		{
@@ -1527,14 +1666,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 				
 				if (!isServer())
-				{ return; }
+				{return;}
 
 				Vec2f targetPos = Vec2f(aimpos.x , landheight - 8);
-
 				CBlob@ plantShot = server_CreateBlob( "plant_aura_shot", this.getTeamNum(), thispos );
 				if (plantShot !is null)
 				{
-					if( charge_state == super_cast )//full charge
+					if (charge_state == super_cast)//full charge
 					{
 						lifetime = 15;
 						moveSpeed += 1.0f;
@@ -1546,7 +1684,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					plantShot.set_Vec2f("target", targetPos);
 				}
 			}
-            else//Can't place this under the map
+            else
             {
 				ManaInfo@ manaInfo;
 				if (!this.get( "manaInfo", @manaInfo )) {
@@ -1726,17 +1864,73 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 2085531767://blood arrows
+		case -1028317829: //blood bolts
 		{
-			if(this.hasScript("BloodArrowRain.as"))
+			if (this.hasScript("BloodBoltRain.as"))
 			{
 				ManaInfo@ manaInfo;
-				if (!this.get( "manaInfo", @manaInfo ))
-				{return;}
+				if (!this.get("manaInfo", @manaInfo ))
+					{return;}
 				
-				manaInfo.mana += spell.mana;
+				if (spell.type == SpellType::healthcost) Heal(this, this, spell.mana);
+				else manaInfo.mana += spell.mana;
+
 				return;
 			}
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+				case complete_cast:
+				{
+					this.set_u8("bloodbolts", 5);
+					this.set_u8("bloodbolt_delay", 2);
+				}
+				break;
+				case super_cast:
+				{
+					this.set_u8("bloodbolts", 8);
+
+					this.set_u8("bloodbolt_delay", 1);
+					this.set_bool("static", false);
+				}
+				break;
+			
+				default:return;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				this.add_u8("bloodbolts", 2);
+			}
+			
+			this.set_u32("bloodbolt_start", getGameTime());
+			this.set_Vec2f("bloodbolt_aimpos", aimpos);
+			this.set_f32("bloodbolt_damage", 0.3f);
+
+			if (!this.hasScript("BloodBoltRain.as"))
+			{
+				this.AddScript("BloodBoltRain.as");
+			}
+		}
+		break;
+
+		case 2085531767: //blood arrows
+		{
+			if (this.hasScript("BloodArrowRain.as"))
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get("manaInfo", @manaInfo ))
+					{return;}
+				
+				if (spell.type == SpellType::healthcost) Heal(this, this, spell.mana);
+				else manaInfo.mana += spell.mana;
+
+				return;
+			}
+
 			switch(charge_state)
 			{
 				case minimum_cast:
@@ -1768,7 +1962,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			this.set_Vec2f("bloodarrow_aimpos", aimpos);
 			this.set_f32("bloodarrow_damage", 0.2f);
 
-			if(!this.hasScript("BloodArrowRain.as"))
+			if (!this.hasScript("BloodArrowRain.as"))
 			{
 				this.AddScript("BloodArrowRain.as");
 			}
@@ -1813,6 +2007,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			{
 				this.add_u8("poisonarrows", 2);
 			}
+
 			this.set_u32("poisonarrow_start", getGameTime());
 			this.set_Vec2f("poisonarrow_aimpos", aimpos);
 			this.set_f32("poisonarrow_damage", 0.2f);
@@ -1826,15 +2021,18 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -667977758: //tomeblood
 		{
-			if(this.hasScript("TomeOfBloodRain.as"))
+			if (this.hasScript("TomeOfBloodRain.as"))
 			{
 				ManaInfo@ manaInfo;
-				if (!this.get( "manaInfo", @manaInfo ))
-				{return;}
+				if (!this.get("manaInfo", @manaInfo ))
+					{return;}
 				
-				manaInfo.mana += spell.mana;
+				if (spell.type == SpellType::healthcost) Heal(this, this, spell.mana);
+				else manaInfo.mana += spell.mana;
+
 				return;
 			}
+
 			switch(charge_state)
 			{
 				case minimum_cast:
@@ -1863,6 +2061,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				this.add_u8("tomeblood_projectiles", 8);
 				this.sub_u8("tomeblood_delay", 1);
 			}
+
 			this.set_u32("tomeblood_start", getGameTime());
 			this.set_Vec2f("tomeblood_aimpos", aimpos);
 			this.set_f32("tomeblood_damage", 0.2f);
@@ -1924,27 +2123,29 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 770505718://leech
+		case 770505718: //leech
 		{
-			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
 		
 			if (isServer())
 			{
 				CBlob@ orb = server_CreateBlobNoInit("leech");
 				if (orb !is null)
 				{
+					f32 damage = charge_state == super_cast ? 1.2f : 0.8f;
+					f32 heal = this.hasTag("extra_damage") ? 0.3f : 0.2f;
+					
 					orb.setPosition(orbPos);
 					orb.server_setTeamNum(this.getTeamNum());
 
-                    if(this.hasTag("extra_damage"))
-                        orb.Tag("extra_damage");//Remember to change this in Leech.as
-
 					orb.set_Vec2f("aim pos", aimpos);
-					if (charge_state == super_cast)
-						orb.Tag("super_cast");
+					orb.set_s8("remaining_casts", 2);
 
-					orb.IgnoreCollisionWhileOverlapped( this );
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.set_f32("damage", damage);
+					orb.set_f32("lifesteal_amount", heal);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
 				}
 			}
 		}
@@ -1959,18 +2160,18 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ orb = server_CreateBlobNoInit("leech_g");
 				if (orb !is null)
 				{
+					f32 damage = charge_state == super_cast ? 3.0f : 2.0f;
+					f32 heal = this.hasTag("extra_damage") ? 1.0f : 0.5f;
+					
 					orb.setPosition(orbPos);
 					orb.server_setTeamNum(this.getTeamNum());
 
-                    if(this.hasTag("extra_damage"))
-                        orb.Tag("extra_damage");//Remember to change this in Leech.as
-
 					orb.set_Vec2f("aim pos", aimpos);
-					if (charge_state == super_cast)
-						orb.Tag("super_cast");
+					orb.set_f32("damage", damage);
+					orb.set_f32("lifesteal_amount", heal);
 
-					orb.IgnoreCollisionWhileOverlapped( this );
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
 				}
 			}
 		}
@@ -1978,19 +2179,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -401411067://lightning
 		{
-            Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
-		
+            Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+			Sound::Play("LightningStrike.ogg", aimpos, 1.0f, 0.9f + XORRandom(11) * 0.01f);
+
 			if (isServer())
 			{
-				CBlob@ orb = server_CreateBlob( "lightning", this.getTeamNum(), Vec2f(aimpos.x, 4.0f) ); 
+				CBlob@ orb = server_CreateBlob("lightning", this.getTeamNum(), Vec2f(aimpos.x, 4.0f));
 				if (orb !is null)
 				{
-                    if(this.hasTag("extra_damage"))
-                        orb.Tag("extra_damage");//Remember to change this in Lightning.as
+					if (this.hasTag("extra_damage"))
+						orb.Tag("extra_damage");//Remember to change this in Lightning.as
 
 					orb.set_Vec2f("aim pos", aimpos);
-
-					orb.SetDamageOwnerPlayer( this.getPlayer() );
+					orb.SetDamageOwnerPlayer(this.getPlayer());
 				}
 			}
 		}
@@ -2764,6 +2965,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			if (!isServer()){
            		return;
 			}
+
 			f32 orbspeed = necro_shoot_speed*0.5f;
 			int amount = this.hasTag("extra_damage") ? 3 : 2;
 
@@ -2786,7 +2988,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				default:return;
 			}
-
 			
 			f32 angle_per_circle = 360/amount;
 
@@ -2920,7 +3121,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -997077766://magicarrows
 		{
-			if(this.hasScript("CastMagicArrows.as"))
+			if( this.hasScript("CastMagicArrows.as"))
 			{
 				return;
 			}
@@ -2929,7 +3130,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			f32 orbDamage = 0.25f;
 			u8 delay = 5;
 
-			switch(charge_state)
+			switch (charge_state)
 			{
 				case minimum_cast:
 				case medium_cast:
@@ -2958,7 +3159,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				amount += 2;
 			}
 
-			if(!this.hasScript("CastMagicArrows.as"))
+			if (!this.hasScript("CastMagicArrows.as"))
 			{
 				this.set_u8("magicarrows_amount", amount);
 				this.set_u8("magicarrows_current", amount);
@@ -3101,11 +3302,13 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		case 1137221912://meteor_strike
 		case 1057572449://arrow_rain
 		case 1693590535://smite
+		case 1786253389://stellarcollapse
 		{
 			if (!isServer())
 			{
 				return;
 			}
+
 			CBitStream params;
 			params.write_string(spellName);
 			params.write_u8(charge_state);
@@ -3120,29 +3323,25 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		{
 			if (!isServer())
 				return;
+				
 			bool isleft = this.isFacingLeft();
 			Vec2f tilespace(int(aimpos.x / 8), int(aimpos.y / 8));
 			Vec2f worldspace = tilespace * 8 + Vec2f(4, 4);
 			Vec2f spawnpos = Vec2f_zero;
 			
 			CMap@ map = getMap(); //standard map check
-			if(map is null)
+			if (map is null)
 			{return;}
 
-			for(int i = 0; i < 50; i++)
+			for (int i = 0; i < 50; i++)
 			{
 				if(!map.isTileSolid(worldspace + Vec2f(0, i * 8)) && map.isTileSolid(worldspace + Vec2f(0, i * 8 + 8)))
 				{
 					spawnpos = worldspace + Vec2f(0, i * 8);
 					break;
 				}	
-				/*else if(!map.isTileSolid(worldspace + Vec2f(0, i * -8)) && map.isTileSolid(worldspace + Vec2f(0, i * -8 + 8)))
-				{
-					spawnpos = worldspace + Vec2f(0, i * -8);
-					break;
-				}*/
 			}
-			if(spawnpos != Vec2f_zero)
+			if( spawnpos != Vec2f_zero)
 			{
 				if(map.getBlobAtPosition(spawnpos) is null || !(map.getBlobAtPosition(spawnpos).getName() == "stone_spike"))
 				{
@@ -3154,6 +3353,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 						newblob.set_bool("leftdir", isleft);
 					}
 				}
+			}
+			else
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				
+				if(!this.get_bool("burnState"))
+				{
+					manaInfo.mana += spell.mana;
+				}
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 			}
 		}
 		break;
@@ -3676,8 +3889,8 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				}
 
 				CBlob@ target = getBlobByNetworkID(id);
-				if (target is null && !everyone_is_full)
-					@target = @this;
+				//if (target is null && !everyone_is_full)
+				//	@target = @this;
 
 				if (target !is null)
 				{
@@ -3702,7 +3915,19 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 							Heal(this, this, base_heal * 0.5f);
 						}
 					}
+
 					this.getSprite().PlaySound("Teleport.ogg", 0.8f, 1.0f);
+				}
+				else
+				{
+					// return mana
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
+					}
+
+					manaInfo.mana += spell.mana;
+					this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
 				}
 			}
 		}
@@ -4445,7 +4670,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 1050564475: //lavashot
+		case 1050564475: // lavashot
 		{
 			if (!isServer()){
            		return;
@@ -4466,7 +4691,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			f32 orbspeed = necro_shoot_speed * 0.75f;
 			f32 extraDamage = this.hasTag("extra_damage") ? 1.25f : 1.0f;
-			f32 orbDamage = 1.0f * extraDamage;
+			f32 orbDamage = 2.0f * extraDamage;
 
 			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
 			Vec2f orbVel = (aimpos - orbPos);
@@ -4502,20 +4727,10 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
-		case 564111203://waterbarrier
+		case 564111203: // waterbarrier
 		{
 			switch(charge_state)
 			{
-				case minimum_cast:
-				case medium_cast:
-				{
-					ManaInfo@ manaInfo;
-					if (!this.get( "manaInfo", @manaInfo )) {
-						return;
-					}
-					manaInfo.mana += spell.mana;
-					break;
-				}
 				case complete_cast:
 				case super_cast:
 				{
@@ -4531,7 +4746,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			}
 		}
 		break;
-
 		
 		case -1908358180://chainlightning
 		{
@@ -4578,6 +4792,71 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 					orb.IgnoreCollisionWhileOverlapped( this );
 					orb.SetDamageOwnerPlayer( this.getPlayer() );
+				}
+			}
+		}
+		break;
+
+		case 554573647: //arclightning
+		{
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+
+			CBlob@[] arclightningBlobs;
+			getBlobsByTag("arclightning_owner_"+player.getUsername(), @arclightningBlobs);
+			if (arclightningBlobs.size() > 4)
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get("manaInfo", @manaInfo)) {
+					return;
+				}
+
+				manaInfo.mana += spell.mana;
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+
+				return;
+			}
+
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("arclightning", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					orb.Tag("arclightning_owner_"+player.getUsername());
+					orb.Sync("arclightning_owner_"+player.getUsername(), true);
+
+					f32 damage = 0.1f;
+					u8 damage_thresh = 3;
+					u8 ttd = 30;
+
+					switch (charge_state)
+					{
+						case minimum_cast:
+						case medium_cast:
+						case super_cast:
+						{
+							damage = 0.15f;
+							damage_thresh = 2;
+							ttd += 5;
+							break;
+						}
+					}
+
+                    if (this.hasTag("extra_damage"))
+                    {
+						damage = 0.2f;
+						ttd += 5;
+					}
+
+					orb.set_Vec2f("aim pos", aimpos);
+					orb.set_u16("follow_id", this.getNetworkID());
+
+					orb.set_f32("damage", damage);
+					orb.set_u8("damage_thresh", damage_thresh);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+
+					orb.server_SetTimeToDie(ttd);
 				}
 			}
 		}
@@ -4846,7 +5125,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 		case -774033844://hallowedbarrier
 		{
-			u8 amount = 3;
+			u8 amount = 5;
 			u16 effectTime = 1800;
 
 			switch(charge_state)
@@ -4855,20 +5134,20 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				case medium_cast:
 				{
 					effectTime = 900;
-					amount = 4;
+					amount = 7;
 				}
 				break;
 				case complete_cast:
 				{
 					effectTime = 1350;
-					amount = 5;
+					amount = 9;
 				}
 				break;
 				
 				case super_cast:
 				{
 					effectTime = 1800;
-					amount = 6;
+					amount = 12;
 				}
 				break;
 
@@ -4877,7 +5156,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 
 			if (this.hasTag("extra_damage"))
 			{
-				amount += 2;
+				amount += 5;
 			}
 
 			Barrier(this, effectTime, amount);
@@ -5121,14 +5400,11 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 			bool extra_damage = this.hasTag("extra_damage");
 			f32 damage = 1.0f;
 			f32 extraDamage = extra_damage ? 1.5f : 1.0f;
-			u8 wait_time = extra_damage ? 15 : 20;
+			u8 wait_time = charge_state == super_cast ? 5 : 15;
 
 			switch(charge_state)
 			{
 				case minimum_cast:
-				{
-					return;
-				}
 				case medium_cast:
 				{
 					damage = 1.5f;
@@ -5142,7 +5418,6 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				
 				case super_cast:
 				{
-					wait_time -= 5;
 					damage = 1.5f; // triple jab mode
 				}
 				break;
@@ -5553,6 +5828,102 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+		case -1143515114: //shapeshift
+		{
+			if (this.hasTag("extra_damage"))
+			{
+				f32 orbspeed = 4.2f;
+				u16 effectTime = 30 * 30;
+
+				switch(charge_state)
+				{
+					case minimum_cast:
+					case medium_cast:
+					case complete_cast:
+					break;
+
+					case super_cast:
+					{
+						orbspeed *= 1.6f;
+					}
+					break;
+
+					default:return;
+				}
+
+				Vec2f orbPos = thispos;
+				Vec2f orbVel = (aimpos - orbPos);
+				orbVel.Normalize();
+				orbVel *= orbspeed;
+
+				if (isServer())
+				{
+					CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
+					if (orb !is null)
+					{
+						orb.set_u8("effect", shapeshift_effect_missile);
+						orb.set_u8("override_sprite_frame", 12);
+						orb.set_u16("effect_time", effectTime);
+
+						orb.IgnoreCollisionWhileOverlapped(this);
+						orb.SetDamageOwnerPlayer(this.getPlayer());
+						orb.setVelocity(orbVel);
+					}
+				}
+			}
+			else
+			{
+				if (isClient())
+				{
+					for (int i = 0; i < 6+XORRandom(6); i++)
+    				{
+						Vec2f vel(1.0f + XORRandom(100) * 0.01f * 2.0f, 0);
+						vel.RotateBy(XORRandom(100) * 0.01f * 360.0f);
+
+    				    CParticle@ p = ParticleAnimated( CFileMatcher("GenericSmoke"+(1+XORRandom(2))+".png").getFirst(), 
+													this.getPosition(), 
+													vel, 
+													float(XORRandom(360)), 
+													1.0f, 
+													4 + XORRandom(8), 
+													0.0f, 
+													false );
+
+    				    if (p is null) break;
+
+    					p.fastcollision = true;
+    				    p.scale = 1.0f;
+    				    p.damping = 0.925f;
+						p.Z = 200.0f;
+						p.lighting = false;
+						p.setRenderStyle(RenderStyle::additive);
+    				}
+
+					this.getSprite().PlaySound("ObsessedSpellDie.ogg", 1.0f, 1.0f+XORRandom(11)*0.01f);
+				}
+
+				if (!isServer()) return;
+
+				u8 id = XORRandom(classes.length);
+				while (id == 8) id = XORRandom(classes.length);
+
+				CBlob@ random = server_CreateBlob(classes[id], this.getTeamNum(), this.getPosition());
+				if (random !is null)
+				{
+					random.server_SetHealth(this.getHealth());
+					random.server_SetPlayer(this.getPlayer());
+
+					if (this.hasTag("extra_damage"))
+					{
+						random.Tag("extra_damage");
+						random.Sync("extra_damage", true);
+					}
+					this.server_Die();
+				}
+			}
+		}
+		break;
+
 		case -461020010: //airhorn jesterlogic.as
 		{
 			if (!isServer()){
@@ -5854,7 +6225,330 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 		}
 		break;
 
+
+
 		// WARLOCK
+
+		case -2033004596: // demonicpact
+		{
+			f32 orbspeed = 4.0f;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.3f;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f,-2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;	
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", demonicpact_effect_missile);
+					orb.set_u8("override_sprite_frame", 14);
+					if (this.hasTag("extra_damage")) orb.Tag("extra_damage");
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		case 477345426: // dark ritual
+		{
+			this.getSprite().PlaySound("DarkRitualOn.ogg", 0.85f, 1.0f + XORRandom(10) * 0.01f);
+
+			u16 effectTime = 360; // 12 seconds
+			f32 self_damage = 2.0f; // 10 damage
+
+			if (charge_state == 5)
+			{
+				effectTime += 120; // + 4 seconds
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				effectTime += 180; // + 6 seconds
+				self_damage += 1.0f; // + 5 damage
+			}
+
+			this.set_u16("darkritual_effect_time", effectTime);
+			this.set_f32("darkritual_self_damage", self_damage);
+
+			if (isServer())
+			{
+				this.Sync("darkritual_effect_time", true);
+				this.Sync("darkritual_self_damage", true);
+			}
+
+			if (!isClient())
+			{
+    			f32 max_range = 24.0f;
+    			u8 quantity = 30;
+
+				u8 rnd = XORRandom(55);
+				SColor col = SColor(255, 155+XORRandom(100), rnd / 2, rnd);
+
+				ParticleBloodSplat(this.getPosition(), true);
+
+    			Vec2f thisPos = this.getPosition();
+				for (u8 i = 0; i < quantity; i++)
+    			{
+    			    Vec2f ppos = thisPos + Vec2f(max_range, 0).RotateBy((360.0f/quantity) * i);
+    			    Vec2f dir = thisPos - ppos;
+
+    			    dir.Normalize();
+    			    dir *= 2.0f + XORRandom(21) * 0.1f;
+
+    			    CParticle@ p = ParticlePixelUnlimited(ppos, -dir, col, true);
+    			    if (p is null) return;
+
+    			    p.fastcollision = true;
+    			    p.gravity = Vec2f_zero;
+    			    p.timeout = 20 + XORRandom(10);
+    			    p.scale = 0.5f + XORRandom(51) * 0.001f;
+    			    p.damping = 0.95f;
+    			}
+			}
+		}
+		break;
+
+		case -352148188: // carnage
+		{
+			if (charge_state == 5) this.Tag("carnage_effect");
+
+			if (!isClient()) return;
+			this.getSprite().PlaySound("CarnageOn.ogg", 0.75f, 1.0f + XORRandom(10) * 0.01f);
+
+			PlayerPrefsInfo@ playerPrefsInfo;
+			if (player.get("playerPrefsInfo", @playerPrefsInfo))
+			{
+				for (u8 i = 0; i < playerPrefsInfo.spell_cooldowns.size(); i++)
+				{
+					if (i != 12)
+					{
+						playerPrefsInfo.spell_cooldowns[i] = 0;
+					}
+				}
+			}
+		}
+		break;
+
+		case -1298128588: // corruptionshard 
+		{
+			{
+				CBlob@[] totems;
+				getBlobsByName("corruptionshard", @totems);
+
+				if (this.getPlayer() is null)
+				{return;}
+
+				bool found = false;
+				for (int i = 0; i < totems.length; i++)
+				{
+					if (totems[i] is null)
+					{continue;}
+
+					if (totems[i].getDamageOwnerPlayer() is null)
+					{continue;}
+
+					if (totems[i].getDamageOwnerPlayer().getNetworkID() == this.getPlayer().getNetworkID())
+					{
+						found = true;
+						break;
+					}
+				}
+
+				if (found)
+				{
+					ManaInfo@ manaInfo;
+					if (!this.get( "manaInfo", @manaInfo )) {
+						return;
+					}
+
+					if (health_taken > 0.0f)
+					{
+						Heal(this, this, health_taken * 0.5f, false, false, 0);
+						
+						if (mana_taken > 0)
+						{
+							manaInfo.mana += mana_taken;
+							this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+						}
+					}
+					else if (mana_taken > 0)
+					{
+						manaInfo.mana += spell.mana;
+						this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+					}
+
+					return;
+				}
+
+				int alive_time = 15 * 30;
+				f32 heal_amount = 1.0f; // 7.5 hp
+				int mana_amount = 25;
+				f32 max_range = 96.0f;
+				int alt_delay = 150;
+				int debuff_time = 150;
+
+				int height = getLandHeight(aimpos);
+				if (height != 0 && !found)
+				{
+					if (isServer())
+					{
+						switch (charge_state)
+						{
+							case minimum_cast:
+							case medium_cast:
+							case complete_cast:
+							break;
+
+							case super_cast:
+							{
+								alive_time = 12.5f * 30;
+								heal_amount = 1.25f;
+								max_range = 128.0f;
+								alt_delay = 90;
+								debuff_time = 180;
+
+								break;
+							}
+						}
+
+						CBlob@ tot = server_CreateBlob("corruptionshard", this.getTeamNum(), Vec2f(aimpos.x, height - 16.0f));
+						if (tot !is null)
+						{
+							if (this.hasTag("extra_damage"))
+							{
+								tot.Tag("extra_damage");
+
+								alive_time = 10 * 30;
+								heal_amount = 1.5f;
+								mana_amount = 35;
+								alt_delay = 45;
+								debuff_time = 210;
+							}
+
+							tot.SetDamageOwnerPlayer(this.getPlayer());
+
+							tot.set_s32("aliveTime", alive_time);
+							tot.set_f32("heal_amount", heal_amount);
+							tot.set_s32("mana_amount", mana_amount);
+							tot.set_f32("max_range", max_range);
+							tot.set_u32("alt_delay", alt_delay);
+							tot.set_u16("debuff_time", debuff_time);
+
+							tot.Sync("aliveTime", true);
+							tot.Sync("heal_amount", true);
+							tot.Sync("mana_amount", true);
+							tot.Sync("max_range", true);
+						}
+					}
+				}
+			}
+			break;
+		}
+		
+		case 1783647402: // shadowspear
+        {
+			if (targetID == 0 || getBlobByNetworkID(targetID) is null)
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+
+				if (health_taken > 0.0f)
+				{
+					Heal(this, this, health_taken * 0.5f, false, false, 0);
+					
+					if (mana_taken > 0)
+					{
+						manaInfo.mana += mana_taken;
+					}
+				}
+				else
+				{
+					manaInfo.mana += spell.mana;
+				}
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			}
+
+            if (!isServer())
+			{
+                return;
+            }
+
+            f32 orbspeed = 1.0f;
+			f32 damage = 2.5f;
+			int max_mana_steal = 15;
+			u8 max_repeats = 3;
+            
+            switch(charge_state)
+            {
+                case minimum_cast:
+                case medium_cast:
+                case complete_cast:
+                break;
+
+                case super_cast:
+                {
+					damage += 0.5f;
+                    orbspeed = 6.0f;
+					max_mana_steal = 20;
+                }
+                break;
+
+                default:return;
+            }
+
+			u8 spearsCount = 1;
+			if (this.hasTag("extra_damage"))
+			{
+				max_mana_steal = 20;
+				max_repeats = 5;
+				spearsCount = 2;
+			}
+
+			for (u8 i = 0; i < spearsCount; i++)
+			{
+				Vec2f orbPos = Vec2f(0, -1028.0f); // teleports at target
+				CBlob@ orb = server_CreateBlob("shadowspear", this.getTeamNum(), orbPos);
+				if (orb !is null)
+				{
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+
+					orb.set_f32("damage", damage);
+					orb.set_f32("speed", orbspeed);
+					orb.set_u8("max_mana_steal", max_mana_steal);
+					orb.set_s8("remaining_repeats", max_repeats);
+					orb.set_u8("real_id", XORRandom(max_repeats));
+					orb.set_u16("follow_id", targetID);
+				}
+			}
+        }
+        break;
+
+
 		case -969070148: // warp field
 		{
 			if (isServer())
@@ -5862,7 +6556,7 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 				CBlob@ circle = server_CreateBlob('warp_field', 3, aimpos);
 
 				circle.SetDamageOwnerPlayer(this.getPlayer());
-				f32 ttd = charge_state == 5 ? 40.0f : (this.hasTag("extra_damage") ? 45.0f : 30.0f);
+				f32 ttd = charge_state == 5 ? 40.0f : (this.hasTag("extra_damage") ? 50.0f : 30.0f);
 				circle.server_SetTimeToDie(ttd);
 
 				if (this.hasTag("extra_damage"))
@@ -5870,6 +6564,302 @@ void CastSpell(CBlob@ this, const s8 charge_state, const Spell spell, Vec2f aimp
 					circle.Tag("extra_damage");
 					circle.Sync("extra_damage", true);
 				}
+			}
+		}
+		break;
+
+		case -1702569748: // chronomantic teleport
+		{
+			bool failedCast = false;
+			if ( this.get_u16("slowed") > 0 )	//cannot teleport while slowed
+			{ failedCast = true; }
+
+			if (failedCast)
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+				manaInfo.mana += spell.mana;
+				
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+				return;
+			}
+
+			if (isServer())
+			{
+				CBitStream params;
+				params.write_u8(spell.type);
+				params.write_f32(spell.mana);
+				params.write_Vec2f(this.getPosition() + this.getAimPos());
+				params.write_s32(charge_state);
+				params.write_bool(this.hasTag("extra_damage"));
+				this.SendCommand(this.getCommandID("chronomantic_teleport"), params); // WarlockLogic.as
+			}
+		}
+		break;
+
+		case 819257813: // poisonsurge
+		{
+			f32 orbspeed = 5.5f;
+
+			if (!isServer()){
+           		return;
+			}
+
+			f32 dmg = this.hasTag("extra_damage") ? 3.5f : 2.5f;
+			u8 shrapnel_count = 3;
+			u8 angle = 45;
+			u32 poison_time = 300;
+
+			switch (charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				break;
+
+				case complete_cast:
+				{
+					dmg += 0.5f;
+					shrapnel_count = 5;
+					angle = 20;
+					angle = 45;
+					poison_time = 450;
+				}
+				break;
+
+				case super_cast:
+				{
+					dmg += 1.0f;
+					angle = 15;
+					shrapnel_count = 5;
+					orbspeed *= 1.15f;
+					poison_time = 600;
+				}
+
+				break;
+				default:return;
+			}
+
+			Vec2f orbPos = thispos - Vec2f(0, 2);
+			Vec2f orbVel = (aimpos - orbPos);
+
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+
+			CBlob@ orb = server_CreateBlob("poisonsurge");
+			if (orb !is null)
+			{
+				orb.IgnoreCollisionWhileOverlapped(this);
+				orb.SetDamageOwnerPlayer(this.getPlayer());
+
+				orb.set_f32("damage", dmg);
+				orb.set_f32("shrapnel_damage", dmg * 0.25f);
+				orb.set_u8("shrapnel_count", shrapnel_count);
+				orb.set_u8("shrapnel_angle", angle);
+				orb.set_u32("poison_time", poison_time);
+
+				orb.setAngleDegrees(-(aimpos - orbPos).Angle()+90);
+				orb.server_SetTimeToDie(1);
+
+				if (this.hasTag("extra_damage"))
+				{
+					orb.Tag("shrapnel_bouncy");
+				}
+
+				orb.server_setTeamNum(this.getTeamNum());
+				orb.setPosition(orbPos);
+
+				orb.set_Vec2f("vel", orbVel);
+				orb.Sync("vel", true);
+			}
+			break;
+		}
+
+		case 1993252871: //plague
+		{
+			if (!isServer())
+			{
+				return;
+			}
+
+			switch(charge_state)
+			{
+				case complete_cast:
+				case super_cast:
+				{
+					Plague(this, !this.get_bool("plague"));
+					return; //Fireward self, doesn't send projectile
+				}
+				break;
+				
+				default:return;
+			}
+		}
+		break;
+		
+		case -1217162868: // silence
+		{
+			f32 orbspeed = 4.2f;
+			u16 effectTime = 120;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.6f;
+					effectTime += 30;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", silence_effect_missile);
+					orb.set_u8("override_sprite_frame", 13);
+					orb.set_u16("effect_time", effectTime);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		case -851536377: // fear
+		{
+			f32 orbspeed = 4.2f;
+			u16 effectTime = 300;
+
+			switch(charge_state)
+			{
+				case minimum_cast:
+				case medium_cast:
+				case complete_cast:
+				break;
+				
+				case super_cast:
+				{
+					orbspeed *= 1.6f;
+					effectTime = 360;
+				}
+				break;
+				
+				default:return;
+			}
+
+			Vec2f orbPos = thispos + Vec2f(0.0f, -2.0f);
+			Vec2f orbVel = (aimpos - orbPos);
+			orbVel.Normalize();
+			orbVel *= orbspeed;
+			
+			if (isServer())
+			{
+				CBlob@ orb = server_CreateBlob("effect_missile", this.getTeamNum(), orbPos); 
+				if (orb !is null)
+				{
+					orb.set_u8("effect", fear_effect_missile);
+					orb.set_u8("override_sprite_frame", 12); // fear sprite frame
+					orb.set_u16("effect_time", effectTime);
+
+					orb.IgnoreCollisionWhileOverlapped(this);
+					orb.SetDamageOwnerPlayer(this.getPlayer());
+					orb.setVelocity(orbVel);
+				}
+			}
+		}
+		break;
+
+		// shadowburst
+		case -1379480811:
+		{
+			if (this.hasScript("ShadowBurstCast.as"))
+			{
+				ManaInfo@ manaInfo;
+				if (!this.get( "manaInfo", @manaInfo )) {
+					return;
+				}
+
+				if (health_taken > 0.0f)
+				{
+					Heal(this, this, health_taken * 0.5f, false, false, 0);
+					
+					if (mana_taken > 0)
+					{
+						manaInfo.mana += mana_taken;
+					}
+				}
+				else
+				{
+					manaInfo.mana += spell.mana;
+				}
+
+				this.getSprite().PlaySound("ManaStunCast.ogg", 1.0f, 1.0f);
+			}
+
+			u32 cast_time = getGameTime();
+			u8 period = 10;
+			u8 max_count = 3;
+			f32 speed = 7.0f;
+			f32 damage = 0.75f;
+			u8 count = 0;
+			bool aiming = false;
+
+			switch(charge_state)
+			{
+				case minimum_cast:	
+				case medium_cast:
+				{}
+				break;
+				case complete_cast:
+				{
+					period = 8;
+				}
+				break;
+				case super_cast:
+				{
+					period = 6;
+					aiming = true;
+				}
+				break;
+
+				default: return;
+			}
+
+			if (this.hasTag("extra_damage"))
+			{
+				speed += 1.5f;
+				period = 6;
+				max_count = 5;
+			}
+
+			if (!this.hasScript("ShadowBurstCast.as"))
+			{
+				this.set_u32("shadowburst_cast_time", cast_time);
+				this.set_u8("shadowburst_count", max_count);
+				this.set_u8("shadowburst_period", period);
+				this.set_f32("shadowburst_speed", speed);
+				this.set_f32("shadowburst_damage", damage);
+				this.set_u8("shadowburst_current_count", 0);
+				this.set_bool("shadowburst_aiming", aiming);
+
+				this.AddScript("ShadowBurstCast.as");
 			}
 		}
 		break;

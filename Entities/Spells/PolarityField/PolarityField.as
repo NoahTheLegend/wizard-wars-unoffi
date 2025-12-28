@@ -35,9 +35,9 @@ void onInit(CBlob@ this)
 	if (!this.exists("stages")) this.set_u8("stages", 3);
 	this.Sync("stages", true);
 
-	this.set_u8("despelled",0);
+	this.set_u8("dispelled",0);
 	this.Tag("magic_circle");
-	this.Tag("multi_despell");
+	this.Tag("multi_dispell");
 
 	this.server_SetTimeToDie(15.0f + 15.0f*(this.get_u8("stages")-2));
 }
@@ -79,7 +79,7 @@ void onTick(CBlob@ this)
 
 	if (isServer())
 	{
-		if (this.get_u8("despelled") >= 2) this.Tag("mark_for_death");
+		if (this.get_u8("dispelled") >= 2) this.Tag("mark_for_death");
 		//create
 		if (this.getTickSinceCreated() <= stages * stage_frequency && getGameTime()%stage_frequency == 0)
 		{

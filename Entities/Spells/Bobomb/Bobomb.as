@@ -377,7 +377,10 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 	}
 
 	if(blobDeath && isServer())
-	{this.Tag("mark_for_death");}
+	{
+		Boom(this);
+		this.Tag("mark_for_death");
+	}
 }
 
 void onDie(CBlob@ this)
@@ -389,33 +392,37 @@ void onDie(CBlob@ this)
 		makeSmokePuff(this);
 		smoke(this.getPosition(), 20);
 	}
+}
+
+void Boom(CBlob@ this)
+{
+	if (!isServer()) return;
+	if (this.hasTag("mark_for_death")) return;
 	
-	if (isServer())
+	CMap@ map = getMap();
+	if(map is null)
+	{return;}
+
+	Vec2f pos = this.getPosition();
+	CBlob@[] aoeBlobs;
+
+	map.getBlobsInRadius(pos, this.get_f32("explode_radius"), @aoeBlobs);
+	for (u16 i = 0; i < aoeBlobs.length(); i++)
 	{
-		CMap@ map = getMap();
-		if(map is null)
-		{return;}
+		CBlob@ b = aoeBlobs[i]; //standard null check for blobs in radius
+		if (b is null)
+		{continue;}
 
-		CBlob@[] aoeBlobs;
-
-		map.getBlobsInRadius(pos, this.get_f32("explode_radius"), @aoeBlobs);
-		for (u16 i = 0; i < aoeBlobs.length(); i++)
+		if (!isEnemy(this, b))
+		{continue;}
+		
+		if (!map.rayCastSolidNoBlobs(pos, b.getPosition()))
 		{
-			CBlob@ b = aoeBlobs[i]; //standard null check for blobs in radius
-			if (b is null)
-			{continue;}
+			f32 dmg = this.get_f32("damage");
+			if (b.getPlayer() !is null && b.getPlayer() is this.getDamageOwnerPlayer())
+				dmg *= 0.25f;
 
-			if (!isEnemy(this, b))
-			{continue;}
-			
-			if (!map.rayCastSolidNoBlobs(pos, b.getPosition()))
-			{
-				f32 dmg = this.get_f32("damage");
-				if (b.getPlayer() !is null && b.getPlayer() is this.getDamageOwnerPlayer())
-					dmg *= 0.25f;
-
-				this.server_Hit(b, pos, Vec2f_zero, dmg, Hitters::explosion, isOwnerBlob(this, b));
-			}
+			this.server_Hit(b, pos, Vec2f_zero, dmg, Hitters::explosion, isOwnerBlob(this, b));
 		}
 	}
 }

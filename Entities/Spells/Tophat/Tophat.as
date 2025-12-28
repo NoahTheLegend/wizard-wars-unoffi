@@ -1,7 +1,7 @@
 void onInit(CBlob@ this)
 {
-    this.set_u8("despelled",0);
-    this.Tag("multi_despell");
+    this.set_u8("dispelled",0);
+    this.Tag("multi_dispell");
     this.Tag("projectile");
 
     this.getShape().getConsts().mapCollisions = false;
@@ -24,7 +24,7 @@ u8 rnd_blobs = 1;
 
 void onTick(CBlob@ this)
 {
-    if (this.get_u8("despelled") >= 2)
+    if (this.get_u8("dispelled") >= 2)
         this.Tag("mark_for_death");
 
     Vec2f origin = this.get_Vec2f("origin");

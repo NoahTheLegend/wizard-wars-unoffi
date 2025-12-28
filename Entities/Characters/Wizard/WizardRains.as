@@ -22,7 +22,8 @@ namespace WizardRainTypes
 		meteorStrike,
         skeletonRain,
 		arrowRain,
-        smite
+        smite,
+        stellarcollapse
     }
 }
 
@@ -36,12 +37,14 @@ class WizardRain
     uint time;
     uint objectsAmount;
     uint initobjectsAmount;
+    bool damagebuff;
 
-    WizardRain(CBlob@ blob, u8 i_type, u8 i_level, Vec2f pos)
+    WizardRain(CBlob@ blob, u8 i_type, u8 i_level, Vec2f pos, bool i_damagebuff)
     {
         type = i_type;
         level = i_level;
         position = pos;
+        damagebuff = i_damagebuff;
         team = blob.getTeamNum();
 
         if (type == WizardRainTypes::zombieRain)
@@ -105,6 +108,23 @@ class WizardRain
             if (level == WizardParams::extra_ready)
                 objectsAmount += 2;
             time = 1;
+        }
+        else if (type == WizardRainTypes::stellarcollapse)
+        {
+            objectsAmount = 6;
+            if (level == WizardParams::extra_ready)
+                objectsAmount += 3;
+            if (damagebuff)
+            {
+                objectsAmount += 3;
+                // todo: extra behavior
+            }
+            time = 1;
+        }
+        else
+        {
+            objectsAmount = 0;
+            time = 0;
         }
 
         initobjectsAmount = objectsAmount;
@@ -198,6 +218,66 @@ class WizardRain
 
                 time = 1;
             }
+            else if (type == WizardRainTypes::stellarcollapse)
+            {
+                f32 gap = damagebuff ? 32.0f : 64.0f;
+                f32 area_width = initobjectsAmount * gap;
+
+                f32 explosion_radius = level == 5 ? 48.0f : 32.0f;
+                f32 damage = 2.5f + XORRandom(11) * 0.1f;
+                u32 explosion_delay = damagebuff ? 8 : 4 + XORRandom(4);
+
+                if (damagebuff)
+                {
+                    for (u32 i = 0; i < objectsAmount; i++)
+                    {
+                        CBlob@ blob = server_CreateBlobNoInit("stellarcollapse");
+                        if (blob !is null)
+                        {
+                            blob.server_setTeamNum(team);
+
+                            f32 offset_x = -area_width/2 + gap/2 + i * gap;
+                            blob.setPosition(Vec2f(position.x + offset_x, -32.0f));
+
+                            blob.Init();
+                            blob.setAngleDegrees(90);
+
+                            blob.set_f32("initial_offset", offset_x);
+                            blob.set_f32("explosion_radius", explosion_radius);
+                            blob.set_f32("explosion_damage", damage);
+                            blob.set_u32("explosion_delay", explosion_delay);
+
+                            blob.getShape().SetGravityScale(-0.5f);
+                        }
+                    }
+
+                    objectsAmount = 0;
+                }
+                else
+                {
+                    // Cast one at a time, random offset
+                    CBlob@ blob = server_CreateBlobNoInit("stellarcollapse");
+                    if (blob !is null)
+                    {
+                        blob.server_setTeamNum(team);
+
+                        Vec2f offset = Vec2f(XORRandom(area_width) - area_width/2, 0);
+                        blob.setPosition(Vec2f(position.x + offset.x, -32.0f));
+
+                        blob.Init();
+                        blob.setAngleDegrees(90);
+                        blob.SetDamageOwnerPlayer(this.getPlayer());
+
+                        blob.set_f32("initial_offset", offset.x);
+                        blob.set_f32("explosion_radius", explosion_radius);
+                        blob.set_f32("explosion_damage", damage);
+                        blob.set_u32("explosion_delay", explosion_delay);
+                    }
+
+                    time = 2;
+                }
+            }
+
             objectsAmount -= 1;
             if (objectsAmount <= 0)
             {
@@ -210,6 +290,19 @@ class WizardRain
     {
         return (type == WizardRainTypes::finished);
     }
+}
+
+f32[] shuffle(f32[] arr)
+{
+    for (u8 i = 0; i < arr.length; i++)
+    {
+        u8 j = XORRandom(arr.length);
+        f32 temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    return arr;
 }
 
 void onInit(CBlob@ this)
@@ -246,7 +339,7 @@ void onTick(CBlob@ this)
         rains[i].Manage(this);
 }
 
-void addRain(CBlob@ this, string type, u8 level, Vec2f pos)
+void addRain(CBlob@ this, string type, u8 level, Vec2f pos, bool damagebuff)
 {
     WizardRain[]@ rains;
     if (!this.get("wizardRains", @rains)){
@@ -255,17 +348,21 @@ void addRain(CBlob@ this, string type, u8 level, Vec2f pos)
     if (!getNet().isServer())
         return;
     if (type == "zombie_rain")
-        rains.insertLast(WizardRain(this, WizardRainTypes::zombieRain, level, pos));
+        rains.insertLast(WizardRain(this, WizardRainTypes::zombieRain, level, pos, damagebuff));
     else if(type == "meteor_rain")
-        rains.insertLast(WizardRain(this, WizardRainTypes::meteorRain, level, pos));
+        rains.insertLast(WizardRain(this, WizardRainTypes::meteorRain, level, pos, damagebuff));
     else if(type == "meteor_strike")
-        rains.insertLast(WizardRain(this, WizardRainTypes::meteorStrike, level, pos));
+        rains.insertLast(WizardRain(this, WizardRainTypes::meteorStrike, level, pos, damagebuff));
     else if(type == "skeleton_rain")
-        rains.insertLast(WizardRain(this, WizardRainTypes::skeletonRain, level, pos));
+        rains.insertLast(WizardRain(this, WizardRainTypes::skeletonRain, level, pos, damagebuff));
     else if(type == "arrow_rain")
-        rains.insertLast(WizardRain(this, WizardRainTypes::arrowRain, level, pos));
+        rains.insertLast(WizardRain(this, WizardRainTypes::arrowRain, level, pos, damagebuff));
     else if(type == "smite")
-        rains.insertLast(WizardRain(this, WizardRainTypes::smite, level, pos));
+        rains.insertLast(WizardRain(this, WizardRainTypes::smite, level, pos, damagebuff));
+    else if(type == "stellarcollapse")
+        rains.insertLast(WizardRain(this, WizardRainTypes::stellarcollapse, level, pos, damagebuff));
+    else
+        return;
 }
 
 void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
@@ -275,7 +372,8 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         string type = params.read_string();
         u8 charge_state = params.read_u8();
         Vec2f aimpos = params.read_Vec2f();
-        addRain(this, type, charge_state, aimpos);
+        bool damagebuff = params.read_bool();
+        addRain(this, type, charge_state, aimpos, damagebuff);
     }
 }
 

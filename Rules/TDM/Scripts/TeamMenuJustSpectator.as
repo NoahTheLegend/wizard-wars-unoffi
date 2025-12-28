@@ -8,6 +8,13 @@ void onInit(CRules@ this)
 	this.addCommandID("pick spectator");
 	this.addCommandID("pick none");
 
+	this.addCommandID("sync_mana");
+	this.addCommandID("callback_mana_request");
+
+	this.addCommandID("shapeshift_gatherstats");
+	this.addCommandID("shapeshift_swap");
+	this.addCommandID("shapeshift_setstats");
+
 	AddIconToken("$TEAMS$", "GUI/MenuItems.png", Vec2f(32, 32), 1);
 	AddIconToken("$SPECTATOR$", "GUI/MenuItems.png", Vec2f(32, 32), 19);
 }

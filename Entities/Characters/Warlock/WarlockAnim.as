@@ -145,17 +145,23 @@ void onTick( CSprite@ this )
 
 	// animations
 	int spellsLength = WarlockParams::spells.length;
-const bool firing = blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2);;
+	CRules@ rules = getRules();
+	if (rules is null) return;
+	const bool firing = (blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2)) && !rules.get_bool("showHelp");
 	const bool left = blob.isKeyPressed(key_left);
 	const bool right = blob.isKeyPressed(key_right);
 	const bool up = blob.isKeyPressed(key_up);
 	const bool down = blob.isKeyPressed(key_down);
 	const bool inair = (!blob.isOnGround() && !blob.isOnLadder());
 	bool spell_ready = false;
+
+	if (playerPrefsInfo.hotbarAssignments_Warlock.size() == 0) return;
+
 	if (blob.isKeyPressed(key_action1))
 		spell_ready = WarlockParams::spells[playerPrefsInfo.primarySpellID].needs_full ? wiz.charge_state >= WarlockParams::cast_3 : wiz.charge_state >= WarlockParams::cast_1;
 	else if (blob.isKeyPressed(key_action2))
 		spell_ready = WarlockParams::spells[Maths::Min(playerPrefsInfo.hotbarAssignments_Warlock[15], spellsLength-1)].needs_full ? wiz.charge_state >= WarlockParams::cast_3 : wiz.charge_state >= WarlockParams::cast_1;
+	
 	bool full_charge = wiz.charge_state == WarlockParams::extra_ready;
 	needs_shiny = spell_ready;
 	needs_shiny2 = wiz.charge_state >= WarlockParams::charging;

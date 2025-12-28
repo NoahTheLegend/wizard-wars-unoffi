@@ -145,11 +145,15 @@ void onTick( CSprite@ this )
 
 	// animations
 	int spellsLength = WizardParams::spells.length;
-const bool firing = blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2);;
+	CRules@ rules = getRules();
+	if (rules is null) return;
+	bool firing = (blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2)) && !rules.get_bool("showHelp");
+
 	const bool left = blob.isKeyPressed(key_left);
 	const bool right = blob.isKeyPressed(key_right);
 	const bool up = blob.isKeyPressed(key_up);
 	const bool down = blob.isKeyPressed(key_down);
+
 	const bool inair = (!blob.isOnGround() && !blob.isOnLadder());
 	bool spell_ready = false;
 	if (blob.isKeyPressed(key_action1))

@@ -25,12 +25,16 @@ void onTick( CBlob@ this )
 {     
 	if (!this.hasTag("initted"))
 	{
-		this.Tag("initted");
-		if (isClient())
-			this.getSprite().PlaySound("SpriteFire1.ogg", 0.5f, 1.5f + XORRandom(10)/10.0f);
+		this.Tag("initted");	
 	}
 
-	if ((getGameTime()+Maths::Pow(this.getNetworkID(), 2)) % 60 == 0
+	if (this.getTickSinceCreated() == 0)
+	{
+		this.getSprite().PlaySound("SpriteFire1.ogg", 0.75f, 1.5f + XORRandom(10)/10.0f);
+	}
+
+	if (isServer()
+		&&(getGameTime()+Maths::Pow(this.getNetworkID(), 2)) % 60 == 0
 		&& !this.get_bool("launch"))
 		this.AddForce(Vec2f(this.getMass(), 0).RotateBy(XORRandom(360)));
 
@@ -81,7 +85,7 @@ void onTick( CBlob@ this )
 		dir.Normalize();
 		this.set_Vec2f("dir", dir);
 
-		if (getMap() !is null && this.getPosition().y/8 >= getMap().tilemapheight-2)
+		if (isServer() && getMap() !is null && this.getPosition().y/8 >= getMap().tilemapheight-2)
 		{
 			this.setVelocity(Vec2f(this.getVelocity().x, 0));
 			this.AddForce(Vec2f(0, -200));

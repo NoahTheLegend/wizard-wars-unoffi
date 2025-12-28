@@ -28,8 +28,8 @@ void ManageCursors( CBlob@ this )
 	{
 		// set cursor
 		getHUD().SetCursorImage("MagicCursor.png", Vec2f(32,32));
-		getHUD().SetCursorOffset( Vec2f(-32, -32) );
-		// frame set in logic
+		getHUD().SetCursorOffset(Vec2f(-32, -32));
+		// frame is set in logic
 	}
 }
 
@@ -143,7 +143,7 @@ void DrawSpellBar(CBlob@ this)
 		{
 			GUI::DrawFramedPane(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i);
 			GUI::DrawIcon("SpellIcons.png", spell.iconFrame, Vec2f(16,16), primaryPos + Vec2f(0,64) + Vec2f(32,0)*i);
-			GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white );
+			GUI::DrawText(""+((i+1)%10), primaryPos + Vec2f(8,-16) + Vec2f(32,0)*i, color_white);
 			
 			if ( i == primaryHotkey )
 				GUI::DrawRectangle(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i, SColor(100, 0, 255, 0));
@@ -154,7 +154,7 @@ void DrawSpellBar(CBlob@ this)
 			if ( currSpellCooldown > 0 )
 			{
 				GUI::DrawRectangle(primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, primaryPos + Vec2f(32,96) + Vec2f(32,0)*i, SColor(100, 255, 0, 0));
-				GUI::DrawText(""+currSpellCooldown, primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, color_white );
+				GUI::DrawText(""+currSpellCooldown, primaryPos + Vec2f(0,64) + Vec2f(32,0)*i, color_white);
 			}
 		}
 		else if ( i < 10 )	//spells 5 through 9	

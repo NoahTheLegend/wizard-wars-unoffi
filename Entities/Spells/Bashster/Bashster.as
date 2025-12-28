@@ -6,7 +6,7 @@ void onInit(CBlob@ this)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;	 // we have our own map collision
 	consts.bullet = true;
-	consts.net_threshold_multiplier = 0.25f;
+	consts.net_threshold_multiplier = 1.25f;
 	shape.SetGravityScale(0.0f);
 	//shape.SetStatic(true);
 
@@ -78,8 +78,10 @@ void onTick(CBlob@ this)
 
 	if (hold_time > max_hold_time || (!holding && this.getTickSinceCreated() > 15))
 	{		
-		if (isServer())
+		if (isServer() && !this.hasTag("created_blob"))
 		{
+			this.Tag("created_blob");
+
 			f32 damage = this.get_f32("damage");
 			damage += hold_time*dmg_per_step;
 

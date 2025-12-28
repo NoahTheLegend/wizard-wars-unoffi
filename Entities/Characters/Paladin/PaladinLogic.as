@@ -50,7 +50,7 @@ void onInit( CBlob@ this )
 	this.getShape().SetRotationsAllowed(false);
     this.addCommandID("freeze");
     this.addCommandID("spell");
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	this.getShape().getConsts().net_threshold_multiplier = 1.5f;
 
     AddIconToken( "$Skeleton$", "SpellIcons.png", Vec2f(16,16), 0 );
     AddIconToken( "$Zombie$", "SpellIcons.png", Vec2f(16,16), 1 );
@@ -152,6 +152,21 @@ void ManageSpell( CBlob@ this, PaladinInfo@ paladin, PlayerPrefsInfo@ playerPref
 
         is_aux2 = true;
     }
+	CRules@ rules = getRules();
+	if (rules is null) return;
+	if (isClient() && rules.get_bool("showHelp"))
+	{
+		is_pressed = false;
+		just_pressed = false;
+		just_released = false;
+
+		is_secondary = false;
+		is_aux1 = false;
+		is_aux2 = false;
+
+		casting_key = "a1";
+	}
+
 	this.set_string("casting_key", casting_key);
 	
 	Spell spell = PaladinParams::spells[spellID];
@@ -267,10 +282,16 @@ void ManageSpell( CBlob@ this, PaladinInfo@ paladin, PlayerPrefsInfo@ playerPref
 				castSpellID = playerPrefsInfo.hotbarAssignments_Paladin[Maths::Min(15,hotbarLength-1)];
 			else
 				castSpellID = playerPrefsInfo.primarySpellID;
+            CBlob@ target = spell.target_type == 2 ? client_getNearbySpellTarget(this, spell.range, spell.target_grab_range) : null;
+
+			u16 targetID = 0;
+			if (target !is null) targetID = target.getNetworkID();
+
             params.write_u8(castSpellID);
             params.write_Vec2f(spellPos);
 			params.write_Vec2f(pos);
 			params.write_Vec2f(this.getAimPos());
+			params.write_u16(targetID);
             this.SendCommand(this.getCommandID("spell"), params);
 			
 			int spell_cd_time = PaladinParams::spells[castSpellID].cooldownTime * getTicksASecond();
@@ -333,7 +354,8 @@ void ManageSpell( CBlob@ this, PaladinInfo@ paladin, PlayerPrefsInfo@ playerPref
         }
     }
 	
-	if ( !is_pressed && getRules().get_bool("spell_number_selection") )
+	if (rules is null) return;
+	if ( !is_pressed && rules.get_bool("spell_number_selection") )
 	{
 		if (PaladinParams::spells.length == 0) 
 		{
@@ -350,7 +372,7 @@ void ManageSpell( CBlob@ this, PaladinInfo@ paladin, PlayerPrefsInfo@ playerPref
 		int currHotkey = playerPrefsInfo.primaryHotkeyID;
 		int nextHotkey =  playerPrefsInfo.hotbarAssignments_Paladin.length;
 		
-		CRules@ rules = getRules();
+		
 		if (rules !is null && rules.hasTag("update_spell_selected")
 			&& rules.exists("reset_spell_id") && rules.get_u16("reset_spell_id") > 0)
 		{
@@ -500,7 +522,9 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         Spell spell = PaladinParams::spells[spellID];
         Vec2f aimpos = params.read_Vec2f();
         Vec2f thispos = params.read_Vec2f();
-        CastSpell(this, charge_state, spell, aimpos, thispos);
+        Vec2f serverAimPos = params.read_Vec2f();
+		u16 targetID = params.read_u16();
+        CastSpell(this, charge_state, spell, aimpos, thispos, targetID);
 
 		manaInfo.mana -= spell.mana;
     }
@@ -550,7 +574,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			if (enemiesInRadius.size() > 0)
 			{
 				f32 split_dmg = (damage * aura_omega_returned_damage_ratio) / enemiesInRadius.size();
-				if (sv_test) printf(""+damage+" "+aura_omega_returned_damage_ratio+" "+enemiesInRadius.size()+" "+split_dmg);
+				//if (sv_test) printf(""+damage+" "+aura_omega_returned_damage_ratio+" "+enemiesInRadius.size()+" "+split_dmg);
 				
 				for (uint i = 0; i < enemiesInRadius.size(); i++)
 				{

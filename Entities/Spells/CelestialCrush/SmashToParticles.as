@@ -1,6 +1,7 @@
 void onInit(CBlob@ this)
 {
     if (!this.exists("smashtoparticles_probability")) this.set_u16("smashtoparticles_probability", 1);
+    if (!this.exists("smashtoparticles_extra_rot")) this.set_f32("smashtoparticles_extra_rot", 0);
 }
 
 void onDie(CBlob@ this) //so its synced
@@ -53,7 +54,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
         
         Vec2f pos = this.getOldPosition();
         Vec2f vel = this.getOldVelocity();
-        f32 deg = this.getAngleDegrees();
+        f32 deg = this.getAngleDegrees() + this.get_f32("smashtoparticles_extra_rot");
         bool fl = this.isFacingLeft();
         f32 layer = sprite.getZ();
         
@@ -71,7 +72,7 @@ bool makeParticlesFromSpriteAccurate(CBlob@ this, CSprite@ sprite, u16 probabili
             int max_frames_in_row = Maths::Floor(w / framesize.x);
             image.setPixelPosition(Vec2f((frame * framesize.x % max_frames_in_row), Maths::Floor((frame * framesize.y) / max_frames_in_row)));
         }
-        else framesize = Vec2f(w,h);
+        else framesize = Vec2f(sprite.getFrameWidth(), sprite.getFrameHeight());
         //printf("frsize: "+framesize+" fr: "+frame);
 
         Vec2f center = Vec2f(-framesize.x/2, -framesize.y/2) + sprite.getOffset(); // shift it to upper left corner for 1/2 of sprite size

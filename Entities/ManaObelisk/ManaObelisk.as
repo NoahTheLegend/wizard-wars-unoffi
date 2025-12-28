@@ -6,20 +6,19 @@ const s16 MANA_REGEN_RATE = 2;
 const s16 MANA_GIVE_RATE = 12;
 const u16 REGEN_COOLDOWN_SECS = 10;
 
-void onInit( CBlob@ this )
+void onInit(CBlob@ this)
 {
 	this.Tag("mana obelisk");
 	this.getSprite().SetZ(-100.0f);
-	
 	this.getShape().SetStatic(true);
-	
+
 	this.set_s16("mana", MAX_MANA);
 	this.set_s16("regen cooldown", 0);
-	
+
 	this.addCommandID("sync mana");
 }
 
-void onTick( CBlob@ this )
+void onTick(CBlob@ this)
 {
 	int ticksPerSec = getTicksASecond();
 
@@ -28,11 +27,11 @@ void onTick( CBlob@ this )
 	{
 		if (getNet().isServer())
 		{
-			SyncMana( this );
+			SyncMana(this);
 		}
 		
 		s16 currRegenCooldown = this.get_s16("regen cooldown");
-		if ( currRegenCooldown > 0 )
+		if (currRegenCooldown > 0)
 			currRegenCooldown -= ticksPerSec;
 
 		s16 storedMana = this.get_s16("mana");
@@ -70,21 +69,26 @@ void onTick( CBlob@ this )
 							s32 wizMana = manaInfo.mana;
 							s32 wizMaxMana = manaInfo.maxMana;
 
-							if ( storedMana >= mana_to_give && wizMana < (wizMaxMana-mana_to_give) )
+							if (storedMana >= mana_to_give && wizMana < wizMaxMana)
 							{
-								storedMana -= mana_to_give;
-								manaInfo.mana = wizMana + mana_to_give;
-
-								if (!was_sound)
+								s32 actual_give = Maths::Min(mana_to_give, wizMaxMana - wizMana);
+								if (actual_give > 0)
 								{
-									touchBlob.getSprite().PlaySound("ManaGain.ogg", 0.75f, 1.0f + XORRandom(2)/10.0f);
-									was_sound = true;
-								}
-								
-								if (storedMana < mana_to_give)
-									touchBlob.getSprite().PlaySound("ManaEmpty.ogg", 0.5f, 1.0f + XORRandom(2)/10.0f);
+									storedMana -= actual_give;
+									manaInfo.mana = wizMana + actual_give;
 
-								currRegenCooldown = REGEN_COOLDOWN_SECS*ticksPerSec;
+									if (!was_sound)
+									{
+										touchBlob.getSprite().PlaySound("ManaGain.ogg", 0.75f, 1.0f + XORRandom(2)/10.0f);
+										was_sound = true;
+									}
+
+									if (storedMana < mana_to_give)
+										touchBlob.getSprite().PlaySound("ManaEmpty.ogg", 0.5f, 1.0f + XORRandom(2)/10.0f);
+
+									f32 cooldown_ratio = f32(actual_give) / f32(mana_to_give);
+									currRegenCooldown = Maths::Max(currRegenCooldown, s16(REGEN_COOLDOWN_SECS * ticksPerSec * cooldown_ratio));
+								}
 							}
 						}				
 					}

@@ -1,4 +1,3 @@
-
 Vec2f getRandomFloorLocationOnMap(uint seed, Vec2f from_pos)
 {
     CMap@ map = getMap();
@@ -24,8 +23,7 @@ Vec2f getRandomFloorLocationOnMap(uint seed, Vec2f from_pos)
         Vec2f floor = pos;
         if (map.rayCastSolid(pos, pos + Vec2f(0, map.tilemapheight * 0.25f), floor))
         {
-            Vec2f nearestEmptySpace = findClosestEmptySpace(map, floor, 4);
-            print(nearestEmptySpace+"");
+            Vec2f nearestEmptySpace = findClosestEmptySpace(map, floor, 8);
             if (nearestEmptySpace == Vec2f_zero) return floor - Vec2f(0, 16);
             
             return nearestEmptySpace - Vec2f(0, 16);

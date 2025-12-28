@@ -9,16 +9,16 @@ const Vec2f glaive_offset = Vec2f(-16,-12);
 const Vec2f rotation_offset = Vec2f(16, 12);
 const u8 glaive_death_delay = 2;
 
-const f32 start_angle_jabs = 30;
+const f32 start_angle_jabs = 15;
 const Vec2f jabs_offset = Vec2f(-12, 0);
 const Vec2f[] jabs_positions_const = {Vec2f(-8,0),Vec2f(-32,16),Vec2f(-8,0),Vec2f(-32,-16),Vec2f(-8,0),Vec2f(-48,0)};
-const u8 jabbing_time = 4;
-const int mid_jab_angle = 15;
-const int left_jab_angle = 35;
-const int right_jab_angle = 35;
+const u8 jabbing_time = 3;
+const int mid_jab_angle = 45;
+const int left_jab_angle = 45;
+const int right_jab_angle = 45;
 
 const f32 scale = 1.25f; // both for sprite and distance
-const f32 extra_distance = 8; // attack distance
+const f32 extra_distance = 12; // attack distance
 
 f32 getAimAngle(CBlob@ this)
 {
@@ -227,7 +227,7 @@ void onTick(CBlob@ this)
 					CBlob@ b = info.blob;
 					if (b is null || !isEnemy(this, b)) continue;
 
-					this.server_Hit(b, b.getPosition(), this.getVelocity(), this.get_f32("faithglaivedamage"), Hitters::sword);
+					this.server_Hit(b, b.getPosition(), Vec2f_zero, this.get_f32("faithglaivedamage"), Hitters::explosion, true);
 				}
 			}
 		}

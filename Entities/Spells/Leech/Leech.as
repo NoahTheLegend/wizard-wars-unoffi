@@ -5,8 +5,7 @@
 #include "SpellUtils.as";
 
 const f32 RANGE = 180.0f;
-const f32 DAMAGE = 2.0f;
-const f32 LIFETIME = 0.5f;
+const f32 LIFETIME = 0.33f;
 
 const int MAX_LASER_POSITIONS = 35;
 const int LASER_UPDATE_TIME = 10;
@@ -31,34 +30,36 @@ void onInit( CBlob@ this )
 	  
 	CSprite@ thisSprite = this.getSprite();
 	thisSprite.getConsts().accurateLighting = false;
-	thisSprite.PlaySound("EnergyBolt1.ogg", 2.0f, 1.0f + XORRandom(5)/10.0f);
+	thisSprite.PlaySound("EnergyBolt1.ogg", 1.5f, 1.0f + XORRandom(5)/10.0f);
 
 	this.set_bool("initialized", false);
 	this.server_SetTimeToDie(LIFETIME);
 
 	if (!isClient()) return;
-	string rendname = "rend3";
+	string rendname = "rend_l";
 
 	SColor col = SColor(220, 237, 20, 20);
-	if (this.getName().find("_g") != -1)
+	bool green = this.getName().find("_g") != -1;
+
+	this.set_bool("green", green);
+	if (green)
 	{
-		col = SColor(220, 40, 255, 55);
-		rendname = "rend3_green";
+		col = SColor(220, 60, 235, 85);
+		rendname = "rend_lg";
 	}
 
-	this.set_string("rendname", rendname);
-	Setup(col, rendname, false);//Red Laser
+	Setup(col, rendname, false);
 	int cb_id = Render::addBlobScript(Render::layer_objects, this, "Leech.as", "laserEffects");
 }
 
 void setPositionToOwner(CBlob@ this)
 {
 	CPlayer@ ownerPlayer = this.getDamageOwnerPlayer();
-	if ( ownerPlayer !is null )
+	if (ownerPlayer !is null)
 	{
 		CBlob@ ownerBlob = ownerPlayer.getBlob();
-		if ( ownerBlob !is null )
-			this.setPosition( ownerBlob.getPosition() );
+		if (ownerBlob !is null)
+			this.setPosition(ownerBlob.getPosition());
 	}
 }
 
@@ -72,7 +73,6 @@ void updateLaserPositions(CBlob@ this)
 	aimNorm.Normalize();
 	
 	Vec2f destination = aimPos;
-	
 	Vec2f shootVec = destination-thisPos;
 	
 	Vec2f normal = (Vec2f(aimVec.y, -aimVec.x));
@@ -129,30 +129,28 @@ void laserEffects(CBlob@ this, int id)
 {
 	CSprite@ thisSprite = this.getSprite();
 	Vec2f thisPos = this.getPosition();
-	//laser effects	
-	if ( this.getTickSinceCreated() > 1 )	//delay to prevent rendering lasers leading from map origin
+
+	if (this.getTickSinceCreated() > 1)
 	{
 		Vec2f[]@ laser_positions;
-		this.get( "laser positions", @laser_positions );
+		this.get("laser positions", @laser_positions);
 		
 		Vec2f[]@ laser_vectors;
-		this.get( "laser vectors", @laser_vectors );
+		this.get("laser vectors", @laser_vectors);
 		
-		if ( laser_positions is null || laser_vectors is null )
-			return; 
+		if (laser_positions is null || laser_vectors is null)
+			return;
+
 		int laserPositions = laser_positions.length;
-		
 		f32 ticksTillUpdate = getGameTime() % TICKS_PER_SEG_UPDATE;
 		
 		int lastPosArrayElement = laser_positions.length-1;
 		int lastVecArrayElement = laser_vectors.length-1;
-		
-		/*for (int i = 0; i < laser_positions.length; i++)
-		{
-			thisSprite.RemoveSpriteLayer("laser"+i);
-		}*/
-		
-		
+
+		string rendname = "rend_l";
+		bool green = this.getName().find("_g") != -1;
+		if (green) rendname = "rend_lg";
+
 		f32 z = thisSprite.getZ() - 0.4f;
 		for (int i = laser_positions.length - laserPositions; i < lastVecArrayElement; i++)
 		{
@@ -161,20 +159,10 @@ void laserEffects(CBlob@ this, int id)
 			Vec2f followVec = currSegPos - prevSegPos;
 			Vec2f followNorm = followVec;
 			followNorm.Normalize();
-			
+
 			f32 followDist = followVec.Length();
-			
 			f32 laserLength = (followDist+3.6f) / 16.0f;		
-			
-			
-			/*Vec2f netTranslation = Vec2f(0,0);
-			for (int t = i+1; t < lastVecArrayElement; t++)
-			{	
-				netTranslation = netTranslation - laser_vectors[t]; 
-			}*/
-			
-			//Vec2f movementOffset = laser_positions[lastPosArrayElement-1] - thisPos;
-			
+
 			Vec2f[] v_pos;
 			Vec2f[] v_uv;
 			
@@ -183,7 +171,7 @@ void laserEffects(CBlob@ this, int id)
 			v_pos.push_back(currSegPos + Vec2f( followDist * laserLength, LASER_WIDTH).RotateBy(-followNorm.Angle(), Vec2f())	); v_uv.push_back(Vec2f(1,1));//Bottom right?
 			v_pos.push_back(currSegPos + Vec2f(-followDist * laserLength, LASER_WIDTH).RotateBy(-followNorm.Angle(), Vec2f())	); v_uv.push_back(Vec2f(0,1));//Bottom left?
 				
-			Render::Quads(this.get_string("rendname"), z, v_pos, v_uv);
+			Render::Quads(rendname, z, v_pos, v_uv);
 			
 			v_pos.clear();
 			v_uv.clear();
@@ -191,14 +179,41 @@ void laserEffects(CBlob@ this, int id)
 	}
 }
 
-void onTick( CBlob@ this)
+void createNextSequence(CBlob@ this)
+{
+	if (!isServer()) return;
+	if (this.get_s8("remaining_casts") <= 0) return;
+
+	CBlob@ caster = this.getDamageOwnerPlayer().getBlob();
+	if (caster is null) return;
+
+	CBlob@ next_leech = server_CreateBlob("leech", caster.getTeamNum(), caster.getPosition());
+	if (next_leech !is null)
+	{
+		next_leech.set_f32("damage", this.get_f32("damage"));
+		next_leech.set_f32("lifesteal_amount", this.get_f32("lifesteal_amount"));
+		next_leech.set_Vec2f("aim pos", caster.getAimPos());
+		next_leech.IgnoreCollisionWhileOverlapped(caster);
+		next_leech.SetDamageOwnerPlayer(caster.getPlayer());
+		next_leech.set_s8("remaining_casts", this.get_s8("remaining_casts") - 1);
+	}
+
+	return;
+}
+
+void onDie(CBlob@ this)
+{
+	bool green = this.get_bool("green");
+	if (!green) createNextSequence(this);
+}
+
+void onTick(CBlob@ this)
 {
 	CSprite@ thisSprite = this.getSprite();
 	Vec2f thisPos = this.getPosition();
 	
 	//setPositionToOwner(this);
-	
-	if ( this.get_bool("initialized") == false && this.getTickSinceCreated() > 1 )
+	if (this.get_bool("initialized") == false && this.getTickSinceCreated() > 1)
 	{
 		this.SetLight(true);
 		this.SetLightRadius(24.0f);
@@ -234,31 +249,29 @@ void onTick( CBlob@ this)
 					{
 						continue;
 					}
-					else if ( damageDealt == false )
+					else if (!damageDealt)
 					{
-                        f32 extraDamage = 1.0f;
-						Vec2f attackVector = Vec2f(1,0).RotateBy(attackAngle);
+						f32 dmg = this.get_f32("damage");
+						Vec2f attackVector = Vec2f(1, 0).RotateBy(attackAngle);
+
 						if (target.hasTag("shielded") && blockAttack(target, attackVector, 0.0f)) //knight blocks with shield
 						{
-							extraDamage = 0;
+							dmg = 0;
 							if(isClient())
                     		{target.getSprite().PlaySound("ShieldHit.ogg");}
 						}
 
-						if (this.hasTag("super_cast")) extraDamage *= 1.5f;
-						this.server_Hit(target, hi.hitpos, Vec2f(0,0), DAMAGE * extraDamage, Hitters::explosion, true);
+						if (target.getName() == "shard") dmg *= 100.0f;
+						this.server_Hit(target, hi.hitpos, Vec2f(0,0), dmg, Hitters::explosion, true);
 
 						CPlayer@ ownerPlayer = this.getDamageOwnerPlayer();
-						if ( ownerPlayer !is null && target.getPlayer() !is null )
+						if (ownerPlayer !is null && target.getPlayer() !is null)
 						{
 							CBlob@ ownerBlob = ownerPlayer.getBlob();
-							if ( ownerBlob !is null )
+							if (ownerBlob !is null)
 							{
-								f32 amo = 0.5f;
-								if (this.hasTag("extra_damage"))
-									amo = 1.0f;
-
-								Heal(this, ownerBlob, amo, false, false, 0);
+								f32 heal = this.get_f32("lifesteal_amount");
+								Heal(this, ownerBlob, heal, false, false, 0);
 							}
 						}
 						

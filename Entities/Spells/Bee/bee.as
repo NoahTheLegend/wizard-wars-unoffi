@@ -43,9 +43,9 @@ void onTick(CBlob@ this){
         this.setVelocity(newVelocity * 4);
     }
 
-    if(this.getDistanceTo(target) <= 8.0f) //hit detection
+    if (this.getDistanceTo(target) <= 8.0f && !this.hasTag("mark_for_death")) //hit detection
     {
-        if(target.getTeamNum() == this.getTeamNum())
+        if (target.getTeamNum() == this.getTeamNum())
         {
             f32 amo = this.get_f32("heal_amount");
             if (target.getPlayer() is this.getDamageOwnerPlayer())

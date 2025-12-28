@@ -6,24 +6,14 @@ float max_distance = 9999.0f;
 uint16[] blob_ids;
 const Vec2f sc_pos = getDriver().getScreenCenterPos();
 
-void onInit(CRules@ this)
-{
-	this.addCommandID("sync_mana");
-	this.addCommandID("callback_mana_request");
-}
-
-void onRestart(CRules@ this)
-{
-	if (!this.hasCommandID("sync_mana")) this.addCommandID("sync_mana");
-	if (!this.hasCommandID("callback_mana_request")) this.addCommandID("callback_mana_request");
-}
-
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (isClient() && cmd == this.getCommandID("sync_mana"))
 	{
-		bool request = params.read_bool();
-		u16 player_count = params.read_u16();
+		bool request = false;
+		if (!params.saferead_bool(request)) return;
+		u16 player_count = 0;
+		if (!params.saferead_u16(player_count)) return;
 
 		if (request) // send our mana
 		{
@@ -33,8 +23,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			u16 local_id = local.getNetworkID();
 			for (u8 i = 0; i < player_count; i++)
 			{
-				u16 id = params.read_u16();
-				u16 mana = params.read_u16();
+				u16 id = 0;
+				u16 mana = 0;
+				if (!params.saferead_u16(id)) return;
+				if (!params.saferead_u16(mana)) return;
 
 				if (id == local_id)
 				{
@@ -55,8 +47,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		{
 			for (u8 i = 0; i < player_count; i++)
 			{
-				u16 id = params.read_u16();
-				u16 mana = params.read_u16();
+				u16 id = 0;
+				u16 mana = 0;
+				if (!params.saferead_u16(id)) return;
+				if (!params.saferead_u16(mana)) return;
 
 				CBlob@ blob = getBlobByNetworkID(id);
 				if (blob !is null && !blob.isMyPlayer())
@@ -72,9 +66,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (isServer() && cmd == this.getCommandID("callback_mana_request"))
 	{
-		u16 id = params.read_u16();
+		u16 id = 0;
+		u16 mana = 0;
+		if (!params.saferead_u16(id)) return;
 		CBlob@ blob = getBlobByNetworkID(id);
-		u16 mana = params.read_u16();
+		if (!params.saferead_u16(mana)) return;
 
 		if (blob !is null)
 		{
@@ -237,9 +233,12 @@ void onRender(CRules@ this)
 				{
 					CPlayer@ local = getLocalPlayer();
 					if (local is null) break;
-					
+
+					CRules@ rules = getRules();
+					if (rules is null) return;
+
 					// Show mana
-					if (blob.getTeamNum() == local.getTeamNum() || local.getTeamNum() == getRules().getSpectatorTeamNum())
+					if (blob.getTeamNum() == local.getTeamNum() || local.getTeamNum() == rules.getSpectatorTeamNum())
 					{
 						Vec2f pos2d = blob.getScreenPos() + Vec2f(0, 40);
 						Vec2f dim = Vec2f(24, 8);

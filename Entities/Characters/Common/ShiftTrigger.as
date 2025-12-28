@@ -26,7 +26,7 @@ void onTick( CBlob@ this )
             this.set_bool("shifting", true);
 
             ManaInfo@ manaInfo;
-			if (this.get( "manaInfo", @manaInfo) && manaInfo.mana > 0)
+			if (this.get("manaInfo", @manaInfo) && manaInfo.mana > 0)
             {
 				this.set_bool("shift_shoot", true);
                 params.write_bool(true);

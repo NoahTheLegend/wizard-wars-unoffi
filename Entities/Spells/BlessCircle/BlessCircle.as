@@ -84,7 +84,7 @@ void onTick(CSprite@ this)
     }
     else
     {
-        this.RotateByDegrees((b.hasTag("fullCharge") ? rotateSpeed*2 : rotateSpeed) / (b.get_u8("despelled") + 1) ,Vec2f(0,0));
+        this.RotateByDegrees((b.hasTag("fullCharge") ? rotateSpeed*2 : rotateSpeed) / (b.get_u8("dispelled") + 1) ,Vec2f(0,0));
         this.SetVisible(false);
 
         for (u8 i = 0; i < 4; i++)

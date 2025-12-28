@@ -1,6 +1,22 @@
 #include "Hitters.as";
 #include "WarpCommon.as";
 
+const int effectRadiusBase = 128.0f;
+const f32 lifetimeBase = 30.0f;
+const f32 lifetimePortal = 5.0f;
+
+const u32 cd_warp = 15; // time before you can warp again
+const u32 cd_retry = 10; // time before you can retry warping
+const u32 particle_spin = 90;
+
+const f32 boundary_offset = 16.0f; // offset from the edge of the circle to prevent warping inside
+const u32 lifetime = 60;
+const u32 lifetime_rnd = 30; 
+
+const float rotateSpeed = 4;
+const u8 max_symbols = 25;
+const u8 symbol_appearance_thresh = 3;
+
 void onInit(CBlob@ this)
 {
     this.addCommandID("warp");
@@ -19,6 +35,11 @@ void onInit(CBlob@ this)
     this.set_f32("scale", this.get_u8("type") == 0 ? 0.75f : 0.33f);
     f32 radius = effectRadiusBase * (this.get_f32("scale") / 2);
     this.set_s32("effectRadius", radius);
+
+    if (getMap().isTileSolid(getMap().getTile(this.getPosition() + Vec2f(0, 8))))
+    {
+        this.setPosition(this.getPosition() - Vec2f(0, 6));
+    }
 
     CBlob@[] ps;
     if (isServer() && getBlobsByTag("push_warp_portal", @ps))
@@ -60,27 +81,15 @@ void onInit(CBlob@ this)
     }
 }
 
-const int effectRadiusBase = 128.0f;
-const f32 lifetimeBase = 30.0f;
-const f32 lifetimePortal = 5.0f;
-
-const u32 cd_warp = 30; // time before you can warp again
-const u32 cd_retry = 15; // time before you can retry warping
-const u32 particle_spin = 90;
-
-const f32 boundary_offset = 16.0f; // offset from the edge of the circle to prevent warping inside
-const u32 lifetime = 60;
-const u32 lifetime_rnd = 30; 
-
-const float rotateSpeed = 4;
-const u8 max_symbols = 25;
-const u8 symbol_appearance_thresh = 3;
-
 void onTick(CBlob@ this)
 {
-    if (this.get_u8("despelled") >= 1) this.server_Die();
+    if (this.get_u8("dispelled") >= 1) this.server_Die();
     u8 type = this.get_u8("type");
-    
+
+    f32 lifetime_factor = Maths::Clamp((int(this.getTickSinceCreated() - 30) / 90.0f), 0.0f, 1.0f);
+    f32 rot = rotateSpeed * lifetime_factor;
+    this.setAngleDegrees(this.getAngleDegrees() + rot);
+
     if (this.getTickSinceCreated() == 0)
     {
         int seed = this.getPosition().x * this.getPosition().y;
@@ -92,7 +101,7 @@ void onTick(CBlob@ this)
             CBlob@ first_portal = createWarpPortal(seed, this.getPosition(), this.get_Vec2f("next_warp_portal_pos"));
             if (first_portal !is null)
             {
-                int c = 2;
+                int c = 6;
                 first_portal.Tag("prespawned");
                 first_portal.server_SetTimeToDie(lifetimeBase);
 
@@ -105,7 +114,7 @@ void onTick(CBlob@ this)
                     if (portal is null) continue;
 
                     portal.Tag("prespawned");
-                    portal.server_SetTimeToDie(lifetimeBase);
+                    portal.server_SetTimeToDie(this.getTimeToDie());
                     
                     first_portal.set_u16("next_warp_portal_chain", portal.getNetworkID());
                     portal.set_u16("last_warp_portal_chain", first_portal.getNetworkID());
@@ -115,7 +124,7 @@ void onTick(CBlob@ this)
                     if (new_portal !is null)
                     {
                         new_portal.Tag("prespawned");
-                        new_portal.server_SetTimeToDie(lifetimeBase);
+                        new_portal.server_SetTimeToDie(this.getTimeToDie());
 
                         portal.set_u16("next_warp_portal_chain", new_portal.getNetworkID());
                         new_portal.set_u16("last_warp_portal_chain", portal.getNetworkID());
@@ -158,7 +167,7 @@ void onTick(CBlob@ this)
         }
     }
 
-    if (this.getTickSinceCreated() < 20)
+    if (this.getTickSinceCreated() < 10)
     {
         return;
     }
@@ -238,7 +247,8 @@ void onTick(CBlob@ this)
                 else
                 {
                     Vec2f warp_pos = this.getPosition() - dir * (effectRadius + 8.0f);
-                    if (map.isTileSolid(map.getTile(warp_pos).type) || warp_pos.y > map.tilemapheight * map.tilesize - 16)
+                    if (map.isTileSolid(map.getTile(warp_pos).type) || warp_pos.y > map.tilemapheight * map.tilesize - 16
+                        || warp_pos.x < 8 || warp_pos.x > map.tilemapwidth * map.tilesize - 8)
                     {
                         tp_back = true;
                     }
@@ -246,6 +256,7 @@ void onTick(CBlob@ this)
                     {
                         // moved inside
                         b.setPosition(warp_pos);
+                        b.getSprite().PlaySound("warp_through.ogg", 0.8f, 0.65f+XORRandom(11) * 0.01f);
 
                         b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_warp);
                         b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
@@ -259,7 +270,6 @@ void onTick(CBlob@ this)
                 b.setPosition(b_dir + dir * 4);
                 b.setVelocity(dir);
 
-                this.getSprite().PlaySound("NoAmmo.ogg", 0.5f, 1.5f + XORRandom(15) * 0.01f);
                 b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_retry);
                 b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
             }
@@ -286,6 +296,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
             b.set_u32("global_warp_time", getGameTime() + cd_warp);
             b.set_u32("last_warp" + this.getNetworkID(), getGameTime() + cd_warp);
             b.set_u32("particle_warp_spin" + this.getNetworkID(), getGameTime() + particle_spin);
+
+            ParticleAnimated("Flash3.png",
+							  pos,
+							  Vec2f(0,0),
+							  360.0f * XORRandom(100) * 0.01f,
+							  1.0f, 
+							  3, 
+							  0.0f, true);
+
+            b.getSprite().PlaySound("warp_teleport.ogg", 1.0f, 1.0f+XORRandom(10) * 0.01f);
         }
     }
 }
@@ -297,9 +317,10 @@ void onInit(CSprite@ this)
 
     f32 scale = b.get_f32("scale");
     int effectRadius = b.get_s32("effectRadius");
+    u8 type = b.get_u8("type");
 
     this.ScaleBy(Vec2f(scale, scale));
-    this.PlaySound("circle_create.ogg", 5, 1.33f);
+    this.PlaySound("warp_open.ogg", type == 0 ? 0.66f : 0.45f, type == 0 ? 1.0f : 1.15f + XORRandom(10) * 0.01f);
     this.setRenderStyle(RenderStyle::additive);
 
     CSpriteLayer@ layer = this.addSpriteLayer("inner", "WarpFieldInner.png", 128, 128);
@@ -312,14 +333,12 @@ void onInit(CSprite@ this)
         Animation@ anim = layer.addAnimation("default", 0, false);
         if (anim !is null)
         {
-            int[] frames = {0, 0, 1, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 9};
+            int[] frames = {0, 0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 8, 9};
             anim.AddFrames(frames);
         }
     }
 
-    u8 type = b.get_u8("type");
     if (type == 1) return;
-
     for (int i = 0; i < max_symbols; i++)
     {
         CSpriteLayer@ layer = this.addSpriteLayer("warpsymbol_"+i, "WarpSymbols.png", 8, 8);
@@ -348,12 +367,8 @@ void onTick(CSprite@ this)
 
     f32 scale = b.get_f32("scale");
     int effectRadius = b.get_s32("effectRadius");
-    
-    f32 lifetime_factor = Maths::Clamp((int(b.getTickSinceCreated() - 30) / 90.0f), 0.0f, 1.0f);
-    f32 rot = rotateSpeed * lifetime_factor;
 
-    if (this.isAnimationEnded()) b.setAngleDegrees(b.getAngleDegrees() + rot);
-    else
+    if (!this.isAnimationEnded())
     {
         CSpriteLayer@ inner = this.getSpriteLayer("inner");
         if (inner !is null)
@@ -436,6 +451,7 @@ void onTick(CSprite@ this)
                 continue;
             }
 
+            // todo: vanilla is storing oldposition into CParticles; particles move bottom right
             SColor col = particle.colour;
 
             f32 sin_amplitude = particle.oldposition.x;
@@ -518,7 +534,9 @@ void onTick(CSprite@ this)
 
 void onDie(CBlob@ this)
 {
-    this.getSprite().PlaySound("circle_create.ogg",10,1.25f);
+    u8 type = this.get_u8("type");
+    this.getSprite().PlaySound(type == 0 ? "warp_end.ogg" : "warp_end_small.ogg", 1.0f, 1.0f + XORRandom(10) * 0.01f);
+
     f32 scale = this.get_f32("scale") * 2;
     Vec2f pos = this.getPosition();
 

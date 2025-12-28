@@ -13,8 +13,8 @@ void onInit(CBlob@ this)
     this.set_s32("nextHeal",getGameTime());
     this.Tag("totem");
     this.Tag("cantparry");
-    this.set_u8("despelled", 0);
-    this.Tag("multi_despell");
+    this.set_u8("dispelled", 0);
+    this.Tag("multi_dispell");
     this.set_u8("spheres", 1);
     this.set_u32("heal_delay", getGameTime()+heal_rate);
     this.set_u16("charge_delay", 180);
@@ -52,7 +52,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 void onTick(CBlob@ this)
 {
     //////////
-    if(this.get_u8("despelled") >= 1 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
+    if(this.get_u8("dispelled") >= 1 || this.getTickSinceCreated() > this.get_s32("aliveTime"))
     {
         this.Tag("mark_for_death");
     }
@@ -227,6 +227,7 @@ void onTick(CSprite@ this)
             orb.SetOffset(offset);
         }
     }
+    
     for (u8 i = s; i < max_charges; i++) // 2 front, 2 back orbs
     {
         CSpriteLayer@ orb = this.getSpriteLayer("orb"+i);

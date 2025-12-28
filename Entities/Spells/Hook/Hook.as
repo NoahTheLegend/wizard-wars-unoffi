@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = true;	 // we have our own map collision
 	consts.bullet = true;
-	consts.net_threshold_multiplier = 0.25f;
+	consts.net_threshold_multiplier = 1.25f;
 	this.Tag("projectile");
 	this.Tag("counterable");
 	this.Tag("die_in_divine_shield");
@@ -54,6 +54,7 @@ void onTick(CBlob@ this)
 			{
 				this.Tag("return");
 			}
+			
 			owner.set_u8("dashCoolDown", 2);
 			owner.set_bool("disable_dash", true);
 			owner.set_u32("teleport_disable", getGameTime()+2);
@@ -271,7 +272,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		blob.set_u8("dashCoolDown", 30);
 		blob.set_bool("disable_dash", true);
-		blob.set_u32("teleport_disable", getGameTime()+30);
+		blob.set_u32("teleport_disable", getGameTime()+15);
 
 		this.Tag("returning");
 		owner.setVelocity((this.getPosition()-owner.getPosition())/16);

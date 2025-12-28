@@ -390,6 +390,8 @@ class DamageTakenMessage : HoverMessage
 
 	void generate_tokens() override
 	{
+		return; // test, todo, fix
+
 		Vec2f taken_dmg_dim;
 		string taken_damage = ""+Maths::Round(damage*10 * 10.0f) / 10.0f;
 		GUI::GetTextDimensions(taken_damage, taken_dmg_dim);
@@ -400,9 +402,10 @@ class DamageTakenMessage : HoverMessage
 
 	HoverMessage@ try_merge(HoverMessage@ other) override
 	{
+		return null;
 		DamageTakenMessage@ message = cast<DamageTakenMessage>(other);
 
-		damage += message.damage;
+		if (message !is null) damage += message.damage;
 		return this;
 	}
 }
@@ -424,6 +427,8 @@ class HealTakenMessage : HoverMessage
 
 	void generate_tokens() override
 	{
+		return; // test, todo, fix
+
 		Vec2f taken_heal_dim;
 		string taken_heal = ""+Maths::Round(heal*10 * 10.0f) / 10.0f;
 		GUI::GetTextDimensions(taken_heal, taken_heal_dim);
@@ -434,9 +439,10 @@ class HealTakenMessage : HoverMessage
 
 	HoverMessage@ try_merge(HoverMessage@ other) override
 	{
+		return null;
 		HealTakenMessage@ message = cast<HealTakenMessage>(other);
 
-		heal += message.heal;
+		if (message !is null) heal += message.heal;
 		return this;
 	}
 }
@@ -458,6 +464,8 @@ class DamageDealtMessage : HoverMessage
 
 	void generate_tokens() override
 	{
+		return; // test, todo, fix
+
 		Vec2f dealt_dmg_dim;
 		string dealt_damage = ""+Maths::Round(damage*5 * 10.0f) / 10.0f;
 		GUI::GetTextDimensions(dealt_damage, dealt_dmg_dim);
@@ -468,9 +476,10 @@ class DamageDealtMessage : HoverMessage
 
 	HoverMessage@ try_merge(HoverMessage@ other) override
 	{
+		return null;
 		DamageDealtMessage@ message = cast<DamageDealtMessage>(other);
 
-		damage += message.damage;
+		if (message !is null) damage += message.damage;
 		return this;
 	}
 }
@@ -492,6 +501,8 @@ class HealDealtMessage : HoverMessage
 
 	void generate_tokens() override
 	{
+		return; // test, todo, fix
+
 		Vec2f dealt_dmg_dim;
 		string dealt_heal = ""+Maths::Round(heal*10 * 10.0f) / 10.0f;
 		GUI::GetTextDimensions(dealt_heal, dealt_dmg_dim);
@@ -503,9 +514,10 @@ class HealDealtMessage : HoverMessage
 
 	HoverMessage@ try_merge(HoverMessage@ other) override
 	{
+		return null;
 		HealDealtMessage@ message = cast<HealDealtMessage>(other);
-
-		heal += message.heal;
+		
+		if (message !is null) heal += message.heal;
 		return this;
 	}
 }
@@ -652,6 +664,7 @@ class HoverMessages
 HoverMessages@ get_messages()
 {
 	CRules@ rules = getRules();
+	if (rules is null) return null;
 
 	HoverMessages@ messages;
 	rules.get("hover messages", @messages);

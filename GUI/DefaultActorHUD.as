@@ -64,10 +64,67 @@ void renderHPBar( CBlob@ blob, Vec2f origin)
 	GUI::DrawText(""+Maths::Round(blobHealth*10)+"/"+blobInitHealth*10, origin+Vec2f(-42,8), color_white );
 }
 
-void onInit( CSprite@ this )
+const string[] font_names = {
+    "Wizardry_12",
+    "Wizardry_14",
+    "Wizardry_16",
+    "Wizardry_18",
+    "Wizardry_20",
+    "Wizardry_22",
+    "Wizardry_24",
+	"Wizardry_32",
+
+    "KingThingsPetrockLight_12",
+    "KingThingsPetrockLight_14",
+    "KingThingsPetrockLight_18",
+    "KingThingsPetrockLight_20",
+    "KingThingsPetrockLight_22",
+    "KingThingsPetrockLight_24",
+    "KingThingsPetrockLight_32",
+    "KingThingsPetrockLight_36",
+    "KingThingsPetrockLight_40",
+    "KingThingsPetrockLight_44",
+    "KingThingsPetrockLight_48",
+    "KingThingsPetrockLight_52",
+    "KingThingsPetrockLight_56",
+    "KingThingsPetrockLight_60",
+    "KingThingsPetrockLight_64",
+    
+    "DragonFire_12",
+    "DragonFire_14",
+    "DragonFire_15",
+    "DragonFire_16",
+    "DragonFire_17",
+    "DragonFire_18",
+	"DragonFire_24",
+	"DragonFire_32",
+    "DragonFire_40",
+    "DragonFire_48",
+    "DragonFire_56",
+    "DragonFire_64"
+};
+
+void onInit(CSprite@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
+
+    for (u8 i = 0; i < font_names.length; i++)
+	{
+		string[] parts = font_names[i].split("_");
+		if (parts.length == 2)
+		{
+			string full_font_name = font_names[i];
+			string font_name = parts[0];
+			string font_size = parts[1];
+			
+			if (!GUI::isFontLoaded(full_font_name))
+			{
+				string font_path = CFileMatcher(full_font_name + ".ttf").getFirst();
+				GUI::LoadFont(full_font_name, font_path, parseInt(font_size), true);
+			}
+		}
+	}
 }
 
 void onRender( CSprite@ this )

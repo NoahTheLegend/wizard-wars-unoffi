@@ -78,8 +78,11 @@ void onInit(CBlob@ this)
 	addShieldVars(this, SHIELD_BLOCK_ANGLE, 2.0f, 5.0f);
 	knight_actorlimit_setup(this);
 	this.getShape().SetRotationsAllowed(false);
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	this.getShape().getConsts().net_threshold_multiplier = 1.5f;
+
+	this.Tag("ignore_scoreboard");
 	this.Tag("player");
+	
 	this.Tag("no_mana_pool");
 	this.Tag("flesh");
 

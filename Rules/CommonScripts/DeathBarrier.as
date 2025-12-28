@@ -90,7 +90,6 @@ void onRestart(CRules@ this)
 	barrier_set = false;
 }
 
-
 void onRender( CRules@ this )
 {
 	if (shouldBarrier( this ))

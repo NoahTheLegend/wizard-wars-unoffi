@@ -6,7 +6,7 @@ void onTick(CBlob@ this)
     u8 delay = this.get_u8("bloodarrow_delay");
 	u8 wait_time = this.get_u8("bloodarrow_wait");
 
-    f32 level = float(getGameTime()-this.get_u32("bloodarrow_start"))/float(this.get_u8("bloodarrows")*delay);
+    f32 level = f32(getGameTime()-this.get_u32("bloodarrow_start")) / f32(this.get_u8("bloodarrows") * delay);
 
     if (isServer() && getGameTime() % delay == 0)
     {
@@ -40,7 +40,7 @@ void onTick(CBlob@ this)
             orb.set_Vec2f("target_pos", dir - extra_dir);
 
             orb.SetDamageOwnerPlayer(this.getPlayer());
-            orb.server_SetTimeToDie(5.0f);
+            orb.server_SetTimeToDie(2.0f + XORRandom(51) * 0.01f);
 
             orb.set_f32("speed", this.hasTag("extra_damage") ? 10.0f : 8.0f);
             orb.set_f32("damage", this.get_f32("bloodarrow_damage"));

@@ -7,11 +7,10 @@ const int LIFETIME = 4;
 const int EXTENDED_LIFETIME = 6;
 const f32 SEARCH_RADIUS = 64.0f;
 const f32 HOMING_FACTOR = 6.0f;
-const int HOMING_DELAY = 15;	
+const int HOMING_DELAY = 15;
+const int INIT_DELAY = 2;
 
-const int INIT_DELAY = 2;	//prevents initial seg pos to be at (0,0)
-
-void onInit( CBlob @ this )
+void onInit(CBlob@ this)
 {
 	this.Tag("phase through spells");
 	this.Tag("counterable");
@@ -72,6 +71,7 @@ void onTick( CBlob@ this)
 			case revive_effect_missile:
 			case revive_knight_effect_missile:
 			case unholyRes_effect_missile:
+			case demonicpact_effect_missile:
 			{
 				targetType = 1;
 			}
@@ -86,13 +86,17 @@ void onTick( CBlob@ this)
 			break;
 
 			case manaburn_effect_missile:
+			case shapeshift_effect_missile:
+			case silence_effect_missile:
+			case fear_effect_missile:
 			{
 				targetType = 2;
-				this.Tag("manaburn");
 				this.Tag("projectile");
+
+				this.Tag("purple_trail");
 			}
 			break;
-				
+	
 			default: targetType = 3;
 		}
 
@@ -132,14 +136,19 @@ void onTick( CBlob@ this)
 
 				if (other is this)
 				{continue;} //lets not run away from / try to eat ourselves...
-				
+
+				if (other.hasTag("ignore_effects"))
+				{
+					continue;
+				}
+
 				bool sameTeam = this.getTeamNum() == other.getTeamNum();
 				
 				switch(targetType) //does action according to targetting type
 				{
 					case 0: //follows allies
 					{
-						if (sameTeam && !isOwnerBlob(this, other) && other.hasTag("player") && !other.hasTag("dead")) //home in on living allies
+						if (sameTeam && !isOwnerBlob(this, other) && other.hasTag("player") && !other.hasTag("ignore_effects") && !other.hasTag("dead")) //home in on living allies
 						{
 							Vec2f tpos = other.getPosition();									  
 							f32 dist = (tpos - thisPos).getLength();
@@ -316,7 +325,19 @@ void setEffect(CBlob@ this, CBlob@ blob)
 			{
 				HealBlock(blob, this.get_u16("effect_time"));
 			}
-
+			else if (effectType == shapeshift_effect_missile && this.getDamageOwnerPlayer() !is null)
+			{
+				Shapeshift(this.getDamageOwnerPlayer().getBlob(), blob, this.get_u16("effect_time"));
+			}
+			else if (effectType == silence_effect_missile)
+			{
+				Silence(blob, this.get_u16("effect_time"));
+			}
+			else if (effectType == fear_effect_missile)
+			{
+				Fear(blob, this.get_u16("effect_time"));
+			}
+			
 			this.Tag("set");
 			this.Tag("mark_for_death");
 			return;
@@ -343,7 +364,13 @@ void setEffect(CBlob@ this, CBlob@ blob)
 				UnholyRes(blob);
 			}
 			break;
-			
+
+			case demonicpact_effect_missile:
+			{
+				CreateDemonicPact(this, blob);
+			}
+			break;
+
 			default: break;
 		} //switch end
 
@@ -487,9 +514,9 @@ void sparks(CBlob@ this, Vec2f pos, int amount)
 		
 			case 2: //enemies
 			{
-				bool is_manaburn = this.hasTag("manaburn");
+				bool purple_trail = this.hasTag("purple_trail");
 				SColor color = SColor( 255, colorShade, colorShade, 0 );
-				if (is_manaburn) {color = SColor(255, 180, 75, 255);}
+				if (purple_trail) {color = SColor(255, 180, 75, 255);}
 				CParticle@ p = ParticlePixelUnlimited(pos, vel, color, true);
     		    if(p !is null)
 		        {
@@ -533,8 +560,8 @@ void selectedTargetIndicator( CBlob@ this , Vec2f pos )
 
 		case 2: //enemies
 		{
-			bool is_manaburn = this.hasTag("manaburn");
-			if (is_manaburn)
+			bool purple_trail = this.hasTag("purple_trail");
+			if (purple_trail)
 				color = SColor(255, 225, 125, 255);
 			else
 				color = SColor( 255, 255, 165, 0 );

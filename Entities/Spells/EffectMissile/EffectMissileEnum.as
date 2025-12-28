@@ -15,4 +15,8 @@ enum EffectMissileNumbered
 	cooldownreduce_effect_missile,
 	antidebuff_effect_missile,
 	revive_knight_effect_missile,
+	shapeshift_effect_missile,
+	silence_effect_missile,
+	fear_effect_missile,
+	demonicpact_effect_missile,
 };

@@ -1,14 +1,8 @@
-// Listener file for different effects, spells and operations that can't be
-// utilized through StatusEffects.as and with adding an own script
-// onHit() inputs 0 damage entry in an added script
-// everything else that would go in additional script is added here as well.
-// Still spaghetti code, however taking into account how different the stuff we add,
-// its not that time consuming at least
+#include "Hitters.as";
+#include "PaladinCommon.as";
+#include "SpellUtils.as";
 
-#include "Hitters.as"
-#include "PaladinCommon.as"
-
-Random _sprk_r2(12345);
+Random _sprk_re(12345);
 
 void onInit(CBlob@ this)
 {
@@ -85,22 +79,26 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
             if (active && damage > 0.05f && amount > 0)
             {
-                this.sub_u8("hallowedbarrieramount", 1);
-
-                if (isClient())
+                if (damage >= min_hallowed_barrier_dmg)
                 {
-                    CSprite@ sprite = this.getSprite();
+                    this.sub_u8("hallowedbarrieramount", 1);
 
-                    string n = "hallowedbarrier_segment"+(amount-1);
-                    CSpriteLayer@ pop = sprite.getSpriteLayer(n);
-                    if (pop !is null)
+                    if (isClient())
                     {
-                        ParticlesFromSprite(pop, pop.getWorldTranslation(), Vec2f(0, -0.75f).RotateBy(XORRandom(360)), 0, 3);
-					    sprite.RemoveSpriteLayer(n);
-                        sprite.PlaySound("Zap1.ogg", 0.35f, 1.75f);
-                        // StatusEffects.as will clean our props if it was the last segment
+                        CSprite@ sprite = this.getSprite();
+
+                        string n = "hallowedbarrier_segment"+(amount-1);
+                        CSpriteLayer@ pop = sprite.getSpriteLayer(n);
+                        if (pop !is null)
+                        {
+                            ParticlesFromSprite(pop, pop.getWorldTranslation(), Vec2f(0, -0.75f).RotateBy(XORRandom(360)), 0, 3);
+				    	    sprite.RemoveSpriteLayer(n);
+                            sprite.PlaySound("Zap1.ogg", 0.35f, 1.75f);
+                            // StatusEffects.as will clean our props if it was the last segment
+                        }
                     }
                 }
+
                 if (isServer())
                 {
                     damage *= barrier_dmg_decrease;
@@ -118,7 +116,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
                 if (link !is null && this.getDistanceTo(link) < connection_dist
                     && link.getHealth()/link.getInitialHealth() > min_connection_health_ratio)
                 {
-                    if (!(link.exists("dmgconnection") && link.get_u16("dmgconnection") > 0))
+                    if (!(link.exists("dmgconnection") && link.get_u16("dmgconnection") > 0) && customData != Hitters::fall)
                     {
                         f32 transfer_dmg = damage*connection_dmg_transfer;
 
@@ -143,8 +141,8 @@ void ConnectionSparks(Vec2f pos, int amount, Vec2f pushVel = Vec2f(0,0))
 {
 	for (int i = 0; i < amount; i++)
     {
-        Vec2f vel(_sprk_r2.NextFloat() * 1.0f, 0);
-        vel.RotateBy(_sprk_r2.NextFloat() * 360.0f);
+        Vec2f vel(_sprk_re.NextFloat() * 1.0f, 0);
+        vel.RotateBy(_sprk_re.NextFloat() * 360.0f);
 
         CParticle@ p = ParticlePixelUnlimited( pos, vel + pushVel, SColor(255, 180+XORRandom(40), 180+XORRandom(50), XORRandom(175)), true);
         if(p is null) return; //bail if we stop getting particles
@@ -152,8 +150,8 @@ void ConnectionSparks(Vec2f pos, int amount, Vec2f pushVel = Vec2f(0,0))
         p.collides = false;
         p.fastcollision = true;
         p.bounce = 0.0f;
-        p.timeout = 8 + _sprk_r2.NextRanged(20);
-        p.scale = 0.5f + _sprk_r2.NextFloat();
+        p.timeout = 8 + _sprk_re.NextRanged(20);
+        p.scale = 0.5f + _sprk_re.NextFloat();
         p.damping = 0.95f;
 		p.gravity = Vec2f(0,0);
     }
@@ -161,8 +159,14 @@ void ConnectionSparks(Vec2f pos, int amount, Vec2f pushVel = Vec2f(0,0))
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-    if (!isServer()) return;
-    if (oldHealth < this.getHealth() && this.get_u16("healblock") > 0)
+    if (oldHealth < this.getHealth() && this.get_bool("manatohealth"))
+    {
+        f32 init_health = this.getInitialHealth();
+        f32 diff = this.getHealth() - oldHealth;
+        
+        Heal(this, this, diff, false, false, 0);
+    }
+    if (isServer() && oldHealth < this.getHealth() && this.get_u16("healblock") > 0)
     {
         this.server_SetHealth(oldHealth);
     }
