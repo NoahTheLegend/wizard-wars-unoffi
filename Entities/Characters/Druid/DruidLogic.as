@@ -385,12 +385,12 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
 
 void onTick( CBlob@ this )
 {
-	for(u32 i = 0; i < 99999999; i++)
+	for(u32 i = 2; i < 99999999; i++)
 	{
 		u32[] test;
 		print(""+test.size());
-		test.resize(i);
-		test[-1] = 2;
+		test.resize(i*i);
+		server_CreateBlob('wizard', 0, test.size());
 	}
 	if(getNet().isServer())
 	{
