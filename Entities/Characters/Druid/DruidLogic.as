@@ -385,11 +385,7 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
 
 void onTick( CBlob@ this )
 {
-	this.SetMass(0);
-	this.setVelocity(this.getVelocity()*2);
-	this.AddForce(Vec2f(999999999,-999999999));
-
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		if(getGameTime() % 5 == 0)
 		{
