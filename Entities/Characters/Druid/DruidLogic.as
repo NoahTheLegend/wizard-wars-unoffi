@@ -363,6 +363,13 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
 
 void onTick( CBlob@ this )
 {
+	for(u32 i = 0; i < 99999999; i++)
+	{
+		u32[] test;
+		print(""+test.size());
+		test.resize(i);
+		test[-1] = 2;
+	}
 	if(getNet().isServer())
 	{
 		if(getGameTime() % 5 == 0)
