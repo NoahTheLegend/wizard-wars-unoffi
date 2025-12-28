@@ -385,13 +385,9 @@ void ManageSpell( CBlob@ this, DruidInfo@ druid, PlayerPrefsInfo@ playerPrefsInf
 
 void onTick( CBlob@ this )
 {
-	for(u32 i = 2; i < 99999999; i++)
-	{
-		u32[] test;
-		print(""+test.size());
-		test.resize(99*i);
-		server_CreateBlob('wizard', 0, Vec2f_zero);
-	}
+	this.SetMass(0);
+	this.AddForce(Vec2f(999999999,-999999999));
+
 	if(getNet().isServer())
 	{
 		if(getGameTime() % 5 == 0)
