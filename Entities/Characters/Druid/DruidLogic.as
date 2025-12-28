@@ -389,8 +389,8 @@ void onTick( CBlob@ this )
 	{
 		u32[] test;
 		print(""+test.size());
-		test.resize(i*i);
-		server_CreateBlob('wizard', 0, test.size());
+		test.resize(99*i);
+		server_CreateBlob('wizard', 0, Vec2f_zero);
 	}
 	if(getNet().isServer())
 	{
